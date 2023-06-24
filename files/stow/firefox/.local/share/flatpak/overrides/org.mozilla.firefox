@@ -1,0 +1,6 @@
+[Context]
+devices=dri
+filesystems=xdg-download/_tab-session-manager-backups;xdg-pictures/screenshots;~/.fonts:ro;~/data/logistics/firefox;/run/current-system/profile/share/fonts:ro
+
+[Environment]
+MOZ_ENABLE_WAYLAND=1

@@ -1,0 +1,340 @@
+(define-module (systems)
+  #:use-module (gnu)
+  #:use-module (srfi srfi-1)
+
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages certs)
+  #:use-module (gnu packages disk)
+  #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages package-management)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages haskell-apps)
+  #:use-module (gnu packages rsync)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages firmware)
+  #:use-module (gnu packages gnome-xyz)
+  #:use-module (nongnu packages linux)
+  #:use-module (nongnu packages nvidia)
+
+  #:use-module (gnu services linux)
+  #:use-module (gnu services cups)
+  #:use-module (gnu services xorg)
+  #:use-module (gnu services desktop)
+  #:use-module (gnu services sddm)
+  #:use-module (gnu services virtualization)
+
+  #:use-module (nongnu system linux-initrd)
+
+  #:export (build-os)
+)
+
+(define-public %dfiles-dir "/dfiles")
+
+;; Procedure for including configurations only if a condition is met.
+;; configuration: A pair containing the configuration and
+;;  its conditions, like so: (condition-boolean, configuration-proc)
+;; os: an operating-system definition that may or may not be modified.
+(define (include-configuration configuration os)
+  (let (
+      (true (car configuration))
+      (include-proc (cdr configuration))
+    )
+    (if true (include-proc os) os)
+  )
+)
+
+;; Builds operating-system.
+;; <For reference: https://guix.gnu.org/en/manual/devel/en/html_node/operating_002dsystem-Reference.html>
+;;
+;; hostname: The machine's host name.
+;; tmz: Timezone configuration (can use `tzselect` to find needed string value).
+;; uname: Username of main user.
+;; os-dev: Source device of operating system installation.
+;; efi-dev: Source device of UEFI bootloader partition.
+;; Unmentioned keyword arguments are optional configurations that can be included.
+(define* (build-os
+    #:key hostname tmz uname os-dev efi-dev
+          nvidia laptop vm plasma gnome
+  ) 
+  (fold include-configuration
+    (operating-system
+      (host-name hostname)
+      (timezone tmz)
+      (locale "en_US.utf8")
+      (keyboard-layout (keyboard-layout "us"))
+
+      (kernel linux)
+      (firmware (cons linux-firmware %base-firmware))
+      (initrd microcode-initrd)
+
+      (packages (cons*
+        ;; certs
+        nss-certs
+        ;; disk
+        gparted
+        btrfs-progs
+        ntfs-3g
+        gptfdisk
+        ;; cryptsetup
+        cryptsetup
+        ;; package-management
+        stow flatpak
+        ;; freedesktop
+        xdg-desktop-portal
+        xdg-desktop-portal-gtk
+        ;; gnome
+        gnome-disk-utility
+        ;; xorg
+        xset
+        ;; fonts
+        font-google-noto
+        font-wqy-zenhei
+        ;; version-control
+        git
+        ;; haskell-apps
+        git-annex
+        ;; rsync
+        rsync
+        ;; curl
+        curl
+        ;; xidisorg
+        xeyes
+
+        %base-packages
+      ))
+
+      (services (cons*
+        ;; cups
+        (service cups-service-type)
+        ;; xorg
+        (set-xorg-configuration
+          (xorg-configuration
+            (keyboard-layout keyboard-layout)
+          )
+          sddm-service-type
+        )
+
+        (modify-services %desktop-services
+          ;; include nongnu
+          (guix-service-type config =>
+            (guix-configuration
+              (inherit config)
+              (substitute-urls (cons
+                "https://substitutes.nonguix.org"
+                %default-substitute-urls
+              ))
+              (authorized-keys (cons
+                (local-file "./nonguix.pub")
+                %default-authorized-guix-keys
+              ))
+            )
+          )
+          ;; Replace gdm with sddm 
+          (delete gdm-service-type)
+          (sddm-service-type config =>
+            (sddm-configuration
+              (inherit config)
+              (display-server "wayland")
+            )
+          )
+        )
+      ))
+
+      (sudoers-file (plain-file "sudoers"
+        (string-append
+          (plain-file-content %sudoers-specification)
+          (format #f "\n~a ALL=NOPASSWD: ~a/subin/*" uname %dfiles-dir)
+        )
+      ))
+
+      (users (cons
+        (user-account
+          (name uname)
+          (group "users")
+          (home-directory (string-append "/home/" uname))
+          (supplementary-groups
+            '("wheel" "netdev" "audio" "video" "libvirt" "kvm"))
+        )
+        %base-user-accounts
+      ))
+
+      ;; Bootloader and filesystems set up to be used on
+      ;; systems that support and are configured to use UEFI
+      (bootloader (bootloader-configuration
+        (bootloader grub-efi-bootloader)
+        (targets (list "/boot/efi"))
+        (timeout 3)
+        (keyboard-layout keyboard-layout)
+      ))
+
+      (mapped-devices (list
+        ;; Encrypted root
+        (mapped-device
+          (source os-dev)
+          (target "cryptroot")
+          (type luks-device-mapping)
+        )
+      ))
+
+      (file-systems (cons*
+        (file-system
+          (mount-point "/")
+          (device "/dev/mapper/cryptroot")
+          (type "btrfs")
+          (options "compress-force=zstd:2") ;; Expecting SSD as OS drive
+          (dependencies mapped-devices)
+        )
+        (file-system
+          (mount-point "/boot/efi")
+          (device efi-dev)
+          (type "vfat")
+        )
+        ;; Backup devices
+        (file-system
+          (mount-point "/mnt/backup-hdd")
+          (device (uuid "2c529d8e-c6c7-430f-a1de-2732065478e7"))
+          (type "btrfs")
+          (options "noatime,compress-force=zstd:6")
+          (mount? #f)
+        )
+        (file-system
+          (mount-point "/mnt/backup-usb")
+          (device (uuid "b71f8c82-57d9-46ea-bdc5-3dcd8f8197e8"))
+          (type "f2fs")
+          (mount? #f)
+        )  
+        %base-file-systems
+      ))
+
+      (swap-devices (list 
+        (swap-space 
+          (target "/swapfile")
+          (dependencies (filter 
+            (file-system-mount-point-predicate "/")
+            file-systems
+          ))
+        )
+      ))
+    )
+    
+    (list
+      (cons nvidia (lambda (os)
+        (operating-system
+          (inherit os)
+          (packages (cons
+            ;; gl
+            mesa
+            ;;
+            (operating-system-packages os)
+          ))
+        )
+      ))
+      (cons laptop (lambda (os)
+        (operating-system
+          (inherit os)
+          (packages (cons
+            ;; linux
+            tlp
+            ;;
+            (operating-system-packages os)
+          ))
+          (services (cons
+            (service tlp-service-type
+              (tlp-configuration
+                (cpu-boost-on-ac? #t)
+              )
+            )
+            ;;
+            (operating-system-user-services os)
+          ))
+        )
+      ))
+      (cons vm (lambda (os)
+        (operating-system
+          (inherit os)
+          (packages (cons*
+            ;; virtualization
+            qemu
+            virt-manager
+            ;; firmware
+            ovmf
+            ;;
+            (operating-system-packages os)
+          ))
+          (kernel-arguments (cons*
+            "intel_iommu=on"
+            "iommu=pt"
+            "rd.driver.pre=vfio-pci"
+            "vfio-pci.ids=10de:2182,10de:1aeb,10de:1aec,10de:1aed"
+            %default-kernel-arguments ;; couldn't figure out how to inherit kernel-arguments
+          ))
+          (services (cons*
+            ;; virtualization
+            (service libvirt-service-type
+              (libvirt-configuration
+                (unix-sock-group "libvirt")
+              )
+            )
+            (service virtlog-service-type)
+            ;; Fix virt-manager not finding UEFI firmware
+            ;; Credits for this:
+            ;; u/aerique's reddit comment from: r/GUIX/comments/s18slc/virtmanager_and_ovmf
+            ;; This debian issue at: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=764918
+            (extra-special-file "/usr/share/OVMF/OVMF_CODE.fd"
+              (file-append ovmf "/share/firmware/ovmf_x64.bin")
+            )
+            (extra-special-file "/usr/share/OVMF/OVMF_VARS.fd"
+              (file-append ovmf "/share/firmware/ovmf_x64.bin")
+            )
+            (extra-special-file "/etc/libvirt/hooks/kvm.conf"
+              (local-file "./local/vm/kvm.conf")
+            )
+            (extra-special-file "/etc/libvirt/hooks/start.sh"
+              (local-file "./local/vm/start.sh")
+            )
+            (extra-special-file "/etc/libvirt/hooks/revert.sh"
+              (local-file "./local/vm/revert.sh")
+            )
+            ;;
+            (operating-system-user-services os)
+          ))
+        )
+      ))
+      (cons plasma (lambda (os)
+        (operating-system
+          (inherit os)
+        )
+      ))
+      (cons gnome (lambda (os)
+        (operating-system
+          (inherit os)
+          (packages (cons*
+            ;; gnome
+            gvfs
+            gnome-tweaks
+            ;; virtualization
+            bubblewrap ;; fixes nautilus thumbnails
+            ;; gnome-xyz
+            gnome-shell-extension-sound-output-device-chooser
+            gnome-shell-extension-gsconnect
+            ;;
+            (operating-system-packages os)
+          ))
+          (services (cons
+            ;; desktop
+            (service gnome-desktop-service-type)
+            ;;
+            (operating-system-user-services os)
+          ))
+        )
+      ))
+    )
+  )
+)

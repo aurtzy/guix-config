@@ -1,0 +1,76 @@
+msg_error () {
+    echo "error: $@"
+}
+
+# Shorthand command for testing if command exists
+find_cmd () {
+    if ! command -v "$1" &> /dev/null; then
+        msg_error "$1 command not found."
+        return 127
+    fi
+}
+
+# Customize PS1
+update_ps1 () {
+    local exit_status=$? # THIS MUST BE AT TOP OF FUNCTION
+
+    # Construct PS1 with any relevant "tags"
+    PS1='\u@\h'
+    [ -n "$GUIX_ENVIRONMENT" ] && PS1="$PS1 [env]"
+    PS1="$PS1:\W\$ "
+
+    # Make text fancier if ncurses is available
+    if (find_cmd ldconfig &&
+            find_cmd grep &&
+            find_cmd tput &&
+            ldconfig -p | grep ncurses) &> /dev/null; then
+        local -A style=(
+            [clean]="\[$(tput sgr0)\]"
+            [bold]="\[$(tput bold)\]"
+            [red]="\[$(tput setaf 1)\]"
+            [green]="\[$(tput setaf 2)\]"
+        )
+        
+        if [ $exit_status -eq 0 ]; then
+            local prompt_style="${style[green]}"
+        else
+            local prompt_style="${style[red]}"
+        fi
+
+        PS1="${style[bold]}$PS1"
+        PS1="${PS1/\$/$prompt_style\$}"
+        PS1="$PS1${style[clean]}"
+    fi
+}; PROMPT_COMMAND='update_ps1'
+
+
+# Simulates rolling dice.
+roll () {
+    if ! find_cmd python; then
+        return $?
+    elif [ "bash" != "$(basename $SHELL)" ]; then
+        msg_error "this function might not work correctly since it depends on Bash features"
+    fi
+    
+    local help_fmt='{# of dice (default=1)}d{# of faces}'
+    if [[ "$1" =~ (help)|(^$) ]]; then
+        echo "Pass a roll of the format: $help_fmt"
+        return 1
+    fi
+    local roll="$1"
+    if [[ "$roll" =~ ^([0-9]*)d([0-9]+)$ ]]; then
+        if [ ! "${BASH_REMATCH[1]}" ]; then
+            local -i ndice=1
+        else local -i ndice="${BASH_REMATCH[1]}"
+        fi
+        local -i nfaces="${BASH_REMATCH[2]}"
+        python -c "
+import random
+for i in range($ndice):
+        print(random.randint(1, $nfaces))
+"
+    else
+        msg_error "$roll: bad roll arg format; expected: $help_fmt"
+        return 1
+    fi
+}
