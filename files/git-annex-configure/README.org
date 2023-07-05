@@ -40,7 +40,12 @@ If you have [[https://guix.gnu.org/][GNU Guix]], this repository comes with a pa
 :CUSTOM_ID: using-git-annex-configure
 :END:
 
-git-annex-configure expects and loads a =.annex.scm= located in the top level directory of your repository, which should evaluate to a valid configuration described in later examples. The suggested method of use is to commit this file as a non-annexed file (which should be done by default as a dotfile) so that the configuration can be applied from any repository if necessary.
+To apply a configuration, simply run something like this:
+#+begin_src sh
+  git-annex configure /path/to/repository
+#+end_src
+
+git-annex-configure expects and loads =.annex.scm= at the top level of the repository that /path/to/repository is located in, which should evaluate to a valid configuration described in later examples. The suggested method of use is to commit this file as a non-annexed file (which should be done by default as a dotfile) so that the configuration can be applied from any repository if necessary.
 
 Optionally, =ANNEX_CONFIG_FILE= can be set so that the file path in this environment variable will be used instead.
 

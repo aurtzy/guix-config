@@ -15,21 +15,29 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (my-guix packages git-annex-configure)
-  #:use-module (guix gexp)
-  #:use-module (guix packages)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix download)
-  #:use-module (guix build-system gnu)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages autotools)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages guile-xyz)
-  #:use-module (gnu packages haskell-apps)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages texinfo)
-  #:use-module (my-guix utils))
+;;; Commentary:
+;; This module provides miscellaneous extensions.
 
-(define-public git-annex-configure
-  ;; Use local copy of git-annex-configure
-  (primitive-load (search-files-path "git-annex-configure/guix.scm")))
+(define-module (my-guix home extensions misc)
+  #:use-module (gnu)
+  #:use-module (gnu home)
+  #:use-module (my-guix extensions))
+
+(use-package-modules tex)
+
+(define-public tex-extension
+  (extension
+    (name "tex")
+    (configuration
+     (extender home-environment
+         env =>
+       (packages
+        (cons* texlive-bin  ;sets GUIX_TEXMF search path, which is important
+               texlive-amsfonts
+               texlive-base
+               texlive-capt-of
+               texlive-fonts-ec
+               texlive-hyperref
+               texlive-ulem
+               texlive-wrapfig
+               (home-environment-packages env)))))))

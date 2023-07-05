@@ -21,15 +21,15 @@
 ;;
 ;; This file is NOT part of GNU Guix.
 ;;
-;; This program is free software; you can redistribute it and/or modify it under
-;; the terms of the GNU General Public License as published by the Free Software
-;; Foundation; either version 3 of the License, or (at your option) any later
-;; version.
+;; This program is free software; you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License as published by the Free
+;; Software Foundation; either version 3 of the License, or (at your option)
+;; any later version.
 ;;
 ;; This program is distributed in the hope that it will be useful, but WITHOUT
-;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-;; FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-;; details.
+;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+;; FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+;; more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -79,23 +79,24 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
-  #:use-module ((srfi srfi-1) #:hide (zip)))
+  #:use-module ((srfi srfi-1) #:hide (zip))
+  #:use-module (my-guix utils))
 
 (define-public libdecor
   (package
     (name "libdecor")
     (version "0.1.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://gitlab.gnome.org/jadahl/libdecor.git")
-                    (recursive? #t)
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                ;; cd /tmp && rm -rf libdecor && git clone https://gitlab.gnome.org/jadahl/libdecor.git --recursive && cd libdecor && git checkout 0.1.0 && guix hash -rx .
-                "0qdg3r7k086wzszr969s0ljlqdvfqm31zpl8p5h397bw076zr6p2"))))
+    (source
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://gitlab.gnome.org/jadahl/libdecor.git")
+                   (recursive? #t)
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               ;; cd /tmp && rm -rf libdecor && git clone https://gitlab.gnome.org/jadahl/libdecor.git --recursive && cd libdecor && git checkout 0.1.0 && guix hash -rx .
+               "0qdg3r7k086wzszr969s0ljlqdvfqm31zpl8p5h397bw076zr6p2"))))
     (build-system meson-build-system)
     (native-inputs
      (list wayland
@@ -127,25 +128,26 @@
               (base32
                "1zlbc4jyxgpll8vnaq382fa92r98y84prcdk15bqi6fygb2rd3wq"))
              (patches
-              (search-patches
-               ;; https://github.com/Admicos/minecraft-wayland/tree/bdc3c0d192097459eb4e72b26c8267f82266e951
-               "0003-Don-t-crash-on-calls-to-focus-or-icon.patch"
-               "0004-wayland-fix-broken-opengl-screenshots-on-mutter.patch"
-               "0005-Add-warning-about-being-an-unofficial-patch.patch"
-               ;; "0006-Don-t-crash-getting-scancode-name.patch" ;; BROKEN
-               "0007-Platform-Prefer-Wayland-over-X11.patch"
-               
-               ;; https://github.com/Admicos/minecraft-wayland/pull/29
-               "0008-libdecor-proper-decorations-with-title-and-window-bu.patch"
-               "0009-Add-libdecoration-marker-to-stderr-warning.patch"))))
+              (map
+               (lambda (file)
+                 (search-files-path (string-append "patches/" file)))
+               '(;; https://github.com/Admicos/minecraft-wayland/tree/bdc3c0d192097459eb4e72b26c8267f82266e951
+                 "0003-Don-t-crash-on-calls-to-focus-or-icon.patch"
+                 "0004-wayland-fix-broken-opengl-screenshots-on-mutter.patch"
+                 "0005-Add-warning-about-being-an-unofficial-patch.patch"
+                 ;; "0006-Don-t-crash-getting-scancode-name.patch" ;; BROKEN
+                 "0007-Platform-Prefer-Wayland-over-X11.patch"
+                 
+                 ;; https://github.com/Admicos/minecraft-wayland/pull/29
+                 "0008-libdecor-proper-decorations-with-title-and-window-bu.patch"
+                 "0009-Add-libdecoration-marker-to-stderr-warning.patch")))))
     (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f ;; no test target
-                #:configure-flags
-                '("-DBUILD_SHARED_LIBS=ON"
-                  "-DGLFW_USE_WAYLAND=ON"
-                  "-DGLFW_USE_LIBDECOR=ON" ;; libdecoration
-                  )))
+    (arguments '(#:tests? #f ;; no test target
+                 #:configure-flags
+                 '("-DBUILD_SHARED_LIBS=ON"
+                   "-DGLFW_USE_WAYLAND=ON"
+                   "-DGLFW_USE_LIBDECOR=ON" ;; libdecoration
+                   )))
     (native-inputs
      (list pkg-config
            doxygen
@@ -162,10 +164,11 @@
      (list wayland
            libxkbcommon))
     (propagated-inputs
-     (list ;; These are in 'Requires.private' of 'glfw3.pc'.
-           ;;openjdk
-           libx11
-           libxxf86vm))
+     (list
+      ;; These are in 'Requires.private' of 'glfw3.pc'.
+      ;;openjdk
+      libx11
+      libxxf86vm))
     (home-page "https://www.glfw.org")
     (synopsis "OpenGL application development library")
     (description

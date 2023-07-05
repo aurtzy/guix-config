@@ -2,18 +2,18 @@
 ;;
 ;; This file is NOT part of GNU Guix.
 ;;
-;; This program is free software; you can redistribute it and/or modify it under
-;; the terms of the GNU General Public License as published by the Free Software
-;; Foundation; either version 3 of the License, or (at your option) any later
-;; version.
+;; This program is free software; you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License as published by the Free
+;; Software Foundation; either version 3 of the License, or (at your option)
+;; any later version.
 ;;
 ;; This program is distributed in the hope that it will be useful, but WITHOUT
-;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-;; FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-;; details.
+;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+;; FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+;; more details.
 ;;
-;; You should have received a copy of the GNU General Public License along with
-;; this program.  If not, see <http://www.gnu.org/licenses/>.
+;; You should have received a copy of the GNU General Public License along
+;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 ;; This module defines general service procedures.
@@ -26,18 +26,9 @@
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix config)
   #:use-module (my-guix utils)
-  #:export (manifest-service
-            flatpak-service
+  #:export (flatpak-service
             stow-service))
 
-;; TODO note: typo in guile manual, 6.11.8.2, raise-exception:
-;; "#:continuable=#f" should be "#:continuable?=#f"
-
-(define (manifest-service name packages)
-  (simple-service name home-profile-service-type
-                  packages))
-
-;; TODO turn this into a more general procedure for reuse to error-check other stuff
 (define flatpak-remotes
   (call-with-values
       (lambda ()
@@ -70,7 +61,9 @@
                   #~(unless #$(getenv "GUIX_DISABLE_STOW")
                       (invoke "stow"
                               "--no-folding"
-                              (string-append "--dir=" #$(files-ref "stow"))
-                              (string-append "--target=" (getenv "HOME"))
+                              (string-append "--dir="
+                                             #$(search-files-path "stow"))
+                              (string-append "--target="
+                                             (getenv "HOME"))
                               "--restow"
                               #$pkg))))

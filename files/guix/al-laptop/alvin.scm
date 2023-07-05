@@ -5,7 +5,6 @@
              (my-guix home groups common)
              (my-guix home groups desktop-environment)
              (my-guix home groups development)
-             (my-guix home groups foreign-distro)
              (my-guix home groups hardware)
              (my-guix home services))
 
@@ -18,7 +17,5 @@
           base-groups
           common-groups
           pipewire-group
-          plasma-group
           c-group
-          python-group
-          foreign-distro-group)))
+          python-group)))

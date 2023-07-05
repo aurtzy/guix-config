@@ -15,21 +15,21 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (my-guix packages git-annex-configure)
-  #:use-module (guix gexp)
-  #:use-module (guix packages)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix download)
-  #:use-module (guix build-system gnu)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages autotools)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages guile-xyz)
-  #:use-module (gnu packages haskell-apps)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages texinfo)
-  #:use-module (my-guix utils))
+;;; Commentary:
+;; This module provides extensions geared towards server use.
 
-(define-public git-annex-configure
-  ;; Use local copy of git-annex-configure
-  (primitive-load (search-files-path "git-annex-configure/guix.scm")))
+(define-module (my-guix home extensions server)
+  #:use-module (gnu)
+  #:use-module (gnu home)
+  #:use-module (gnu packages web)
+  #:use-module (my-guix extensions))
+
+(define-public web-server-extension
+  (extension
+    (name "web-server")
+    (configuration
+     (extender home-environment
+         env =>
+       (packages
+        (cons* darkhttpd
+               (home-environment-packages env)))))))

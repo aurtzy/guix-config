@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-1)
   #:export (<repository-configuration>
             repository-configuration repository-configuration?
+            this-repository-configuration
             configuration-uuid
             configuration-disabled?
             configuration-description
@@ -40,6 +41,7 @@
             
             <configuration>
             configuration configuration?
+            this-configuration
             configuration-annex-config
             configuration-groupwanted
             configuration-repositories))

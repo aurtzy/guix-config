@@ -15,51 +15,66 @@
 :CUSTOM_ID: introduction
 :END:
 
+NOTE: This config is still fairly work-in-progress and going through large foundational changes. Documentation is less than optimal at the moment, but it should improve as changes stabilize.
+
+-----
+
 # TODO insert link
-The aim of this project is to document how I use [[https://guix.gnu.org][GNU Guix]] to manage, organize, and deploy software and configurations onto my various systems. The focus here is not mainly about the configurations themselves. However, this is still as much of a dotfiles repository as any other, and readers are more than welcome to inspect them as well.
+The aim of this README is to document how I use [[https://guix.gnu.org][GNU Guix]] to manage, organize, and deploy software and configurations onto my various systems. The focus here is not about the configurations themselves. With that said, however, this is still very much a dotfiles repository, and readers are more than welcome to inspect them as well.
 
-Notably, this project acts as a bootstrapping mechanism for a sibling project which documents my data curation scheme and how I make data easier to manage for myself. You can find that project here: <wip! link not available yet>
+The purpose of this Guix configuration is twofold:
+1. To act as bootstrapping mechanism for my sibling project, which documents how I manage my data and make it easier to manage for myself (You can find that project here: <wip! link not available yet>)
+2. To enable the full power of an awesome, fully capable programming language - that is, [[https://www.gnu.org/software/guile][Guile]] - in order to build a robust, modular configuration system that I can hack around with ease.
 
-My config is built around various custom [[https://www.gnu.org/software/guile][Guile]] modules that I use to extend Guix and modularize my setup. This includes additional services I've defined to semi-declaratively manage packages and files using other applications like [[https://flatpak.org][Flatpak]] and [[https://www.gnu.org/software/stow][GNU Stow]], as well as something I call "groups" which enable the ability to categorize services and interact with those categories rather than individual services, simplifying the process of including or removing software (and associated configurations).
-
-This config is still fairly work-in-progress and documentation is less than optimal. There are still a lot of ideas I have for improvement, and I've yet to flesh out how I'll approach modular system configuration - see [[file:files/guix/systems.scm.todo][systems.scm]] for an idea. As I am not a Guix System user (yet!), the system configuration files present in this repository are merely archives of previous endeavours and are included as references for others, but also myself in case I want to use them as starting points in the future.
+My config is built around various custom Guile modules that I use to extend Guix and modularize my setup. This includes additional services I've defined to manage packages and files using other applications like [[https://flatpak.org][Flatpak]] and [[https://www.gnu.org/software/stow][GNU Stow]] through Guix, as well as something I call extensions which - simply put - allow for breaking up configurations into reusable snippets that I can pick and choose to include in the system or home environment.
 
 * Structure of the config
 :PROPERTIES:
 :CUSTOM_ID: structure-of-the-config
 :END:
 
-This section discusses how I organize and manage my configurations.
+This section gives a general overview of the files in the configuration and how I manage and organize them.
 
-My config is built from two main directories: =./files= and =./my-guix=.
+My config revolves around two main directories: =./files= and =./my-guix=.
 
 ** =my-guix=
 :PROPERTIES:
 :CUSTOM_ID: my-guix
 :END:
 
-=my-guix= contains Guile modules closely following the structure of the Guix repository, defining the various utilities and services that get used in my Guix Home configuration files.
+=my-guix= contains custom Guile modules that define all sorts of things, including definitions for packages, services, and other utility functions.
 
-To group home services into more manageable clumps, I define what I call, well, "groups" in ~(my-guix home groups)~. A group is simply a list of services. This allows new groups to be defined from combining groups with other groups that would be commonly installed together (e.g. =common-groups= for groups of services that practically all my machines would include) or be pulled in as needed (e.g. include just one game rather than all at once from the =entertainment= groups).
+Most notably, however, is ~my-guix extensions~, which defines the extension interface that I use for modularizing my configuration.
+
+Extensions are records similar in format to package definitions. The most important part of extensions is the ~configuration~ field, a procedure that takes a record (e.g. a ~home-environment~ or ~operating-system~), does something (or nothing) to it, and returns the newly modified record. This approach makes extensions extremely flexible, and with the ~extender~ macro it's made fairly elegant to work with.
 
 ** =files=
 :PROPERTIES:
 :CUSTOM_ID: files
 :END:
 
-=files= contains the Guix Home/System configuration files - which are notably /not/ defined as Guile modules, and thus are put here - for the various systems I manage. This directory also includes all of the "impure" files that aren't declared in Guile, like files for Stow.
+=files= contains everything else used in my configuration that isn't a Guile module. This includes the Guix Home/System configuration files for the various systems I manage, in addition to all of the "impure" files that aren't declared in Guile, like files for Stow.
 
 * Using the config
 :PROPERTIES:
 :CUSTOM_ID: using-the-config
 :END:
 
-Here are the steps that one can follow to get from a fresh system install to a fully configured, usable home environment:
+Here are the steps that I follow to get from no system to a fully configured, usable environment:
 
-1. Install Guix if it is not already installed.
-2. Clone guix-config. Since my config is included with my data which is managed with git, my clone will result in the config being located at =~/data/guix-config=.
-3. Symlink a Guix Home configuration file (or create a new one to symlink) to =./home.scm= from =./files/guix=. This file is gitignored which lets me locally set a config without writing any code, avoiding mistakes with editing the wrong configuration file in the future. This also makes the script used for the next step straightforward.
+1. Perform a system installation.
 
-   Configurations should include at least the base group from ~(my-guix home groups base)~, which sets persistent variables so that =guix home reconfigure= will always be able to find the custom modules.
-4. Run =./bootstrap.scm home=. This small script handles setting all the necessary environment variables and options so that Guix can find everything it needs to find before reconfiguring with Guix Home.
-5. That's it! The home has been configured. Subsequent reconfigures can be done by running =guix home reconfigure /path/to/home.scm=. If something ever manages to get messed up, there is always the option of running =./bootstrap.scm home= again or even rolling back the config.
+   Depending on if Guix System is being installed, I'll take different steps.
+
+   For Guix System: I follow the guided installation until the installer asks me to edit the file. Then, I hop into another TTY and use =./setup.scm= to set up an extra things like a swapfile. It'll spit out any information that needs to be included in the configuration, which I'll do, and then go back to the guided installation to complete it.
+
+   For a foreign distro: I simply follow whatever guided installation there is to completion since I'm not concerned with the system declaration. However, since Guix System isn't being used, Guix will have to be manually installed before continuing.
+2. Clone the config. Since my config is included with my data which is managed with git, my clone will result in the config being located at =~/data/guix-config=.
+3. In the config directory, symlink the home and system configuration files (or create new ones to symlink) to =./home.scm= and =./system.scm=, respectively (ignoring system if not on Guix System). This makes viewing and using configurations less prone to error from selecting the wrong file. Since these paths are gitignored, I won't have to worry about unintentionally syncing them, either.
+4. Reconfigure the system. On a first-time run, I'll have to include the load path manually, which can be done through a small =./guix-with-env.scm= script:
+    =sudo ./guix-with-env.scm system reconfigure system.scm=
+   Or for the home environment:
+   =./guix-with-env.scm home reconfigure home.scm= 
+5. That's it! The system is fully configured with everything that I've declared in the config file. After sourcing environment variables, subsequent reconfigures can be done without the load path option due to a service in the base configuration definition that handles making the load path persistent (this also makes my custom packages show up in =guix search=, which is pretty cool).
+
+   Of course, if anything ever goes wrong, I can always pass the option again. =guix-config= is set up to be completely independent of its location on the system as well, so if I decide to move it elsewhere, I can simply use =./guix-with-env.scm= to reconfigure once again and the system will adjust accordingly. Although, that's without considering the mess that it makes in my home with broken symlinks if I don't =stow --delete= my Stow packages first, but that's another problem to solve for another day.
