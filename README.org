@@ -66,15 +66,21 @@ Here are the steps that I follow to get from no system to a fully configured, us
 
    Depending on if Guix System is being installed, I'll take different steps.
 
-   For Guix System: I follow the guided installation until the installer asks me to edit the file. Then, I hop into another TTY and use =./setup.scm= to set up an extra things like a swapfile. It'll spit out any information that needs to be included in the configuration, which I'll do, and then go back to the guided installation to complete it.
+   For Guix System: I follow the guided installation until the installer asks me to edit the file. Then, I hop into another TTY and use =./setup.scm= to set up an extra things like a swapfile. This script spits out any extra information that needs to be included in the configuration. After I'm finished with this, I then go back to the guided installation to complete it.
 
-   For a foreign distro: I simply follow whatever guided installation there is to completion since I'm not concerned with the system declaration. However, since Guix System isn't being used, Guix will have to be manually installed before continuing.
-2. Clone the config. Since my config is included with my data which is managed with git, my clone will result in the config being located at =~/data/guix-config=.
-3. In the config directory, symlink the home and system configuration files (or create new ones to symlink) to =./home.scm= and =./system.scm=, respectively (ignoring system if not on Guix System). This makes viewing and using configurations less prone to error from selecting the wrong file. Since these paths are gitignored, I won't have to worry about unintentionally syncing them, either.
+   For a foreign distro: I simply follow whatever guided installation there is to completion since I'm not concerned with the system declaration. However, since Guix System isn't being used, Guix will have to be manually installed before continuing. The [[https://guix.gnu.org/en/manual/devel/en/html_node/Binary-Installation.html][Guix manual]] has a section covering this.
+2. Clone the config to my home. Since the config is set up to work wherever as long as the internal file structure stays intact, it doesn't really matter where it's put.
+3. In the config directory, symlink the home and system configuration files (or create new ones to symlink) to =./home.scm= and =./system.scm=, respectively (ignoring system if not on Guix System).
+
+   This makes it easier to distinguish which config is being used, and reduces the chance that I accidentally reconfigure with the wrong one. Since these paths are gitignored, I won't have to worry about unintentionally syncing them, either.
 4. Reconfigure the system. On a first-time run, I'll have to include the load path manually, which can be done through a small =./guix-with-env.scm= script:
-    =sudo ./guix-with-env.scm system reconfigure system.scm=
-   Or for the home environment:
-   =./guix-with-env.scm home reconfigure home.scm= 
-5. That's it! The system is fully configured with everything that I've declared in the config file. After sourcing environment variables, subsequent reconfigures can be done without the load path option due to a service in the base configuration definition that handles making the load path persistent (this also makes my custom packages show up in =guix search=, which is pretty cool).
+   
+   =sudo ./guix-with-env.scm system reconfigure system.scm=
 
-   Of course, if anything ever goes wrong, I can always pass the option again. =guix-config= is set up to be completely independent of its location on the system as well, so if I decide to move it elsewhere, I can simply use =./guix-with-env.scm= to reconfigure once again and the system will adjust accordingly. Although, that's without considering the mess that it makes in my home with broken symlinks if I don't =stow --delete= my Stow packages first, but that's another problem to solve for another day.
+   Or for the home environment:
+
+   =./guix-with-env.scm home reconfigure home.scm= 
+
+That's it! The system is fully configured with everything that I've declared in the config file.
+
+After sourcing environment variables, subsequent reconfigures can be done without =guix-with-env.scm= due to a service in the base configuration definition that handles making the load path persistent. As a nice side effect, it also makes my custom packages show up when I use =guix search=.
