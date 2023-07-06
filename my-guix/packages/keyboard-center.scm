@@ -60,14 +60,16 @@
 (define-public keyboard-center
   (package
     (name "keyboard-center")
-    (version "1.0.0")
+    (version "1.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/zocker-160/keyboard-center/")
-                    (commit "1.0.0")))
+                    (commit version)))
               (file-name (git-file-name name version))
-              (sha256 (base32 "0hf3vaif7xwylda6jbfrg8wppjfwz6hnsimcx9kdxr631v20cv8v"))))
+              (sha256
+               (base32
+                "1lwf20whr8ic90gf826387vi5qkn83w5kyavb2q7rwjb8s74a9r1"))))
     (build-system copy-build-system)
     (arguments
      `(#:modules ((guix build copy-build-system)

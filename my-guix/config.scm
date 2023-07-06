@@ -23,8 +23,10 @@
   #:use-module (guix utils)
   #:use-module (ice-9 exceptions)
   #:export ($modules-dir
-            $default-file-system-options
-            default-file-system-options-ref
+            $base-file-system-flags
+            base-file-system-flags-ref
+            $base-file-system-options
+            base-file-system-options-ref
             $xdg-data-home
             $flatpak-remotes))
 
@@ -37,26 +39,37 @@
       ;; directory works
       (getcwd)))
 
-(define $default-file-system-options
-  '((btrfs . ((ssd . '(("compress-force" . "zstd:2")
-                       "noatime"))
-              (hdd . '(("compress-force" . "zstd:6")
-                       "noatime"))))))
-
-(define (default-file-system-options-ref file-system-type device-type)
-  "This procedure retrieves the default file-system options for some type of
-storage device. The format of keys expected to be symbols in the following
-order: FILE-SYSTEM-TYPE => DEVICE-TYPE"
-  (let ((options (assq-ref $default-file-system-options
-                           file-system-type)))
-    (or (assq-ref options device-type)
+(define (base-file-system-config-ref alist file-system-type device-type)
+  (let ((device-alist (assq-ref alist file-system-type)))
+    (or (assq-ref device-alist device-type)
         (raise-exception
          (make-exception
           (make-programming-error)
           (make-exception-with-message "~a: ~s")
           (make-exception-with-irritants
-           (list "default file-system options entry not available"
+           (list "base file-system device-config entry not available"
                  (list file-system-type device-type))))))))
+
+(define $base-file-system-flags
+  '((btrfs . ((ssd . (no-atime))
+              (hdd . (no-atime))))))
+
+(define (base-file-system-flags-ref file-system-type device-type)
+  (base-file-system-config-ref $base-file-system-flags
+                               file-system-type
+                               device-type))
+
+(define $base-file-system-options
+  '((btrfs . ((ssd . (("compress-force" . "zstd:2")))
+              (hdd . (("compress-force" . "zstd:6")))))))
+
+(define (base-file-system-options-ref file-system-type device-type)
+  "This procedure retrieves the base file-system options for some type of
+storage device. The format of keys expected to be symbols in the following
+order: FILE-SYSTEM-TYPE => DEVICE-TYPE"
+  (base-file-system-config-ref $base-file-system-options
+                               file-system-type
+                               device-type))
 
 (define $xdg-data-home (string-append
                         (getenv "HOME")

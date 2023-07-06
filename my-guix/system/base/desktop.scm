@@ -60,10 +60,8 @@
     (services
      (cons* (simple-service 'add-guix-config-path
                             session-environment-service-type
-                            '(("GUIX_PACKAGE_PATH"
-                               . ,(build-path-augmentation
-                                   "GUIX_PACKAGE_PATH"
-                                   $modules-dir))))
+                            `(("GUIX_PACKAGE_PATH"
+                               . ,$modules-dir)))
             (service cups-service-type)
             %desktop-services))
     (sudoers-file

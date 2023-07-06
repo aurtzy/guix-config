@@ -41,9 +41,8 @@
           borg
           ;; TODO use of flatpak/stow on a first-time run will fail due to
           ;; paths not being updated until a restart or .bash_profile is
-          ;; sourced. I should be able to fix this by referencing packages
-          ;; with gexp magic in the service definitions, which should be
-          ;; feasible to do.
+          ;; sourced. With recent endeavour into learning service definitions,
+          ;; this is definitely possible to fix.
           flatpak
           stow))
    (services
@@ -67,7 +66,11 @@
                         . ,(build-path-augmentation
                             "XDG_DATA_DIRS"
                             (string-append
-                             $xdg-data-home "/flatpak/exports/share")))
+                             $xdg-data-home "/flatpak/exports/share")
+                            ;; This won't actually be used since we always do
+                            ;; user installation, but it should make flatpak
+                            ;; stop complaining about path issues
+                            "/var/lib/flatpak/exports/share"))
                        
                        ;; TODO is this necessary, still? if it is, might be
                        ;; better to put it elsewhere (perhaps even a dedicated

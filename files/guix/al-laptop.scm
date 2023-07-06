@@ -25,9 +25,11 @@
                (mount-point "/")
                (device "/dev/mapper/cryptroot")
                (type "btrfs")
+               (flags
+                (base-file-system-flags-ref 'btrfs 'ssd))
                (options
                 (alist->file-system-options
-                 (default-file-system-options-ref 'btrfs 'ssd)))
+                 (base-file-system-options-ref 'btrfs 'ssd)))
                (dependencies mapped-devices))
              (file-system
                (mount-point "/boot/efi")

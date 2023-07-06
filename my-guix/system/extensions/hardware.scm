@@ -16,23 +16,19 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; This module defines hardware-specific extensions.
+;; This module defines system-level extensions for hardware.
 
-(define-module (my-guix home extensions hardware)
+(define-module (my-guix system extensions hardware)
   #:use-module (gnu)
-  #:use-module (gnu home)
   #:use-module (my-guix extensions)
-  #:use-module (my-guix home services))
+  #:use-module (my-guix services hardware))
 
-(define-public pipewire-extension
+(define-public keyboard-center-extension
   (extension
-    (name "pipewire")
+    (name "keyboard-center")
     (configuration
-     (extender home-environment
-         env =>
+     (extender operating-system
+         os =>
        (services
-        (cons* (stow-service 'stow-pipewire "pipewire")
-               (flatpak-service 'pipewire-flatpaks
-                                'flathub
-                                '("com.github.wwmm.easyeffects"))
-               (home-environment-user-services env)))))))
+        (cons* (service keyboard-center-service-type)
+               (operating-system-user-services os)))))))

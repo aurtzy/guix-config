@@ -10,14 +10,18 @@
              (my-guix home extensions hardware)
              (my-guix home extensions server)
              (my-guix home services)
+             (my-guix packages keyboard-center)
              (guix utils))
 
 (extend
  (let ((env base-desktop-home-environment))
    (home-environment
     (inherit env)
+    (packages
+     (cons* keyboard-center
+            (home-environment-packages env)))
     (services
-     (cons* (stow-service 'stow-data "alvin@al-desktop")
+     (cons* (stow-service 'stow-data "alvin@al-pc")
             (home-environment-user-services env)))))
  (list foreign-extension
        common-extension
@@ -28,5 +32,4 @@
        syncplay-extension
        extras-extension
        pipewire-extension
-       keyboard-center-extension
        web-server-extension))
