@@ -3,18 +3,22 @@
              (my-guix extensions)
              (my-guix home base desktop)
              (my-guix home extensions common)
+             (my-guix home extensions desktop-environment)
              (my-guix home extensions extras)
-             (my-guix home services))
+             (my-guix home services package-management))
 
 (extend
  (let ((env base-desktop-home-environment))
    (home-environment
     (inherit env)
     (services
-     (cons* (stow-service 'data-stow "alvin@al-laptop")
+     (cons* (simple-service 'data-stow
+                            home-stow-service-type
+                            (list "alvin@al-laptop"))
             (home-environment-user-services env)))))
- (list common-extension
-       extras-extension)
- #:excluded
- (list creative-apps-extension
+ (append (list gnome-extension)
+         common-extensions
+         extras-extensions)
+ #:exclude
+ (list creative-extension
        personal-comms-extension))

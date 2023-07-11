@@ -16,7 +16,8 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; This module provides a simple generic interface for extending guix records.
+;; This module provides a simple generic interface for extending Guix record
+;; configurations.
 
 (define-module (my-guix extensions)
   #:use-module (guix records)
@@ -28,6 +29,7 @@
             extension-name
             extension-dependencies
             extension-configuration
+            extensions-eq?
 
             extender
             extension-dependencies-all
@@ -37,7 +39,18 @@
   extension make-extension
   extension?
   this-extension
-  (name extension-name)
+  (name extension-name
+        (sanitize
+         (lambda (value)
+           (unless (symbol? value)
+             (raise-exception
+              (make-exception
+               (make-programming-error)
+               (make-exception-with-message "~a: ~s")
+               (make-exception-with-irritants
+                (list "Extension name not a symbol"
+                      value)))))
+           value)))
   (dependencies extension-dependencies
                 (default '())
                 (sanitize
@@ -76,9 +89,9 @@
                                value)))))
                     value))))
 
-(define (extensions-equal? ext1 ext2)
-  (equal? (extension-name ext1)
-          (extension-name ext2)))
+(define (extensions-eq? ext1 ext2)
+  (eq? (extension-name ext1)
+       (extension-name ext2)))
 
 (define-syntax extender
   (syntax-rules (=>)
@@ -93,13 +106,13 @@ This form should be used when specifying extension configuration fields."
         (inherit record)
         field ...)))))
 
-(define excluded-extensions (make-parameter '()))
+(define exclude-extensions (make-parameter '()))
 
 (define (%extension-dependencies-all extension visited-deps)
   (fold
    (lambda (dep visited-deps)
-     (if (or (member dep visited-deps extensions-equal?)
-             (member dep (excluded-extensions) extensions-equal?))
+     (if (or (member dep visited-deps extensions-eq?)
+             (member dep (exclude-extensions) extensions-eq?))
          visited-deps
          (%extension-dependencies-all dep
                                       (cons dep visited-deps))))
@@ -118,7 +131,7 @@ use with optimizations for traversing the dependency tree."
    '()
    extensions))
 
-(define* (extend record extensions #:key (excluded '()))
+(define* (extend record extensions #:key (exclude '()))
   "Extends RECORD with a list EXTENSIONS of extension records, including
 dependencies of extensions (recursively).
 
@@ -130,18 +143,18 @@ configuration procedure, and so on.
 The resulting record from applying all extension configurations will be
 returned.
 
-Optionally, a list of extensions to exclude from the extend operation can be provided with the EXCLUDED keyword."
+Optionally, a list of extensions to exclude from the extend operation can be provided with the EXCLUDE keyword."
   ;; Remove excluded extensions
-  (let ((extensions (lset-difference extensions-equal?
+  (let ((extensions (lset-difference extensions-eq?
                                      extensions
-                                     excluded)))
+                                     exclude)))
     (fold
      (lambda (extension record)
        ((extension-configuration extension) record))
      record
      ;; Add the top-level extensions to dependencies list that is returned
-     (lset-union extensions-equal?
+     (lset-union extensions-eq?
                  extensions
-                 (parameterize ((excluded-extensions excluded))
+                 (parameterize ((exclude-extensions exclude))
                    (apply extension-dependencies-all
                           extensions))))))

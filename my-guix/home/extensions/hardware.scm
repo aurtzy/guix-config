@@ -21,18 +21,23 @@
 (define-module (my-guix home extensions hardware)
   #:use-module (gnu)
   #:use-module (gnu home)
+  #:use-module (gnu services)
   #:use-module (my-guix extensions)
-  #:use-module (my-guix home services))
+  #:use-module (my-guix home services package-management)
+  #:export (pipewire-extension))
 
-(define-public pipewire-extension
+(define pipewire-extension
   (extension
-    (name "pipewire")
+    (name 'pipewire-extension)
     (configuration
      (extender home-environment
          env =>
        (services
-        (cons* (stow-service 'stow-pipewire "pipewire")
-               (flatpak-service 'pipewire-flatpaks
-                                'flathub
-                                '("com.github.wwmm.easyeffects"))
+        (cons* (simple-service name
+                               home-stow-service-type
+                               (list "pipewire"))
+               (simple-service name
+                               home-flatpak-profile-service-type
+                               '(("com.github.wwmm.easyeffects"
+                                  . flathub)))
                (home-environment-user-services env)))))))

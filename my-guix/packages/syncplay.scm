@@ -16,30 +16,30 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (my-guix packages syncplay)
-  #:use-module (guix gexp)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages qt)
-  #:use-module (gnu packages python-crypto))
+  #:use-module (gnu packages qt))
 
 (define-public syncplay
   (package
     (name "syncplay")
-    (version "1.6.9")
+    (version "1.7.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Syncplay/syncplay/")
-                    (commit "f7faa592466d283bc570b9a7eff14f9b7476c3d2")))
+                    (url "https://github.com/Syncplay/syncplay.git")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qm3qn4a1nahhs7q81liz514n9blsi107g9s9xfw2i8pzi7v9v0v"))))
+                "061kpnb48lad8rr8v58xac33mwpbrixfbhn7d0xa63zpxg43bvsd"))))
     (build-system gnu-build-system)
     (arguments
      (list #:imported-modules `(,@%gnu-build-system-modules
@@ -60,24 +60,20 @@
                             (wrap-qt-program "syncplay"
                                              #:output #$output
                                              #:inputs inputs))))))
-    (native-inputs
-     (list qtwayland-5))
-    (inputs
-     (list bash-minimal))
-    (propagated-inputs
-     (list python
-           python-service-identity
-           python-twisted
-           python-pyside-2
-           python-certifi
-           python-idna))
+    (inputs (list bash-minimal))
+    (propagated-inputs (list python
+                             python-service-identity
+                             python-twisted
+                             python-pyside-2
+                             python-certifi
+                             python-idna))
     (home-page "https://syncplay.pl")
     (synopsis "Client/server to synchronize media playback on many computers")
     (description
      "Syncplay is a solution to synchronize video playback across multiple
-instances of media players over the Internet.  When one person
-pauses/unpauses playback or skips to a position in the video, this is
-replicated across all media players connected to the same server and
-in the same \"room\" (viewing session).  A built-in text chat for
-discussing the synced media is also included for convenience.")
+instances of media players over the Internet.  When one person pauses/unpauses
+playback or skips to a position in the video, this is replicated across all
+media players connected to the same server and in the same \"room\" (viewing
+session).  A built-in text chat for discussing the synced media is also
+included for convenience.")
     (license asl2.0)))

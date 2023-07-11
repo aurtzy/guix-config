@@ -1,7 +1,7 @@
 (use-modules (gnu home)
              (gnu services)
              (my-guix extensions)
-             (my-guix home base desktop)
+             (my-guix home base foreign-desktop)
              (my-guix home extensions common)
              (my-guix home extensions desktop-environment)
              (my-guix home extensions entertainment)
@@ -9,27 +9,26 @@
              (my-guix home extensions foreign)
              (my-guix home extensions hardware)
              (my-guix home extensions server)
-             (my-guix home services)
+             (my-guix home services package-management)
              (my-guix packages keyboard-center)
              (guix utils))
 
+
 (extend
- (let ((env base-desktop-home-environment))
+ (let ((env base-foreign-desktop-home-environment))
    (home-environment
     (inherit env)
     (packages
      (cons* keyboard-center
             (home-environment-packages env)))
     (services
-     (cons* (stow-service 'stow-data "alvin@al-pc")
+     (cons* (simple-service 'stow-data
+                            home-stow-service-type
+                            (list "alvin@al-pc"))
             (home-environment-user-services env)))))
- (list foreign-extension
-       common-extension
-       plasma-extension
-       game-managers-extension
-       minecraft-extension
-       minetest-extension
-       syncplay-extension
-       extras-extension
-       pipewire-extension
-       web-server-extension))
+ (append (list plasma-extension
+               pipewire-extension
+               web-server-extension)
+         common-extensions
+         extras-extensions
+         entertainment-extensions))

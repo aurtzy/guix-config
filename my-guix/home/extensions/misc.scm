@@ -21,13 +21,14 @@
 (define-module (my-guix home extensions misc)
   #:use-module (gnu)
   #:use-module (gnu home)
-  #:use-module (my-guix extensions))
+  #:use-module (my-guix extensions)
+  #:export (tex-extension))
 
 (use-package-modules tex)
 
-(define-public tex-extension
+(define tex-extension
   (extension
-    (name "tex")
+    (name 'tex-extension)
     (configuration
      (extender home-environment
          env =>

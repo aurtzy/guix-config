@@ -23,32 +23,68 @@
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
+  #:use-module (gnu home services shells)
+  #:use-module (gnu services)
   #:use-module (guix gexp)
-  #:use-module (my-guix extensions))
+  #:use-module (my-guix extensions)
+  #:export (wayland-extension
+            gnome-extension
+            plasma-extension))
 
-(define-public plasma-extension
+(define wayland-extension
   (extension
-    (name "plasma")
+    (name 'wayland-extension)
     (configuration
      (extender home-environment
          env =>
        (services
-        (cons* (simple-service 'configure-plasma
+        (cons* (simple-service name
+                               home-bash-service-type
+                               (home-bash-extension
+                                (environment-variables
+                                 '(("MOZ_ENABLE_WAYLAND" . "1")))))
+               (home-environment-user-services env)))))))
+
+(define gnome-extension
+  (extension
+    (name 'gnome-extension)
+    (dependencies
+     (list wayland-extension))))
+
+(define plasma-extension-shortcuts
+  #~(begin
+      ;; Use Overview as default action for Meta
+      ;; See: https://zren.github.io/kde/#windowsmeta-key
+      (invoke "kwriteconfig5"
+              "--file"
+              (string-append (getenv "HOME")
+                             "/.config/kwinrc")
+              "--group"
+              "ModifierOnlyShortcuts"
+              "--key"
+              "Meta"
+              (string-join
+               (list "org.kde.kglobalaccel"
+                     "/component/kwin"
+                     "org.kde.kglobalaccel.Component"
+                     "invokeShortcut"
+                     "Overview")
+               ","))
+      (invoke "qdbus"
+              "org.kde.KWin"
+              "/KWin"
+              "reconfigure")))
+
+(define plasma-extension
+  (extension
+    (name 'plasma-extension)
+    (dependencies
+     (list wayland-extension))
+    (configuration
+     (extender home-environment
+         env =>
+       (services
+        (cons* (simple-service name
                                home-activation-service-type
-                               #~(begin
-                                   ;; Use Overview as default action for Meta
-                                   ;; See: https://zren.github.io/kde/#windowsmeta-key
-                                   (invoke "kwriteconfig5"
-                                           "--file"
-                                           (string-append (getenv "HOME")
-                                                          "/.config/kwinrc")
-                                           "--group"
-                                           "ModifierOnlyShortcuts"
-                                           "--key"
-                                           "Meta"
-                                           "org.kde.kglobalaccel,/component/kwin,org.kde.kglobalaccel.Component,invokeShortcut,Overview")
-                                   (invoke "qdbus"
-                                           "org.kde.KWin"
-                                           "/KWin"
-                                           "reconfigure")))
+                               plasma-extension-shortcuts)
                (home-environment-user-services env)))))))

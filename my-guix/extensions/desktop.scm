@@ -18,39 +18,65 @@
 ;;; Commentary:
 ;; This module defines extensions for desktop operating systems.
 
-(define-module (my-guix system extensions desktop)
+(define-module (my-guix extensions desktop)
   #:use-module (gnu)
-  #:use-module (my-guix extensions))
+  #:use-module (guix records)
+  #:use-module (my-guix extensions)
+  #:use-module (srfi srfi-1)
+  #:export (<swapfile-configuration>
+            swapfile-configuration
+            swapfile-configuration?
+            swapfile-configuration-file
+            swapfile-configuration-device
+            swapfile-configuration-offset
+
+            build-swapfile-extension
+            gnome-extension
+            battery-extension))
 
 (use-package-modules linux gnome gnome-xyz)
 
 (use-service-modules xorg desktop pm)
 
-(define-public (build-swapfile-extension file device offset)
-  "Builds swapfile extension located at FILE. The DEVICE the swapfile is on as
-well as its OFFSET is needed. See Guix documentation on swapfiles for more
-information. If the setup script in this repository is used to set up the
-swapfile, it outputs this information automatically."
-  (extension
-    (name "swapfile")
-    (configuration
-     (extender operating-system
-         os =>
-       (swap-devices
-        (cons (swap-space
-               (target file)
-               (dependencies (filter
-                              (file-system-mount-point-predicate "/")
-                              (operating-system-file-systems os))))
-              (operating-system-swap-devices os)))
-       (kernel-arguments
-        (cons* (string-append "resume="device)
-               (string-append "resume_offset="offset)
-               (operating-system-user-kernel-arguments os)))))))
+(define-record-type* <swapfile-configuration>
+  swapfile-configuration make-swapfile-configuration
+  swapfile-configuration?
+  ;; Path to swapfile.
+  (file swapfile-configuration-file)
+  ;; Device that swapfile is present on.
+  (device swapfile-configuration-device)
+  ;; Offset of swapfile.
+  (offset swapfile-configuration-offset))
 
-(define-public gnome-extension
+;;; Not really a service, but it fits in fairly fine.
+(define (build-swapfile-extension config)
+  "Builds swapfile extension, given a swapfile configuration CONFIG. See Guix
+documentation on swapfiles for more information. If the setup script in this
+repository is used to set up the swapfile, it should output this information
+automatically."
+  (let ((file (swapfile-configuration-file config))
+        (device (swapfile-configuration-device config))
+        (offset (swapfile-configuration-offset config)))
+    (extension
+      (name 'swapfile-extension)
+      (configuration
+       (extender operating-system
+           os =>
+         (swap-devices
+          (cons* (swap-space (target file)
+                             (dependencies
+                              (filter
+                               (file-system-mount-point-predicate "/")
+                               (operating-system-file-systems os))))
+                 (operating-system-swap-devices os)))
+         (kernel-arguments
+          (cons* (string-append "resume=" device)
+                 (string-append "resume_offset=" offset)
+                 (operating-system-user-kernel-arguments os))))))))
+
+(define gnome-extension
   (extension
-    (name "gnome")
+    (name 'gnome-extension)
     (configuration
      (extender operating-system
          os =>
@@ -72,9 +98,9 @@ swapfile, it outputs this information automatically."
                                     (inherit config)
                                     (wayland? #t))))))))))
 
-(define-public battery-extension
+(define battery-extension
   (extension
-    (name "battery")
+    (name 'battery-extension)
     (configuration
      (extender operating-system
          os =>

@@ -18,14 +18,14 @@
 ;;; Commentary:
 ;; This module defines extensions that add channels.
 
-(define-module (my-guix system extensions channels)
+(define-module (my-guix extensions channels)
   #:use-module (gnu)
   #:use-module (my-guix utils)
   #:use-module (my-guix extensions))
 
 (define-public nonguix-channel-extension
   (extension
-    (name "nonguix-channel")
+    (name 'nonguix-channel-extension)
     (configuration
      (extender operating-system
          os =>

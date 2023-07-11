@@ -23,22 +23,32 @@
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
+  #:use-module (gnu services)
   #:use-module (my-guix extensions)
   #:use-module (my-guix home extensions misc)
-  #:use-module (my-guix home services))
+  #:use-module (my-guix home services package-management)
+  #:export (emacs-base-extension
+            emacs-org-extension
+            emacs-extension
+            browsers-extension
+            password-management-extension
+            breeze-theme-extension
+            media-extension
 
-(use-package-modules emacs emacs-xyz
+            common-extensions))
+
+(use-package-modules emacs emacs-xyz guile
                      kde-plasma kde-frameworks
                      video music)
 
-(define-public emacs-base-extension
+(define emacs-base-extension
   (extension
-    (name "emacs-base")
+    (name 'emacs-base-extension)
     (configuration
      (extender home-environment
          env =>
        (packages
-        (cons* emacs-next-pgtk  ;wayland support
+        (cons* emacs-next-pgtk  ;emacs with wayland support
                ;; meow modal editing
                emacs-meow
                ;; completion bundle
@@ -52,9 +62,16 @@
                emacs-adaptive-wrap
                ;; git
                emacs-magit
+               ;; guix/guile/scheme hacking
+               guile-3.0
+               emacs-guix
+               emacs-geiser
+               emacs-geiser-guile
+               emacs-paredit
+               ;;
                (home-environment-packages env)))
        (services
-        (cons* (simple-service 'emacs-environment
+        (cons* (simple-service name
                                home-environment-variables-service-type
                                '(;; Set editor for e.g. sudoedit
                                  ("VISUAL"
@@ -63,53 +80,55 @@
                                   . "/usr/bin/env emacs -nw")))
                (home-environment-user-services env)))))))
 
-(define-public emacs-org-extension
+(define emacs-org-extension
   (extension
-    (name "emacs-org")
+    (name 'emacs-org-extension)
     (dependencies
      (list emacs-base-extension
            tex-extension))))
 
-(define-public emacs-extension
+(define emacs-extension
   (extension
-    (name "emacs")
+    (name 'emacs-extension)
     (dependencies
      (list emacs-base-extension
            emacs-org-extension))))
 
-(define-public browsers-extension
+(define browsers-extension
   (extension
-    (name "browsers")
+    (name 'browsers-extension)
     (configuration
      (extender home-environment
          env =>
        (services
-        (cons* (stow-service 'stow-firefox "firefox")
-               (stow-service 'stow-brave "brave")
-               (flatpak-service 'flatpak-browsers
-                                'flathub
-                                '("org.mozilla.firefox"
-                                  "com.github.micahflee.torbrowser-launcher"
-                                  "com.brave.Browser"))
-
+        (cons* (simple-service name
+                               home-stow-service-type
+                               (list "firefox"
+                                     "brave"))
+               (simple-service name
+                               home-flatpak-profile-service-type
+                               '(("org.mozilla.firefox" . flathub)
+                                 ("com.github.micahflee.torbrowser-launcher"
+                                  . flathub)
+                                 ("com.brave.Browser" . flathub)))
                (home-environment-user-services env)))))))
 
-(define-public password-management-extension
+(define password-management-extension
   (extension
-    (name "password-management")
+    (name 'password-management-extension)
     (configuration
      (extender home-environment
          env =>
        (services
-        (cons* (flatpak-service 'flatpak-keepassxc
-                                'flathub
-                                '("org.keepassxc.KeePassXC"))
+        (cons* (simple-service name
+                               home-flatpak-profile-service-type
+                               '(("org.keepassxc.KeePassXC" . flathub)))
                (home-environment-user-services env)))))))
 
 ;; TODO do I actually need this?
-(define-public breeze-theme-extension
+(define breeze-theme-extension
   (extension
-    (name "breeze-theme")
+    (name 'breeze-theme-extension)
     (configuration
      (extender home-environment
          env =>
@@ -118,35 +137,21 @@
                breeze-icons
                (home-environment-packages env)))))))
 
-(define-public media-players-extension
+(define media-extension
   (extension
-    (name "media-players")
-    (configuration
-     (extender home-environment
-         env =>
-       (packages
-        (cons* mpv
-               strawberry
-               (home-environment-packages env)))))))
-
-(define-public yt-dlp-extension
-  (extension
-    (name "yt-dlp")
+    (name 'media-extension)
     (configuration
      (extender home-environment
          env =>
        (packages
         (cons* yt-dlp
+               mpv
+               strawberry
                (home-environment-packages env)))))))
 
-(define-public common-extension
-  (extension
-    (name "common")
-    (dependencies
-     (list emacs-extension
-           browsers-extension
-           password-management-extension
-           ;; TODO enable this if it's needed; otherwise remove extension
-           ;; breeze-theme-extension
-           media-players-extension
-           yt-dlp-extension))))
+(define common-extensions
+  (list emacs-extension
+        browsers-extension
+        password-management-extension
+        breeze-theme-extension
+        media-extension))

@@ -24,9 +24,10 @@
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
   #:use-module (gnu services)
+  #:use-module (gnu packages ncurses)
   #:use-module (guix gexp)
   #:use-module (my-guix config)
-  #:use-module (my-guix home services)
+  #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages git-annex-configure)
   #:use-module (my-guix utils))
 
@@ -39,12 +40,8 @@
     (list git-annex ;; data management packages
           git-annex-configure
           borg
-          ;; TODO use of flatpak/stow on a first-time run will fail due to
-          ;; paths not being updated until a restart or .bash_profile is
-          ;; sourced. With recent endeavour into learning service definitions,
-          ;; this is definitely possible to fix.
-          flatpak
-          stow))
+          ;; fancy shell text
+          ncurses))
    (services
     (list (service home-bash-service-type
                    (home-bash-configuration
@@ -69,17 +66,8 @@
                              $xdg-data-home "/flatpak/exports/share")
                             ;; This won't actually be used since we always do
                             ;; user installation, but it should make flatpak
-                            ;; stop complaining about path issues
+                            ;; stop complaining
                             "/var/lib/flatpak/exports/share"))
-                       
-                       ;; TODO is this necessary, still? if it is, might be
-                       ;; better to put it elsewhere (perhaps even a dedicated
-                       ;; wayland-extension which could be pulled in by
-                       ;; wayland desktop env extensions)
-                       ;;
-                       ;; Wayland-specific variables
-                       ;; ("MOZ_ENABLE_WAYLAND" . "1")
-
                        ;; Include more in PATH
                        ("PATH"
                         . ,(build-path-augmentation
@@ -87,9 +75,7 @@
                             "$HOME/.local/bin"))))
                     ;; TODO some of these might be redundant and can be
                     ;; removed
-                    (aliases `(("grep" . "grep --color=auto")
-                               ("ls" . "ls --color=auto")
-                               ("l." . "ls -d .*")
+                    (aliases `(("l." . "ls -d .*")
                                ("la" . "ls -a")
                                ("diff" . "diff --color=auto")))
                     (bashrc
@@ -97,17 +83,13 @@
                      (list (local-file
                             (search-files-path "bash/bashrc")
                             "bashrc")))))
-          ;; TODO not needed once flatpaks are completely managed by Guix
-          ;;
-          ;; Update all flatpaks, including those not managed by Guix
-          (simple-service 'flatpak-update-all
-                          home-activation-service-type
-                          #~(unless #$(getenv "GUIX_DISABLE_FLATPAK")
-                              (invoke "flatpak"
-                                      "update"
-                                      "--noninteractive")))
-          ;; Flatpak management
-          (flatpak-service 'flatpak-flatseal
-                           'flathub
-                           (list "com.github.tchx84.Flatseal"))
-          (stow-service 'stow-flatseal "flatpak")))))
+           ;; Flatpak management
+           (service home-flatpak-service-type
+                    (home-flatpak-configuration
+                     (remotes
+                      '((flathub
+                         . "https://flathub.org/repo/flathub.flatpakrepo")))
+                     (profile '(("com.github.tchx84.Flatseal" . flathub)))))
+           (simple-service 'stow-flatpak
+                           home-stow-service-type
+                           (list "flatpak"))))))

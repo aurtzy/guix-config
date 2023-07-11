@@ -27,8 +27,7 @@
             base-file-system-flags-ref
             $base-file-system-options
             base-file-system-options-ref
-            $xdg-data-home
-            $flatpak-remotes))
+            $xdg-data-home))
 
 (define $modules-dir
   ;; Assume base modules directory is previous directory following logic of
@@ -74,7 +73,3 @@ order: FILE-SYSTEM-TYPE => DEVICE-TYPE"
 (define $xdg-data-home (string-append
                         (getenv "HOME")
                         "/.local/share"))
-
-(define $flatpak-remotes
-  '((flathub . "https://dl.flathub.org/repo/flathub.flatpakrepo")))
-

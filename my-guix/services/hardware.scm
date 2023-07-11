@@ -15,6 +15,9 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Commentary:
+;; This module defines hardware services.
+
 (define-module (my-guix services hardware)
   #:use-module (gnu services)
   #:use-module (gnu services base)

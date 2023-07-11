@@ -10,6 +10,16 @@ find_cmd () {
     fi
 }
 
+# Fetch "style palette" if ncurses is available
+if find_cmd tput &> /dev/null; then
+    declare -A styles=(
+        [clean]="\[$(tput sgr0)\]"
+        [bold]="\[$(tput bold)\]"
+        [red]="\[$(tput setaf 1)\]"
+        [green]="\[$(tput setaf 2)\]"
+    )
+fi
+
 # Customize PS1
 update_ps1 () {
     local exit_status=$? # THIS MUST BE AT TOP OF FUNCTION
@@ -20,26 +30,16 @@ update_ps1 () {
     PS1="$PS1:\W\$ "
 
     # Make text fancier if ncurses is available
-    if (find_cmd ldconfig &&
-            find_cmd grep &&
-            find_cmd tput &&
-            ldconfig -p | grep ncurses) &> /dev/null; then
-        local -A style=(
-            [clean]="\[$(tput sgr0)\]"
-            [bold]="\[$(tput bold)\]"
-            [red]="\[$(tput setaf 1)\]"
-            [green]="\[$(tput setaf 2)\]"
-        )
-        
+    if [ -n "${styles[*]}" ]; then
         if [ $exit_status -eq 0 ]; then
-            local prompt_style="${style[green]}"
+            local prompt_style="${styles[green]}"
         else
-            local prompt_style="${style[red]}"
+            local prompt_style="${styles[red]}"
         fi
 
-        PS1="${style[bold]}$PS1"
+        PS1="${styles[bold]}$PS1"
         PS1="${PS1/\$/$prompt_style\$}"
-        PS1="$PS1${style[clean]}"
+        PS1="$PS1${styles[clean]}"
     fi
 }; PROMPT_COMMAND='update_ps1'
 

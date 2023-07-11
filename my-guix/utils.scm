@@ -20,11 +20,11 @@
 
 (define-module (my-guix utils)
   #:use-module (guix gexp)
-  #:use-module ((srfi srfi-1) #:select (not-pair?))
+  #:use-module (ice-9 exceptions)
   #:use-module (my-guix config)
+  #:use-module ((srfi srfi-1) #:select (not-pair?))
   #:export (search-files-path
-            build-path-augmentation
-            symbol->string:alist?))
+            build-path-augmentation))
 
 (define (search-files-path file)
   (let ((path (string-join
@@ -32,14 +32,27 @@
                      "../files"
                      file)
                "/")))
-    (or (and=> path canonicalize-path)
-        (raise-exception
-         (make-exception
-          (make-external-error)
-          (make-exception-with-message "~a: ~s")
-          (make-exception-with-irritants
-           (list "File not found in files path"
-                 file)))))))
+    (if (file-exists? path)
+        (canonicalize-path path)
+        ;; TODO I'd prefer to use this instead of the print statement below,
+        ;; but there are cases where I may want to test other things without
+        ;; regard for the warning, except that when there's no exception
+        ;; handler - like when using the repl (maybe it can be enabled?) - it
+        ;; becomes less useful.
+        ;;
+        ;; (raise-continuable
+        ;;  (make-exception
+        ;;   (make-warning)
+        ;;   (make-exception-with-message "~a: ~s")
+        ;;   (make-exception-with-irritants
+        ;;    (list "File not found in files path"
+        ;;          file))))
+        (begin
+          (format (current-error-port)
+                  "WARNING: ~a: ~s\n"
+                  "File not found in files path"
+                  file)
+          path))))
 
 (define (build-path-augmentation var path . paths)
   "Builds an sh expression that augments the environment variable VAR to
@@ -49,35 +62,3 @@ include PATH in a colon-separated fashion."
           (string-join (cons path paths) ":")
           var
           var))
-
-;; Returns whether an object is an association list with symbol->string pairs.
-;; If not an association list, the problem value will be stored
-;; in the second return value.
-(define (symbol->string:alist? obj)
-  (if (not (list? obj))
-      (values #f obj)
-      (let ((throw-invalid-alist
-             (lambda (value)
-               ((raise-exception
-                 (make-exception-from-throw
-                  'invalid-alist (list value))
-                 #:continuable? #t)))))
-        (with-exception-handler
-         (lambda (exn)
-           (if (eq? 'invalid-alist (exception-kind exn))
-               (values #f (car (exception-args exn)))
-               (raise-exception exn)))
-         (lambda ()
-           (begin
-             (for-each
-              (lambda (elem)
-                (begin
-                  (if (not-pair? elem)
-                      (throw-invalid-alist elem))
-                  (if (not (and
-                            (symbol? (car elem))
-                            (string? (cdr elem))))
-                      (throw-invalid-alist elem))))
-              obj)
-             (values #t #f)))
-         #:unwind? #t))))

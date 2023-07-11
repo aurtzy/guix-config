@@ -21,12 +21,15 @@
 (define-module (my-guix home extensions server)
   #:use-module (gnu)
   #:use-module (gnu home)
+  #:use-module (gnu home services)
   #:use-module (gnu packages web)
-  #:use-module (my-guix extensions))
+  #:use-module (gnu services)
+  #:use-module (my-guix extensions)
+  #:export (web-server-extension))
 
-(define-public web-server-extension
+(define web-server-extension
   (extension
-    (name "web-server")
+    (name 'web-server-extension)
     (configuration
      (extender home-environment
          env =>

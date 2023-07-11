@@ -21,20 +21,27 @@
 (define-module (my-guix home extensions entertainment)
   #:use-module (gnu)
   #:use-module (gnu home)
+  #:use-module (gnu services)
   #:use-module (my-guix extensions)
-  #:use-module (my-guix home services)
+  #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages minecraft-wayland)
-  #:use-module (my-guix packages syncplay))
+  #:use-module (my-guix packages syncplay)
+  #:export (game-mangers-extension
+            minecraft-extension
+            minetest-extension
+            syncplay-extension
+
+            entertainment-extensions))
 
 (use-package-modules minetest
                      sdl)
 
-;; NOTE for lutris: must disallow access to home because of weird pthread
-;; library issue with Guix
+;; NOTE for lutris: must disallow access to home (e.g. via flatseal) because
+;; of weird pthread library issue with Guix
 ;; (e.g. https://logs.guix.gnu.org/guix/2023-01-17.log#124520)
-(define-public game-managers-extension
+(define game-managers-extension
   (extension
-    (name "game-managers")
+    (name 'game-managers-extension)
     (configuration
      (extender home-environment
          env =>
@@ -42,18 +49,20 @@
         (cons* sdl2
                (home-environment-packages env)))
        (services
-        (cons* (stow-service 'stow-lutris "lutris")
-               (stow-service 'stow-steam "steam")
-               (flatpak-service 'flatpak-game-managers
-                                'flathub
-                                '("net.lutris.Lutris"
-                                  "net.davidotek.pupgui2"
-                                  "com.valvesoftware.Steam"))
+        (cons* (simple-service name
+                               home-stow-service-type
+                               (list "lutris"
+                                     "steam"))
+               (simple-service name
+                               home-flatpak-profile-service-type
+                               '(("net.lutris.Lutris" . flathub)
+                                 ("net.davidotek.pupgui2" . flathub)
+                                 ("com.valvesoftware.Steam" . flathub)))
                (home-environment-user-services env)))))))
 
-(define-public minecraft-extension
+(define minecraft-extension
   (extension
-    (name "minecraft")
+    (name 'minecraft-extension)
     (configuration
      (extender home-environment
          env =>
@@ -61,14 +70,15 @@
         (cons* glfw-wayland-minecraft
                (home-environment-packages env)))
        (services
-        (cons* (flatpak-service 'minecraft-flatpak
-                                'flathub
-                                '("org.prismlauncher.PrismLauncher"))
+        (cons* (simple-service name
+                               home-flatpak-profile-service-type
+                               '(("org.prismlauncher.PrismLauncher"
+                                  . flathub)))
                (home-environment-user-services env)))))))
 
-(define-public minetest-extension
+(define minetest-extension
   (extension
-    (name "minetest")
+    (name 'minetest-extension)
     (configuration
      (extender home-environment
          env =>
@@ -76,12 +86,18 @@
         (cons* minetest
                (home-environment-packages env)))))))
 
-(define-public syncplay-extension
+(define syncplay-extension
   (extension
-    (name "syncplay")
+    (name 'syncplay-extension)
     (configuration
      (extender home-environment
          env =>
        (packages
         (cons* syncplay
                (home-environment-packages env)))))))
+
+(define entertainment-extensions
+  (list game-managers-extension
+        minecraft-extension
+        minetest-extension
+        syncplay-extension))

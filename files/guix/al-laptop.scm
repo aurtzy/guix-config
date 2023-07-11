@@ -2,12 +2,15 @@
              (gnu system file-systems)
              (my-guix config)
              (my-guix extensions)
-             (my-guix system base desktop)
-             (my-guix system extensions desktop))
+             (my-guix base desktop)
+             (my-guix extensions desktop))
 
 (define swapfile-extension
   (build-swapfile-extension 
-   "/swapfile" "/dev/mapper/cryptroot" "269568"))
+   (swapfile-configuration
+    (file "/swapfile")
+    (device "/dev/mapper/cryptroot")
+    (offset "269568"))))
 
 (extend
  (let ((os base-desktop-operating-system))

@@ -23,43 +23,51 @@
 (define-module (my-guix home extensions extras)
   #:use-module (gnu)
   #:use-module (gnu home)
+  #:use-module (gnu services)
   #:use-module (my-guix extensions)
-  #:use-module (my-guix home extensions common)  
-  #:use-module (my-guix home services))
+  #:use-module (my-guix home extensions common)
+  #:use-module (my-guix home services package-management)
+  #:export (newsreader-extension
+            creative-extension
+            office-extension
+            personal-comms-extension
+            programming-extension
+
+            extras-extensions))
 
 (use-package-modules libreoffice
                      emacs-xyz
                      python-xyz)
 
-(define-public newsreaders-extension
+(define newsreaders-extension
   (extension
-    (name "newsreaders")
+    (name 'newsreaders-extension)
     (configuration
      (extender home-environment
          env =>
        (services
-        (cons* (flatpak-service 'flatpak-newsreaders
-                                'flathub
-                                '("org.mozilla.Thunderbird"
-                                  "com.gitlab.newsflash"))
+        (cons* (simple-service name
+                               home-flatpak-profile-service-type
+                               '(("org.mozilla.Thunderbird" . flathub)
+                                 ("com.gitlab.newsflash" . flathub)))
                (home-environment-user-services env)))))))
 
-(define-public creative-apps-extension
+(define creative-extension
   (extension
-    (name "creative-apps")
+    (name 'creative-extension)
     (configuration
      (extender home-environment
          env =>
        (services
-        (cons* (flatpak-service 'flatpak-creative-apps
-                                'flathub
-                                '("fr.handbrake.ghb"
-                                  "org.kde.krita"))
+        (cons* (simple-service name
+                               home-flatpak-profile-service-type
+                               '(("fr.handbrake.ghb" . flathub)
+                                 ("org.kde.krita" . flathub)))
                (home-environment-user-services env)))))))
 
-(define-public office-apps-extension
+(define office-extension
   (extension
-    (name "office-apps")
+    (name 'office-extension)
     (configuration
      (extender home-environment
          env =>
@@ -67,39 +75,40 @@
         (cons* libreoffice
                (home-environment-packages env)))))))
 
-(define-public personal-comms-extension
+(define personal-comms-extension
   (extension
-    (name "personal-comms")
+    (name 'personal-comms-extension)
     (configuration
      (extender home-environment
          env =>
        (services
-        (cons* (stow-service 'stow-soundux "soundux")
-               (flatpak-service 'flatpak-personal-comms
-                                'flathub
-                                '("in.cinny.Cinny"
-                                  "io.github.Soundux"))
+        (cons* (simple-service name
+                               home-stow-service-type
+                               (list "soundux"))
+               (simple-service name
+                               home-flatpak-profile-service-type
+                               '(("in.cinny.Cinny" . flathub)
+                                 ("io.github.Soundux" . flathub)))
                (home-environment-user-services env)))))))
 
 ;; TODO unsure if this should be an extension or manifests to shell into for
 ;; use
-(define-public programming-extension
+(define programming-extension
   (extension
-    (name "programming")
+    (name 'programming-extension)
     (dependencies
-     (list emacs-base-extension))
+     (list emacs-extension))
     (configuration
      (extender home-environment
          env =>
        (packages
         (cons* python-lsp-server
-               emacs-ccls))))))
+               emacs-ccls
+               (home-environment-packages env)))))))
 
-(define-public extras-extension
-  (extension
-    (name "extras")
-    (dependencies
-     (list newsreaders-extension
-           creative-apps-extension
-           office-apps-extension
-           personal-comms-extension))))
+(define extras-extensions
+  (list newsreaders-extension
+        creative-extension
+        office-extension
+        personal-comms-extension
+        programming-extension))

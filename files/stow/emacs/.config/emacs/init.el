@@ -37,24 +37,29 @@
 ;;; SETTINGS
 
 ;;;; CONFIG LOCATION
+
 (defconst config-dir user-emacs-directory)
 
 ;;;; STATE LOCATION
+
 (defconst state-dir
   (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
 
 ;;; CONFIGURATIONS
 
 ;;;; MORE CUSTOM KEYMAPS
+
 (use-package emacs
   :bind (("C-z" . nil)))
 
 ;;;; PREFER NEWER FILES
+
 (use-package emacs
   :custom
   (load-prefer-newer t))
 
 ;;;; GUI TWEAKS
+
 (use-package emacs
   :preface
   (defun toggle-frame-transparency ()
@@ -80,6 +85,7 @@
   (global-hl-line-mode 1))
 
 ;;;; UNIQUE FILENAME IDENTIFIERS
+
 (use-package emacs
   :config
   (use-package uniquify
@@ -89,6 +95,7 @@
 ;;;; SESSION STATE
 
 ;;;;; BACKUPS
+
 (use-package emacs
   :custom
   (backup-directory-alist `(("." . ,state-dir)))
@@ -98,12 +105,14 @@
   (kept-new-versions 4))
 
 ;;;;; PERSISTENCE ACROSS SESSIONS
+
 (use-package emacs
   :config
   (savehist-mode 1)
   (save-place-mode 1))
 
 ;;;; POINT CONTROL
+
 (use-package emacs
   ;; Make point semi-centered with deadzone
   :custom
@@ -135,12 +144,14 @@
   )
 
 ;;;; DEFAULT FILE FORMAT
+
 (use-package emacs
   :custom
   (indent-tabs-mode nil)
   (require-final-newline t))
 
 ;;;; DEFAULT TO REGEXP ISEARCH
+
 (use-package emacs
   :bind (("C-s" . isearch-forward-regexp)
          ("C-r" . isearch-backward-regexp)
@@ -148,6 +159,7 @@
          ("C-M-r" . isearch-backward)))
 
 ;;;; REMAP `kill-sexp'
+
 (use-package emacs
   :preface
   (defun into-list (&optional arg interactive)
@@ -165,16 +177,19 @@ simple rename to fit the keybind it will be mapped to."
          ("C-M-i" . nil)))
 
 ;;;; REMAP UP/DOWN CASE COMMANDS
+
 (use-package emacs
   :bind (("M-u" . upcase-dwim)
          ("M-l" . downcase-dwim)))
 
 ;;;; ENABLE ELECTRIC PARENS
+
 (use-package emacs
   :config
   (electric-pair-mode 1))
 
 ;;;; ENABLE AUTO INSERT MODE FOR FILES
+
 (use-package emacs
   :config (auto-insert-mode 1))
 
@@ -184,7 +199,9 @@ simple rename to fit the keybind it will be mapped to."
 ;; preferably rewrite some of the custom functions I've inserted with
 ;; meow-macros-friendly function wrappers so they actually work with
 ;; them.
+
 (use-package meow
+  :disabled
   :preface
   (defun previous-other-window ()
     (interactive)
@@ -199,7 +216,6 @@ simple rename to fit the keybind it will be mapped to."
    ;; '("<escape>" . ignore)
    '("<escape>" . keyboard-quit))
   (meow-leader-define-key
-   ;; SPC j/k will run the original command in MOTION state.
    '("j" . "H-j")
    '("k" . "H-k")
    ;; Use SPC (0-9) for digit arguments.
@@ -313,6 +329,7 @@ simple rename to fit the keybind it will be mapped to."
 ;;;; COMPLETION
 
 ;;;;; VERTICAL INTERACTIVE COMPLETION
+
 (use-package vertico
   :preface
   ;; Add prompt indicator to `completing-read-multiple'.
@@ -334,11 +351,13 @@ simple rename to fit the keybind it will be mapped to."
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator))
 
 ;;;;; HANDY `completing-read' COMMANDS
+
 (use-package consult
   :bind (;; C-c bindings (mode-specific-map)
          ("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
-         ("C-c k" . consult-kmacro)
+         ;; Overrides meow binding
+         ;; ("C-c k" . consult-kmacro)
          ("C-c m" . consult-man)
          ("C-c i" . consult-info)
          ([remap Info-search] . consult-info)
@@ -463,18 +482,21 @@ simple rename to fit the keybind it will be mapped to."
 )
 
 ;;;;; RICH ANNOTATIONS
+
 (use-package marginalia
   :bind (:map minibuffer-local-map ("M-A" . marginalia-cycle))
   :init
   (marginalia-mode 1))
 
 ;;;;; COMPLETION STYLE
+
 (use-package orderless
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion)))))
 
 ;;;;; ACTION SUGGESTIONS BASED ON CONTEXT
+
 (use-package embark
   :bind (("C-." . embark-act)
          ("M-." . embark-dwim)
@@ -511,6 +533,7 @@ simple rename to fit the keybind it will be mapped to."
 ;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
 ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41955#26
 ;; https://reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/
+
 (use-package project
   :preface
   (defcustom project-root-markers
@@ -532,10 +555,12 @@ simple rename to fit the keybind it will be mapped to."
   (add-to-list 'project-find-functions #'project-find-root))
 
 ;;;;; LSP SUPPORT
+
 (use-package eglot
   :commands eglot)
 
 ;;;;; C
+
 (use-package ccls
   :after eglot
   :custom
@@ -550,7 +575,13 @@ simple rename to fit the keybind it will be mapped to."
   ;; depending on its implementation the above may need to be tweaked
   )
 
-;;;;; SCHEME
+;;;;; LISP/SCHEME
+
+(use-package paredit
+  :hook ((emacs-lisp-mode . enable-paredit-mode)
+         (lisp-mode . enable-paredit-mode)
+         (scheme-mode . enable-paredit-mode)))
+
 (use-package scheme
   :init
   (font-lock-add-keywords 'scheme-mode
@@ -558,7 +589,12 @@ simple rename to fit the keybind it will be mapped to."
                              (1 font-lock-keyword-face))))
   (put 'lambda* 'scheme-indent-function 1))
 
+(use-package geiser-guile
+  :config
+  (add-to-list 'geiser-guile-load-path "~/workshop/guix"))
+
 ;;;;; STATIC ANALYSIS
+
 (use-package flymake
   :hook prog-mode
   :custom
@@ -571,6 +607,7 @@ simple rename to fit the keybind it will be mapped to."
 ;;;; GIT CLIENT
 
 ;;;;; TODO: explore magit configurations
+
 (use-package magit
   :commands magit)
 
@@ -585,7 +622,8 @@ simple rename to fit the keybind it will be mapped to."
    (cons '((org-mode . "Org file")
            nil
            "#+title: " _ \n
-           "#+export_file_name: ~/Documents/org/export" \n
+           ;; This doesn't work now?
+           ;; "#+export_file_name: ~/Documents/old/export" \n
            "#+options: author:nil date:nil" \n
            "#+author:" \n
            "#+date:" \n

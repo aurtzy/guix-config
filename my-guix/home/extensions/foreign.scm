@@ -26,30 +26,27 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu services)
   #:use-module (my-guix extensions)
-  #:use-module (my-guix home services))
+  #:use-module (my-guix home services package-management)
+  #:export (foreign-extension))
 
 (use-package-modules base
                      certs)
 
-(define-public foreign-extension
+(define foreign-extension
   (extension
-    (name "foreign")
+    (name 'foreign-extension)
     (configuration
      (extender home-environment
          env =>
        (packages
-        ;; use system version of flatpak on foreign distro due to ssl issues
-        ;; (particularly on fedora)
-        (filter
-         (lambda (pkg)
-           (not (eq? pkg flatpak)))
-         (cons* nss-certs
-                glibc-locales
-                (home-environment-packages env))))
+        (cons* nss-certs
+               glibc-locales
+               (home-environment-packages env)))
        (services
-        ;; TODO figure out how this hack with XCURSOR_PATH works; apps can
-        ;; find adwaita cursors but not others (e.g. breeze_cursors)
-        (cons* (simple-service 'foreign-distro-environment
+        (cons* (simple-service name
+                               ;; TODO figure out how this hack with
+                               ;; XCURSOR_PATH works; apps can find adwaita
+                               ;; cursors but not others (e.g. breeze_cursors)
                                home-environment-variables-service-type
                                '(("XCURSOR_PATH" . "/usr/share/icons")))
                (home-environment-user-services env)))))))

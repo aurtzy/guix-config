@@ -18,21 +18,22 @@
 ;;; Commentary:
 ;; This module defines base operating systems for desktop usage.
 
-(define-module (my-guix system base desktop)
+(define-module (my-guix base desktop)
   #:use-module (gnu)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system pam)
   #:use-module (my-guix config)
-  #:use-module (my-guix utils))
+  #:use-module (my-guix utils)
+  #:export (base-desktop-operating-system))
 
 (use-package-modules linux certs 
                      disk xdisorg)
 
-(use-service-modules cups desktop)
+(use-service-modules cups desktop virtualization)
 
 ;; Base desktop operating system. This configuration is missing proper
 ;; filesystem configurations that must be configured per-system.
-(define-public base-desktop-operating-system
+(define base-desktop-operating-system
   (operating-system
     (host-name "a-guix-system")
     (timezone "America/New_York")
@@ -55,7 +56,7 @@
             btrfs-progs
             ;; for checking if programs are using wayland
             xeyes
-            
+            ;;
             %base-packages))
     (services
      (cons* (simple-service 'add-guix-config-path
@@ -63,6 +64,11 @@
                             `(("GUIX_PACKAGE_PATH"
                                . ,$modules-dir)))
             (service cups-service-type)
+            (service qemu-binfmt-service-type
+                     (qemu-binfmt-configuration
+                      (platforms (lookup-qemu-platforms
+                                  "arm"
+                                  "aarch64"))))
             %desktop-services))
     (sudoers-file
      (plain-file "sudoers"
