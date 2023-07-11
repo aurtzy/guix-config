@@ -1,6 +1,10 @@
 #+title: guix-config
 
-# Modular Guix configuration with some extensions on the side
+# Guix configuration with a focus on modularity
+
+NOTE: This config is still fairly work-in-progress. Documentation is less than optimal at the moment, but it should improve as changes stabilize.
+
+-----
 
 * Table of Contents
 
@@ -14,10 +18,6 @@
 :PROPERTIES:
 :CUSTOM_ID: introduction
 :END:
-
-NOTE: This config is still fairly work-in-progress and going through large foundational changes. Documentation is less than optimal at the moment, but it should improve as changes stabilize.
-
------
 
 # TODO insert link
 The aim of this README is to document how I use [[https://guix.gnu.org][GNU Guix]] to manage, organize, and deploy software and configurations onto my various systems. The focus here is not about the configurations themselves. With that said, however, this is still very much a dotfiles repository, and readers are more than welcome to inspect them as well.
