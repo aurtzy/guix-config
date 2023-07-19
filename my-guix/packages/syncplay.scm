@@ -60,7 +60,8 @@
                             (wrap-qt-program "syncplay"
                                              #:output #$output
                                              #:inputs inputs))))))
-    (inputs (list bash-minimal))
+    (inputs (list bash-minimal
+                  qtwayland-5))
     (propagated-inputs (list python
                              python-service-identity
                              python-twisted

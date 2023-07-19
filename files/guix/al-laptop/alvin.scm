@@ -7,7 +7,7 @@
              (my-guix home extensions extras)
              (my-guix home services package-management))
 
-(extend
+(apply-extensions
  (let ((env base-desktop-home-environment))
    (home-environment
     (inherit env)

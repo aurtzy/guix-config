@@ -31,7 +31,7 @@
   #:export (base-foreign-desktop-home-environment))
 
 (define base-foreign-desktop-home-environment
-  (extend
+  (apply-extensions
    (let ((env base-desktop-home-environment))
      (home-environment
       (inherit env)
@@ -39,10 +39,6 @@
        (cons* (modify-services (home-environment-user-services env)
                 (home-flatpak-service-type
                  config => (home-flatpak-configuration
-                            (flatpak "/usr")
-                            (remotes
-                             (home-flatpak-configuration-remotes config))
-                            (profile
-                             (home-flatpak-configuration-profile
-                              config)))))))))
+                            (inherit config)
+                            (flatpak "/usr"))))))))
    (list foreign-extension)))

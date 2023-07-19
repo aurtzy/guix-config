@@ -29,16 +29,16 @@
 (define tex-extension
   (extension
     (name 'tex-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* texlive-bin  ;sets GUIX_TEXMF search path, which is important
+        (modify-list
+         home-environment-packages
+         (list texlive-bin    ;sets GUIX_TEXMF search path, which is important
                texlive-amsfonts
                texlive-base
                texlive-capt-of
                texlive-fonts-ec
                texlive-hyperref
                texlive-ulem
-               texlive-wrapfig
-               (home-environment-packages env)))))))
+               texlive-wrapfig)))))))

@@ -26,21 +26,23 @@
 (define-public nonguix-channel-extension
   (extension
     (name 'nonguix-channel-extension)
-    (configuration
+    (apply
      (extender operating-system
-         os =>
        (services
-        (modify-services (operating-system-user-services os)
-          (guix-service-type
-           config => (guix-configuration
-                      (inherit config)
-                      (substitute-urls
-                       (cons "https://substitutes.nonguix.org"
-                             (guix-configuration-substitute-urls
-                              config)))
-                      (authorized-keys
-                       ;; TODO this file is not currently present
-                       (cons (local-file (search-files-path
-                                          "guix/nonguix.pub"))
-                             (guix-configuration-authorized-keys
-                              config)))))))))))
+        (modify
+         operating-system-user-services
+         services =>
+         (modify-services services
+           (guix-service-type
+            config => (guix-configuration
+                       (inherit config)
+                       (substitute-urls
+                        (cons "https://substitutes.nonguix.org"
+                              (guix-configuration-substitute-urls
+                               config)))
+                       (authorized-keys
+                        ;; TODO this file is not currently present
+                        (cons (local-file (search-files-path
+                                           "guix/nonguix.pub"))
+                              (guix-configuration-authorized-keys
+                               config))))))))))))

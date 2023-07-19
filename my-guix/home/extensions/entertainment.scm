@@ -42,59 +42,64 @@
 (define game-managers-extension
   (extension
     (name 'game-managers-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* sdl2
-               (home-environment-packages env)))
+        (modify-list
+         home-environment-packages
+         (list sdl2)))
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-stow-service-type
                                (list "lutris"
                                      "steam"))
                (simple-service name
                                home-flatpak-profile-service-type
-                               '(("net.lutris.Lutris" . flathub)
-                                 ("net.davidotek.pupgui2" . flathub)
-                                 ("com.valvesoftware.Steam" . flathub)))
-               (home-environment-user-services env)))))))
+                               '(("net.lutris.Lutris"
+                                  . flathub)
+                                 ("net.davidotek.pupgui2"
+                                  . flathub)
+                                 ("com.valvesoftware.Steam"
+                                  . flathub))))))))))
 
 (define minecraft-extension
   (extension
     (name 'minecraft-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* glfw-wayland-minecraft
-               (home-environment-packages env)))
+        (modify-list
+         home-environment-packages
+         (list glfw-wayland-minecraft)))
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-flatpak-profile-service-type
                                '(("org.prismlauncher.PrismLauncher"
-                                  . flathub)))
-               (home-environment-user-services env)))))))
+                                  . flathub))))))))))
 
 (define minetest-extension
   (extension
     (name 'minetest-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* minetest
-               (home-environment-packages env)))))))
+        (modify-list
+         home-environment-packages
+         (list minetest)))))))
 
 (define syncplay-extension
   (extension
     (name 'syncplay-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* syncplay
-               (home-environment-packages env)))))))
+        (modify-list
+         home-environment-packages
+         (list syncplay)))))))
 
 (define entertainment-extensions
   (list game-managers-extension

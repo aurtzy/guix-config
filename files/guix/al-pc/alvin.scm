@@ -14,7 +14,7 @@
              (guix utils))
 
 
-(extend
+(apply-extensions
  (let ((env base-foreign-desktop-home-environment))
    (home-environment
     (inherit env)

@@ -35,18 +35,20 @@
 (define foreign-extension
   (extension
     (name 'foreign-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* nss-certs
-               glibc-locales
-               (home-environment-packages env)))
+        (modify-list
+         home-environment-packages
+         (list nss-certs
+               glibc-locales)))
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                ;; TODO figure out how this hack with
                                ;; XCURSOR_PATH works; apps can find adwaita
                                ;; cursors but not others (e.g. breeze_cursors)
                                home-environment-variables-service-type
-                               '(("XCURSOR_PATH" . "/usr/share/icons")))
-               (home-environment-user-services env)))))))
+                               '(("XCURSOR_PATH"
+                                  . "/usr/share/icons"))))))))))

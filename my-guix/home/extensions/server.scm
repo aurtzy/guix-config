@@ -30,9 +30,9 @@
 (define web-server-extension
   (extension
     (name 'web-server-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* darkhttpd
-               (home-environment-packages env)))))))
+        (modify-list
+         home-environment-packages
+         (list darkhttpd)))))))

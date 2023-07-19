@@ -12,7 +12,7 @@
     (device "/dev/mapper/cryptroot")
     (offset "269568"))))
 
-(extend
+(apply-extensions
  (let ((os base-desktop-operating-system))
    (operating-system
      (inherit os)

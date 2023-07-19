@@ -28,12 +28,13 @@
             this-extension
             extension-name
             extension-dependencies
-            extension-configuration
+            extension-apply
             extensions-eq?
 
+            extend
             extender
             extension-dependencies-all
-            extend))
+            apply-extensions))
 
 (define-record-type* <extension>
   extension make-extension
@@ -75,25 +76,26 @@
                                  elem))))))
                     value)
                    value)))
-  (configuration extension-configuration
-                 (default identity)
-                 (sanitize
-                  (lambda (value)
-                    (unless (procedure? value)
-                      (raise-exception
-                       (make-exception
-                        (make-programming-error)
-                        (make-exception-with-message "~a: ~s")
-                        (make-exception-with-irritants
-                         (list "Extension configuration field not a procedure"
-                               value)))))
-                    value))))
+  (apply extension-apply
+         (default identity)
+         (sanitize
+          (lambda (value)
+            (unless (procedure? value)
+              (raise-exception
+               (make-exception
+                (make-programming-error)
+                (make-exception-with-message "~a: ~s")
+                (make-exception-with-irritants
+                 (list "Extension apply field not a procedure"
+                       value)))))
+            value))))
 
 (define (extensions-eq? ext1 ext2)
   (eq? (extension-name ext1)
        (extension-name ext2)))
 
-(define-syntax extender
+;; TODO DEPRECATED
+(define-syntax extend
   (syntax-rules (=>)
     "Return a procedure that takes RECORD as an input. This new procedure,
 when called, will return a record via RECORD-PRODUCER that inherits RECORD and
@@ -105,6 +107,48 @@ This form should be used when specifying extension configuration fields."
        (record-producer
         (inherit record)
         field ...)))))
+
+(define-syntax modify-field
+  (syntax-rules (modify =>
+                 modify-list)
+    "Modify a record field and return the resulting modified value."
+    ((_ record (modify field-getter binding => exp ...))
+     (let ((binding (field-getter record)))
+       exp ...))
+    ((_ record (modify-list field-getter exp))
+     (let ((field-value (field-getter record)))
+       (append exp field-value)))))
+
+(define-syntax *extend
+  (syntax-rules ()
+    ((_ record constructor fields)
+     (constructor
+      (inherit record)
+      .
+      fields))
+    ((_ record constructor field* ... (field-name modifier) fields)
+     (*extend record
+              constructor
+              field* ...
+              ((field-name (modify-field record modifier))
+               .
+               fields)))))
+
+(define-syntax-rule (extend record constructor field field* ...)
+  "Extend RECORD with FIELD using CONSTRUCTOR as the record constructor."
+  (*extend record constructor field field* ... ()))
+
+(define-syntax extender
+  (syntax-rules (=>)
+    "Return a procedure that - when passed a record - will use the `extend'
+special form with the provided arguments.
+
+This form should be used when specifying extension-apply fields."
+   ((_ constructor record => field ...)
+    (lambda (record)
+      (extend record constructor field ...)))
+   ((_ constructor field ...)
+    (extender constructor record => field ...))))
 
 (define exclude-extensions (make-parameter '()))
 
@@ -131,7 +175,7 @@ use with optimizations for traversing the dependency tree."
    '()
    extensions))
 
-(define* (extend record extensions #:key (exclude '()))
+(define* (apply-extensions record extensions #:key (exclude '()))
   "Extends RECORD with a list EXTENSIONS of extension records, including
 dependencies of extensions (recursively).
 
@@ -150,7 +194,7 @@ Optionally, a list of extensions to exclude from the extend operation can be pro
                                      exclude)))
     (fold
      (lambda (extension record)
-       ((extension-configuration extension) record))
+       ((extension-apply extension) record))
      record
      ;; Add the top-level extensions to dependencies list that is returned
      (lset-union extensions-eq?

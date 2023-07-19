@@ -44,11 +44,12 @@
 (define emacs-base-extension
   (extension
     (name 'emacs-base-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* emacs-next-pgtk  ;emacs with wayland support
+        (modify-list
+         home-environment-packages
+         (list emacs-next-pgtk          ;emacs with wayland support
                ;; meow modal editing
                emacs-meow
                ;; completion bundle
@@ -67,18 +68,17 @@
                emacs-guix
                emacs-geiser
                emacs-geiser-guile
-               emacs-paredit
-               ;;
-               (home-environment-packages env)))
+               emacs-paredit)))
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-environment-variables-service-type
-                               '(;; Set editor for e.g. sudoedit
+                               '( ;; Set editor for e.g. sudoedit
                                  ("VISUAL"
                                   . "/usr/bin/env emacs")
                                  ("EDITOR"
-                                  . "/usr/bin/env emacs -nw")))
-               (home-environment-user-services env)))))))
+                                  . "/usr/bin/env emacs -nw"))))))))))
 
 (define emacs-org-extension
   (extension
@@ -97,11 +97,12 @@
 (define browsers-extension
   (extension
     (name 'browsers-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-stow-service-type
                                (list "firefox"
                                      "brave"))
@@ -110,44 +111,44 @@
                                '(("org.mozilla.firefox" . flathub)
                                  ("com.github.micahflee.torbrowser-launcher"
                                   . flathub)
-                                 ("com.brave.Browser" . flathub)))
-               (home-environment-user-services env)))))))
+                                 ("com.brave.Browser" . flathub))))))))))
 
 (define password-management-extension
   (extension
     (name 'password-management-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-flatpak-profile-service-type
-                               '(("org.keepassxc.KeePassXC" . flathub)))
-               (home-environment-user-services env)))))))
+                               '(("org.keepassxc.KeePassXC"
+                                  . flathub))))))))))
 
 ;; TODO do I actually need this?
 (define breeze-theme-extension
   (extension
     (name 'breeze-theme-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* breeze
-               breeze-icons
-               (home-environment-packages env)))))))
+        (modify-list
+         home-environment-packages
+         (list breeze
+               breeze-icons)))))))
 
 (define media-extension
   (extension
     (name 'media-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* yt-dlp
+        (modify-list
+         home-environment-packages
+         (list yt-dlp
                mpv
-               strawberry
-               (home-environment-packages env)))))))
+               strawberry)))))))
 
 (define common-extensions
   (list emacs-extension

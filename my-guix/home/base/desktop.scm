@@ -65,16 +65,14 @@
                             (string-append
                              $xdg-data-home "/flatpak/exports/share")
                             ;; This won't actually be used since we always do
-                            ;; user installation, but it should make flatpak
-                            ;; stop complaining
+                            ;; user installation, but it make should make
+                            ;; flatpak stop complaining
                             "/var/lib/flatpak/exports/share"))
                        ;; Include more in PATH
                        ("PATH"
                         . ,(build-path-augmentation
                             "PATH"
                             "$HOME/.local/bin"))))
-                    ;; TODO some of these might be redundant and can be
-                    ;; removed
                     (aliases `(("l." . "ls -d .*")
                                ("la" . "ls -a")
                                ("diff" . "diff --color=auto")))
@@ -83,13 +81,13 @@
                      (list (local-file
                             (search-files-path "bash/bashrc")
                             "bashrc")))))
-           ;; Flatpak management
-           (service home-flatpak-service-type
-                    (home-flatpak-configuration
-                     (remotes
-                      '((flathub
-                         . "https://flathub.org/repo/flathub.flatpakrepo")))
-                     (profile '(("com.github.tchx84.Flatseal" . flathub)))))
-           (simple-service 'stow-flatpak
-                           home-stow-service-type
-                           (list "flatpak"))))))
+          ;; Flatpak management
+          (service home-flatpak-service-type
+                   (home-flatpak-configuration
+                    (remotes
+                     '((flathub
+                        . "https://flathub.org/repo/flathub.flatpakrepo")))
+                    (profile '(("com.github.tchx84.Flatseal" . flathub)))))
+          (simple-service 'stow-flatpak
+                          home-stow-service-type
+                          (list "flatpak"))))))

@@ -31,19 +31,21 @@
             gnome-extension
             plasma-extension))
 
+(use-package-modules qt)
+
 (define wayland-extension
   (extension
     (name 'wayland-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-bash-service-type
                                (home-bash-extension
                                 (environment-variables
-                                 '(("MOZ_ENABLE_WAYLAND" . "1")))))
-               (home-environment-user-services env)))))))
+                                 '(("MOZ_ENABLE_WAYLAND" . "1"))))))))))))
 
 (define gnome-extension
   (extension
@@ -80,11 +82,11 @@
     (name 'plasma-extension)
     (dependencies
      (list wayland-extension))
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-activation-service-type
-                               plasma-extension-shortcuts)
-               (home-environment-user-services env)))))))
+                               plasma-extension-shortcuts))))))))

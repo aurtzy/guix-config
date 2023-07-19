@@ -59,56 +59,61 @@ automatically."
         (offset (swapfile-configuration-offset config)))
     (extension
       (name 'swapfile-extension)
-      (configuration
+      (apply
        (extender operating-system
-           os =>
+         os =>
          (swap-devices
-          (cons* (swap-space (target file)
+          (modify-list
+           operating-system-swap-devices
+           (list (swap-space (target file)
                              (dependencies
                               (filter
                                (file-system-mount-point-predicate "/")
-                               (operating-system-file-systems os))))
-                 (operating-system-swap-devices os)))
+                               (operating-system-file-systems os)))))))
          (kernel-arguments
-          (cons* (string-append "resume=" device)
-                 (string-append "resume_offset=" offset)
-                 (operating-system-user-kernel-arguments os))))))))
+          operating-system-user-kernel-arguments
+          (list (string-append "resume=" device)
+                (string-append "resume_offset=" offset))))))))
 
 (define gnome-extension
   (extension
     (name 'gnome-extension)
-    (configuration
+    (apply
      (extender operating-system
-         os =>
+       os =>
        (packages
-        (cons* gvfs
+        (modify-list
+         operating-system-packages
+         (list gvfs
                gnome-tweaks
                gnome-shell-extensions
                gnome-shell-extension-sound-output-device-chooser
-               gnome-shell-extension-gsconnect
-               (operating-system-packages os)))
+               gnome-shell-extension-gsconnect)))
        (services
-        (cons* (set-xorg-configuration
-                (xorg-configuration
-                 (keyboard-layout (operating-system-keyboard-layout os))))
-               (service gnome-desktop-service-type)
-               (modify-services (operating-system-user-services os)
-                 (gdm-service-type config =>
-                                   (gdm-configuration
-                                    (inherit config)
-                                    (wayland? #t))))))))))
+        (modify-list
+         operating-system-user-services
+         (cons* (set-xorg-configuration
+                 (xorg-configuration
+                  (keyboard-layout (operating-system-keyboard-layout os))))
+                (service gnome-desktop-service-type)
+                (modify-services
+                    (gdm-service-type
+                     config => (gdm-configuration
+                                (inherit config)
+                                (wayland? #t)))))))))))
 
 (define battery-extension
   (extension
     (name 'battery-extension)
-    (configuration
+    (apply
      (extender operating-system
-         os =>
        (packages
-        (cons* tlp
-               (operating-system-packages os)))
+        (modify-list
+         operating-system-packages
+         (list tlp)))
        (services
-        (cons* (service tlp-service-type
+        (modify-list
+         operating-system-user-services
+         (list (service tlp-service-type
                         (tlp-configuration
-                         (cpu-boost-on-ac? #t)))
-               (operating-system-user-services os)))))))
+                         (cpu-boost-on-ac? #t))))))))))

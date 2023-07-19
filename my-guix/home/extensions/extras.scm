@@ -42,54 +42,54 @@
 (define newsreaders-extension
   (extension
     (name 'newsreaders-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-flatpak-profile-service-type
                                '(("org.mozilla.Thunderbird" . flathub)
-                                 ("com.gitlab.newsflash" . flathub)))
-               (home-environment-user-services env)))))))
+                                 ("com.gitlab.newsflash" . flathub))))))))))
 
 (define creative-extension
   (extension
     (name 'creative-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-flatpak-profile-service-type
                                '(("fr.handbrake.ghb" . flathub)
-                                 ("org.kde.krita" . flathub)))
-               (home-environment-user-services env)))))))
+                                 ("org.kde.krita" . flathub))))))))))
 
 (define office-extension
   (extension
     (name 'office-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* libreoffice
-               (home-environment-packages env)))))))
+        (modify-list
+         home-environment-packages
+         (list libreoffice)))))))
 
 (define personal-comms-extension
   (extension
     (name 'personal-comms-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-stow-service-type
                                (list "soundux"))
                (simple-service name
                                home-flatpak-profile-service-type
                                '(("in.cinny.Cinny" . flathub)
-                                 ("io.github.Soundux" . flathub)))
-               (home-environment-user-services env)))))))
+                                 ("io.github.Soundux" . flathub))))))))))
 
 ;; TODO unsure if this should be an extension or manifests to shell into for
 ;; use
@@ -98,13 +98,13 @@
     (name 'programming-extension)
     (dependencies
      (list emacs-extension))
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (packages
-        (cons* python-lsp-server
-               emacs-ccls
-               (home-environment-packages env)))))))
+        (modify-list
+         home-environment-packages
+         (list python-lsp-server
+               emacs-ccls)))))))
 
 (define extras-extensions
   (list newsreaders-extension

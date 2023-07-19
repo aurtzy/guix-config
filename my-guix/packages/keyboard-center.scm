@@ -121,12 +121,11 @@
                (wrap-qt-program "keyboard-center"
                                 #:output %output
                                 #:inputs inputs)))))))
-    (native-inputs
-     (list qtwayland-5))
     (inputs
      (list bash-minimal
            eudev
-           hidapi))
+           hidapi
+           qtwayland-5))
     (propagated-inputs
      (list python
            python-pyqt

@@ -29,15 +29,15 @@
 (define pipewire-extension
   (extension
     (name 'pipewire-extension)
-    (configuration
+    (apply
      (extender home-environment
-         env =>
        (services
-        (cons* (simple-service name
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
                                home-stow-service-type
                                (list "pipewire"))
                (simple-service name
                                home-flatpak-profile-service-type
                                '(("com.github.wwmm.easyeffects"
-                                  . flathub)))
-               (home-environment-user-services env)))))))
+                                  . flathub))))))))))
