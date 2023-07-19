@@ -71,9 +71,10 @@ automatically."
                                (file-system-mount-point-predicate "/")
                                (operating-system-file-systems os)))))))
          (kernel-arguments
-          operating-system-user-kernel-arguments
-          (list (string-append "resume=" device)
-                (string-append "resume_offset=" offset))))))))
+          (modify-list
+           operating-system-user-kernel-arguments
+           (list (string-append "resume=" device)
+                 (string-append "resume_offset=" offset)))))))))
 
 (define gnome-extension
   (extension
@@ -90,17 +91,18 @@ automatically."
                gnome-shell-extension-sound-output-device-chooser
                gnome-shell-extension-gsconnect)))
        (services
-        (modify-list
+        (modify
          operating-system-user-services
+         services =>
          (cons* (set-xorg-configuration
                  (xorg-configuration
                   (keyboard-layout (operating-system-keyboard-layout os))))
                 (service gnome-desktop-service-type)
-                (modify-services
-                    (gdm-service-type
-                     config => (gdm-configuration
-                                (inherit config)
-                                (wayland? #t)))))))))))
+                (modify-services services
+                  (gdm-service-type
+                   config => (gdm-configuration
+                              (inherit config)
+                              (wayland? #t)))))))))))
 
 (define battery-extension
   (extension
