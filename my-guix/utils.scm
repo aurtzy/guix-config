@@ -16,7 +16,8 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; This module defines general utility procedures.
+;;;
+;;; This module defines general utility procedures.
 
 (define-module (my-guix utils)
   #:use-module (guix gexp)

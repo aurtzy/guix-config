@@ -1,38 +1,38 @@
-;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
-;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
-;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
-;; Copyright © 2016 Nikita <nikita@n0.is>
-;; Copyright © 2016, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
-;; Copyright © 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
-;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
-;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
-;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
-;; Copyright © 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
-;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
-;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
-;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
-;; Copyright © 2022 Samuel Culpepper
-;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
-;;
-;; This file is NOT part of GNU Guix.
-;;
-;; This program is free software; you can redistribute it and/or modify it
-;; under the terms of the GNU General Public License as published by the Free
-;; Software Foundation; either version 3 of the License, or (at your option)
-;; any later version.
-;;
-;; This program is distributed in the hope that it will be useful, but WITHOUT
-;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-;; FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-;; more details.
-;;
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
+;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Nikita <nikita@n0.is>
+;;; Copyright © 2016, 2017, 2018, 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019, 2021 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020, 2021, 2022 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
+;;; Copyright © 2021 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
+;;; Copyright © 2022 Samuel Culpepper
+;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;;
+;;; This file is NOT part of GNU Guix.
+;;;
+;;; This program is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by the Free
+;;; Software Foundation; either version 3 of the License, or (at your option)
+;;; any later version.
+;;;
+;;; This program is distributed in the hope that it will be useful, but WITHOUT
+;;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+;;; FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+;;; more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;; See: https://github.com/Admicos/minecraft-wayland/issues/18
 

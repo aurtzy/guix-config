@@ -1,22 +1,23 @@
-;; Copyright (c) 2023 aurtzy <aurtzy@gmail.com>
-;;
-;; This file is NOT part of GNU Guix.
-;;
-;; This program is free software; you can redistribute it and/or modify it
-;; under the terms of the GNU General Public License as published by the Free
-;; Software Foundation; either version 3 of the License, or (at your option)
-;; any later version.
-;;
-;; This program is distributed in the hope that it will be useful, but WITHOUT
-;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-;; FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-;; more details.
-;;
-;; You should have received a copy of the GNU General Public License along
-;; with this program.  If not, see <http://www.gnu.org/licenses/>.
+;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;;
+;;; This file is NOT part of GNU Guix.
+;;;
+;;; This program is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by the Free
+;;; Software Foundation; either version 3 of the License, or (at your option)
+;;; any later version.
+;;;
+;;; This program is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+;;; or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+;;; for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License along
+;;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;; This module defines base operating systems for desktop usage.
+;;;
+;;; This module defines base operating systems for desktop usage.
 
 (define-module (my-guix base desktop)
   #:use-module (gnu)
@@ -30,9 +31,9 @@
 
 (use-service-modules cups desktop virtualization)
 
-;; Base desktop operating system. This configuration is missing proper
-;; filesystem configurations that must be configured per-system.
 (define base-desktop-operating-system
+  ;; Base desktop operating system. This configuration is missing
+  ;; filesystem configurations that must be configured per-system.
   (operating-system
     (host-name "a-guix-system")
     (timezone "America/New_York")
@@ -49,7 +50,7 @@
                                      "video")))
             %base-user-accounts))
     (packages
-     (cons* nss-certs  ;https certifications
+     (cons* nss-certs                   ;https certifications
             ;; useful disk management utilities
             gparted
             gptfdisk

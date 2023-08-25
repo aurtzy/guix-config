@@ -19,6 +19,7 @@
 ;;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+;;;
 ;;; Additional base services for Guix.
 ;;;
 ;;; The impure-symlinks service type is based off of symlink-manager, except
