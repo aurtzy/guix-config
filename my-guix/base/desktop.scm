@@ -26,8 +26,7 @@
   #:use-module (my-guix utils)
   #:export (base-desktop-operating-system))
 
-(use-package-modules linux certs 
-                     disk xdisorg)
+(use-package-modules linux certs disk)
 
 (use-service-modules cups desktop virtualization)
 
@@ -50,12 +49,11 @@
                                      "video")))
             %base-user-accounts))
     (packages
-     (cons* nss-certs  ;certifications required for https
+     (cons* nss-certs  ;https certifications
             ;; useful disk management utilities
             gparted
+            gptfdisk
             btrfs-progs
-            ;; for checking if programs are using wayland
-            xeyes
             ;;
             %base-packages))
     (services
