@@ -2,9 +2,17 @@
 Show System Activity=
 display=Display; Meta+P
 
+[kmix][Global Shortcuts]
+decrease_microphone_volume=Microphone Volume Down
+decrease_volume=Volume Down
+increase_microphone_volume=Microphone Volume Up
+increase_volume=Volume Up
+mic_mute=Volume Mute
+mute=
+
 [ksmserver][Global Shortcuts]
 Halt Without Confirmation=
-Lock Session=Meta+Home
+Lock Session=Meta+Home; Screensaver
 Log Out=Ctrl+Alt+Del
 Log Out Without Confirmation=
 Reboot Without Confirmation=
@@ -14,7 +22,7 @@ Activate Window Demanding Attention=Meta+Ctrl+A
 Decrease Opacity=
 Edit Tiles=
 Expose=Ctrl+F9
-ExposeAll=Ctrl+F10; Launch (C)
+ExposeAll=Launch (C); Ctrl+F10
 ExposeClass=Ctrl+F7
 ExposeClassCurrentDesktop=
 Increase Opacity=
@@ -98,7 +106,7 @@ Window Fullscreen=Meta+F
 Window Grow Horizontal=
 Window Grow Vertical=
 Window Lower=
-Window Maximize=Meta+PgUp
+Window Maximize=Meta+PgUp; Meta+K
 Window Maximize Horizontal=
 Window Maximize Vertical=
 Window Minimize=Meta+PgDown
@@ -119,12 +127,12 @@ Window Pack Down=
 Window Pack Left=
 Window Pack Right=
 Window Pack Up=
-Window Quick Tile Bottom=Meta+J; Meta+Down
+Window Quick Tile Bottom=Meta+Down
 Window Quick Tile Bottom Left=
 Window Quick Tile Bottom Right=
-Window Quick Tile Left=Meta+Left; Meta+H
+Window Quick Tile Left=Meta+H; Meta+Left
 Window Quick Tile Right=Meta+Right; Meta+L
-Window Quick Tile Top=Meta+Up; Meta+K
+Window Quick Tile Top=Meta+Up
 Window Quick Tile Top Left=
 Window Quick Tile Top Right=
 Window Raise=
