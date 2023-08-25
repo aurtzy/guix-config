@@ -32,6 +32,7 @@
   #:use-module (ice-9 eval-string)
   #:use-module (ice-9 getopt-long)
   #:use-module (ice-9 optargs)
+  #:use-module (ice-9 pretty-print)
   #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
@@ -205,17 +206,19 @@
                                         name)
                                        "/")))
                       ;; Only write if hook script has changed
-                      (unless (and (file-exists? file-path)
-                                   (equal? script
-                                           (call-with-port (open-input-file
-                                                            file-path)
-                                             (lambda (port)
-                                               (read port)))))
+                      (unless (false-if-exception
+                               (equal? script
+                                       (call-with-port (open-input-file
+                                                        file-path)
+                                         (lambda (port)
+                                           (read port)))))
                         (call-with-port (open-output-file file-path)
                           (lambda (port)
-                            (format port "~a\n~s\n"
-                                    "#! /usr/bin/env -S guile -s\n!#"
-                                    script)
+                            (format port
+                                    "~a\n~a\n\n"
+                                    "#!/usr/bin/env -S guile -s"
+                                    "!#")
+                            (pretty-print script port)
                             (chmod port
                                    (logior #o111 (stat:perms
                                                   (stat port)))))))))
