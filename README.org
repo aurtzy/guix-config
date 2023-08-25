@@ -27,7 +27,7 @@ put - allow for breaking up configurations into reusable snippets that I can
 pick and choose to include in the system or home environment.
 
 
-* Structure of the config
+* Overview
 
 This section gives a general overview of the files in the configuration and
 how I manage and organize them.
@@ -49,6 +49,7 @@ something (or nothing) to it, and returns the newly modified record. This
 approach makes extensions extremely flexible, and with the ~extender~ macro
 it's made fairly elegant to work with.
 
+
 ** =files=
 
 =files= contains everything else used in my configuration that isn't a Guile
@@ -59,10 +60,27 @@ declared in Guile, like files for Stow.
 
 * Services
 
-This section documents various custom services I've defined.
+** Hardware Services
+
+The ~(my-guix services hardware)~ module provides services relating to
+hardware.
+
+*** ~keyboard-center-service-type~
+
+This service adds udev rules necessary for the =keyboard-center= package to
+work.
+
+No configuration is available for this service, so the following should
+suffice:
+
+#+begin_src scheme
+  (service keyboard-center-service-type)
+#+end_src
 
 
-** Base services
+* Home Services
+
+** Base Services
 
 The ~(my-guix home services)~ module provides additional base services.
 
@@ -90,7 +108,7 @@ respectively:
 #+end_src
 
 
-** Flatpak management
+** Flatpak Management
 
 The ~(my-guix home services package-management)~ module provides additional
 services for package management.
@@ -137,7 +155,7 @@ Flatpak remotes have been manually configured (as dummy values or otherwise)
 before using the service.
 
 
-* A system from scratch
+* A System from Scratch
 
 Here are the steps that I follow to get from no system to a fully configured,
 usable environment:
