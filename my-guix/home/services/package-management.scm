@@ -120,6 +120,7 @@
          profile)
         ;; Update any remaining applications
         (invoke flatpak
+                "--user"
                 "update"
                 "--noninteractive"))))
 
