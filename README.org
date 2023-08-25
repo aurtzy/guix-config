@@ -1,6 +1,6 @@
 #+title: guix-config
 
-# Guix configuration with a focus on modularity
+# Modular Guix configuration
 
 * Introduction
 
