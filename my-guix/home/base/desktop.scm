@@ -27,12 +27,13 @@
   #:use-module (gnu packages ncurses)
   #:use-module (guix gexp)
   #:use-module (my-guix config)
+  #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages git-annex-configure)
   #:use-module (my-guix utils))
 
 (use-package-modules haskell-apps backup
-                     package-management)
+                     package-management xdisorg)
 
 (define-public base-desktop-home-environment
   (home-environment
@@ -41,7 +42,9 @@
           git-annex-configure
           borg
           ;; fancy shell text
-          ncurses))
+          ncurses
+          ;; for checking if programs are using wayland
+          xeyes))
    (services
     (list (service home-bash-service-type
                    (home-bash-configuration
