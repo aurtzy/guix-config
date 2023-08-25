@@ -22,9 +22,11 @@
   #:use-module (guix gexp)
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix config)
+  #:use-module (oop goops)
   #:use-module ((srfi srfi-1) #:select (not-pair?))
   #:export (search-files-path
-            build-path-augmentation))
+            build-path-augmentation
+            sanitizer))
 
 (define (search-files-path file)
   (let ((path (string-join
@@ -62,3 +64,22 @@ include PATH in a colon-separated fashion."
           (string-join (cons path paths) ":")
           var
           var))
+
+(define* (sanitizer type #:key (label "Value"))
+  "Returns a procedure that asserts a value is of type TYPE, raising an
+exception if the condition does not hold.
+
+Values must be compatible with GOOPS types (which is what this procedure
+uses)."
+  (lambda (value)
+    (unless (is-a? value type)
+      (raise-exception
+       (make-exception
+        (make-programming-error)
+        (make-exception-with-message "~a ~a ~s: ~s")
+        (make-exception-with-irritants
+         (list label
+               "not of type"
+               (class-name type)
+               value)))))
+    value))
