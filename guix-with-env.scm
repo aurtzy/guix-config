@@ -1,4 +1,4 @@
-#! /usr/bin/env -S guix repl --
+#!/usr/bin/env -S guix repl --
 !#
 
 ;;; The location of this script is important - it expects the directory it is

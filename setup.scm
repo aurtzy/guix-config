@@ -1,4 +1,4 @@
-#! /usr/bin/env -S guix repl --
+#!/usr/bin/env -S guix repl --
 !#
 
 ;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
