@@ -9,6 +9,7 @@
              (my-guix home extensions foreign)
              (my-guix home extensions hardware)
              (my-guix home extensions server)
+             (my-guix home services)
              (my-guix home services package-management)
              (my-guix packages keyboard-center)
              (guix utils))
@@ -22,9 +23,12 @@
      (cons* keyboard-center
             (home-environment-packages env)))
     (services
-     (cons* (simple-service 'stow-data
-                            home-stow-service-type
-                            (list "alvin@al-pc"))
+     (cons* (simple-service 'home-impure-symlinks-data
+                            home-impure-symlinks-service-type
+                            '(("workshop" "data/store/workshop")
+                              ("areas" "data/store/areas")
+                              ("library" "/mnt/storage/data/store/library")
+                              ("attic" "/mnt/storage/data/store/attic")))
             (home-environment-user-services env)))))
  (append (list plasma-extension
                pipewire-extension

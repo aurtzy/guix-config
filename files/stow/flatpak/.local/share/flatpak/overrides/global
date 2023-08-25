@@ -1,5 +1,0 @@
-[Context]
-filesystems=/gnu/store:ro
-
-[Environment]
-GDK_PIXBUF_MODULE_FILE=""

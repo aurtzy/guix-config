@@ -36,16 +36,26 @@
 
 ;;; SETTINGS
 
-;;;; CONFIG LOCATION
-
-(defconst config-dir user-emacs-directory)
-
 ;;;; STATE LOCATION
 
 (defconst state-dir
   (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
 
+;;;; CUSTOM FILE
+
+(use-package emacs
+  :init
+  (setq custom-file (locate-user-emacs-file "custom.el"))
+  :config
+  (load custom-file 'noerror 'nomessage))
+
 ;;; CONFIGURATIONS
+
+;;;; DASHBOARD
+
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook))
 
 ;;;; MORE CUSTOM KEYMAPS
 
@@ -75,6 +85,7 @@
   (visible-bell t)
   (frame-inhibit-implied-resize t)
   (frame-resize-pixelwise t)
+  (use-dialog-box nil)
   :config
   ;; TODO menu-bar was funky with frame transparency at the time of
   ;; writing so menu-bar has been disabled; try re-enabling in future
@@ -109,7 +120,8 @@
 (use-package emacs
   :config
   (savehist-mode 1)
-  (save-place-mode 1))
+  (save-place-mode 1)
+  (recentf-mode 1))
 
 ;;;; POINT CONTROL
 
@@ -143,7 +155,7 @@
   ;; - closest solution right now: https://www.emacswiki.org/emacs/Scrolling
   )
 
-;;;; DEFAULT FILE FORMAT
+;;;; DEFAULT FILE FORMATTING
 
 (use-package emacs
   :custom
@@ -191,7 +203,8 @@ simple rename to fit the keybind it will be mapped to."
 ;;;; ENABLE AUTO INSERT MODE FOR FILES
 
 (use-package emacs
-  :config (auto-insert-mode 1))
+  :config
+  (auto-insert-mode 1))
 
 ;;;; MODAL EDITING WITH MEOW
 ;;
@@ -307,18 +320,42 @@ simple rename to fit the keybind it will be mapped to."
    )
   (meow-global-mode 1))
 
-;;;; FILL COLUMN WRAPPING
+;;;; EDITING TWEAKS
 
 (use-package emacs
   :init
-  (setq-default fill-column 80))
+  (setq-default fill-column 80)
+  :custom
+  (global-auto-revert-non-file-buffers t)
+  :config
+  (global-display-fill-column-indicator-mode 1)
+  (global-auto-revert-mode 1))
+
+(use-package unfill)
 
 (use-package visual-fill-column
+  :disabled
   :config
   (global-visual-fill-column-mode 1))
 
 (use-package adaptive-wrap
   :hook (visual-line-mode . adaptive-wrap-prefix-mode))
+
+;; TODO this is cool
+;; See: https://vernon-grant.com/discovering-emacs/using-whitespace-mode/
+(use-package whitespace
+  :init
+  (setq-default whitespace-style
+                '(face
+                  spaces
+                  empty
+                  tabs
+                  trailing
+                  space-mark
+                  tab-mark))
+  :config
+  ;; (global-whitespace-mode 1)
+  )
 
 ;;;; THEME
 
@@ -590,7 +627,7 @@ simple rename to fit the keybind it will be mapped to."
 
 (use-package geiser-guile
   :config
-  (add-to-list 'geiser-guile-load-path "~/workshop/guix"))
+  (add-to-list 'geiser-guile-load-path "~/workshop/git/guix"))
 
 ;;;;; STATIC ANALYSIS
 
@@ -612,25 +649,38 @@ simple rename to fit the keybind it will be mapped to."
 
 ;;;; ORG
 
+(use-package ox-latex
+  :commands org-mode)
+
 (use-package org
+  :after ox-latex
+  :preface
+  (defun org-export-output-file-name* (fun extension &optional subtreep pub-dir)
+    (let ((pub-dir (if pub-dir
+                       pub-dir
+                     "~/Documents/exports")))
+      (make-directory pub-dir t)
+      (funcall fun extension subtreep pub-dir)))
   :commands org-mode
   :bind (("C-c C-x <backtab>" . org-clock-out))
   :custom
   (org-cycle-inline-images-display t)
+  ;; TODO add a cleaner function that deletes files after some time limit
+  (org-preview-latex-image-directory "~/.cache/emacs/ltximg")
   (auto-insert-alist
    (cons '((org-mode . "Org file")
            nil
            "#+title: " _ \n
-           ;; This doesn't work now?
-           ;; "#+export_file_name: ~/Documents/old/export" \n
            "#+options: author:nil date:nil" \n
            "#+author:" \n
            "#+date:" \n
            "#+options: toc:nil timestamp:nil" \n
-           ;; Find a replacement for this: it causes latex previews to have way
-           ;; too much whitespace
+           ;; TODO: Find a replacement for this (or throw out): it causes latex
+           ;; previews to have way too much whitespace, but previously used to
+           ;; fix colored links
            ;; "#+latex_header: \\hypersetup{colorlinks=true}" \n
-           \n \n)
+           \n
+           \n)
          auto-insert-alist))
   :config
   (org-babel-do-load-languages
@@ -638,70 +688,12 @@ simple rename to fit the keybind it will be mapped to."
    '((emacs-lisp . t)
      (python . t)
      (C . t)))
-  (plist-put org-format-latex-options :scale 2.0))
+  (plist-put org-format-latex-options :scale 2.0)
+  (advice-add 'org-export-output-file-name
+              :around #'org-export-output-file-name*)
+  (setcdr (assoc 'plain-list-item org-blank-before-new-entry) nil)
+  ;; TODO this doesn't work.
+  ;; (add-to-list 'org-latex-logfiles-extensions "600pk")
+  )
 
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(safe-local-variable-values
-   '((eval progn
-           (require 'lisp-mode)
-           (defun emacs27-lisp-fill-paragraph
-               (&optional justify)
-             (interactive "P")
-             (or
-              (fill-comment-paragraph justify)
-              (let
-                  ((paragraph-start
-                    (concat paragraph-start "\\|\\s-*\\([(;\"]\\|\\s-:\\|`(\\|#'(\\)"))
-                   (paragraph-separate
-                    (concat paragraph-separate "\\|\\s-*\".*[,\\.]$"))
-                   (fill-column
-                    (if
-                        (and
-                         (integerp emacs-lisp-docstring-fill-column)
-                         (derived-mode-p 'emacs-lisp-mode))
-                        emacs-lisp-docstring-fill-column fill-column)))
-                (fill-paragraph justify))
-              t))
-           (setq-local fill-paragraph-function #'emacs27-lisp-fill-paragraph))
-     (eval modify-syntax-entry 43 "'")
-     (eval modify-syntax-entry 36 "'")
-     (eval modify-syntax-entry 126 "'")
-     (eval let
-           ((root-dir-unexpanded
-             (locate-dominating-file default-directory ".dir-locals.el")))
-           (when root-dir-unexpanded
-             (let*
-                 ((root-dir
-                   (file-local-name
-                    (expand-file-name root-dir-unexpanded)))
-                  (root-dir*
-                   (directory-file-name root-dir)))
-               (unless
-                   (boundp 'geiser-guile-load-path)
-                 (defvar geiser-guile-load-path 'nil))
-               (make-local-variable 'geiser-guile-load-path)
-               (require 'cl-lib)
-               (cl-pushnew root-dir* geiser-guile-load-path :test #'string-equal))))
-     (eval with-eval-after-load 'yasnippet
-           (let
-               ((guix-yasnippets
-                 (expand-file-name "etc/snippets/yas"
-                                   (locate-dominating-file default-directory ".dir-locals.el"))))
-             (unless
-                 (member guix-yasnippets yas-snippet-dirs)
-               (add-to-list 'yas-snippet-dirs guix-yasnippets)
-               (yas-reload-all))))
-     (eval setq-local guix-directory
-           (locate-dominating-file default-directory ".dir-locals.el"))
-     (eval add-to-list 'completion-ignored-extensions ".go"))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

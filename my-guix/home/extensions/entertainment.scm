@@ -23,9 +23,11 @@
   #:use-module (gnu home)
   #:use-module (gnu services)
   #:use-module (my-guix extensions)
+  #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages minecraft-wayland)
   #:use-module (my-guix packages syncplay)
+  #:use-module (my-guix utils)
   #:export (game-mangers-extension
             minecraft-extension
             minetest-extension
@@ -52,17 +54,19 @@
         (modify-list
          home-environment-user-services
          (list (simple-service name
-                               home-stow-service-type
-                               (list "lutris"
-                                     "steam"))
+                               home-impure-symlinks-service-type
+                               `((".local/share/flatpak/overrides/net.lutris.Lutris"
+                                  ,(search-files-path
+                                    "impure/lutris/net.lutris.Lutris"))
+                                 (".local/share/flatpak/overrides/com.valvesoftware.Steam"
+                                  ,(search-files-path
+                                    "impure/steam/com.valvesoftware.Steam"))))
                (simple-service name
                                home-flatpak-profile-service-type
-                               '(("net.lutris.Lutris"
-                                  . flathub)
-                                 ("net.davidotek.pupgui2"
-                                  . flathub)
-                                 ("com.valvesoftware.Steam"
-                                  . flathub))))))))))
+                               '((flathub "net.lutris.Lutris")
+                                 (flathub "net.davidotek.pupgui2")
+                                 (flathub "com.valvesoftware.Steam")
+                                 (flathub "com.github.Matoking.protontricks"))))))))))
 
 (define minecraft-extension
   (extension
@@ -78,8 +82,7 @@
          home-environment-user-services
          (list (simple-service name
                                home-flatpak-profile-service-type
-                               '(("org.prismlauncher.PrismLauncher"
-                                  . flathub))))))))))
+                               '((flathub "org.prismlauncher.PrismLauncher"))))))))))
 
 (define minetest-extension
   (extension

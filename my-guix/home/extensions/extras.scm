@@ -26,7 +26,9 @@
   #:use-module (gnu services)
   #:use-module (my-guix extensions)
   #:use-module (my-guix home extensions common)
+  #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
+  #:use-module (my-guix utils)
   #:export (newsreader-extension
             creative-extension
             office-extension
@@ -49,8 +51,15 @@
          home-environment-user-services
          (list (simple-service name
                                home-flatpak-profile-service-type
-                               '(("org.mozilla.Thunderbird" . flathub)
-                                 ("com.gitlab.newsflash" . flathub))))))))))
+                               '((flathub "org.mozilla.Thunderbird")
+                                 (flathub "org.kde.akregator")))
+               ;; Disable GPU access to fix NVIDIA Wayland issues
+               ;; See: https://bugs.kde.org/show_bug.cgi?id=466124
+               (simple-service name
+                               home-impure-symlinks-service-type
+                               `((".local/share/flatpak/overrides/org.kde.akregator"
+                                  ,(search-files-path
+                                    "impure/akregator/org.kde.akregator")))))))))))
 
 (define creative-extension
   (extension
@@ -62,8 +71,8 @@
          home-environment-user-services
          (list (simple-service name
                                home-flatpak-profile-service-type
-                               '(("fr.handbrake.ghb" . flathub)
-                                 ("org.kde.krita" . flathub))))))))))
+                               '((flathub "fr.handbrake.ghb")
+                                 (flathub "org.kde.krita"))))))))))
 
 (define office-extension
   (extension
@@ -84,12 +93,14 @@
         (modify-list
          home-environment-user-services
          (list (simple-service name
-                               home-stow-service-type
-                               (list "soundux"))
+                               home-impure-symlinks-service-type
+                               `((".local/share/flatpak/overrides/io.github.Soundux"
+                                  ,(search-files-path
+                                    "impure/soundux/io.github.Soundux"))))
                (simple-service name
                                home-flatpak-profile-service-type
-                               '(("in.cinny.Cinny" . flathub)
-                                 ("io.github.Soundux" . flathub))))))))))
+                               '((flathub "in.cinny.Cinny")
+                                 (flathub "io.github.Soundux"))))))))))
 
 ;; TODO unsure if this should be an extension or manifests to shell into for
 ;; use

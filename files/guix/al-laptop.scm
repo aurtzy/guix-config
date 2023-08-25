@@ -36,7 +36,7 @@
                (dependencies mapped-devices))
              (file-system
                (mount-point "/boot/efi")
-               (device (uuid "955C-7266"
+               (device (uuid "DC21-DB63"
                              'fat32))
                (type "vfat"))
              (operating-system-file-systems os)))))

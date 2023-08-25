@@ -23,10 +23,13 @@
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
+  #:use-module (gnu home services shells)
   #:use-module (gnu services)
   #:use-module (my-guix extensions)
   #:use-module (my-guix home extensions misc)
+  #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
+  #:use-module (my-guix utils)
   #:export (emacs-base-extension
             emacs-org-extension
             emacs-extension
@@ -58,8 +61,9 @@
                emacs-marginalia
                emacs-orderless
                emacs-embark
-               ;; fill column display tweaks
-               emacs-visual-fill-column
+               ;; editing tweaks
+               emacs-unfill
+               emacs-visual-fill-column ; TODO DEPRECATED
                emacs-adaptive-wrap
                ;; git
                emacs-magit
@@ -68,11 +72,18 @@
                emacs-guix
                emacs-geiser
                emacs-geiser-guile
-               emacs-paredit)))
+               emacs-paredit
+               ;; dashboard on init
+               emacs-dashboard)))
        (services
         (modify-list
          home-environment-user-services
          (list (simple-service name
+                               home-impure-symlinks-service-type
+                               `((".config/emacs/init.el"
+                                  ,(search-files-path
+                                    "impure/emacs/init.el"))))
+               (simple-service name
                                home-environment-variables-service-type
                                '( ;; Set editor for e.g. sudoedit
                                  ("VISUAL"
@@ -103,15 +114,24 @@
         (modify-list
          home-environment-user-services
          (list (simple-service name
-                               home-stow-service-type
-                               (list "firefox"
-                                     "brave"))
+                               home-impure-symlinks-service-type
+                               `(("Downloads/_tab-session-manager-backups"
+                                  ,(string-append
+                                    (getenv "HOME")
+                                    "/areas/firefox/extension-backups"
+                                    "/tab-session-manager-backups"))
+                                 (".local/share/flatpak/overrides/com.brave.Browser"
+                                  ,(search-files-path
+                                    "impure/brave/com.brave.Browser"))
+                                 (".local/share/flatpak/overrides/org.mozilla.firefox"
+                                  ,(search-files-path
+                                    "impure/firefox/org.mozilla.firefox"))))
                (simple-service name
                                home-flatpak-profile-service-type
-                               '(("org.mozilla.firefox" . flathub)
-                                 ("com.github.micahflee.torbrowser-launcher"
-                                  . flathub)
-                                 ("com.brave.Browser" . flathub))))))))))
+                               '((flathub "org.mozilla.firefox")
+                                 (flathub
+                                  "com.github.micahflee.torbrowser-launcher")
+                                 (flathub "com.brave.Browser"))))))))))
 
 (define password-management-extension
   (extension
@@ -123,8 +143,7 @@
          home-environment-user-services
          (list (simple-service name
                                home-flatpak-profile-service-type
-                               '(("org.keepassxc.KeePassXC"
-                                  . flathub))))))))))
+                               '((flathub "org.keepassxc.KeePassXC"))))))))))
 
 ;; TODO do I actually need this?
 (define breeze-theme-extension
@@ -148,7 +167,16 @@
          home-environment-packages
          (list yt-dlp
                mpv
-               strawberry)))))))
+               quodlibet)))
+       (services
+        (modify-list
+         home-environment-user-services
+         (list (simple-service name
+                               home-bash-service-type
+                               (home-bash-extension
+                                (aliases
+                                 '(("mpv-without-cache"
+                                    . "mpv --cache-secs=5"))))))))))))
 
 (define common-extensions
   (list emacs-extension

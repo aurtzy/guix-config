@@ -34,11 +34,10 @@
        (packages
         (modify-list
          home-environment-packages
-         (list texlive-bin    ;sets GUIX_TEXMF search path, which is important
-               texlive-amsfonts
-               texlive-base
+         ;; texlive-bin should be somewhere in the profile since it sets the
+         ;; GUIX_TEXMF search path - texlive-scheme-basic provides this
+         (list texlive-scheme-basic
                texlive-capt-of
-               texlive-fonts-ec
-               texlive-hyperref
                texlive-ulem
-               texlive-wrapfig)))))))
+               texlive-wrapfig
+               texlive-beamer)))))))

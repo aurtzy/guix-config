@@ -46,8 +46,9 @@
 
             home-stow-service-type))
 
-;; TODO preferably learn and use define-configuration here, but this should
-;; suffice for now albeit without the ability to extend flatpak remotes
+;; TODO learn and use define-configuration here which should improve
+;; extensibility, but this will suffice for now albeit without the ability to
+;; extend flatpak remotes
 
 (define-record-type* <home-flatpak-configuration>
   home-flatpak-configuration make-home-flatpak-configuration
@@ -58,32 +59,29 @@
   ;; Alist of remote name symbol to remote URL string
   (remotes home-flatpak-configuration-remotes
            (default '()))
-  ;; Alist of application ID string to remote name symbol
+  ;; List of flatpaks, each of which should be a list consisting of the remote
+  ;; as the first element and the application ID as the second.
+  ;; TODO this could eventually be a list of flatpak definitions, potentially
+  ;; records with information about remote name, overrides and such - similar
+  ;; to package definitions
   (profile home-flatpak-configuration-profile
            (default '())))
 
 (define (home-flatpak-packages config)
   "Add flatpak package to profile."
-  ;; Due to unknown reasons, Guix-installed Flatpak does not seem to enjoy
-  ;; working on foreign distros (particularly Fedora). It seems like it has to
-  ;; do with certs not being available, but attempts to resolve this have
-  ;; so far been in vain. Instead, do this hacky hack.
-  ;;
-  ;; Permit a string for flatpak package field, which enables specifying an
-  ;; arbitrary flatpak path; e.g. "/bin/flatpak" is appended to what is
-  ;; usually the package output, but if instead "/usr" is passed as the
-  ;; package it becomes an absolute path pointing directly to
-  ;; "/usr/bin/flatpak" instead of what would usually be a store item.
   (let ((flatpak (home-flatpak-configuration-flatpak config)))
-    (if (string? flatpak)
-        (list)
-        (list flatpak))))
+    (list flatpak)))
 
 (define (home-flatpak-profile-installer config)
   "Gexp to add flatpak remotes and install packages."
   ;; TODO check if all packages use valid remote names before proceeding and
   ;; deduplicate
-  #~(unless #$(getenv "GUIX_DISABLE_FLATPAK")
+  ;; 
+  ;; TODO this service only works on foreign distros when the SSL_CERT_FILE
+  ;; env var is set properly, which requires at least one run beforehand for
+  ;; Guix Home to set it if handling outside. Can this env var be somehow
+  ;; included here (without hardcoding)?
+  #~(unless #$(getenv "GUIX_FLATPAK_DISABLE")
       (let ((flatpak (string-append
                       #$(home-flatpak-configuration-flatpak config)
                       "/bin/flatpak"))
@@ -94,6 +92,8 @@
          (lambda (remote)
            (let ((remote-name (symbol->string (car remote)))
                  (remote-url (cdr remote)))
+             ;; TODO fix case where remote does not exist, causing the
+             ;; following command to fail
              (invoke flatpak
                      "--user"
                      "remote-delete"
@@ -107,21 +107,31 @@
          remotes)
         ;; Install/update applications in profile
         (for-each
-         (lambda (app)
-           (let ((app-id (car app))
-                 (app-remote-name (cdr app)))
+         (lambda (flatpak-app)
+           (let ((remote-name (car flatpak-app))
+                 (app-id (cadr flatpak-app)))
              (invoke flatpak
                      "--user"
                      "install"
                      "--or-update"
                      "--noninteractive"
-                     (symbol->string app-remote-name)
+                     (symbol->string remote-name)
                      app-id)))
          profile)
         ;; Update any remaining applications
         (invoke flatpak
                 "update"
                 "--noninteractive"))))
+
+;; TODO see todo comment at top; this should be able to extend remotes too,
+;; likely by changing profile-extensions to be a general extensions argument,
+;; which makes the home-flatpak-profile-service-type have an actual purpose
+(define (home-flatpak-extend config profile-extensions)
+  (home-flatpak-configuration
+   (inherit config)
+   (profile
+    (append (home-flatpak-configuration-profile config)
+            profile-extensions))))
 
 (define home-flatpak-service-type
   (service-type (name 'home-flatpak)
@@ -132,6 +142,8 @@
                        (service-extension
                         home-activation-service-type
                         home-flatpak-profile-installer)))
+                (compose concatenate)
+                (extend home-flatpak-extend)
                 (description "Install and configure Flatpak applications.")
                 (default-value (home-flatpak-configuration))))
 
@@ -140,7 +152,12 @@
                 (extensions
                  (list (service-extension
                         home-flatpak-service-type
+                        ;; TODO this will need to be changed to provide the
+                        ;; profile wrapped by a home-flatpak-extension when
+                        ;; flatpak refactor takes place
                         identity)))
+                (compose concatenate)
+                (extend append)
                 (description
                  "Add additional Flatpak applications to profile.")
                 (default-value '())))
@@ -160,20 +177,19 @@
 (define (home-stow-profile-installer config)
   "Gexp to stow packages."
   (let ((stow (home-stow-configuration-stow config)))
-    #~(unless #$(getenv "GUIX_DISABLE_STOW")
-        (let ((stow (string-append
-                     #$stow
-                     "/bin/stow"))
-              (packages '#$(home-stow-configuration-profile config)))
-          (apply invoke
-                 stow
-                 "--no-folding"
-                 (string-append
-                  "--dir=" #$(search-files-path "stow"))
-                 (string-append
-                  "--target=" (getenv "HOME"))
-                 "--restow"
-                 packages)))))
+    #~(let ((stow (string-append
+                   #$stow
+                   "/bin/stow"))
+            (packages '#$(home-stow-configuration-profile config)))
+        (apply invoke
+               stow
+               "--no-folding"
+               (string-append
+                "--dir=" #$(search-files-path "stow"))
+               (string-append
+                "--target=" (getenv "HOME"))
+               "--restow"
+               packages))))
 
 (define (home-stow-extend config profile)
   (home-stow-configuration
@@ -182,6 +198,8 @@
     (append profile
             (home-stow-configuration-profile config)))))
 
+;; TODO
+;; This service is deprecated in favor of home-impure-symlinks-service-type.
 (define home-stow-service-type
   (service-type (name 'home-stow)
                 (extensions

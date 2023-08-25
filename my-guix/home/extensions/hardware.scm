@@ -23,7 +23,9 @@
   #:use-module (gnu home)
   #:use-module (gnu services)
   #:use-module (my-guix extensions)
+  #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
+  #:use-module (my-guix utils)
   #:export (pipewire-extension))
 
 (define pipewire-extension
@@ -35,9 +37,10 @@
         (modify-list
          home-environment-user-services
          (list (simple-service name
-                               home-stow-service-type
-                               (list "pipewire"))
+                               home-impure-symlinks-service-type
+                               `((".config/easyeffects/input/main-mic.json"
+                                  ,(search-files-path
+                                    "impure/pipewire/main-mic.json"))))
                (simple-service name
                                home-flatpak-profile-service-type
-                               '(("com.github.wwmm.easyeffects"
-                                  . flathub))))))))))
+                               '((flathub "com.github.wwmm.easyeffects"))))))))))

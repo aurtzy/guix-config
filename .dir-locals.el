@@ -172,7 +172,7 @@
    (eval . (put 'with-http-server 'scheme-indent-function 1))
 
    (eval . (put 'extension 'scheme-indent-function 0))
-   (eval . (put 'extend 'scheme-indent-function 0))
+   (eval . (put '%extend 'scheme-indent-function 0))
    (eval . (put 'extender 'scheme-indent-function 1))
    
    ;; This notably allows '(' in Paredit to not insert a space when the

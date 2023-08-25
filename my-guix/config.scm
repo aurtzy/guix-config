@@ -30,8 +30,8 @@
             $xdg-data-home))
 
 (define $modules-dir
-  ;; Assume base modules directory is previous directory following logic of
-  ;; module name depth
+  ;; Assume base modules directory is dirname of source directory,
+  ;; i.e. "$modules-dir/my-guix/../"
   (or (and=> (current-source-directory)
              dirname)
       ;; Fallback in case return is #f - likely in a repl, so current

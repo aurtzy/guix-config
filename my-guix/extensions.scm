@@ -22,6 +22,8 @@
 (define-module (my-guix extensions)
   #:use-module (guix records)
   #:use-module (ice-9 exceptions)
+  #:use-module (my-guix utils)
+  #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (<extension>
             extension extension?
@@ -31,7 +33,6 @@
             extension-apply
             extensions-eq?
 
-            extend
             extender
             extension-dependencies-all
             apply-extensions))
@@ -41,114 +42,68 @@
   extension?
   this-extension
   (name extension-name
-        (sanitize
-         (lambda (value)
-           (unless (symbol? value)
-             (raise-exception
-              (make-exception
-               (make-programming-error)
-               (make-exception-with-message "~a: ~s")
-               (make-exception-with-irritants
-                (list "Extension name not a symbol"
-                      value)))))
-           value)))
+        (sanitize (sanitizer <symbol>
+                             #:label "Extension name")))
   (dependencies extension-dependencies
                 (default '())
-                (sanitize
-                 (lambda (value)
-                   (unless (list? value)
-                     (raise-exception
-                      (make-exception
-                       (make-programming-error)
-                       (make-exception-with-message "~a: ~s")
-                       (make-exception-with-irritants
-                        (list "Extension dependencies field not a list"
-                              value)))))
-                   (for-each
-                    (lambda (elem)
-                      (unless (extension? elem)
-                        (raise-exception
-                         (make-exception
-                          (make-programming-error)
-                          (make-exception-with-message "~a: ~s")
-                          (make-exception-with-irritants
-                           (list "Extension dependencies field contains value that is not an extension"
-                                 elem))))))
-                    value)
-                   value)))
+                (sanitize (sanitizer <list>
+                                     #:label "Extension dependencies")))
   (apply extension-apply
          (default identity)
-         (sanitize
-          (lambda (value)
-            (unless (procedure? value)
-              (raise-exception
-               (make-exception
-                (make-programming-error)
-                (make-exception-with-message "~a: ~s")
-                (make-exception-with-irritants
-                 (list "Extension apply field not a procedure"
-                       value)))))
-            value))))
+         (sanitize (sanitizer <procedure>
+                              #:label "Extension apply field"))))
 
 (define (extensions-eq? ext1 ext2)
   (eq? (extension-name ext1)
        (extension-name ext2)))
 
-;; TODO DEPRECATED
-(define-syntax extend
-  (syntax-rules (=>)
-    "Return a procedure that takes RECORD as an input. This new procedure,
-when called, will return a record via RECORD-PRODUCER that inherits RECORD and
-replaces FIELD.
-
-This form should be used when specifying extension configuration fields."
-    ((_ record-producer record => field ...)
-     (lambda (record)
-       (record-producer
-        (inherit record)
-        field ...)))))
-
 (define-syntax modify-field
   (syntax-rules (modify =>
                  modify-list)
-    "Modify a record field and return the resulting modified value."
+    "Modifies a record field and return the resulting modified value.
+
+MODIFY is the most primitive field modifier, giving a BINDING for the field
+obtained from FIELD-GETTER and returning the result of the last EXP.
+
+MODIFY-LIST appends the field obtained from FIELD-GETTER with EXP. Optionally,
+BINDING may be omitted."
     ((_ record (modify field-getter binding => exp ...))
      (let ((binding (field-getter record)))
        exp ...))
+    ((_ record (modify-list field-getter binding => exp))
+     (let ((binding (field-getter record)))
+       (append exp binding)))
     ((_ record (modify-list field-getter exp))
-     (let ((field-value (field-getter record)))
-       (append exp field-value)))))
+     (modify-field record (modify-list field-getter %binding => exp)))))
 
-(define-syntax *extend
+(define-syntax %extend
   (syntax-rules ()
+    "Applies each FIELD modification specified to RECORD using CONSTRUCTOR as
+the record constructor."
     ((_ record constructor fields)
      (constructor
       (inherit record)
       .
       fields))
-    ((_ record constructor field* ... (field-name modifier) fields)
-     (*extend record
+    ((_ record constructor field ... (field-name modification) fields)
+     (%extend record
               constructor
-              field* ...
-              ((field-name (modify-field record modifier))
+              field ...
+              ((field-name (modify-field record modification))
                .
                fields)))))
 
-(define-syntax-rule (extend record constructor field field* ...)
-  "Extend RECORD with FIELD using CONSTRUCTOR as the record constructor."
-  (*extend record constructor field field* ... ()))
-
 (define-syntax extender
   (syntax-rules (=>)
-    "Return a procedure that - when passed a record - will use the `extend'
-special form with the provided arguments.
+    "Returns a procedure that - when passed RECORD - will apply the FIELD
+modifications specified using CONSTRUCTOR as the record constructor.
 
-This form should be used when specifying extension-apply fields."
+This form should be used when specifying the apply field for extensions."
    ((_ constructor record => field ...)
     (lambda (record)
-      (extend record constructor field ...)))
+      (%extend record constructor field ... ())))
    ((_ constructor field ...)
-    (extender constructor record => field ...))))
+    (extender constructor %record => field ...))))
 
 (define exclude-extensions (make-parameter '()))
 

@@ -34,11 +34,5 @@
   (apply-extensions
    (let ((env base-desktop-home-environment))
      (home-environment
-      (inherit env)
-      (services
-       (cons* (modify-services (home-environment-user-services env)
-                (home-flatpak-service-type
-                 config => (home-flatpak-configuration
-                            (inherit config)
-                            (flatpak "/usr"))))))))
+      (inherit env)))
    (list foreign-extension)))

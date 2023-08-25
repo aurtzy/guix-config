@@ -2,85 +2,204 @@
 
 # Guix configuration with a focus on modularity
 
-NOTE: This config is still fairly work-in-progress. Documentation is less than optimal at the moment, but it should improve as changes stabilize.
-
------
-
-* Table of Contents
-
-1. [[#introduction][Introduction]]
-2. [[#structure-of-the-config][Structure of the config]]
-   1. [[#my-guix][my-guix]]
-   2. [[#files][files]]
-3. [[#using-the-config][Using the config]]
-
 * Introduction
-:PROPERTIES:
-:CUSTOM_ID: introduction
-:END:
 
 # TODO insert link
-The aim of this README is to document how I use [[https://guix.gnu.org][GNU Guix]] to manage, organize, and deploy software and configurations onto my various systems. The focus here is not about the configurations themselves. With that said, however, this is still very much a dotfiles repository, and readers are more than welcome to inspect them as well.
+The aim of this README is to document how I use [[https://guix.gnu.org][GNU Guix]] to manage, organize,
+and deploy software and configurations onto my various systems. The focus here
+is not about the configurations themselves. With that said, however, this is
+still very much a dotfiles repository, and readers are more than welcome to
+inspect them as well.
 
 The purpose of this Guix configuration is twofold:
-1. To act as bootstrapping mechanism for my sibling project, which documents how I manage my data and make it easier to manage for myself (You can find that project here: <wip! link not available yet>)
-2. To enable the full power of an awesome, fully capable programming language - that is, [[https://www.gnu.org/software/guile][Guile]] - in order to build a robust, modular configuration system that I can hack around with ease.
+1. To act as bootstrapping mechanism for my sibling project, which documents
+   how I manage my data and make it easier to manage for myself (You can find
+   that project here: <wip! link not available yet>)
+2. To enable the full power of an awesome, fully capable programming
+   language - that is, [[https://www.gnu.org/software/guile][Guile]] - in order to build a robust, modular
+   configuration system that I can hack around with ease.
 
-My config is built around various custom Guile modules that I use to extend Guix and modularize my setup. This includes additional services I've defined to manage packages and files using other applications like [[https://flatpak.org][Flatpak]] and [[https://www.gnu.org/software/stow][GNU Stow]] through Guix, as well as something I call extensions which - simply put - allow for breaking up configurations into reusable snippets that I can pick and choose to include in the system or home environment.
+My config is built around various custom Guile modules that I use to extend
+Guix and modularize my setup. This includes additional services I've defined
+to manage packages and files using other applications like [[https://flatpak.org][Flatpak]] and [[https://www.gnu.org/software/stow][GNU
+Stow]] through Guix, as well as something I call extensions which - simply
+put - allow for breaking up configurations into reusable snippets that I can
+pick and choose to include in the system or home environment.
+
 
 * Structure of the config
-:PROPERTIES:
-:CUSTOM_ID: structure-of-the-config
-:END:
 
-This section gives a general overview of the files in the configuration and how I manage and organize them.
+This section gives a general overview of the files in the configuration and
+how I manage and organize them.
 
 My config revolves around two main directories: =./files= and =./my-guix=.
 
 ** =my-guix=
-:PROPERTIES:
-:CUSTOM_ID: my-guix
-:END:
 
-=my-guix= contains custom Guile modules that define all sorts of things, including definitions for packages, services, and other utility functions.
+=my-guix= contains custom Guile modules that define all sorts of things,
+including definitions for packages, services, and other utility functions.
 
-Most notably, however, is ~my-guix extensions~, which defines the extension interface that I use for modularizing my configuration.
+Most notably, however, is ~my-guix extensions~, which defines the extension
+interface that I use for modularizing my configuration.
 
-Extensions are records similar in format to package definitions. The most important part of extensions is the ~configuration~ field, a procedure that takes a record (e.g. a ~home-environment~ or ~operating-system~), does something (or nothing) to it, and returns the newly modified record. This approach makes extensions extremely flexible, and with the ~extender~ macro it's made fairly elegant to work with.
+Extensions are records similar in format to package definitions. The most
+important part of extensions is the ~configuration~ field, a procedure that
+takes a record (e.g. a ~home-environment~ or ~operating-system~), does
+something (or nothing) to it, and returns the newly modified record. This
+approach makes extensions extremely flexible, and with the ~extender~ macro
+it's made fairly elegant to work with.
 
 ** =files=
-:PROPERTIES:
-:CUSTOM_ID: files
-:END:
 
-=files= contains everything else used in my configuration that isn't a Guile module. This includes the Guix Home/System configuration files for the various systems I manage, in addition to all of the "impure" files that aren't declared in Guile, like files for Stow.
+=files= contains everything else used in my configuration that isn't a Guile
+module. This includes the Guix Home/System configuration files for the various
+systems I manage, in addition to all of the "impure" files that aren't
+declared in Guile, like files for Stow.
 
-* Using the config
-:PROPERTIES:
-:CUSTOM_ID: using-the-config
-:END:
 
-Here are the steps that I follow to get from no system to a fully configured, usable environment:
+* Services
 
-1. Perform a system installation.
+This section documents various custom services I've defined.
 
-   Depending on if Guix System is being installed, I'll take different steps.
 
-   For Guix System: I follow the guided installation until the installer asks me to edit the file. Then, I hop into another TTY and use =./setup.scm= to set up an extra things like a swapfile. This script spits out any extra information that needs to be included in the configuration. After I'm finished with this, I then go back to the guided installation to complete it.
+** Base services
 
-   For a foreign distro: I simply follow whatever guided installation there is to completion since I'm not concerned with the system declaration. However, since Guix System isn't being used, Guix will have to be manually installed before continuing. The [[https://guix.gnu.org/en/manual/devel/en/html_node/Binary-Installation.html][Guix manual]] has a section covering this.
-2. Clone the config to my home. Since the config is set up to work wherever as long as the internal file structure stays intact, it doesn't really matter where it's put.
-3. In the config directory, symlink the home and system configuration files (or create new ones to symlink) to =./home.scm= and =./system.scm=, respectively (ignoring system if not on Guix System).
+The ~(my-guix home services)~ module provides additional base services.
 
-   This makes it easier to distinguish which config is being used, and reduces the chance that I accidentally reconfigure with the wrong one. Since these paths are gitignored, I won't have to worry about unintentionally syncing them, either.
-4. Reconfigure the system. On a first-time run, I'll have to include the load path manually, which can be done through a small =./guix-with-env.scm= script:
+*** ~home-impure-symlinks-service-type~
+
+This service is based off of Guix Home's ~symlink-manager~ service, except
+that it is designed to work with symlinks outside of the store; hence,
+"impure".
+
+~home-impure-symlinks-service-type~ can be initialized and extended with a
+list of symlink specifications. For example, the following extends the service
+with symlinks at =$HOME/.config/emacs/init.el= and =$HOME/.bash_profile=
+pointing to =$HOME/dotfiles/emacs-init.el= and =$HOME/dotfiles/bash_profile=,
+respectively:
+
+#+begin_src scheme
+  (simple-service 'home-impure-symlinks-dotfiles
+                  home-impure-symlinks-service-type
+                  `((".config/emacs/init.el" ,(string-append
+                                               (getenv "HOME")
+                                               "/dotfiles/emacs-init.el"))
+                    (".bash_profile" ,(string-append
+                                       (getenv "HOME")
+                                       "/dotfiles/bash_profile"))))
+#+end_src
+
+
+** Flatpak management
+
+The ~(my-guix home services package-management)~ module provides additional
+services for package management.
+
+*** ~home-flatpak-service-type~
+
+This is the service type for configuring Flatpak. It expects a
+~home-flatpak-configuration~ record as its value.
+
+Only installation of flatpaks is supported to avoid accidental removals that
+cause reinstallations. Although this service (mostly) works in its current
+form, the interface is still experimental and will likely go through changes
+to improve flexibility and capabilities.
+
+To start using this service, it must be configured with at least one
+remote. The following example configures Flatpak to use Flathub as a remote:
+
+#+begin_src scheme
+  (service home-flatpak-service-type
+           (home-flatpak-configuration
+            (remotes
+             '((flathub
+                . "https://flathub.org/repo/flathub.flatpakrepo")))))
+#+end_src
+
+~home-flatpak-service-type~ may itself be extended to add applications to the
+profile, but it can be fairly cumbersome having to specify
+~home-flatpak-configuration~ every time. ~home-flatpak-profile-service-type~
+is included as a shorthand service for specifying lists of application
+specifications to include in the profile, that being ~(remote app-id)~. The
+following declares the Firefox and Brave Browser flatpaks in the home
+environment (assuming that Flathub is already configured as shown above):
+
+#+begin_src scheme
+  (simple-service 'home-flatpak-browsers
+                  home-flatpak-profile-service-type
+                  '((flathub "org.mozilla.firefox")
+                    (flathub "com.brave.Browser")))
+#+end_src
+
+Due to complications with utilizing Flatpak's command-line interface for this
+service, the service may have to be bootstrapped by making sure that the
+Flatpak remotes have been manually configured (as dummy values or otherwise)
+before using the service.
+
+
+* A system from scratch
+
+Here are the steps that I follow to get from no system to a fully configured,
+usable environment:
+
+1. Have access to this repository in some form which will need to be fetched
+   while setting up the system. I normally employ a [[https://www.ventoy.net/en/index.html][Ventoy]] USB, so I put a
+   snapshot of the directory on the Ventoy partition to mount and use during
+   the installation.
+2. Perform a system installation.
+
+   Depending on if Guix System is being installed, I'll take different steps:
+
+   - For Guix System: I follow the guided installation until the installer
+     asks me to edit the file. Then, I hop into another TTY and copy
+     guix-config to the target system; anywhere works, but in this case it'll
+     be put in =/etc/guix-config=.
+
+     From the copied guix-config now, I create =./system.scm= to inherit a
+     configuration from ~(my-guix base)~ without any extensions, copying
+     anything relevant from the installer-generated config file to
+     here. =./setup.scm= is used to set up anything else I want, like a
+     swapfile. Some commands will spit out extra information to be included in
+     the configuration.
+
+     Finally, I use =./setup.scm install= to initialize the installation,
+     rebooting after this is done.
+   - For a foreign distro: I simply follow whatever guided installation there is
+     to completion since I'm not concerned with the system declaration. However,
+     since Guix System isn't being used, Guix will have to be manually installed
+     before continuing. The [[https://guix.gnu.org/en/manual/devel/en/html_node/Binary-Installation.html][Guix manual]] has a section covering this.
+3. Depending on the way data is managed, this step may vary. Since my actual
+   guix-config is part of my [[https://git-annex.branchable.com/][git-annex]] data repository, I clone that to my
+   home. The snapshot will no longer be used.
+
+   Note that it doesn't really matter where guix-config itself is put,
+   since it is not dependent on its location.
+4. If on Guix System, copy the =system.scm= created during installation to the
+   newly cloned one in =./files/guix= with a more appropriate name (usually
+   following host-name) so it can be backed up and symlink it to
+   =./system.scm=. At this point, extensions can be added as desired.
+
+   This symlink makes it easier to distinguish which config is being used and
+   reduces the chance that I accidentally reconfigure with the wrong
+   one. Since these paths are gitignored, I won't have to worry about
+   unintentionally syncing them, either.
+5. Symlink =home.scm= from =./files/guix= similar to the last step, but for
+   Guix Home instead.
+6. =guix pull= and reconfigure the system!. On a first-time run, I'll have to
+   include the load path manually, which can be done through the
+   =./guix-with-env.scm= script like so:
    
    =sudo ./guix-with-env.scm system reconfigure system.scm=
 
    Or for the home environment:
 
-   =./guix-with-env.scm home reconfigure home.scm= 
+   =./guix-with-env.scm home reconfigure home.scm=
 
-That's it! The system is fully configured with everything that I've declared in the config file.
 
-After sourcing environment variables, subsequent reconfigures can be done without =guix-with-env.scm= due to a service in the base configuration definition that handles making the load path persistent. As a nice side effect, it also makes my custom packages show up when I use =guix search=.
+That's it! The system is fully configured with the extensions I've included.
+
+After sourcing environment variables, subsequent reconfigures can be done
+without =guix-with-env.scm= due my base configurations (see ~(my-guix base)~
+and ~(my-guix home base)~) including services that make the load path
+persistent. As a nice side effect, it also makes my custom packages show up
+when I use =guix search=.

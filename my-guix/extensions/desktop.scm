@@ -34,7 +34,9 @@
             gnome-extension
             battery-extension))
 
-(use-package-modules linux gnome gnome-xyz)
+(use-package-modules linux
+                     gnome gnome-xyz
+                     qt kde-plasma kde-frameworks)
 
 (use-service-modules xorg desktop pm)
 
@@ -48,7 +50,6 @@
   ;; Offset of swapfile.
   (offset swapfile-configuration-offset))
 
-;;; Not really a service, but it fits in fairly fine.
 (define (build-swapfile-extension config)
   "Builds swapfile extension, given a swapfile configuration CONFIG. See Guix
 documentation on swapfiles for more information. If the setup script in this
@@ -76,9 +77,22 @@ automatically."
            (list (string-append "resume=" device)
                  (string-append "resume_offset=" offset)))))))))
 
+(define wayland-extension
+  (extension
+    (name 'wayland-extension)
+    (apply
+     (extender operating-system
+       (packages
+        (modify-list
+         operating-system-packages
+         (list ;; qtwayland
+          )))))))
+
 (define gnome-extension
   (extension
     (name 'gnome-extension)
+    (dependencies
+     (list wayland-extension))
     (apply
      (extender operating-system
        os =>
@@ -86,10 +100,15 @@ automatically."
         (modify-list
          operating-system-packages
          (list gvfs
+               ;; TODO should these be handled by Guix Home?
                gnome-tweaks
                gnome-shell-extensions
                gnome-shell-extension-sound-output-device-chooser
-               gnome-shell-extension-gsconnect)))
+               gnome-shell-extension-gsconnect
+               gnome-shell-extension-clipboard-indicator
+               ;; Support Breeze themes for Qt applications
+               breeze
+               breeze-icons)))
        (services
         (modify
          operating-system-user-services
