@@ -1,3 +1,3 @@
 [Context]
 devices=dri
-filesystems=xdg-download/_tab-session-manager-backups;xdg-pictures/screenshots;~/.fonts:ro;~/areas;~/data/store/areas/firefox;/run/current-system/profile/share/fonts:ro
+filesystems=xdg-pictures/screenshots;~/.fonts:ro;~/areas/firefox;/run/current-system/profile/share/fonts:ro
