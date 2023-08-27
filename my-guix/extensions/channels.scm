@@ -42,7 +42,6 @@
                               (guix-configuration-substitute-urls
                                config)))
                        (authorized-keys
-                        ;; TODO this file is not currently present
                         (cons (local-file (search-files-path
                                            "guix/nonguix.pub"))
                               (guix-configuration-authorized-keys
