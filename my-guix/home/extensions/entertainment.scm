@@ -39,9 +39,6 @@
 (use-package-modules minetest
                      sdl)
 
-;; NOTE for lutris: must disallow access to home (e.g. via flatseal) because
-;; of weird pthread library issue with Guix
-;; (e.g. https://logs.guix.gnu.org/guix/2023-01-17.log#124520)
 (define game-managers-extension
   (extension
     (name 'game-managers-extension)
