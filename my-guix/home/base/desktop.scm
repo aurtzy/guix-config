@@ -99,7 +99,10 @@
                     (profile '((flathub "com.github.tchx84.Flatseal")))))
           (simple-service 'home-impure-symlinks-flatpak
                           home-impure-symlinks-service-type
-                          `((".local/share/flatpak/overrides/global"
+                          `(;; GDK_PIXBUF_MODULE_FILE causes CSD issues on
+                            ;; foreign distros, so we unset it for all
+                            ;; flatpaks.
+                            (".local/share/flatpak/overrides/global"
                              ,(search-files-path
                                "impure/flatpak/global"))
                             (".local/share/flatpak/overrides/com.github.tchx84.Flatseal"
