@@ -17,6 +17,7 @@
 
 ;;; Commentary:
 ;;;
+;
 ;; This module provides a base desktop home environment.
 
 (define-module (my-guix home base desktop)
