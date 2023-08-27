@@ -15,10 +15,12 @@
     (services
      (cons* (simple-service 'home-impure-symlinks-data
                             home-impure-symlinks-service-type
-                            `(("workshop" "data/store/workshop")
-                              ("areas" "data/store/areas")
-                              ("library" "data/store/library")
-                              ("attic" "data/store/attic")))
+                            `((""
+                               "data/store"
+                               "workshop"
+                               "areas"
+                               "library"
+                               "attic")))
             (home-environment-user-services env)))))
  (append (list gnome-extension)
          common-extensions

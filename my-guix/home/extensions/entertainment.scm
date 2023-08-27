@@ -53,12 +53,20 @@
          home-environment-user-services
          (list (simple-service name
                                home-impure-symlinks-service-type
-                               `((".local/share/flatpak/overrides/net.lutris.Lutris"
+                               `((".local/share/flatpak/overrides"
                                   ,(search-files-path
-                                    "impure/lutris/net.lutris.Lutris"))
-                                 (".local/share/flatpak/overrides/com.valvesoftware.Steam"
+                                    "impure/lutris")
+                                  "net.lutris.Lutris")
+                                 (".var/app/net.lutris.Lutris/data/Mindustry"
+                                  ,(string-append
+                                    (getenv "HOME")
+                                    "/areas/games/mindustry")
+                                  "saves"
+                                  "settings.bin")
+                                 (".local/share/flatpak/overrides"
                                   ,(search-files-path
-                                    "impure/steam/com.valvesoftware.Steam"))))
+                                    "impure/steam")
+                                  "com.valvesoftware.Steam")))
                (simple-service name
                                home-flatpak-profile-service-type
                                '((flathub "net.lutris.Lutris")

@@ -58,9 +58,10 @@
                ;; See: https://bugs.kde.org/show_bug.cgi?id=466124
                (simple-service name
                                home-impure-symlinks-service-type
-                               `((".local/share/flatpak/overrides/org.kde.akregator"
+                               `((".local/share/flatpak/overrides"
                                   ,(search-files-path
-                                    "impure/akregator/org.kde.akregator")))))))))))
+                                    "impure/akregator")
+                                  "org.kde.akregator"))))))))))
 
 (define creative-extension
   (extension
@@ -95,9 +96,10 @@
          home-environment-user-services
          (list (simple-service name
                                home-impure-symlinks-service-type
-                               `((".local/share/flatpak/overrides/io.github.Soundux"
+                               `((".local/share/flatpak/overrides"
                                   ,(search-files-path
-                                    "impure/soundux/io.github.Soundux"))))
+                                    "impure/soundux")
+                                  "io.github.Soundux")))
                (simple-service name
                                home-flatpak-profile-service-type
                                '((flathub "in.cinny.Cinny")

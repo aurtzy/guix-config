@@ -81,9 +81,10 @@
          home-environment-user-services
          (list (simple-service name
                                home-impure-symlinks-service-type
-                               `((".config/emacs/init.el"
+                               `((".config/emacs"
                                   ,(search-files-path
-                                    "impure/emacs/init.el"))))
+                                    "impure/emacs")
+                                  "init.el")))
                (simple-service name
                                home-environment-variables-service-type
                                '( ;; Set editor for e.g. sudoedit
@@ -121,12 +122,14 @@
                                     (getenv "HOME")
                                     "/areas/firefox/extension-backups"
                                     "/tab-session-manager-backups"))
-                                 (".local/share/flatpak/overrides/com.brave.Browser"
+                                 (".local/share/flatpak/overrides"
                                   ,(search-files-path
-                                    "impure/brave/com.brave.Browser"))
-                                 (".local/share/flatpak/overrides/org.mozilla.firefox"
+                                    "impure/brave")
+                                  "com.brave.Browser")
+                                 (".local/share/flatpak/overrides"
                                   ,(search-files-path
-                                    "impure/firefox/org.mozilla.firefox"))))
+                                    "impure/firefox")
+                                  "org.mozilla.firefox")))
                (simple-service name
                                home-flatpak-profile-service-type
                                '((flathub "org.mozilla.firefox")

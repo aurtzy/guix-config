@@ -25,10 +25,14 @@
     (services
      (cons* (simple-service 'home-impure-symlinks-data
                             home-impure-symlinks-service-type
-                            '(("workshop" "data/store/workshop")
-                              ("areas" "data/store/areas")
-                              ("library" "/mnt/storage/data/store/library")
-                              ("attic" "/mnt/storage/data/store/attic")))
+                            '((""
+                               "data/store"
+                               "workshop"
+                               "areas")
+                              (""
+                               "/mnt/storage/data/store"
+                               "library"
+                               "attic")))
             (home-environment-user-services env)))))
  (append (list plasma-extension
                pipewire-extension
