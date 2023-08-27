@@ -85,7 +85,15 @@ even if both SOURCE and TARGET lead to the same file."
                     (readlink target))))
 
          (define (target-file file)
-           (string-append home-directory "/" file))
+           (string-append home-directory
+                          ;; No need to add separator if file name is empty or
+                          ;; starts with separator
+                          (if (or (string-null? file)
+                                  (string-prefix? file-name-separator-string
+                                                  file))
+                              ""
+                              "/")
+                          file))
 
          (define (backup-file file)
            (define backup
@@ -110,41 +118,71 @@ even if both SOURCE and TARGET lead to the same file."
              (format #t (G_ "Removed ~a.\n") directory)
              (remove-empty-directories (dirname directory))))
 
+         (define (cleanup-symlink target source)
+           (if (symlink-to? source (target-file target))
+               (begin
+                 (format #t
+                         (G_ "Removing ~a...")
+                         (target-file target))
+                 (delete-file (target-file target))
+                 (display (G_ " done\n"))
+                 (remove-empty-directories
+                  (dirname (target-file target))))
+               (format #t
+                       (G_ "Skipping ~a (not an impure symlink)... done\n")
+                       (target-file target))))
+
          (define (cleanup-symlinks home-generation)
            "Delete impure symlinks created from HOME-GENERATION."
            (define impure-symlinks-file
              (find-impure-symlinks-file home-generation))
 
            (when impure-symlinks-file
-             (format #t
-                     (G_ "Cleaning up impure symlinks from previous home at ~a.~%")
-                     home-generation)
+             (format
+              #t
+              (G_ "Cleaning up impure symlinks from previous home at ~a.~%")
+              home-generation)
              (newline)
 
-             (let ((symlink-specs (call-with-input-file impure-symlinks-file
-                                    read)))
-               (for-each
-                (lambda (symlink-spec)
-                  (match symlink-spec
-                    ((target source)
-                     (if (symlink-to? source (target-file target))
-                         (begin
-                           (format #t (G_ "Removing ~a...")
-                                   (target-file target))
-                           (delete-file (target-file target))
-                           (display (G_ " done\n"))
-                           (remove-empty-directories
-                            (dirname (target-file target))))
-                         (format
-                          #t
-                          (G_ "Skipping ~a (not an impure symlink)... done\n")
-                          (target-file target))))
-                    (else
-                     (format #t (G_ "Skipping cleaning up ~a (invalid spec given)...\n")
-                             symlink-spec))))
-                symlink-specs))
+             (for-each
+              (lambda (symlink-spec)
+                (match symlink-spec
+                  ((target source)
+                   (cleanup-symlink target source))
+                  ((target-dir source-dir files ..1)
+                   (let ((target-dir
+                          (string-append
+                           target-dir (if (string-suffix? "/" target-dir)
+                                          ""
+                                          "/")))
+                         (source-dir
+                          (string-append
+                           source-dir (if (string-suffix? "/" source-dir)
+                                          ""
+                                          "/"))))
+                     (for-each
+                      (lambda (file)
+                        (let ((target (string-append target-dir file))
+                              (source (string-append source-dir file)))
+                          (cleanup-symlink target source)))
+                      files)))
+                  (else
+                   (format
+                    #t
+                    (G_ "Skipping cleaning up ~a (INVALID SPEC GIVEN)...\n")
+                    symlink-spec))))
+              (call-with-input-file impure-symlinks-file read))
 
              (display (G_ "Cleanup finished.\n\n"))))
+
+         (define (create-symlink target source)
+           (when (false-if-exception (lstat (target-file target)))
+             (backup-file target))
+           (format #t (G_ "Symlinking ~a -> ~a...")
+                   (target-file target) source)
+           (mkdir-p (dirname (target-file target)))
+           (symlink source (target-file target))
+           (display (G_ " done\n")))
 
          (define (create-symlinks home-generation)
            "Create impure symlinks for HOME-GENERATION. Back up files that are
@@ -152,20 +190,29 @@ in the way."
            (define impure-symlinks-file
              (find-impure-symlinks-file home-generation))
 
-           (let ((symlink-specs (call-with-input-file impure-symlinks-file
-                                  read)))
-             (for-each
-              (lambda (symlink-spec)
-                (match symlink-spec
-                  ((target source)
-                   (when (false-if-exception (lstat (target-file target)))
-                     (backup-file target))
-                   (format #t (G_ "Symlinking ~a -> ~a...")
-                           (target-file target) source)
-                   (mkdir-p (dirname (target-file target)))
-                   (symlink source (target-file target))
-                   (display (G_ " done\n")))))
-              symlink-specs)))
+           (for-each
+            (lambda (symlink-spec)
+              (match symlink-spec
+                ((target source)
+                 (create-symlink target source))
+                ((target-dir source-dir files ..1)
+                 (let ((target-dir
+                        (string-append
+                         target-dir (if (string-suffix? "/" target-dir)
+                                        ""
+                                        "/")))
+                       (source-dir
+                        (string-append
+                         source-dir (if (string-suffix? "/" source-dir)
+                                        ""
+                                        "/"))))
+                   (for-each
+                    (lambda (file)
+                      (let ((target (string-append target-dir file))
+                            (source (string-append source-dir file)))
+                        (create-symlink target source)))
+                    files)))))
+            (call-with-input-file impure-symlinks-file read)))
 
          #$%initialize-gettext
 
