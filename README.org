@@ -26,7 +26,6 @@ Stow]] through Guix, as well as something I call extensions which - simply
 put - allow for breaking up configurations into reusable snippets that I can
 pick and choose to include in the system or home environment.
 
-
 * Overview
 
 This section gives a general overview of the files in the configuration and
@@ -49,14 +48,12 @@ something (or nothing) to it, and returns the newly modified record. This
 approach makes extensions extremely flexible, and with the ~extender~ macro
 it's made fairly elegant to work with.
 
-
 ** =files=
 
 =files= contains everything else used in my configuration that isn't a Guile
 module. This includes the Guix Home/System configuration files for the various
 systems I manage, in addition to all of the "impure" files that aren't
 declared in Guile, like files for Stow.
-
 
 * Services
 
@@ -77,7 +74,6 @@ suffice:
   (service keyboard-center-service-type)
 #+end_src
 
-
 * Home Services
 
 ** Base Services
@@ -93,20 +89,44 @@ that it is designed to work with symlinks outside of the store; hence,
 ~home-impure-symlinks-service-type~ can be initialized and extended with a
 list of symlink specifications. For example, the following extends the service
 with symlinks at =$HOME/.config/emacs/init.el= and =$HOME/.bash_profile=
-pointing to =$HOME/dotfiles/emacs-init.el= and =$HOME/dotfiles/bash_profile=,
+pointing to =$HOME/dotfiles/init.el= and =$HOME/dotfiles/.bash_profile=,
 respectively:
 
 #+begin_src scheme
   (simple-service 'home-impure-symlinks-dotfiles
                   home-impure-symlinks-service-type
-                  `((".config/emacs/init.el" ,(string-append
-                                               (getenv "HOME")
-                                               "/dotfiles/emacs-init.el"))
-                    (".bash_profile" ,(string-append
-                                       (getenv "HOME")
-                                       "/dotfiles/bash_profile"))))
+                  `((".config/emacs/init.el"
+                     ,(string-append
+                       (getenv "HOME")
+                       "/dotfiles/init.el"))
+                    (".config/emacs/early-init.el"
+                     ,(string-append
+                       (getenv "HOME")
+                       "/dotfiles/early-init.el"))
+                    (".bash_profile"
+                     ,(string-append
+                       (getenv "HOME")
+                       "/dotfiles/.bash_profile"))))
 #+end_src
 
+Optionally, file names can be specified after the source path to copy the
+directory structure of the source path to the destination path (which are
+implied to be directories in this case). For example, the following value is
+equivalent to the extension value declared above:
+
+#+begin_src scheme
+  `((".config/emacs"
+     ,(string-append
+       (getenv "HOME")
+       "/dotfiles")
+     "init.el"
+     "early-init.el")
+    (""
+     ,(string-append
+       (getenv "HOME")
+       "/dotfiles")
+     ".bash_profile"))
+#+end_src
 
 ** Flatpak Management
 
@@ -153,7 +173,6 @@ Due to complications with utilizing Flatpak's command-line interface for this
 service, the service may have to be bootstrapped by making sure that the
 Flatpak remotes have been manually configured (as dummy values or otherwise)
 before using the service.
-
 
 * A System from Scratch
 
