@@ -5,10 +5,10 @@
 ;;; in to have a ./modules which should store the Guile modules for Guix to
 ;;; find.
 
-(setenv "GUIX_PACKAGE_PATH"
+(setenv "GUILE_LOAD_PATH"
         (format #f
                 "~a/modules:~a"
                 (dirname (current-filename))
-                (getenv "GUIX_PACKAGE_PATH")))
+                (getenv "GUILE_LOAD_PATH")))
 
 (apply system* "guix" (cdr (command-line)))

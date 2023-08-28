@@ -31,8 +31,8 @@
 
 (define (search-files-path file)
   (let ((path (string-join
-               (list $modules-dir
-                     "../files"
+               (list $my-guix-config
+                     "files"
                      file)
                "/")))
     (if (file-exists? path)

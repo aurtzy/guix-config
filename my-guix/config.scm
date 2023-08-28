@@ -23,21 +23,26 @@
   #:use-module (gnu system file-systems)
   #:use-module (guix utils)
   #:use-module (ice-9 exceptions)
-  #:export ($modules-dir
+  #:export ($my-guix-config
+            $modules-dir
+            $guix-package-path
             $base-file-system-flags
             base-file-system-flags-ref
             $base-file-system-options
             base-file-system-options-ref
             $xdg-data-home))
 
+;; Base directory for Guix configurations
+(define $my-guix-config
+  ;; Value is based off of module directory location (my-guix config) =>
+  ;; .../guix-config/modules/my-guix/../..
+  (dirname (dirname (current-source-directory))))
+
 (define $modules-dir
-  ;; Assume base modules directory is dirname of source directory,
-  ;; i.e. "$modules-dir/my-guix/../"
-  (or (and=> (current-source-directory)
-             dirname)
-      ;; Fallback in case return is #f - likely in a repl, so current
-      ;; directory works
-      (getcwd)))
+  (string-append $my-guix-config "/modules"))
+
+(define $guix-package-path
+  (string-append $my-guix-config "/guix-package-path"))
 
 (define (base-file-system-config-ref alist file-system-type device-type)
   (let ((device-alist (assq-ref alist file-system-type)))

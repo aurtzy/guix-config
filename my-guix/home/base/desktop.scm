@@ -51,10 +51,14 @@
     (list (service home-bash-service-type
                    (home-bash-configuration
                     (environment-variables
-                     `(("GUIX_PACKAGE_PATH"
+                     `(("GUILE_LOAD_PATH"
+                        . ,(build-path-augmentation
+                            "GUILE_LOAD_PATH"
+                            $modules-dir))
+                       ("GUIX_PACKAGE_PATH"
                         . ,(build-path-augmentation
                             "GUIX_PACKAGE_PATH"
-                            $modules-dir))
+                            $guix-package-path))
 
                        ;; Exclude certain commands from history
                        ("HISTCONTROL" . "ignoreboth")

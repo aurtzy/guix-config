@@ -58,11 +58,7 @@
             ;;
             %base-packages))
     (services
-     (cons* (simple-service 'add-guix-config-path
-                            session-environment-service-type
-                            `(("GUIX_PACKAGE_PATH"
-                               . ,$modules-dir)))
-            (service cups-service-type)
+     (cons* (service cups-service-type)
             (service qemu-binfmt-service-type
                      (qemu-binfmt-configuration
                       (platforms (lookup-qemu-platforms
@@ -73,6 +69,10 @@
      (plain-file "sudoers"
                  (string-join
                   (list (plain-file-content %sudoers-specification)
+                        ;; TODO can this be restricted to just `guix'?
+                        ;; /run/current-system doesn't get used when running
+                        ;; via sudo as user...
+                        "Defaults env_keep+=GUILE_LOAD_PATH"
                         "Defaults pwfeedback")
                   "\n"
                   'suffix)))
