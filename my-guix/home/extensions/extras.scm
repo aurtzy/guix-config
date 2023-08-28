@@ -61,7 +61,12 @@
                                `((".local/share/flatpak/overrides"
                                   ,(search-files-path
                                     "impure/akregator")
-                                  "org.kde.akregator"))))))))))
+                                  "org.kde.akregator")
+                                 (".var/app/org.kde.akregator/data/akregator/data"
+                                  ,(string-append
+                                    (getenv "HOME")
+                                    "/areas/feeds")
+                                  "feeds.opml"))))))))))
 
 (define creative-extension
   (extension

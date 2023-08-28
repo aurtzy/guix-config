@@ -17,8 +17,7 @@
 
 ;;; Commentary:
 ;;;
-;
-;; This module provides a base desktop home environment.
+;;; This module provides a base desktop home environment.
 
 (define-module (my-guix home base desktop)
   #:use-module (gnu)
@@ -63,7 +62,7 @@
                        ;; Exclude certain commands from history
                        ("HISTCONTROL" . "ignoreboth")
                        ("HISTIGNORE" . "history*")
-                       
+
                        ;; Explicitly set application data directory
                        ("XDG_DATA_HOME" . ,$xdg-data-home)
 
@@ -82,12 +81,12 @@
                         . ,(build-path-augmentation
                             "PATH"
                             "$HOME/.local/bin"))))
-                    (aliases `(("l." . "ls -d .*")
-                               ("la" . "ls -a")
-                               ("diff" . "diff --color=auto")
+                    (aliases `(("guix-without-flatpak"
+                                . "GUIX_FLATPAK_DISABLE=1 guix")
 
-                               ("guix-without-flatpak"
-                                . "GUIX_FLATPAK_DISABLE=1 guix")))
+                               ("l." . "ls -d .*")
+                               ("la" . "ls -a")
+                               ("diff" . "diff --color=auto")))
                     (bashrc
                      ;; Import function definitions in bashrc file
                      (list (local-file

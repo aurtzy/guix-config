@@ -649,10 +649,8 @@ simple rename to fit the keybind it will be mapped to."
 
 ;;;; ORG
 
-(use-package ox-latex
-  :commands org-mode)
-
 (use-package org
+  :commands org-mode
   :after ox-latex
   :preface
   (defun org-export-output-file-name* (fun extension &optional subtreep pub-dir)
@@ -667,22 +665,22 @@ simple rename to fit the keybind it will be mapped to."
   (org-cycle-inline-images-display t)
   ;; TODO add a cleaner function that deletes files after some time limit
   (org-preview-latex-image-directory "~/.cache/emacs/ltximg")
-  (auto-insert-alist
-   (cons '((org-mode . "Org file")
-           nil
-           "#+title: " _ \n
-           "#+options: author:nil date:nil" \n
-           "#+author:" \n
-           "#+date:" \n
-           "#+options: toc:nil timestamp:nil" \n
-           ;; TODO: Find a replacement for this (or throw out): it causes latex
-           ;; previews to have way too much whitespace, but previously used to
-           ;; fix colored links
-           ;; "#+latex_header: \\hypersetup{colorlinks=true}" \n
-           \n
-           \n)
-         auto-insert-alist))
   :config
+  (define-auto-insert
+    '(org-mode . "Org file")
+    '(nil
+      "#+title: " _ \n
+      "#+options: author:nil date:nil" \n
+      "#+author:" \n
+      "#+date:" \n
+      "#+options: toc:nil timestamp:nil" \n
+      ;; TODO: Find a replacement for this (or throw out): it causes latex
+      ;; previews to have way too much whitespace, but previously used to
+      ;; fix colored links
+      ;;
+      ;; "#+latex_header: \\hypersetup{colorlinks=true}" \n
+      \n
+      \n))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
