@@ -160,7 +160,8 @@
       ((target)
        (invoke "herd" "start" "cow-store" (canonicalize-path target))
        (guix-system "init"
-                    "-L" (dirname PROGRAM)
+                    ;; Enable loading custom guix-config modules
+                    "-L" (string-append (dirname PROGRAM) "/modules")
                     CONFIG-FILE
                     target))
       (else
