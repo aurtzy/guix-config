@@ -77,7 +77,9 @@
                emacs-geiser-guile
                emacs-paredit
                ;; dashboard on init
-               emacs-dashboard)))
+               emacs-dashboard
+               ;; markdown
+               emacs-markdown-mode)))
        (services
         (modify-list
          home-environment-user-services
