@@ -1,5 +1,5 @@
 ;;; init.el --- my init.el -*- lexical-binding: t -*-
-;; Copyright (c) 2023 aurtzy <aurtzy@gmail.com>
+;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
 ;; Copyright © 2013-2022 Phil Hagelberg and contributors
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -559,16 +559,16 @@ simple rename to fit the keybind it will be mapped to."
 ;;;; PROGRAMMING
 
 ;;;;; PROJECT SUPPORT
-;; TEMP: properly set project root based on files found
-;;
-;; project.el does not have such a feature for manually selecting at
-;; the moment; this will suffice for now. Comes from:
-;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
-;;
-;; Extra links for more info:
-;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
-;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41955#26
-;; https://reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/
+;;;;;
+;;;;; TEMP: properly set project root based on files found
+;;;;;
+;;;;; project.el does not have such a feature for manually selecting at
+;;;;; the moment; this will suffice for now. Comes from:
+;;;;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
+;;;;;
+;;;;; Extra links for more info:
+;;;;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
+;;;;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41955#26
 
 (use-package project
   :preface
@@ -595,10 +595,25 @@ simple rename to fit the keybind it will be mapped to."
 (use-package eglot
   :commands eglot)
 
-;;;;; C
+;;;;; PYTHON
 
+(use-package python
+  :init
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (set-fill-column 79)))
+  :custom
+  (python-interpreter "python3"))
+
+;;;;; C
+;;;;;
+;;;;; https://reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/
+
+
+;; Optionally installed
 (use-package ccls
   :after eglot
+  :when (package-installed-p 'ccls)
   :custom
   (ccls-initialization-options '(:index
                                  (:comments 2)
@@ -650,8 +665,6 @@ simple rename to fit the keybind it will be mapped to."
 ;;;; ORG
 
 (use-package org
-  :commands org-mode
-  :after ox-latex
   :preface
   (defun org-export-output-file-name* (fun extension &optional subtreep pub-dir)
     (let ((pub-dir (if pub-dir
@@ -665,7 +678,7 @@ simple rename to fit the keybind it will be mapped to."
   (org-cycle-inline-images-display t)
   ;; TODO add a cleaner function that deletes files after some time limit
   (org-preview-latex-image-directory "~/.cache/emacs/ltximg")
-  :config
+  :init
   (define-auto-insert
     '(org-mode . "Org file")
     '(nil
