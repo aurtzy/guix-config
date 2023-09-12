@@ -36,7 +36,7 @@
             battery-extension
             virtualization-extension))
 
-(use-package-modules linux
+(use-package-modules linux freedesktop
                      gnome gnome-xyz
                      qt kde-plasma kde-frameworks
                      virtualization)
@@ -88,8 +88,9 @@ automatically."
        (packages
         (modify-list
          operating-system-packages
-         (list ;; qtwayland
-          )))))))
+         (list xdg-desktop-portal
+               ;; qtwayland
+               )))))))
 
 (define gnome-extension
   (extension
@@ -102,8 +103,8 @@ automatically."
        (packages
         (modify-list
          operating-system-packages
-         (list gvfs
-               ;; TODO should these be handled by Guix Home?
+         (list xdg-desktop-portal-gtk
+               gvfs
                gnome-tweaks
                gnome-shell-extensions
                gnome-shell-extension-sound-output-device-chooser
