@@ -108,10 +108,7 @@ automatically."
                gnome-shell-extensions
                gnome-shell-extension-sound-output-device-chooser
                gnome-shell-extension-gsconnect
-               gnome-shell-extension-clipboard-indicator
-               ;; Support Breeze themes for Qt applications
-               breeze
-               breeze-icons)))
+               gnome-shell-extension-clipboard-indicator)))
        (services
         (modify
          operating-system-user-services
