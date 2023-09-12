@@ -33,13 +33,15 @@
 
             build-swapfile-extension
             gnome-extension
-            battery-extension))
+            battery-extension
+            virtualization-extension))
 
 (use-package-modules linux
                      gnome gnome-xyz
-                     qt kde-plasma kde-frameworks)
+                     qt kde-plasma kde-frameworks
+                     virtualization)
 
-(use-service-modules xorg desktop pm)
+(use-service-modules xorg desktop pm virtualization)
 
 (define-record-type* <swapfile-configuration>
   swapfile-configuration make-swapfile-configuration
@@ -139,3 +141,21 @@ automatically."
          (list (service tlp-service-type
                         (tlp-configuration
                          (cpu-boost-on-ac? #t))))))))))
+
+(define virtualization-extension
+  (extension
+    (name 'virtualization-extension)
+    (apply
+     (extender operating-system
+       (packages
+        (modify-list
+         operating-system-packages
+         (list virt-manager
+               gnome-boxes)))
+       (services
+        (modify-list
+         operating-system-user-services
+         (list (service libvirt-service-type
+                        (libvirt-configuration
+                         (unix-sock-group "libvirt")))
+               (service virtlog-service-type))))))))
