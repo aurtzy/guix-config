@@ -29,11 +29,11 @@
             build-path-augmentation
             sanitizer))
 
-(define (search-files-path file)
+(define (search-files-path . relpaths)
   (let ((path (string-join
-               (list $my-guix-config
-                     "files"
-                     file)
+               (cons* $my-guix-config
+                      "files"
+                      relpaths)
                "/")))
     (if (file-exists? path)
         (canonicalize-path path)
