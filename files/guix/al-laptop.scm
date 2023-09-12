@@ -1,8 +1,10 @@
 (use-modules (gnu)
              (gnu system file-systems)
+             (guix packages)
              (my-guix config)
              (my-guix extensions)
              (my-guix base desktop)
+             (my-guix extensions channels)
              (my-guix extensions desktop))
 
 (define swapfile-extension
@@ -41,4 +43,7 @@
                (type "vfat"))
              (operating-system-file-systems os)))))
  (list swapfile-extension
-       gnome-extension))
+       gnome-extension
+       battery-extension
+       virtualization-extension
+       nonguix-channel-extension))

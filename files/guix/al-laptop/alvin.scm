@@ -2,9 +2,10 @@
              (gnu services)
              (my-guix extensions)
              (my-guix home base desktop)
+             (my-guix home extensions channels)
              (my-guix home extensions common)
              (my-guix home extensions desktop-environment)
-             (my-guix home extensions extras)
+             (my-guix home extensions extra)
              (my-guix home services)
              (my-guix home services package-management))
 
@@ -22,9 +23,10 @@
                                "library"
                                "attic")))
             (home-environment-user-services env)))))
- (append (list gnome-extension)
-         common-extensions
-         extras-extensions)
+ (append common-extensions
+         extra-extensions
+         (list gnome-extension
+               nonguix-channel-extension))
  #:exclude
  (list creative-extension
        personal-comms-extension))
