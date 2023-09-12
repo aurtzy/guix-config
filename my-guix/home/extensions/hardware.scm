@@ -24,6 +24,7 @@
   #:use-module (gnu home)
   #:use-module (gnu services)
   #:use-module (my-guix extensions)
+  #:use-module (my-guix home extensions common)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix utils)
@@ -32,6 +33,8 @@
 (define pipewire-extension
   (extension
     (name 'pipewire-extension)
+    (dependencies
+     (list flatpak-extension))
     (apply
      (extender home-environment
        (services

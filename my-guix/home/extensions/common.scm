@@ -34,6 +34,7 @@
   #:export (emacs-base-extension
             emacs-org-extension
             emacs-extension
+            flatpak-extension
             browsers-extension
             password-management-extension
             breeze-theme-extension
@@ -42,6 +43,7 @@
             common-extensions))
 
 (use-package-modules emacs emacs-xyz guile
+                     freedesktop
                      kde-plasma kde-frameworks
                      video music)
 
@@ -107,9 +109,61 @@
      (list emacs-base-extension
            emacs-org-extension))))
 
+(define flatpak-extension
+  (extension
+    (name 'flatpak-extension)
+    (apply
+     (extender home-environment
+       (packages
+        (modify-list
+         home-environment-packages
+         (list flatpak-xdg-utils)))
+       (services
+        (modify
+         home-environment-user-services
+         services =>
+         (cons (simple-service 'home-impure-symlinks-flatpak
+                               home-impure-symlinks-service-type
+                               (append
+                                ;; Flatpak doesn't like dangling symlinks, so
+                                ;; only make symlink when icons directory
+                                ;; exists (i.e. when on Guix System)
+                                (if (file-exists?
+                                     "/run/current-system/profile/share")
+                                    '((".local/share"
+                                       "/run/current-system/profile/share"
+                                       "icons"))
+                                    '())
+                                `(;; GDK_PIXBUF_MODULE_FILE causes CSD issues
+                                  ;; on foreign distros, so we unset it for
+                                  ;; all flatpaks; allow access to system
+                                  ;; icons
+                                  (".local/share/flatpak/overrides"
+                                   ,(search-files-path
+                                     "impure/flatpak")
+                                   "global")
+                                  (".local/share/flatpak/overrides"
+                                   ,(search-files-path
+                                     "impure/flatpak")
+                                   "com.github.tchx84.Flatseal"))))
+               (modify-services services
+                 (home-flatpak-service-type
+                  config =>
+                  (home-flatpak-configuration
+                   (remotes
+                    (acons 'flathub
+                           "https://flathub.org/repo/flathub.flatpakrepo"
+                           (home-flatpak-configuration-remotes config)))
+                   (profile
+                    (cons '(flathub "com.github.tchx84.Flatseal")
+                           (home-flatpak-configuration-profile
+                            config)))))))))))))
+
 (define browsers-extension
   (extension
     (name 'browsers-extension)
+    (dependencies
+     (list flatpak-extension))
     (apply
      (extender home-environment
        (services
@@ -140,6 +194,8 @@
 (define password-management-extension
   (extension
     (name 'password-management-extension)
+    (dependencies
+     (list flatpak-extension))
     (apply
      (extender home-environment
        (services
@@ -184,6 +240,7 @@
 
 (define common-extensions
   (list emacs-extension
+        flatpak-extension
         browsers-extension
         password-management-extension
         breeze-theme-extension

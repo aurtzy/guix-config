@@ -24,6 +24,7 @@
   #:use-module (gnu home)
   #:use-module (gnu services)
   #:use-module (my-guix extensions)
+  #:use-module (my-guix home extensions common)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages minecraft-wayland)
@@ -42,6 +43,8 @@
 (define game-managers-extension
   (extension
     (name 'game-managers-extension)
+    (dependencies
+     (list flatpak-extension))
     (apply
      (extender home-environment
        (packages
@@ -77,6 +80,8 @@
 (define minecraft-extension
   (extension
     (name 'minecraft-extension)
+    (dependencies
+     (list flatpak-extension))
     (apply
      (extender home-environment
        (packages

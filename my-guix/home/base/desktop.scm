@@ -92,22 +92,5 @@
                      (list (local-file
                             (search-files-path "bash/bashrc")
                             "bashrc")))))
-          (service home-impure-symlinks-service-type)
-          ;; Flatpak management
-          (service home-flatpak-service-type
-                   (home-flatpak-configuration
-                    (remotes
-                     '((flathub
-                        . "https://flathub.org/repo/flathub.flatpakrepo")))
-                    (profile '((flathub "com.github.tchx84.Flatseal")))))
-          (simple-service 'home-impure-symlinks-flatpak
-                          home-impure-symlinks-service-type
-                          `(;; GDK_PIXBUF_MODULE_FILE causes CSD issues on
-                            ;; foreign distros, so we unset it for all
-                            ;; flatpaks.
-                            (".local/share/flatpak/overrides/global"
-                             ,(search-files-path
-                               "impure/flatpak/global"))
-                            (".local/share/flatpak/overrides/com.github.tchx84.Flatseal"
-                             ,(search-files-path
-                               "impure/flatpak/com.github.tchx84.Flatseal"))))))))
+          (service home-flatpak-service-type)
+          (service home-impure-symlinks-service-type)))))
