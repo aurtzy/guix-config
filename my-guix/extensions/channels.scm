@@ -30,19 +30,13 @@
     (apply
      (extender operating-system
        (services
-        (modify
+        (modify-list
          operating-system-user-services
-         services =>
-         (modify-services services
-           (guix-service-type
-            config => (guix-configuration
-                       (inherit config)
-                       (substitute-urls
-                        (cons "https://substitutes.nonguix.org"
-                              (guix-configuration-substitute-urls
-                               config)))
-                       (authorized-keys
-                        (cons (local-file (search-files-path
-                                           "guix/nonguix.pub"))
-                              (guix-configuration-authorized-keys
-                               config))))))))))))
+         (list (simple-service name
+                               guix-service-type
+                               (guix-extension
+                                (authorized-keys
+                                 (list (local-file (search-files-path
+                                                    "guix/nonguix.pub"))))
+                                (substitute-urls
+                                 '("https://substitutes.nonguix.org")))))))))))
