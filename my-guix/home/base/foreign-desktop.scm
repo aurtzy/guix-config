@@ -24,16 +24,35 @@
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
+  #:use-module (gnu home services shells)
   #:use-module (gnu services)
-  #:use-module (my-guix extensions)
+  #:use-module (guix channels)
   #:use-module (my-guix home base desktop)
-  #:use-module (my-guix home extensions foreign)
-  #:use-module (my-guix home services package-management)
   #:export (base-foreign-desktop-home-environment))
 
+(use-package-modules base certs ssh)
+
 (define base-foreign-desktop-home-environment
-  (apply-extensions
-   (let ((env base-desktop-home-environment))
-     (home-environment
-      (inherit env)))
-   (list foreign-extension)))
+  (let ((env base-desktop-home-environment))
+    (home-environment
+     (inherit env)
+     (packages
+      (cons* nss-certs
+             glibc-locales
+             ;; Use host's ssh
+             (delq openssh
+                   (home-environment-packages env))))
+     (services
+      (cons*
+       (simple-service 'base-foreign-desktop-home-environment-variables
+                       home-environment-variables-service-type
+                       '(("SSL_CERT_DIR"
+                          . "$HOME/.guix-home/profile/etc/ssl/certs")
+                         ("SSL_CERT_FILE"
+                          . "$HOME/.guix-home/profile/etc/ssl/certs/ca-certificates.crt")
+                         ;; TODO figure out how this hack with XCURSOR_PATH
+                         ;; works; apps can find adwaita cursors but not
+                         ;; others (e.g. breeze_cursors)
+                         ("XCURSOR_PATH"
+                          . "/usr/share/icons")))
+       (home-environment-user-services env))))))
