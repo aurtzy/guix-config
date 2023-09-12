@@ -17,41 +17,41 @@
 
 ;;; Commentary:
 ;;;
-;;; This module provides extensions that will commonly be pulled in by base
-;;; home environment definitions.
+;;; This module provides mods that will commonly be pulled in by base home
+;;; environment definitions.
 
-(define-module (my-guix home extensions common)
+(define-module (my-guix home mods common)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
   #:use-module (gnu services)
-  #:use-module (my-guix extensions)
-  #:use-module (my-guix home extensions misc)
+  #:use-module (my-guix mods)
+  #:use-module (my-guix home mods misc)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix utils)
-  #:export (emacs-base-extension
-            emacs-org-extension
-            emacs-extension
-            flatpak-extension
-            browsers-extension
-            password-management-extension
-            breeze-theme-extension
-            media-extension
+  #:export (emacs-base-mod
+            emacs-org-mod
+            emacs-mod
+            flatpak-mod
+            browsers-mod
+            password-management-mod
+            breeze-theme-mod
+            media-mod
 
-            common-extensions))
+            common-mods))
 
 (use-package-modules emacs emacs-xyz guile
                      freedesktop
                      kde-plasma kde-frameworks
                      video music)
 
-(define emacs-base-extension
-  (extension
-    (name 'emacs-base-extension)
+(define emacs-base-mod
+  (mod
+    (name 'emacs-base-mod)
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -97,25 +97,25 @@
                                  ("EDITOR"
                                   . "/usr/bin/env emacs -nw"))))))))))
 
-(define emacs-org-extension
-  (extension
-    (name 'emacs-org-extension)
+(define emacs-org-mod
+  (mod
+    (name 'emacs-org-mod)
     (dependencies
-     (list emacs-base-extension
-           tex-extension))))
+     (list emacs-base-mod
+           tex-mod))))
 
-(define emacs-extension
-  (extension
-    (name 'emacs-extension)
+(define emacs-mod
+  (mod
+    (name 'emacs-mod)
     (dependencies
-     (list emacs-base-extension
-           emacs-org-extension))))
+     (list emacs-base-mod
+           emacs-org-mod))))
 
-(define flatpak-extension
-  (extension
-    (name 'flatpak-extension)
+(define flatpak-mod
+  (mod
+    (name 'flatpak-mod)
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -136,7 +136,7 @@
                                        "/run/current-system/profile/share"
                                        "icons"))
                                     '())
-                                `(;; GDK_PIXBUF_MODULE_FILE causes CSD issues
+                                `( ;; GDK_PIXBUF_MODULE_FILE causes CSD issues
                                   ;; on foreign distros, so we unset it for
                                   ;; all flatpaks; allow access to system
                                   ;; icons
@@ -158,16 +158,16 @@
                            (home-flatpak-configuration-remotes config)))
                    (profile
                     (cons '(flathub "com.github.tchx84.Flatseal")
-                           (home-flatpak-configuration-profile
-                            config)))))))))))))
+                          (home-flatpak-configuration-profile
+                           config)))))))))))))
 
-(define browsers-extension
-  (extension
-    (name 'browsers-extension)
+(define browsers-mod
+  (mod
+    (name 'browsers-mod)
     (dependencies
-     (list flatpak-extension))
+     (list flatpak-mod))
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (services
         (modify-list
          home-environment-user-services
@@ -200,13 +200,13 @@
                                   "com.github.micahflee.torbrowser-launcher")
                                  (flathub "com.brave.Browser"))))))))))
 
-(define password-management-extension
-  (extension
-    (name 'password-management-extension)
+(define password-management-mod
+  (mod
+    (name 'password-management-mod)
     (dependencies
-     (list flatpak-extension))
+     (list flatpak-mod))
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (services
         (modify-list
          home-environment-user-services
@@ -215,22 +215,22 @@
                                '((flathub "org.keepassxc.KeePassXC"))))))))))
 
 ;; TODO do I actually need this?
-(define breeze-theme-extension
-  (extension
-    (name 'breeze-theme-extension)
+(define breeze-theme-mod
+  (mod
+    (name 'breeze-theme-mod)
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (packages
         (modify-list
          home-environment-packages
          (list breeze
                breeze-icons)))))))
 
-(define media-extension
-  (extension
-    (name 'media-extension)
+(define media-mod
+  (mod
+    (name 'media-mod)
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -247,10 +247,10 @@
                                  '(("mpv-without-cache"
                                     . "mpv --cache-secs=5"))))))))))))
 
-(define common-extensions
-  (list emacs-extension
-        flatpak-extension
-        browsers-extension
-        password-management-extension
-        breeze-theme-extension
-        media-extension))
+(define common-mods
+  (list emacs-mod
+        flatpak-mod
+        browsers-mod
+        password-management-mod
+        breeze-theme-mod
+        media-mod))

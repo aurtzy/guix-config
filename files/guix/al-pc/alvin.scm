@@ -1,21 +1,21 @@
 (use-modules (gnu home)
              (gnu services)
-             (my-guix extensions)
+             (my-guix mods)
              (my-guix home base foreign-desktop)
-             (my-guix home extensions channels)
-             (my-guix home extensions common)
-             (my-guix home extensions desktop-environment)
-             (my-guix home extensions entertainment)
-             (my-guix home extensions extra)
-             (my-guix home extensions hardware)
-             (my-guix home extensions server)
+             (my-guix home mods channels)
+             (my-guix home mods common)
+             (my-guix home mods desktop-environment)
+             (my-guix home mods entertainment)
+             (my-guix home mods extra)
+             (my-guix home mods hardware)
+             (my-guix home mods server)
              (my-guix home services)
              (my-guix home services package-management)
              (my-guix packages keyboard-center)
              (guix utils))
 
 
-(apply-extensions
+(apply-mods
  (let ((env base-foreign-desktop-home-environment))
    (home-environment
     (inherit env)
@@ -34,10 +34,10 @@
                                "library"
                                "attic")))
             (home-environment-user-services env)))))
- (append common-extensions
-         extra-extensions
-         entertainment-extensions
-         (list plasma-extension
-               pipewire-extension
-               web-server-extension
-               nonguix-channel-extension)))
+ (append common-mods
+         extra-mods
+         entertainment-mods
+         (list plasma-mod
+               pipewire-mod
+               web-server-mod
+               nonguix-channel-mod)))

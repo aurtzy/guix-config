@@ -17,20 +17,20 @@
 
 ;;; Commentary:
 ;;;
-;;; This module provides channels extensions.
+;;; This module provides channels mods.
 
-(define-module (my-guix home extensions channels)
+(define-module (my-guix home mods channels)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services guix)
   #:use-module (guix channels)
-  #:use-module (my-guix extensions))
+  #:use-module (my-guix mods))
 
-(define-public nonguix-channel-extension
-  (extension
-    (name 'nonguix-channel-extension)
+(define-public nonguix-channel-mod
+  (mod
+    (name 'nonguix-channel-mod)
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (services
         (modify-list
          home-environment-user-services

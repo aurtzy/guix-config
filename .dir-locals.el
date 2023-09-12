@@ -171,9 +171,9 @@
 
    (eval . (put 'with-http-server 'scheme-indent-function 1))
 
-   (eval . (put 'extension 'scheme-indent-function 0))
-   (eval . (put '%extend 'scheme-indent-function 0))
-   (eval . (put 'extender 'scheme-indent-function 1))
+   (eval . (put 'mod 'scheme-indent-function 0))
+   (eval . (put '%modify-fields 'scheme-indent-function 0))
+   (eval . (put 'record-modifier 'scheme-indent-function 1))
    
    ;; This notably allows '(' in Paredit to not insert a space when the
    ;; preceding symbol is one of these.

@@ -2,19 +2,19 @@
              (gnu system file-systems)
              (guix packages)
              (my-guix config)
-             (my-guix extensions)
+             (my-guix mods)
              (my-guix base desktop)
-             (my-guix extensions channels)
-             (my-guix extensions desktop))
+             (my-guix mods channels)
+             (my-guix mods desktop))
 
-(define swapfile-extension
-  (build-swapfile-extension 
+(define swapfile-mod
+  (build-swapfile-mod 
    (swapfile-configuration
     (file "/swapfile")
     (device "/dev/mapper/cryptroot")
     (offset "269568"))))
 
-(apply-extensions
+(apply-mods
  (let ((os base-desktop-operating-system))
    (operating-system
      (inherit os)
@@ -42,8 +42,8 @@
                              'fat32))
                (type "vfat"))
              (operating-system-file-systems os)))))
- (list swapfile-extension
-       gnome-extension
-       battery-extension
-       virtualization-extension
-       nonguix-channel-extension))
+ (list swapfile-mod
+       gnome-mod
+       battery-mod
+       virtualization-mod
+       nonguix-channel-mod))

@@ -17,21 +17,21 @@
 
 ;;; Commentary:
 ;;;
-;;; This module provides miscellaneous extensions.
+;;; This module provides miscellaneous mods.
 
-(define-module (my-guix home extensions misc)
+(define-module (my-guix home mods misc)
   #:use-module (gnu)
   #:use-module (gnu home)
-  #:use-module (my-guix extensions)
-  #:export (tex-extension))
+  #:use-module (my-guix mods)
+  #:export (tex-mod))
 
 (use-package-modules tex)
 
-(define tex-extension
-  (extension
-    (name 'tex-extension)
+(define tex-mod
+  (mod
+    (name 'tex-mod)
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (packages
         (modify-list
          home-environment-packages

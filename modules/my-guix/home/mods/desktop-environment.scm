@@ -17,28 +17,28 @@
 
 ;;; Commentary:
 ;;;
-;;; This module provides home-environment extensions for specific desktop
+;;; This module provides home-environment mods for specific desktop
 ;;; environments.
 
-(define-module (my-guix home extensions desktop-environment)
+(define-module (my-guix home mods desktop-environment)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
   #:use-module (gnu services)
   #:use-module (guix gexp)
-  #:use-module (my-guix extensions)
-  #:export (wayland-extension
-            gnome-extension
-            plasma-extension))
+  #:use-module (my-guix mods)
+  #:export (wayland-mod
+            gnome-mod
+            plasma-mod))
 
 (use-package-modules qt)
 
-(define wayland-extension
-  (extension
-    (name 'wayland-extension)
+(define wayland-mod
+  (mod
+    (name 'wayland-mod)
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (services
         (modify-list
          home-environment-user-services
@@ -48,13 +48,13 @@
                                 (environment-variables
                                  '(("MOZ_ENABLE_WAYLAND" . "1"))))))))))))
 
-(define gnome-extension
-  (extension
-    (name 'gnome-extension)
+(define gnome-mod
+  (mod
+    (name 'gnome-mod)
     (dependencies
-     (list wayland-extension))))
+     (list wayland-mod))))
 
-(define plasma-extension-shortcuts
+(define plasma-mod-shortcuts
   #~(begin
       ;; Use Overview as default action for Meta
       ;; See: https://zren.github.io/kde/#windowsmeta-key
@@ -78,16 +78,16 @@
               "/KWin"
               "reconfigure")))
 
-(define plasma-extension
-  (extension
-    (name 'plasma-extension)
+(define plasma-mod
+  (mod
+    (name 'plasma-mod)
     (dependencies
-     (list wayland-extension))
+     (list wayland-mod))
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (services
         (modify-list
          home-environment-user-services
          (list (simple-service name
                                home-activation-service-type
-                               plasma-extension-shortcuts))))))))
+                               plasma-mod-shortcuts))))))))

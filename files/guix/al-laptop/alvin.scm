@@ -1,15 +1,15 @@
 (use-modules (gnu home)
              (gnu services)
-             (my-guix extensions)
+             (my-guix mods)
              (my-guix home base desktop)
-             (my-guix home extensions channels)
-             (my-guix home extensions common)
-             (my-guix home extensions desktop-environment)
-             (my-guix home extensions extra)
+             (my-guix home mods channels)
+             (my-guix home mods common)
+             (my-guix home mods desktop-environment)
+             (my-guix home mods extra)
              (my-guix home services)
              (my-guix home services package-management))
 
-(apply-extensions
+(apply-mods
  (let ((env base-desktop-home-environment))
    (home-environment
     (inherit env)
@@ -23,10 +23,10 @@
                                "library"
                                "attic")))
             (home-environment-user-services env)))))
- (append common-extensions
-         extra-extensions
-         (list gnome-extension
-               nonguix-channel-extension))
+ (append common-mods
+         extra-mods
+         (list gnome-mod
+               nonguix-channel-mod))
  #:exclude
- (list creative-extension
-       personal-comms-extension))
+ (list creative-mod
+       personal-comms-mod))

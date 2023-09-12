@@ -17,37 +17,36 @@
 
 ;;; Commentary:
 ;;;
-;;; This module provides extra extensions that are also commonly used on
-;;; machines, but more likely to be individually picked on a case-by-case
-;;; basis.
+;;; This module provides extra mods that are also commonly used on machines,
+;;; but more likely to be individually picked on a case-by-case basis.
 
-(define-module (my-guix home extensions extra)
+(define-module (my-guix home mods extra)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu services)
   #:use-module (my-guix config)
-  #:use-module (my-guix extensions)
-  #:use-module (my-guix home extensions common)
+  #:use-module (my-guix mods)
+  #:use-module (my-guix home mods common)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix utils)
-  #:export (newsreader-extension
-            creative-extension
-            office-extension
-            personal-comms-extension
-            programming-extension
+  #:export (newsreader-mod
+            creative-mod
+            office-mod
+            personal-comms-mod
+            programming-mod
 
-            extra-extensions))
+            extra-mods))
 
 (use-package-modules libreoffice)
 
-(define newsreaders-extension
-  (extension
-    (name 'newsreaders-extension)
+(define newsreaders-mod
+  (mod
+    (name 'newsreaders-mod)
     (dependencies
-     (list flatpak-extension))
+     (list flatpak-mod))
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (services
         (modify-list
          home-environment-user-services
@@ -69,13 +68,13 @@
                                     "/areas/feeds")
                                   "feeds.opml"))))))))))
 
-(define creative-extension
-  (extension
-    (name 'creative-extension)
+(define creative-mod
+  (mod
+    (name 'creative-mod)
     (dependencies
-     (list flatpak-extension))
+     (list flatpak-mod))
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (services
         (modify-list
          home-environment-user-services
@@ -84,23 +83,23 @@
                                '((flathub "fr.handbrake.ghb")
                                  (flathub "org.kde.krita"))))))))))
 
-(define office-extension
-  (extension
-    (name 'office-extension)
+(define office-mod
+  (mod
+    (name 'office-mod)
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (packages
         (modify-list
          home-environment-packages
          (list libreoffice)))))))
 
-(define personal-comms-extension
-  (extension
-    (name 'personal-comms-extension)
+(define personal-comms-mod
+  (mod
+    (name 'personal-comms-mod)
     (dependencies
-     (list flatpak-extension))
+     (list flatpak-mod))
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (services
         (modify-list
          home-environment-user-services
@@ -116,13 +115,13 @@
                                  (flathub "io.github.Soundux"))))))))))
 
 ;; TODO experimental; see how this fares
-(define programming-extension
-  (extension
-    (name 'programming-extension)
+(define programming-mod
+  (mod
+    (name 'programming-mod)
     (dependencies
-     (list emacs-extension))
+     (list emacs-mod))
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (services
         (modify-list
          home-environment-user-services
@@ -132,9 +131,9 @@
                                   ,(search-files-path)
                                   "manifests"))))))))))
 
-(define extra-extensions
-  (list newsreaders-extension
-        creative-extension
-        office-extension
-        personal-comms-extension
-        programming-extension))
+(define extra-mods
+  (list newsreaders-mod
+        creative-mod
+        office-mod
+        personal-comms-mod
+        programming-mod))

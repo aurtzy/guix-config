@@ -17,36 +17,36 @@
 
 ;;; Commentary:
 ;;;
-;;; This module provides entertainment-related extensions.
+;;; This module provides entertainment-related mods.
 
-(define-module (my-guix home extensions entertainment)
+(define-module (my-guix home mods entertainment)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu services)
-  #:use-module (my-guix extensions)
-  #:use-module (my-guix home extensions common)
+  #:use-module (my-guix mods)
+  #:use-module (my-guix home mods common)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages minecraft-wayland)
   #:use-module (my-guix packages syncplay)
   #:use-module (my-guix utils)
-  #:export (game-mangers-extension
-            minecraft-extension
-            minetest-extension
-            syncplay-extension
+  #:export (game-mangers-mod
+            minecraft-mod
+            minetest-mod
+            syncplay-mod
 
-            entertainment-extensions))
+            entertainment-mods))
 
 (use-package-modules minetest
                      sdl)
 
-(define game-managers-extension
-  (extension
-    (name 'game-managers-extension)
+(define game-managers-mod
+  (mod
+    (name 'game-managers-mod)
     (dependencies
-     (list flatpak-extension))
+     (list flatpak-mod))
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -77,13 +77,13 @@
                                  (flathub "com.valvesoftware.Steam")
                                  (flathub "com.github.Matoking.protontricks"))))))))))
 
-(define minecraft-extension
-  (extension
-    (name 'minecraft-extension)
+(define minecraft-mod
+  (mod
+    (name 'minecraft-mod)
     (dependencies
-     (list flatpak-extension))
+     (list flatpak-mod))
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -95,28 +95,28 @@
                                home-flatpak-profile-service-type
                                '((flathub "org.prismlauncher.PrismLauncher"))))))))))
 
-(define minetest-extension
-  (extension
-    (name 'minetest-extension)
+(define minetest-mod
+  (mod
+    (name 'minetest-mod)
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (packages
         (modify-list
          home-environment-packages
          (list minetest)))))))
 
-(define syncplay-extension
-  (extension
-    (name 'syncplay-extension)
+(define syncplay-mod
+  (mod
+    (name 'syncplay-mod)
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (packages
         (modify-list
          home-environment-packages
          (list syncplay)))))))
 
-(define entertainment-extensions
-  (list game-managers-extension
-        minecraft-extension
-        minetest-extension
-        syncplay-extension))
+(define entertainment-mods
+  (list game-managers-mod
+        minecraft-mod
+        minetest-mod
+        syncplay-mod))

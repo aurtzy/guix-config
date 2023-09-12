@@ -17,26 +17,26 @@
 
 ;;; Commentary:
 ;;;
-;;; This module defines hardware-specific extensions.
+;;; This module defines hardware-specific mods.
 
-(define-module (my-guix home extensions hardware)
+(define-module (my-guix home mods hardware)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu services)
-  #:use-module (my-guix extensions)
-  #:use-module (my-guix home extensions common)
+  #:use-module (my-guix mods)
+  #:use-module (my-guix home mods common)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix utils)
-  #:export (pipewire-extension))
+  #:export (pipewire-mod))
 
-(define pipewire-extension
-  (extension
-    (name 'pipewire-extension)
+(define pipewire-mod
+  (mod
+    (name 'pipewire-mod)
     (dependencies
-     (list flatpak-extension))
+     (list flatpak-mod))
     (apply
-     (extender home-environment
+     (record-mod home-environment
        (services
         (modify-list
          home-environment-user-services

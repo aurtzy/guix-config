@@ -17,12 +17,12 @@
 
 ;;; Commentary:
 ;;;
-;;; This module defines extensions for desktop operating systems.
+;;; This module defines mods for desktop operating systems.
 
-(define-module (my-guix extensions desktop)
+(define-module (my-guix mods desktop)
   #:use-module (gnu)
   #:use-module (guix records)
-  #:use-module (my-guix extensions)
+  #:use-module (my-guix mods)
   #:use-module (srfi srfi-1)
   #:export (<swapfile-configuration>
             swapfile-configuration
@@ -31,10 +31,10 @@
             swapfile-configuration-device
             swapfile-configuration-offset
 
-            build-swapfile-extension
-            gnome-extension
-            battery-extension
-            virtualization-extension))
+            build-swapfile-mod
+            gnome-mod
+            battery-mod
+            virtualization-mod))
 
 (use-package-modules linux freedesktop
                      gnome gnome-xyz
@@ -53,18 +53,18 @@
   ;; Offset of swapfile.
   (offset swapfile-configuration-offset))
 
-(define (build-swapfile-extension config)
-  "Builds swapfile extension, given a swapfile configuration CONFIG. See Guix
+(define (build-swapfile-mod config)
+  "Builds swapfile mod, given a swapfile configuration CONFIG. See Guix
 documentation on swapfiles for more information. If the setup script in this
 repository is used to set up the swapfile, it should output this information
 automatically."
   (let ((file (swapfile-configuration-file config))
         (device (swapfile-configuration-device config))
         (offset (swapfile-configuration-offset config)))
-    (extension
-      (name 'swapfile-extension)
+    (mod
+      (name 'swapfile-mod)
       (apply
-       (extender operating-system
+       (record-modifier operating-system
          os =>
          (swap-devices
           (modify-list
@@ -80,11 +80,11 @@ automatically."
            (list (string-append "resume=" device)
                  (string-append "resume_offset=" offset)))))))))
 
-(define wayland-extension
-  (extension
-    (name 'wayland-extension)
+(define wayland-mod
+  (mod
+    (name 'wayland-mod)
     (apply
-     (extender operating-system
+     (record-modifier operating-system
        (packages
         (modify-list
          operating-system-packages
@@ -92,13 +92,13 @@ automatically."
                ;; qtwayland
                )))))))
 
-(define gnome-extension
-  (extension
-    (name 'gnome-extension)
+(define gnome-mod
+  (mod
+    (name 'gnome-mod)
     (dependencies
-     (list wayland-extension))
+     (list wayland-mod))
     (apply
-     (extender operating-system
+     (record-modifier operating-system
        os =>
        (packages
         (modify-list
@@ -124,11 +124,11 @@ automatically."
                               (inherit config)
                               (wayland? #t)))))))))))
 
-(define battery-extension
-  (extension
-    (name 'battery-extension)
+(define battery-mod
+  (mod
+    (name 'battery-mod)
     (apply
-     (extender operating-system
+     (record-modifier operating-system
        (packages
         (modify-list
          operating-system-packages
@@ -140,11 +140,11 @@ automatically."
                         (tlp-configuration
                          (cpu-boost-on-ac? #t))))))))))
 
-(define virtualization-extension
-  (extension
-    (name 'virtualization-extension)
+(define virtualization-mod
+  (mod
+    (name 'virtualization-mod)
     (apply
-     (extender operating-system
+     (record-modifier operating-system
        (packages
         (modify-list
          operating-system-packages

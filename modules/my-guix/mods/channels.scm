@@ -17,23 +17,26 @@
 
 ;;; Commentary:
 ;;;
-;;; This module provides extensions geared towards server use.
+;;; This module defines mods that add channels.
 
-(define-module (my-guix home extensions server)
+(define-module (my-guix mods channels)
   #:use-module (gnu)
-  #:use-module (gnu home)
-  #:use-module (gnu home services)
-  #:use-module (gnu packages web)
-  #:use-module (gnu services)
-  #:use-module (my-guix extensions)
-  #:export (web-server-extension))
+  #:use-module (my-guix utils)
+  #:use-module (my-guix mods))
 
-(define web-server-extension
-  (extension
-    (name 'web-server-extension)
+(define-public nonguix-channel-mod
+  (mod
+    (name 'nonguix-channel-mod)
     (apply
-     (extender home-environment
-       (packages
+     (record-modifier operating-system
+       (services
         (modify-list
-         home-environment-packages
-         (list darkhttpd)))))))
+         operating-system-user-services
+         (list (simple-service name
+                               guix-service-type
+                               (guix-extension
+                                (authorized-keys
+                                 (list (local-file (search-files-path
+                                                    "guix/nonguix.pub"))))
+                                (substitute-urls
+                                 '("https://substitutes.nonguix.org")))))))))))
