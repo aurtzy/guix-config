@@ -178,6 +178,13 @@
                                     (getenv "HOME")
                                     "/areas/firefox/extension-backups"
                                     "/tab-session-manager-backups"))
+                                 (".var/app/org.mozilla.firefox/.mozilla/firefox/profile.default"
+                                  ,(string-append
+                                    (getenv "HOME")
+                                    "/areas/firefox/profile")
+                                  "bookmarkbackups"
+                                  "favicons.sqlite"
+                                  "search.json.mozlz4")
                                  (".local/share/flatpak/overrides"
                                   ,(search-files-path
                                     "impure/brave")
