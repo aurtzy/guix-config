@@ -47,7 +47,9 @@
              (supplementary-groups '("wheel"
                                      "netdev"
                                      "audio"
-                                     "video")))
+                                     "video"
+                                     "kvm"
+                                     "libvirt")))
             %base-user-accounts))
     (packages
      (cons* nss-certs                   ;https certifications
