@@ -25,7 +25,6 @@
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
   #:use-module (gnu services)
-  #:use-module (gnu packages ncurses)
   #:use-module (guix gexp)
   #:use-module (my-guix config)
   #:use-module (my-guix home services)
