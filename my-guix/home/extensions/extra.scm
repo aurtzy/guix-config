@@ -21,10 +21,11 @@
 ;;; machines, but more likely to be individually picked on a case-by-case
 ;;; basis.
 
-(define-module (my-guix home extensions extras)
+(define-module (my-guix home extensions extra)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu services)
+  #:use-module (my-guix config)
   #:use-module (my-guix extensions)
   #:use-module (my-guix home extensions common)
   #:use-module (my-guix home services)
@@ -36,15 +37,15 @@
             personal-comms-extension
             programming-extension
 
-            extras-extensions))
+            extra-extensions))
 
-(use-package-modules libreoffice
-                     emacs-xyz
-                     python-xyz)
+(use-package-modules libreoffice)
 
 (define newsreaders-extension
   (extension
     (name 'newsreaders-extension)
+    (dependencies
+     (list flatpak-extension))
     (apply
      (extender home-environment
        (services
@@ -71,6 +72,8 @@
 (define creative-extension
   (extension
     (name 'creative-extension)
+    (dependencies
+     (list flatpak-extension))
     (apply
      (extender home-environment
        (services
@@ -94,6 +97,8 @@
 (define personal-comms-extension
   (extension
     (name 'personal-comms-extension)
+    (dependencies
+     (list flatpak-extension))
     (apply
      (extender home-environment
        (services
@@ -110,8 +115,7 @@
                                '((flathub "in.cinny.Cinny")
                                  (flathub "io.github.Soundux"))))))))))
 
-;; TODO unsure if this should be an extension or manifests to shell into for
-;; use
+;; TODO experimental; see how this fares
 (define programming-extension
   (extension
     (name 'programming-extension)
@@ -119,13 +123,16 @@
      (list emacs-extension))
     (apply
      (extender home-environment
-       (packages
+       (services
         (modify-list
-         home-environment-packages
-         (list python-lsp-server
-               emacs-ccls)))))))
+         home-environment-user-services
+         (list (simple-service name
+                               home-impure-symlinks-service-type
+                               `((""
+                                  ,(search-files-path)
+                                  "manifests"))))))))))
 
-(define extras-extensions
+(define extra-extensions
   (list newsreaders-extension
         creative-extension
         office-extension
