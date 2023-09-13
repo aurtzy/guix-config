@@ -38,14 +38,14 @@
     (apply
      (apply-mod home-environment
        (services
-        (modify-list
-         home-environment-user-services
-         (list (simple-service name
-                               home-impure-symlinks-service-type
-                               `((".config/easyeffects/input"
-                                  ,(search-files-path
-                                    "impure/pipewire")
-                                  "main-mic.json")))
-               (simple-service name
-                               home-flatpak-profile-service-type
-                               '((flathub "com.github.wwmm.easyeffects"))))))))))
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-impure-symlinks-service-type
+                              `((".config/easyeffects/input"
+                                 ,(search-files-path
+                                   "impure/pipewire")
+                                 "main-mic.json")))
+              (simple-service name
+                              home-flatpak-profile-service-type
+                              '((flathub "com.github.wwmm.easyeffects")))))))))

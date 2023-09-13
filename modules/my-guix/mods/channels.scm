@@ -30,13 +30,13 @@
     (apply
      (apply-mod operating-system
        (services
-        (modify-list
-         operating-system-user-services
-         (list (simple-service name
-                               guix-service-type
-                               (guix-extension
-                                (authorized-keys
-                                 (list (local-file (search-files-path
-                                                    "guix/nonguix.pub"))))
-                                (substitute-urls
-                                 '("https://substitutes.nonguix.org")))))))))))
+        operating-system-user-services
+        append=>
+        (list (simple-service name
+                              guix-service-type
+                              (guix-extension
+                               (authorized-keys
+                                (list (local-file (search-files-path
+                                                   "guix/nonguix.pub"))))
+                               (substitute-urls
+                                '("https://substitutes.nonguix.org"))))))))))

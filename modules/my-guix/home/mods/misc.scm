@@ -33,12 +33,12 @@
     (apply
      (apply-mod home-environment
        (packages
-        (modify-list
-         home-environment-packages
-         ;; texlive-bin should be somewhere in the profile since it sets the
-         ;; GUIX_TEXMF search path - texlive-scheme-basic provides this
-         (list texlive-scheme-basic
-               texlive-capt-of
-               texlive-ulem
-               texlive-wrapfig
-               texlive-beamer)))))))
+        home-environment-packages
+        append=>
+        ;; texlive-bin should be somewhere in the profile since it sets the
+        ;; GUIX_TEXMF search path - texlive-scheme-basic provides this
+        (list texlive-scheme-basic
+              texlive-capt-of
+              texlive-ulem
+              texlive-wrapfig
+              texlive-beamer))))))

@@ -67,18 +67,18 @@ automatically."
        (apply-mod operating-system
          os =>
          (swap-devices
-          (modify-list
-           operating-system-swap-devices
-           (list (swap-space (target file)
-                             (dependencies
-                              (filter
-                               (file-system-mount-point-predicate "/")
-                               (operating-system-file-systems os)))))))
+          operating-system-swap-devices
+          append=>
+          (list (swap-space (target file)
+                            (dependencies
+                             (filter
+                              (file-system-mount-point-predicate "/")
+                              (operating-system-file-systems os))))))
          (kernel-arguments
-          (modify-list
-           operating-system-user-kernel-arguments
-           (list (string-append "resume=" device)
-                 (string-append "resume_offset=" offset)))))))))
+          operating-system-user-kernel-arguments
+          append=>
+          (list (string-append "resume=" device)
+                (string-append "resume_offset=" offset))))))))
 
 (define wayland-mod
   (mod
@@ -86,11 +86,11 @@ automatically."
     (apply
      (apply-mod operating-system
        (packages
-        (modify-list
-         operating-system-packages
-         (list xdg-desktop-portal
-               ;; qtwayland
-               )))))))
+        operating-system-packages
+        append=>
+        (list xdg-desktop-portal
+              ;; qtwayland
+              ))))))
 
 (define gnome-mod
   (mod
@@ -101,28 +101,27 @@ automatically."
      (apply-mod operating-system
        os =>
        (packages
-        (modify-list
-         operating-system-packages
-         (list xdg-desktop-portal-gtk
-               gvfs
-               gnome-tweaks
-               gnome-shell-extensions
-               gnome-shell-extension-sound-output-device-chooser
-               gnome-shell-extension-gsconnect
-               gnome-shell-extension-clipboard-indicator)))
+        operating-system-packages
+        append=>
+        (list xdg-desktop-portal-gtk
+              gvfs
+              gnome-tweaks
+              gnome-shell-extensions
+              gnome-shell-extension-sound-output-device-chooser
+              gnome-shell-extension-gsconnect
+              gnome-shell-extension-clipboard-indicator))
        (services
-        (modify
-         operating-system-user-services
-         services =>
-         (cons* (set-xorg-configuration
-                 (xorg-configuration
-                  (keyboard-layout (operating-system-keyboard-layout os))))
-                (service gnome-desktop-service-type)
-                (modify-services services
-                  (gdm-service-type
-                   config => (gdm-configuration
-                              (inherit config)
-                              (wayland? #t)))))))))))
+        operating-system-user-services
+        services =>
+        (cons* (set-xorg-configuration
+                (xorg-configuration
+                 (keyboard-layout (operating-system-keyboard-layout os))))
+               (service gnome-desktop-service-type)
+               (modify-services services
+                 (gdm-service-type
+                  config => (gdm-configuration
+                             (inherit config)
+                             (wayland? #t))))))))))
 
 (define battery-mod
   (mod
@@ -130,15 +129,15 @@ automatically."
     (apply
      (apply-mod operating-system
        (packages
-        (modify-list
-         operating-system-packages
-         (list tlp)))
+        operating-system-packages
+        append=>
+        (list tlp))
        (services
-        (modify-list
-         operating-system-user-services
-         (list (service tlp-service-type
-                        (tlp-configuration
-                         (cpu-boost-on-ac? #t))))))))))
+        operating-system-user-services
+        append=>
+        (list (service tlp-service-type
+                       (tlp-configuration
+                        (cpu-boost-on-ac? #t)))))))))
 
 (define virtualization-mod
   (mod
@@ -146,14 +145,14 @@ automatically."
     (apply
      (apply-mod operating-system
        (packages
-        (modify-list
-         operating-system-packages
-         (list virt-manager
-               gnome-boxes)))
+        operating-system-packages
+        append=>
+        (list virt-manager
+              gnome-boxes))
        (services
-        (modify-list
-         operating-system-user-services
-         (list (service libvirt-service-type
-                        (libvirt-configuration
-                         (unix-sock-group "libvirt")))
-               (service virtlog-service-type))))))))
+        operating-system-user-services
+        append=>
+        (list (service libvirt-service-type
+                       (libvirt-configuration
+                        (unix-sock-group "libvirt")))
+              (service virtlog-service-type)))))))

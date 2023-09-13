@@ -58,9 +58,8 @@
        (mod-name ext2)))
 
 (define-syntax modify-field
-  (syntax-rules (modify
-                 =>
-                 modify-list)
+  (syntax-rules (=>
+                 append=>)
     "Modifies a record field and return the resulting modified value.
 
 MODIFY is the most primitive field modifier, giving a BINDING for the field
@@ -68,14 +67,13 @@ obtained from FIELD-GETTER and returning the result of the last EXP.
 
 MODIFY-LIST appends the field obtained from FIELD-GETTER with EXP. Optionally,
 BINDING may be omitted."
-    ((_ record (modify field-getter binding => exp ...))
+    ((_ record field-getter binding => exp)
      (let ((binding (field-getter record)))
-       exp ...))
-    ((_ record (modify-list field-getter binding => exp))
-     (let ((binding (field-getter record)))
-       (append exp binding)))
-    ((_ record (modify-list field-getter exp))
-     (modify-field record (modify-list field-getter %binding => exp)))))
+       exp))
+    ((_ record field-getter binding append=> exp)
+     (modify-field record field-getter binding => (append exp binding)))
+    ((_ record field-getter append=> exp)
+     (modify-field record field-getter %binding append=> exp))))
 
 (define-syntax %modify-fields
   (syntax-rules ()
@@ -86,13 +84,12 @@ the record constructor."
       (inherit record)
       .
       fields))
-    ((_ record constructor field ... (field-name modification) fields)
+    ((_ record constructor field ... (field-name args ...) fields)
      (%modify-fields record
                      constructor
                      field ...
-                     ((field-name (modify-field record modification))
-                      .
-                      fields)))))
+                     ((field-name (modify-field record args ...))
+                      . fields)))))
 
 (define-syntax apply-mod
   (syntax-rules (=>)

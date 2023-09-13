@@ -40,13 +40,13 @@
     (apply
      (apply-mod home-environment
        (services
-        (modify-list
-         home-environment-user-services
-         (list (simple-service name
-                               home-bash-service-type
-                               (home-bash-extension
-                                (environment-variables
-                                 '(("MOZ_ENABLE_WAYLAND" . "1"))))))))))))
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-bash-service-type
+                              (home-bash-extension
+                               (environment-variables
+                                '(("MOZ_ENABLE_WAYLAND" . "1")))))))))))
 
 (define gnome-mod
   (mod
@@ -86,8 +86,8 @@
     (apply
      (apply-mod home-environment
        (services
-        (modify-list
-         home-environment-user-services
-         (list (simple-service name
-                               home-activation-service-type
-                               plasma-mod-shortcuts))))))))
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-activation-service-type
+                              plasma-mod-shortcuts)))))))

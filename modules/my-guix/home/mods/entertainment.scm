@@ -48,34 +48,34 @@
     (apply
      (apply-mod home-environment
        (packages
-        (modify-list
-         home-environment-packages
-         (list sdl2)))
+        home-environment-packages
+        append=>
+        (list sdl2))
        (services
-        (modify-list
-         home-environment-user-services
-         (list (simple-service name
-                               home-impure-symlinks-service-type
-                               `((".local/share/flatpak/overrides"
-                                  ,(search-files-path
-                                    "impure/lutris")
-                                  "net.lutris.Lutris")
-                                 (".var/app/net.lutris.Lutris/data/Mindustry"
-                                  ,(string-append
-                                    (getenv "HOME")
-                                    "/areas/games/mindustry")
-                                  "saves"
-                                  "settings.bin")
-                                 (".local/share/flatpak/overrides"
-                                  ,(search-files-path
-                                    "impure/steam")
-                                  "com.valvesoftware.Steam")))
-               (simple-service name
-                               home-flatpak-profile-service-type
-                               '((flathub "net.lutris.Lutris")
-                                 (flathub "net.davidotek.pupgui2")
-                                 (flathub "com.valvesoftware.Steam")
-                                 (flathub "com.github.Matoking.protontricks"))))))))))
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-impure-symlinks-service-type
+                              `((".local/share/flatpak/overrides"
+                                 ,(search-files-path
+                                   "impure/lutris")
+                                 "net.lutris.Lutris")
+                                (".var/app/net.lutris.Lutris/data/Mindustry"
+                                 ,(string-append
+                                   (getenv "HOME")
+                                   "/areas/games/mindustry")
+                                 "saves"
+                                 "settings.bin")
+                                (".local/share/flatpak/overrides"
+                                 ,(search-files-path
+                                   "impure/steam")
+                                 "com.valvesoftware.Steam")))
+              (simple-service name
+                              home-flatpak-profile-service-type
+                              '((flathub "net.lutris.Lutris")
+                                (flathub "net.davidotek.pupgui2")
+                                (flathub "com.valvesoftware.Steam")
+                                (flathub "com.github.Matoking.protontricks")))))))))
 
 (define minecraft-mod
   (mod
@@ -85,15 +85,15 @@
     (apply
      (apply-mod home-environment
        (packages
-        (modify-list
-         home-environment-packages
-         (list glfw-wayland-minecraft)))
+        home-environment-packages
+        append=>
+        (list glfw-wayland-minecraft))
        (services
-        (modify-list
-         home-environment-user-services
-         (list (simple-service name
-                               home-flatpak-profile-service-type
-                               '((flathub "org.prismlauncher.PrismLauncher"))))))))))
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-flatpak-profile-service-type
+                              '((flathub "org.prismlauncher.PrismLauncher")))))))))
 
 (define minetest-mod
   (mod
@@ -101,9 +101,9 @@
     (apply
      (apply-mod home-environment
        (packages
-        (modify-list
-         home-environment-packages
-         (list minetest)))))))
+        home-environment-packages
+        append=>
+        (list minetest))))))
 
 (define syncplay-mod
   (mod
@@ -111,9 +111,9 @@
     (apply
      (apply-mod home-environment
        (packages
-        (modify-list
-         home-environment-packages
-         (list syncplay)))))))
+        home-environment-packages
+        append=>
+        (list syncplay))))))
 
 (define entertainment-mods
   (list game-managers-mod

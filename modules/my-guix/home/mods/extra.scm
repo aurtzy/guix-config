@@ -48,25 +48,25 @@
     (apply
      (apply-mod home-environment
        (services
-        (modify-list
-         home-environment-user-services
-         (list (simple-service name
-                               home-flatpak-profile-service-type
-                               '((flathub "org.mozilla.Thunderbird")
-                                 (flathub "org.kde.akregator")))
-               ;; Disable GPU access to fix NVIDIA Wayland issues
-               ;; See: https://bugs.kde.org/show_bug.cgi?id=466124
-               (simple-service name
-                               home-impure-symlinks-service-type
-                               `((".local/share/flatpak/overrides"
-                                  ,(search-files-path
-                                    "impure/akregator")
-                                  "org.kde.akregator")
-                                 (".var/app/org.kde.akregator/data/akregator/data"
-                                  ,(string-append
-                                    (getenv "HOME")
-                                    "/areas/feeds")
-                                  "feeds.opml"))))))))))
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-flatpak-profile-service-type
+                              '((flathub "org.mozilla.Thunderbird")
+                                (flathub "org.kde.akregator")))
+              ;; Disable GPU access to fix NVIDIA Wayland issues
+              ;; See: https://bugs.kde.org/show_bug.cgi?id=466124
+              (simple-service name
+                              home-impure-symlinks-service-type
+                              `((".local/share/flatpak/overrides"
+                                 ,(search-files-path
+                                   "impure/akregator")
+                                 "org.kde.akregator")
+                                (".var/app/org.kde.akregator/data/akregator/data"
+                                 ,(string-append
+                                   (getenv "HOME")
+                                   "/areas/feeds")
+                                 "feeds.opml")))))))))
 
 (define creative-mod
   (mod
@@ -76,12 +76,12 @@
     (apply
      (apply-mod home-environment
        (services
-        (modify-list
-         home-environment-user-services
-         (list (simple-service name
-                               home-flatpak-profile-service-type
-                               '((flathub "fr.handbrake.ghb")
-                                 (flathub "org.kde.krita"))))))))))
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-flatpak-profile-service-type
+                              '((flathub "fr.handbrake.ghb")
+                                (flathub "org.kde.krita")))))))))
 
 (define office-mod
   (mod
@@ -89,9 +89,9 @@
     (apply
      (apply-mod home-environment
        (packages
-        (modify-list
-         home-environment-packages
-         (list libreoffice)))))))
+        home-environment-packages
+        append=>
+        (list libreoffice))))))
 
 (define personal-comms-mod
   (mod
@@ -101,18 +101,18 @@
     (apply
      (apply-mod home-environment
        (services
-        (modify-list
-         home-environment-user-services
-         (list (simple-service name
-                               home-impure-symlinks-service-type
-                               `((".local/share/flatpak/overrides"
-                                  ,(search-files-path
-                                    "impure/soundux")
-                                  "io.github.Soundux")))
-               (simple-service name
-                               home-flatpak-profile-service-type
-                               '((flathub "in.cinny.Cinny")
-                                 (flathub "io.github.Soundux"))))))))))
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-impure-symlinks-service-type
+                              `((".local/share/flatpak/overrides"
+                                 ,(search-files-path
+                                   "impure/soundux")
+                                 "io.github.Soundux")))
+              (simple-service name
+                              home-flatpak-profile-service-type
+                              '((flathub "in.cinny.Cinny")
+                                (flathub "io.github.Soundux")))))))))
 
 ;; TODO experimental; see how this fares
 (define programming-mod
@@ -123,13 +123,13 @@
     (apply
      (apply-mod home-environment
        (services
-        (modify-list
-         home-environment-user-services
-         (list (simple-service name
-                               home-impure-symlinks-service-type
-                               `((""
-                                  ,(search-files-path)
-                                  "manifests"))))))))))
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-impure-symlinks-service-type
+                              `((""
+                                 ,(search-files-path)
+                                 "manifests")))))))))
 
 (define extra-mods
   (list newsreaders-mod

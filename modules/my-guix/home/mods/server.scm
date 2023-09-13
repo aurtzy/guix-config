@@ -34,6 +34,6 @@
     (apply
      (apply-mod home-environment
        (packages
-        (modify-list
-         home-environment-packages
-         (list darkhttpd)))))))
+        home-environment-packages
+        append=>
+        (list darkhttpd))))))
