@@ -4,56 +4,46 @@
 
 * Introduction
 
-# TODO insert link
-The aim of this README is to document how I use [[https://guix.gnu.org][GNU Guix]] to manage, organize,
-and deploy software and configurations onto my various systems. The focus here
-is not about the configurations themselves. With that said, however, this is
-still very much a dotfiles repository, and readers are more than welcome to
-inspect them as well.
+[[https://guix.gnu.org][GNU Guix]] configuration files for my various systems. This config extends Guix
+with a custom extension system (dubbed "mods") to modularize my setup.
 
-The purpose of this Guix configuration is twofold:
-1. To act as bootstrapping mechanism for my sibling project, which documents
-   how I manage my data and make it easier to manage for myself (You can find
-   that project here: <wip! link not available yet>)
+This repository also includes additional packages and services that are either
+being refined for upstreaming or are not suitable for upstream.
+
+These configurations allow me to accomplish two main goals:
+
+1. To have a bootstrapping mechanism for reliably (and to some extent,
+   reproducibly) initializing environments with the software I use to manage
+   my sibling project, which handles the organization and management of my
+   data (a link to documentation about this will exist at some point in the
+   future).
 2. To enable the full power of an awesome, fully capable programming
    language - that is, [[https://www.gnu.org/software/guile][Guile]] - in order to build a robust, modular
-   configuration system that I can hack around with ease.
-
-My config is built around various custom Guile modules that I use to extend
-Guix and modularize my setup. This includes additional services I've defined
-to manage packages and files using other applications like [[https://flatpak.org][Flatpak]] and [[https://www.gnu.org/software/stow][GNU
-Stow]] through Guix, as well as something I call extensions which - simply
-put - allow for breaking up configurations into reusable snippets that I can
-pick and choose to include in the system or home environment.
+   configuration that I can hack around with ease.
 
 * Overview
 
-This section gives a general overview of the files in the configuration and
-how I manage and organize them.
+Here is a general overview of this repository's layout:
 
-My config revolves around two main directories: =./files= and =./my-guix=.
+- [[file:modules/][modules]] contains Guile modules which define all sorts of things, including
+  the extensions system in the ~(my-guix mods)~ module, other utility
+  functions, as well as packages and services.
+- [[file:files/][files]] contains everything used in my configuration that isn't a Guile
+  module. This includes the Guix Home/System configuration files for the
+  various systems I manage, in addition to all of the "impure" files that
+  aren't declared in Guile.
+- [[file:guix-package-path/][guix-package-path]] is used primarily for the =GUIX_PACKAGE_PATH= variable,
+  which enables Guix to see packages in this repository when doing
+  package-related tasks like =guix search=.
 
-** =my-guix=
+  See the [[https://guix.gnu.org/en/manual/devel/en/html_node/Package-Modules.html][Package Modules]] section in the manual for more information about
+  this variable.
+- [[file:guix-with-env.scm][guix-with-env.scm]] is a script that runs =guix= with [[file:modules/][modules]] in the load
+  path, helpful for cases where the load path gets broken or when initializing
+  the system with Guix.
+- [[file:setup.scm][setup.scm]] is another script for setting up various tasks during the
+  installation phase of Guix System.
 
-=my-guix= contains custom Guile modules that define all sorts of things,
-including definitions for packages, services, and other utility functions.
-
-Most notably, however, is ~my-guix extensions~, which defines the extension
-interface that I use for modularizing my configuration.
-
-Extensions are records similar in format to package definitions. The most
-important part of extensions is the ~configuration~ field, a procedure that
-takes a record (e.g. a ~home-environment~ or ~operating-system~), does
-something (or nothing) to it, and returns the newly modified record. This
-approach makes extensions extremely flexible, and with the ~extender~ macro
-it's made fairly elegant to work with.
-
-** =files=
-
-=files= contains everything else used in my configuration that isn't a Guile
-module. This includes the Guix Home/System configuration files for the various
-systems I manage, in addition to all of the "impure" files that aren't
-declared in Guile, like files for Stow.
 
 * Services
 
@@ -181,40 +171,47 @@ usable environment:
 
 1. Have access to this repository in some form which will need to be fetched
    while setting up the system. I normally employ a [[https://www.ventoy.net/en/index.html][Ventoy]] USB, so I put a
-   snapshot of the directory on the Ventoy partition to mount and use during
+   snapshot of the repository on the Ventoy partition to mount and use during
    the installation.
 2. Perform a system installation.
 
    Depending on if Guix System is being installed, I'll take different steps:
 
-   - For Guix System: I follow the guided installation until the installer
-     asks me to edit the file. Then, I hop into another TTY and copy
-     guix-config to the target system; anywhere works, but in this case it'll
-     be put in =/etc/guix-config=.
+   - For Guix System:
 
-     From the copied guix-config now, I create =./system.scm= to inherit a
-     configuration from ~(my-guix base)~ without any extensions, copying
-     anything relevant from the installer-generated config file to
-     here. =./setup.scm= is used to set up anything else I want, like a
-     swapfile. Some commands will spit out extra information to be included in
-     the configuration.
+     1. I follow the guided installation until the installer asks me to edit
+        the file.
+     2. Then, I hop into another TTY and copy guix-config to the target
+        system; anywhere works, but in this case it'll be put in
+        =/etc/guix-config=.
+     3. From the copied guix-config now, I create =./system.scm= to inherit a
+        configuration from ~(my-guix base)~ without any mods, copying anything
+        relevant from the installer-generated config file to here. [[file:setup.scm][setup.scm]]
+        is used to set up anything else I want, like a swapfile.
+     4. Finally, I use =./setup.scm install= to initialize the installation,
+        rebooting after this is done.
+   - For a foreign distro:
 
-     Finally, I use =./setup.scm install= to initialize the installation,
-     rebooting after this is done.
-   - For a foreign distro: I simply follow whatever guided installation there is
-     to completion since I'm not concerned with the system declaration. However,
-     since Guix System isn't being used, Guix will have to be manually installed
-     before continuing. The [[https://guix.gnu.org/en/manual/devel/en/html_node/Binary-Installation.html][Guix manual]] has a section covering this.
-3. Depending on the way data is managed, this step may vary. Since my actual
-   guix-config is part of my [[https://git-annex.branchable.com/][git-annex]] data repository, I clone that to my
-   home. The snapshot will no longer be used.
+     I simply follow whatever guided installation there is to completion since
+     I'm not concerned with the system declaration.
+
+     However, since Guix System isn't being used, Guix will have to be
+     manually installed before continuing. The [[https://guix.gnu.org/en/manual/devel/en/html_node/Binary-Installation.html][Guix manual]] has a section
+     covering this.
+3. Depending on the way data is managed, this step may vary. Since the initial
+   guix-config was only a snapshot and my guix-config is part of a
+   separately-managed [[https://git-annex.branchable.com/][git-annex]] repository, I retire the snapshot and clone
+   the real one to my home. The snapshot will no longer be used, and can be
+   deleted or left as a relic.
 
    Note that it doesn't really matter where guix-config itself is put,
    since it is not dependent on its location.
-4. If on Guix System, copy the =system.scm= created during installation to the
-   newly cloned one in =./files/guix= with a more appropriate name (usually
-   following host-name) so it can be backed up and symlink it to
-   =./system.scm=. At this point, extensions can be added as desired.
+4. Only do this step if on Guix System.
+
+   Copy the =./system.scm= created during installation to the newly cloned one
+   in =./files/guix= with a more appropriate name (conventionally in my case
+   by host-name) so it can be backed up and symlink it to =./system.scm=. At
+   this point, mods can be added as desired.
 
    This symlink makes it easier to distinguish which config is being used and
    reduces the chance that I accidentally reconfigure with the wrong
@@ -224,7 +221,7 @@ usable environment:
    Guix Home instead.
 6. =guix pull= and reconfigure the system!. On a first-time run, I'll have to
    include the load path manually, which can be done through the
-   =./guix-with-env.scm= script like so:
+   [[file:guix-with-env.scm][guix-with-env.scm]] script like so:
    
    =sudo ./guix-with-env.scm system reconfigure system.scm=
 
@@ -233,10 +230,8 @@ usable environment:
    =./guix-with-env.scm home reconfigure home.scm=
 
 
-That's it! The system is fully configured with the extensions I've included.
+That's it! The system is fully configured with the mods I've included.
 
 After sourcing environment variables, subsequent reconfigures can be done
-without =guix-with-env.scm= due my base configurations (see ~(my-guix base)~
-and ~(my-guix home base)~) including services that make the load path
-persistent. As a nice side effect, it also makes my custom packages show up
-when I use =guix search=.
+without [[file:guix-with-env.scm][guix-with-env.scm]] due my base configurations (see ~(my-guix base)~ and
+~(my-guix home base)~) including services that make the load paths persistent.
