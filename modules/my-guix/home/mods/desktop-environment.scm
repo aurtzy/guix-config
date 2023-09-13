@@ -38,7 +38,7 @@
   (mod
     (name 'wayland-mod)
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (services
         (modify-list
          home-environment-user-services
@@ -84,7 +84,7 @@
     (dependencies
      (list wayland-mod))
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (services
         (modify-list
          home-environment-user-services

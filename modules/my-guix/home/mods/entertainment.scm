@@ -46,7 +46,7 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -83,7 +83,7 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -99,7 +99,7 @@
   (mod
     (name 'minetest-mod)
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -109,7 +109,7 @@
   (mod
     (name 'syncplay-mod)
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (packages
         (modify-list
          home-environment-packages

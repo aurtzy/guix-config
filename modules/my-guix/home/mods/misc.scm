@@ -31,7 +31,7 @@
   (mod
     (name 'tex-mod)
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (packages
         (modify-list
          home-environment-packages

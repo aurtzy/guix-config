@@ -36,7 +36,7 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (services
         (modify-list
          home-environment-user-services

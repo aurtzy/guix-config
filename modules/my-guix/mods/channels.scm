@@ -28,7 +28,7 @@
   (mod
     (name 'nonguix-channel-mod)
     (apply
-     (record-modifier operating-system
+     (apply-mod operating-system
        (services
         (modify-list
          operating-system-user-services

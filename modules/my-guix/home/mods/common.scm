@@ -51,7 +51,7 @@
   (mod
     (name 'emacs-base-mod)
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -115,7 +115,7 @@
   (mod
     (name 'flatpak-mod)
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -167,7 +167,7 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (services
         (modify-list
          home-environment-user-services
@@ -206,7 +206,7 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (services
         (modify-list
          home-environment-user-services
@@ -219,7 +219,7 @@
   (mod
     (name 'breeze-theme-mod)
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (packages
         (modify-list
          home-environment-packages
@@ -230,7 +230,7 @@
   (mod
     (name 'media-mod)
     (apply
-     (record-mod home-environment
+     (apply-mod home-environment
        (packages
         (modify-list
          home-environment-packages

@@ -64,7 +64,7 @@ automatically."
     (mod
       (name 'swapfile-mod)
       (apply
-       (record-modifier operating-system
+       (apply-mod operating-system
          os =>
          (swap-devices
           (modify-list
@@ -84,7 +84,7 @@ automatically."
   (mod
     (name 'wayland-mod)
     (apply
-     (record-modifier operating-system
+     (apply-mod operating-system
        (packages
         (modify-list
          operating-system-packages
@@ -98,7 +98,7 @@ automatically."
     (dependencies
      (list wayland-mod))
     (apply
-     (record-modifier operating-system
+     (apply-mod operating-system
        os =>
        (packages
         (modify-list
@@ -128,7 +128,7 @@ automatically."
   (mod
     (name 'battery-mod)
     (apply
-     (record-modifier operating-system
+     (apply-mod operating-system
        (packages
         (modify-list
          operating-system-packages
@@ -144,7 +144,7 @@ automatically."
   (mod
     (name 'virtualization-mod)
     (apply
-     (record-modifier operating-system
+     (apply-mod operating-system
        (packages
         (modify-list
          operating-system-packages

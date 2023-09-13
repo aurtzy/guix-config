@@ -33,7 +33,7 @@
             mod-apply
             mods-eq?
 
-            record-mod
+            apply-mod
             mod-dependencies-all
             apply-mods))
 
@@ -94,7 +94,7 @@ the record constructor."
                       .
                       fields)))))
 
-(define-syntax record-mod
+(define-syntax apply-mod
   (syntax-rules (=>)
     "Returns a procedure that - when passed RECORD - will apply the FIELD
 modifications specified using CONSTRUCTOR as the record constructor.
@@ -104,7 +104,7 @@ This form should be used when specifying the apply field for mods."
      (lambda (record)
        (%modify-fields record constructor field ... ())))
     ((_ constructor field ...)
-     (record-mod constructor %record => field ...))))
+     (apply-mod constructor %record => field ...))))
 
 (define exclude-mods (make-parameter '()))
 
