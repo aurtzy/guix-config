@@ -118,7 +118,7 @@ equivalent to the extension value declared above:
      ".bash_profile"))
 #+end_src
 
-** Flatpak Management
+** Package Management
 
 The ~(my-guix home services package-management)~ module provides additional
 services for package management.
