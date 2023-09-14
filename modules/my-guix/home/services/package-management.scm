@@ -27,7 +27,6 @@
   #:use-module (gnu packages package-management)
   #:use-module (guix gexp)
   #:use-module (guix records)
-  #:use-module (my-guix utils)
   #:use-module (srfi srfi-1)
   #:export (<home-flatpak-configuration>
             home-flatpak-configuration
@@ -37,15 +36,7 @@
             home-flatpak-configuration-profile
 
             home-flatpak-service-type
-            home-flatpak-profile-service-type
-
-            <home-stow-configuration>
-            home-stow-configuration
-            home-stow-configuration?
-            home-stow-configuration-stow
-            home-stow-configuration-profile
-
-            home-stow-service-type))
+            home-flatpak-profile-service-type))
 
 ;; TODO learn and use define-configuration here which should improve
 ;; extensibility, but this will suffice for now albeit without the ability to
@@ -163,55 +154,3 @@
                 (description
                  "Add additional Flatpak applications to profile.")
                 (default-value '())))
-
-(define-record-type* <home-stow-configuration>
-  home-stow-configuration make-home-stow-configuration
-  home-stow-configuration?
-  (stow home-stow-configuration-stow
-        (default stow))
-  (profile home-stow-configuration-profile
-           (default '())))
-
-(define (home-stow-packages config)
-  "Add flatpak package to profile."
-  (list (home-stow-configuration-stow config)))
-
-(define (home-stow-profile-installer config)
-  "Gexp to stow packages."
-  (let ((stow (home-stow-configuration-stow config)))
-    #~(let ((stow (string-append
-                   #$stow
-                   "/bin/stow"))
-            (packages '#$(home-stow-configuration-profile config)))
-        (apply invoke
-               stow
-               "--no-folding"
-               (string-append
-                "--dir=" #$(search-files-path "stow"))
-               (string-append
-                "--target=" (getenv "HOME"))
-               "--restow"
-               packages))))
-
-(define (home-stow-extend config profile)
-  (home-stow-configuration
-   (inherit config)
-   (profile
-    (append profile
-            (home-stow-configuration-profile config)))))
-
-;; TODO
-;; This service is deprecated in favor of home-impure-symlinks-service-type.
-(define home-stow-service-type
-  (service-type (name 'home-stow)
-                (extensions
-                 (list (service-extension
-                        home-profile-service-type
-                        home-stow-packages)
-                       (service-extension
-                        home-activation-service-type
-                        home-stow-profile-installer)))
-                (compose concatenate)
-                (extend home-stow-extend)
-                (description "Stow packages to the $HOME directory.")
-                (default-value (home-stow-configuration))))
