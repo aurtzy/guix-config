@@ -68,11 +68,15 @@ obtained from FIELD-GETTER and returning the result of the last EXP.
 MODIFY-LIST appends the field obtained from FIELD-GETTER with EXP. Optionally,
 BINDING may be omitted."
     ((_ record field-getter binding => exp)
+    ((_ record
+        field-getter binding => exp)
      (let ((binding (field-getter record)))
        exp))
-    ((_ record field-getter binding append=> exp)
+    ((_ record
+        field-getter binding append=> exp)
      (modify-field record field-getter binding => (append exp binding)))
-    ((_ record field-getter append=> exp)
+    ((_ record
+        field-getter append=> exp)
      (modify-field record field-getter %binding append=> exp))))
 
 (define-syntax %modify-fields
