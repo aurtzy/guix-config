@@ -62,12 +62,16 @@
                  append=>)
     "Modifies a record field and return the resulting modified value.
 
-MODIFY is the most primitive field modifier, giving a BINDING for the field
-obtained from FIELD-GETTER and returning the result of the last EXP.
+The `=>' symbol and its variations instruct how the record field will be
+handled. The most basic form assigns a BINDING to the field value obtained
+from applying FIELD-GETTER to RECORD which is then made available in the body.
 
-MODIFY-LIST appends the field obtained from FIELD-GETTER with EXP. Optionally,
-BINDING may be omitted."
-    ((_ record field-getter binding => exp)
+The basic form purposefully disallows omitting BINDING so that errors like
+forgetting to merge the existing value cannot happen; if this is desired, the
+value must be explicitly discarded (e.g. by doing `_ =>').
+
+More abstracted forms like `append=>' may also be used which automatically
+apply some operation to the field value."
     ((_ record
         field-getter binding => exp)
      (let ((binding (field-getter record)))
@@ -97,8 +101,9 @@ the record constructor."
 
 (define-syntax apply-mod
   (syntax-rules (=>)
-    "Returns a procedure that - when passed RECORD - will apply the FIELD
-modifications specified using CONSTRUCTOR as the record constructor.
+    "Returns a procedure that - when passed RECORD - will apply the
+modifications specified by each FIELD using CONSTRUCTOR as the record
+constructor.
 
 This form should be used when specifying the apply field for mods."
     ((_ constructor record => field ...)
