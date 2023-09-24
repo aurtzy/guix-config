@@ -20,11 +20,9 @@
 ;;; This module defines general utility procedures.
 
 (define-module (my-guix utils)
-  #:use-module (guix gexp)
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix config)
   #:use-module (oop goops)
-  #:use-module ((srfi srfi-1) #:select (not-pair?))
   #:export (search-files-path
             path-append
             path-append-my-home
