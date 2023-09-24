@@ -40,7 +40,9 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "061kpnb48lad8rr8v58xac33mwpbrixfbhn7d0xa63zpxg43bvsd"))))
+                "061kpnb48lad8rr8v58xac33mwpbrixfbhn7d0xa63zpxg43bvsd"))
+              (patches (search-my-patches
+                        "syncplay-fix-typeerror.patch"))))
     (build-system python-build-system)
     (arguments
      (list #:imported-modules `(,@%python-build-system-modules
