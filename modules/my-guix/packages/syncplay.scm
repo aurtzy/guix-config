@@ -7,10 +7,10 @@
 ;;; Software Foundation; either version 3 of the License, or (at your option)
 ;;; any later version.
 ;;;
-;;; This program is distributed in the hope that it will be useful, but WITHOUT
-;;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-;;; FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-;;; more details.
+;;; This program is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+;;; or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+;;; for more details.
 ;;;
 ;;; You should have received a copy of the GNU General Public License along
 ;;; with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -19,13 +19,14 @@
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix licenses)
+  #:use-module (guix build-system python)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages qt)
+  #:use-module (my-guix utils))
 
 (define-public syncplay
   (package
@@ -40,34 +41,34 @@
               (sha256
                (base32
                 "061kpnb48lad8rr8v58xac33mwpbrixfbhn7d0xa63zpxg43bvsd"))))
-    (build-system gnu-build-system)
+    (build-system python-build-system)
     (arguments
-     (list #:imported-modules `(,@%gnu-build-system-modules
+     (list #:imported-modules `(,@%python-build-system-modules
                                 (guix build qt-utils)
                                 (guix build utils))
-           #:modules '((guix build gnu-build-system)
+           #:modules '((guix build python-build-system)
                        (guix build qt-utils)
                        (guix build utils))
-           #:make-flags #~`("DESTDIR="
-                            ,(string-append "PREFIX="
-                                            (assoc-ref %outputs "out")))
            #:phases #~(modify-phases %standard-phases
-                        (delete 'configure)
-                        (delete 'build)
                         (delete 'check)
+                        (replace 'install
+                          (lambda _
+                            (invoke "make" "install" "DESTDIR="
+                                    (string-append "PREFIX="
+                                                   (assoc-ref %outputs "out")))))
                         (add-after 'install 'wrap-qt
                           (lambda* (#:key inputs #:allow-other-keys)
                             (wrap-qt-program "syncplay"
                                              #:output #$output
-                                             #:inputs inputs))))))
+                                             #:inputs inputs
+                                             #:qt-major-version "6"))))))
+    (native-inputs (list python-pyside-6))
     (inputs (list bash-minimal
-                  qtwayland-5))
-    (propagated-inputs (list python
-                             python-service-identity
-                             python-twisted
-                             python-pyside-2
-                             python-certifi
-                             python-idna))
+                  python-certifi
+                  python-idna
+                  python-service-identity
+                  python-twisted
+                  qtwayland))
     (home-page "https://syncplay.pl")
     (synopsis "Client/server to synchronize media playback on many computers")
     (description
@@ -77,4 +78,4 @@ playback or skips to a position in the video, this is replicated across all
 media players connected to the same server and in the same \"room\" (viewing
 session).  A built-in text chat for discussing the synced media is also
 included for convenience.")
-    (license asl2.0)))
+    (license license:asl2.0)))
