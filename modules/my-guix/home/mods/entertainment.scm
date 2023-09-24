@@ -41,41 +41,57 @@
                      sdl)
 
 (define game-managers-mod
-  (mod
-    (name 'game-managers-mod)
-    (dependencies
-     (list flatpak-mod))
-    (apply
-     (apply-mod home-environment
-       (packages
-        home-environment-packages
-        append=>
-        (list sdl2))
-       (services
-        home-environment-user-services
-        append=>
-        (list (simple-service name
-                              home-impure-symlinks-service-type
-                              `((".local/share/flatpak/overrides"
-                                 ,(search-files-path
-                                   "impure/lutris")
-                                 "net.lutris.Lutris")
-                                (".var/app/net.lutris.Lutris/data/Mindustry"
-                                 ,(string-append
-                                   (getenv "HOME")
-                                   "/areas/games/mindustry")
-                                 "saves"
-                                 "settings.bin")
-                                (".local/share/flatpak/overrides"
-                                 ,(search-files-path
-                                   "impure/steam")
-                                 "com.valvesoftware.Steam")))
-              (simple-service name
-                              home-flatpak-profile-service-type
-                              '((flathub "net.lutris.Lutris")
-                                (flathub "net.davidotek.pupgui2")
-                                (flathub "com.valvesoftware.Steam")
-                                (flathub "com.github.Matoking.protontricks")))))))))
+  (let* ((steam-dest ".var/app/com.valvesoftware.Steam")
+         (terraria-dest (path-append steam-dest
+                                     ".local/share/Terraria"))
+         (tmodloader-dest (path-append terraria-dest
+                                       "tModLoader"))
+
+         (terraria-src (path-append-my-home "areas/games/terraria"))
+         (tmodloader-src (path-append terraria-src "tmodloader")))
+    (mod
+      (name 'game-managers-mod)
+      (dependencies
+       (list flatpak-mod))
+      (apply
+       (apply-mod home-environment
+         (packages
+          home-environment-packages
+          append=>
+          (list sdl2))
+         (services
+          home-environment-user-services
+          append=>
+          (list (simple-service name
+                                home-impure-symlinks-service-type
+                                `( ;; Flatpak overrides
+                                  (".local/share/flatpak/overrides"
+                                   ,(path-append-my-files "impure/lutris")
+                                   "net.lutris.Lutris")
+                                  (".local/share/flatpak/overrides"
+                                   ,(path-append-my-files "impure/steam")
+                                   "com.valvesoftware.Steam")
+                                  ;; Mindustry
+                                  (".var/app/net.lutris.Lutris/data/Mindustry"
+                                   ,(path-append-my-home
+                                     "areas/games/mindustry")
+                                   "saves"
+                                   "settings.bin")
+                                  ;; Terraria
+                                  (,(path-append tmodloader-dest
+                                                 "Players/Backups")
+                                   ,(path-append tmodloader-src
+                                                 "backups/players"))
+                                  (,(path-append tmodloader-dest
+                                                 "Worlds/Backups")
+                                   ,(path-append tmodloader-src
+                                                 "backups/worlds"))))
+                (simple-service name
+                                home-flatpak-profile-service-type
+                                '((flathub "net.lutris.Lutris")
+                                  (flathub "net.davidotek.pupgui2")
+                                  (flathub "com.valvesoftware.Steam")
+                                  (flathub "com.github.Matoking.protontricks"))))))))))
 
 (define minecraft-mod
   (mod
