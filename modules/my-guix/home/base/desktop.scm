@@ -91,7 +91,7 @@
                     (bashrc
                      ;; Import function definitions in bashrc file
                      (list (local-file
-                            (search-files-path "bash/bashrc")
+                            (path-append-my-files "bash/bashrc")
                             "bashrc")))))
           (service home-flatpak-service-type)
           (service home-impure-symlinks-service-type)))))

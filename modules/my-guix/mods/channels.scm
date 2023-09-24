@@ -36,7 +36,7 @@
                               guix-service-type
                               (guix-extension
                                (authorized-keys
-                                (list (local-file (search-files-path
+                                (list (local-file (path-append-my-files
                                                    "guix/nonguix.pub"))))
                                (substitute-urls
                                 '("https://substitutes.nonguix.org"))))))))))

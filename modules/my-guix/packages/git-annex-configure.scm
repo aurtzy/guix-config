@@ -32,4 +32,4 @@
 
 (define-public git-annex-configure
   ;; Use local copy of git-annex-configure
-  (primitive-load (search-files-path "git-annex-configure/guix.scm")))
+  (primitive-load (path-append-my-files "git-annex-configure/guix.scm")))

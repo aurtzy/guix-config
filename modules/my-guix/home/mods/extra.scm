@@ -59,13 +59,10 @@
               (simple-service name
                               home-impure-symlinks-service-type
                               `((".local/share/flatpak/overrides"
-                                 ,(search-files-path
-                                   "impure/akregator")
+                                 ,(path-append-my-files "impure/akregator")
                                  "org.kde.akregator")
                                 (".var/app/org.kde.akregator/data/akregator/data"
-                                 ,(string-append
-                                   (getenv "HOME")
-                                   "/areas/feeds")
+                                 ,(path-append-my-home "areas/feeds")
                                  "feeds.opml")))))))))
 
 (define creative-mod
@@ -106,8 +103,7 @@
         (list (simple-service name
                               home-impure-symlinks-service-type
                               `((".local/share/flatpak/overrides"
-                                 ,(search-files-path
-                                   "impure/soundux")
+                                 ,(path-append-my-files "impure/soundux")
                                  "io.github.Soundux")))
               (simple-service name
                               home-flatpak-profile-service-type
@@ -128,7 +124,7 @@
         (list (simple-service name
                               home-impure-symlinks-service-type
                               `((""
-                                 ,(search-files-path)
+                                 ,(path-append-my-files)
                                  "manifests")))))))))
 
 (define extra-mods

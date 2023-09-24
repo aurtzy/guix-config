@@ -43,8 +43,7 @@
         (list (simple-service name
                               home-impure-symlinks-service-type
                               `((".config/easyeffects/input"
-                                 ,(search-files-path
-                                   "impure/pipewire")
+                                 ,(path-append-my-files "impure/pipewire")
                                  "main-mic.json")))
               (simple-service name
                               home-flatpak-profile-service-type

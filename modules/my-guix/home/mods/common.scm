@@ -86,8 +86,7 @@
         (list (simple-service name
                               home-impure-symlinks-service-type
                               `((".config/emacs"
-                                 ,(search-files-path
-                                   "impure/emacs")
+                                 ,(path-append-my-files "impure/emacs")
                                  "init.el")))
               (simple-service name
                               home-environment-variables-service-type
@@ -140,12 +139,10 @@
                                  ;; all flatpaks; allow access to system
                                  ;; icons
                                  (".local/share/flatpak/overrides"
-                                  ,(search-files-path
-                                    "impure/flatpak")
+                                  ,(path-append-my-files "impure/flatpak")
                                   "global")
                                  (".local/share/flatpak/overrides"
-                                  ,(search-files-path
-                                    "impure/flatpak")
+                                  ,(path-append-my-files "impure/flatpak")
                                   "com.github.tchx84.Flatseal"))))
               (modify-services services
                 (home-flatpak-service-type
@@ -185,12 +182,10 @@
                                  "favicons.sqlite"
                                  "search.json.mozlz4")
                                 (".local/share/flatpak/overrides"
-                                 ,(search-files-path
-                                   "impure/brave")
+                                 ,(path-append-my-files "impure/brave")
                                  "com.brave.Browser")
                                 (".local/share/flatpak/overrides"
-                                 ,(search-files-path
-                                   "impure/firefox")
+                                 ,(path-append-my-files "impure/firefox")
                                  "org.mozilla.firefox")))
               (simple-service name
                               home-flatpak-profile-service-type
