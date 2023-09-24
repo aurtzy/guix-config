@@ -180,6 +180,8 @@ even if both SOURCE and TARGET lead to the same file."
              (backup-file target))
            (format #t (G_ "Symlinking ~a -> ~a...")
                    (target-file target) source)
+           (unless (file-exists? source)
+             (format #t (G_ "Warning: ~a does not exist.") source))
            (mkdir-p (dirname (target-file target)))
            (symlink source (target-file target))
            (display (G_ " done\n")))
