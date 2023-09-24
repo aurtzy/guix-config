@@ -66,7 +66,7 @@
               emacs-embark
               ;; editing tweaks
               emacs-unfill
-              emacs-visual-fill-column ; TODO DEPRECATED
+              emacs-visual-fill-column ;TODO DEPRECATED
               emacs-adaptive-wrap
               ;; git
               emacs-magit
