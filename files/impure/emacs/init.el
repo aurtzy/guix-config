@@ -36,6 +36,9 @@
 
 ;;; SETTINGS
 
+(setq user-full-name "aurtzy"
+      user-mail-address "aurtzy@gmail.com")
+
 ;;;; STATE LOCATION
 
 (defconst state-dir
@@ -48,6 +51,10 @@
   (setq custom-file (locate-user-emacs-file "custom.el"))
   :config
   (load custom-file 'noerror 'nomessage))
+
+;;;; ENVIRONMENT VARIABLES
+
+(setenv "ssh_vm" "/ssh:vboxuser@127.0.0.1#2222")
 
 ;;; CONFIGURATIONS
 
@@ -67,6 +74,12 @@
 (use-package emacs
   :custom
   (load-prefer-newer t))
+
+;;;; ENABLE REMOTE dir-locals.el
+
+(use-package emacs
+  :custom
+  (enable-remote-dir-locals t))
 
 ;;;; GUI TWEAKS
 
@@ -573,7 +586,8 @@ simple rename to fit the keybind it will be mapped to."
 (use-package project
   :preface
   (defcustom project-root-markers
-    '("Makefile" ".project-root")
+    '(".project-root"
+      "main.py")
     "Files or directories that indicate the root of a project."
     :type '(repeat string)
     :group 'project)
