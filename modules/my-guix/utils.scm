@@ -23,41 +23,13 @@
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix config)
   #:use-module (oop goops)
-  #:export (search-files-path
-            path-append
+  #:export (path-append
             path-append-my-home
             path-append-my-files
             search-my-patches
             build-path-augmentation
             sanitizer))
 
-(define (search-files-path . relpaths)
-  (let ((path (string-join
-               (cons* $my-guix-config
-                      "files"
-                      relpaths)
-               "/")))
-    (if (file-exists? path)
-        (canonicalize-path path)
-        ;; TODO I'd prefer to use this instead of the print statement below,
-        ;; but there are cases where I may want to test other things without
-        ;; regard for the warning, except that when there's no exception
-        ;; handler - like when using the repl (maybe it can be enabled?) - it
-        ;; becomes less useful.
-        ;;
-        ;; (raise-continuable
-        ;;  (make-exception
-        ;;   (make-warning)
-        ;;   (make-exception-with-message "~a: ~s")
-        ;;   (make-exception-with-irritants
-        ;;    (list "File not found in files path"
-        ;;          file))))
-        (begin
-          (format (current-error-port)
-                  "WARNING: ~a: ~s\n"
-                  "File not found in files path"
-                  file)
-          path))))
 (define (path-append . paths)
   (string-join paths "/"))
 
