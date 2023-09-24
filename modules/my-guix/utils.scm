@@ -29,6 +29,7 @@
             path-append
             path-append-my-home
             path-append-my-files
+            search-my-patches
             build-path-augmentation
             sanitizer))
 
@@ -71,6 +72,17 @@
          "files"
          paths))
 
+(define (search-my-patches . names)
+  (map (lambda (name)
+         (let ((path (path-append-my-files "patches" name)))
+           (unless (file-exists? path)
+             (raise-continuable
+              (make-exception
+               (make-warning)
+               (make-exception-with-message
+                (format #f "Custom patch does not exist: ~s" path)))))
+           path))
+       names))
 
 (define (build-path-augmentation var path . paths)
   "Builds an sh expression that augments the environment variable VAR to
