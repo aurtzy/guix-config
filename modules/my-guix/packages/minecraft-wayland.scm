@@ -128,19 +128,17 @@
               (base32
                "1zlbc4jyxgpll8vnaq382fa92r98y84prcdk15bqi6fygb2rd3wq"))
              (patches
-              (map
-               (lambda (file)
-                 (search-files-path (string-append "patches/" file)))
-               '(;; https://github.com/Admicos/minecraft-wayland/tree/bdc3c0d192097459eb4e72b26c8267f82266e951
-                 "0003-Don-t-crash-on-calls-to-focus-or-icon.patch"
-                 "0004-wayland-fix-broken-opengl-screenshots-on-mutter.patch"
-                 "0005-Add-warning-about-being-an-unofficial-patch.patch"
-                 ;; "0006-Don-t-crash-getting-scancode-name.patch" ;; BROKEN
-                 "0007-Platform-Prefer-Wayland-over-X11.patch"
-                 
-                 ;; https://github.com/Admicos/minecraft-wayland/pull/29
-                 "0008-libdecor-proper-decorations-with-title-and-window-bu.patch"
-                 "0009-Add-libdecoration-marker-to-stderr-warning.patch")))))
+              (search-my-patches
+               ;; https://github.com/Admicos/minecraft-wayland/tree/bdc3c0d192097459eb4e72b26c8267f82266e951
+               "0003-Don-t-crash-on-calls-to-focus-or-icon.patch"
+               "0004-wayland-fix-broken-opengl-screenshots-on-mutter.patch"
+               "0005-Add-warning-about-being-an-unofficial-patch.patch"
+               ;; "0006-Don-t-crash-getting-scancode-name.patch" ;; BROKEN
+               "0007-Platform-Prefer-Wayland-over-X11.patch"
+                                 
+               ;; https://github.com/Admicos/minecraft-wayland/pull/29
+               "0008-libdecor-proper-decorations-with-title-and-window-bu.patch"
+               "0009-Add-libdecoration-marker-to-stderr-warning.patch"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f ;; no test target
                  #:configure-flags
