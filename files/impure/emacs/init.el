@@ -587,6 +587,7 @@ simple rename to fit the keybind it will be mapped to."
   :preface
   (defcustom project-root-markers
     '(".project-root"
+      "manifest.scm"
       "main.py")
     "Files or directories that indicate the root of a project."
     :type '(repeat string)

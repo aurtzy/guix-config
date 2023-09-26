@@ -55,7 +55,7 @@
        (packages
         home-environment-packages
         append=>
-        (list emacs-next-pgtk          ;emacs with wayland support
+        (list emacs-pgtk
               ;; meow modal editing
               emacs-meow
               ;; completion bundle
