@@ -40,15 +40,20 @@
 (use-package-modules minetest
                      sdl)
 
-(define game-managers-mod
-  (let* ((steam-dest ".var/app/com.valvesoftware.Steam")
-         (terraria-dest (path-append steam-dest
-                                     ".local/share/Terraria"))
-         (tmodloader-dest (path-append terraria-dest
-                                       "tModLoader"))
+(define games-src
+  (path-append-my-home "areas/games"))
 
-         (terraria-src (path-append-my-home "areas/games/terraria"))
-         (tmodloader-src (path-append terraria-src "tmodloader")))
+;; TODO Source paths for steam need to go through data store instead of
+;; symlinks in home currently due to steam flatpak currently not liking
+;; symlinks.  This is not optimal, so readjust whenever this is fixed.
+;;
+;; See: https://github.com/flatpak/flatpak/issues/1971
+(define games-src-steam
+  (path-append-my-home "data/store/areas/games"))
+
+(define game-managers-mod
+  (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
+         (steam-dest ".var/app/com.valvesoftware.Steam"))
     (mod
       (name 'game-managers-mod)
       (dependencies
@@ -72,20 +77,24 @@
                                    ,(path-append-my-files "impure/steam")
                                    "com.valvesoftware.Steam")
                                   ;; Mindustry
-                                  (".var/app/net.lutris.Lutris/data/Mindustry"
-                                   ,(path-append-my-home
-                                     "areas/games/mindustry")
+                                  (,(path-append lutris-dest "Mindustry")
+                                   ,(path-append games-src "mindustry/files")
                                    "saves"
                                    "settings.bin")
-                                  ;; Terraria
-                                  (,(path-append tmodloader-dest
-                                                 "Players/Backups")
-                                   ,(path-append tmodloader-src
-                                                 "backups/players"))
-                                  (,(path-append tmodloader-dest
-                                                 "Worlds/Backups")
-                                   ,(path-append tmodloader-src
-                                                 "backups/worlds"))))
+                                  ;; Factorio
+                                  (,steam-dest
+                                   ,(path-append games-src-steam
+                                                 "factorio/files")
+                                   ".factorio")
+                                  ;; tModLoader
+                                  (,(path-append steam-dest
+                                                 ".local/share/Terraria"
+                                                 "tModLoader")
+                                   ,(path-append games-src-steam
+                                                 "tmodloader/files")
+                                   "Players/Backups"
+                                   "Worlds/Backups"
+                                   "Captures")))
                 (simple-service name
                                 home-flatpak-profile-service-type
                                 '((flathub "net.lutris.Lutris")
