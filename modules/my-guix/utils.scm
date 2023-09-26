@@ -1,4 +1,4 @@
-;;; Copyright (c) 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
