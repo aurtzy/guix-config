@@ -26,12 +26,6 @@
 ;; TODO: would like comment highlighting functionality; e.g. TODO, FIXME,
 ;; etc. being highlighted assigned colors.
 
-;; TODO: figure out issue with use-package :functions and :defines being weird
-;;
-;; are one of these issues related?
-;; https://github.com/jwiegley/use-package/issues/792
-;; https://github.com/jwiegley/use-package/issues/1032
-
 ;;; Code:
 
 ;;; SETTINGS
@@ -52,15 +46,15 @@
   :config
   (load custom-file 'noerror 'nomessage))
 
-;;;; ENVIRONMENT VARIABLES
-
-(setenv "ssh_vm" "/ssh:vboxuser@127.0.0.1#2222")
-
 ;;; CONFIGURATIONS
 
 ;;;; DASHBOARD
 
 (use-package dashboard
+  :preface
+  (declare-function dashboard-setup-startup-hook "dashboard")
+  :custom
+  (dashboard-set-init-info nil)
   :config
   (dashboard-setup-startup-hook))
 
@@ -100,6 +94,7 @@
   (frame-resize-pixelwise t)
   (use-dialog-box nil)
   :config
+  (add-to-list 'default-frame-alist '(font . "Hack-11"))
   ;; TODO menu-bar was funky with frame transparency at the time of
   ;; writing so menu-bar has been disabled; try re-enabling in future
   (add-to-list 'default-frame-alist '(alpha-background . 95))
@@ -110,11 +105,9 @@
 
 ;;;; UNIQUE FILENAME IDENTIFIERS
 
-(use-package emacs
-  :config
-  (use-package uniquify
-    :custom
-    (uniquify-buffer-name-style 'post-forward)))
+(use-package uniquify
+  :custom
+  (uniquify-buffer-name-style 'post-forward))
 
 ;;;; SESSION STATE
 
@@ -141,8 +134,10 @@
 (use-package emacs
   ;; Make point semi-centered with deadzone
   :custom
+  ;; TODO set buffer-local variables for modes that don't like the margin,
+  ;; e.g. eshell
   (scroll-margin 5)
-  (scroll-conservatively 5)
+  (scroll-conservatively 1000)
   ;; Configure scrollbar/mouse scrolling
   ;;
   ;; TODO check out mwheel.el and experiment with
@@ -335,24 +330,25 @@ simple rename to fit the keybind it will be mapped to."
 
 ;;;; EDITING TWEAKS
 
-(use-package emacs
-  :init
-  (setq-default fill-column 80)
+(use-package autorevert
   :custom
   (global-auto-revert-non-file-buffers t)
   :config
-  (global-display-fill-column-indicator-mode 1)
-  (global-auto-revert-mode 1))
+  (global-auto-revert-mode 1)
+  (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode))
+
+(use-package emacs
+  :init
+  (setq-default fill-column 80)
+  :config
+  (global-display-fill-column-indicator-mode 1))
 
 (use-package unfill)
 
-(use-package visual-fill-column
-  :disabled
-  :config
-  (global-visual-fill-column-mode 1))
-
 (use-package adaptive-wrap
-  :hook (visual-line-mode . adaptive-wrap-prefix-mode))
+  :hook (visual-line-mode . adaptive-wrap-prefix-mode)
+  :custom
+  (adaptive-wrap-extra-indent 1))
 
 ;; TODO this is cool
 ;; See: https://vernon-grant.com/discovering-emacs/using-whitespace-mode/
@@ -381,7 +377,9 @@ simple rename to fit the keybind it will be mapped to."
 ;;;;; VERTICAL INTERACTIVE COMPLETION
 
 (use-package vertico
+  :defines (crm-separator)
   :preface
+  (declare-function vertico-mode "vertico")
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
   (defun crm-indicator (args)
@@ -403,6 +401,16 @@ simple rename to fit the keybind it will be mapped to."
 ;;;;; HANDY `completing-read' COMMANDS
 
 (use-package consult
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+  :preface
+  (declare-function consult--customize-put "consult")
+  :defines (xref-show-xrefs-function
+            xref-show-definitions-function)
+  :functions (consult-register-format
+              consult-register-window
+              consult-xref)
   :bind (;; C-c bindings (mode-specific-map)
          ("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
@@ -469,11 +477,6 @@ simple rename to fit the keybind it will be mapped to."
          ("M-s" . consult-history)
          ;; orig. previous-matching-history-element
          ("M-r" . consult-history))
-  
-  ;; Enable automatic preview at point in the *Completions* buffer. This is
-  ;; relevant when you use the default completion UI.
-  :hook (completion-list-mode . consult-preview-at-point-mode)
-
   ;; The :init configuration is always executed (Not lazy)
   :init
 
@@ -517,22 +520,24 @@ simple rename to fit the keybind it will be mapped to."
 
   ;; By default `consult-project-function' uses `project-root' from project.el.
   ;; Optionally configure a different project root function.
-  ;;;; 1. project.el (the default)
+;;;; 1. project.el (the default)
   ;; (setq consult-project-function #'consult--default-project--function)
-  ;;;; 2. vc.el (vc-root-dir)
+;;;; 2. vc.el (vc-root-dir)
   ;; (setq consult-project-function (lambda (_) (vc-root-dir)))
-  ;;;; 3. locate-dominating-file
+;;;; 3. locate-dominating-file
   ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
-  ;;;; 4. projectile.el (projectile-project-root)
+;;;; 4. projectile.el (projectile-project-root)
   ;; (autoload 'projectile-project-root "projectile")
   ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
-  ;;;; 5. No project support
+;;;; 5. No project support
   ;; (setq consult-project-function nil)
-)
+  )
 
 ;;;;; RICH ANNOTATIONS
 
 (use-package marginalia
+  :preface
+  (declare-function marginalia-mode "marginalia")
   :bind (:map minibuffer-local-map ("M-A" . marginalia-cycle))
   :init
   (marginalia-mode 1))
@@ -570,6 +575,14 @@ simple rename to fit the keybind it will be mapped to."
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 ;;;; PROGRAMMING
+
+;;;;; DIRENV
+
+(use-package envrc
+  :preface
+  (declare-function envrc-global-mode "envrc")
+  :config
+  (envrc-global-mode t))
 
 ;;;;; PROJECT SUPPORT
 ;;;;;
@@ -629,6 +642,7 @@ simple rename to fit the keybind it will be mapped to."
 (use-package ccls
   :after eglot
   :when (package-installed-p 'ccls)
+  :defines ccls-sem-highlight-method
   :custom
   (ccls-initialization-options '(:index
                                  (:comments 2)
@@ -684,42 +698,42 @@ simple rename to fit the keybind it will be mapped to."
   (defun org-export-output-file-name* (fun extension &optional subtreep pub-dir)
     (let ((pub-dir (if pub-dir
                        pub-dir
-                     "~/Documents/exports")))
+                     "~/Documents/org")))
       (make-directory pub-dir t)
       (funcall fun extension subtreep pub-dir)))
   :commands org-mode
   :bind (("C-c C-x <backtab>" . org-clock-out))
   :custom
   (org-cycle-inline-images-display t)
+  (org-export-in-background t)
   ;; TODO add a cleaner function that deletes files after some time limit
   (org-preview-latex-image-directory "~/.cache/emacs/ltximg")
   :init
-  (define-auto-insert
-    '(org-mode . "Org file")
-    '(nil
-      "#+title: " _ \n
-      "#+options: author:nil date:nil" \n
-      "#+author:" \n
-      "#+date:" \n
-      "#+options: toc:nil timestamp:nil" \n
-      ;; TODO: Find a replacement for this (or throw out): it causes latex
-      ;; previews to have way too much whitespace, but previously used to
-      ;; fix colored links
-      ;;
-      ;; "#+latex_header: \\hypersetup{colorlinks=true}" \n
-      \n
-      \n))
+  (let ((export-dir "~/Documents/org"))
+    (make-directory export-dir t)
+    (define-auto-insert
+      '(org-mode . "Org file")
+      `(nil
+        "#+title: " _ \n
+        "#+author:" \n
+        "#+date:" \n
+        "#+options: author:nil date:nil toc:nil tags:nil" \n
+        "#+export_file_name: " ,export-dir "/export" \n
+        "#+latex_header: \\usepackage{libertine}" \n
+        "#+latex_header: \\renewcommand*\\oldstylenums[1]{{\\fontfamily{fxlj}\\selectfont #1}}" \n
+        "#+latex_header: \\usepackage{lmodern}" \n
+        "#+options: timestamp:nil" \n
+        \n
+        \n)))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
      (python . t)
      (C . t)))
   (plist-put org-format-latex-options :scale 2.0)
-  (advice-add 'org-export-output-file-name
-              :around #'org-export-output-file-name*)
+  ;; (advice-add 'org-export-output-file-name
+  ;;             :around #'org-export-output-file-name*)
   (setcdr (assoc 'plain-list-item org-blank-before-new-entry) nil)
-  ;; TODO this doesn't work.
-  ;; (add-to-list 'org-latex-logfiles-extensions "600pk")
-  )
+  (add-to-list 'org-latex-default-packages-alist '("hidelinks" "hyperref" nil)))
 
 ;;; init.el ends here

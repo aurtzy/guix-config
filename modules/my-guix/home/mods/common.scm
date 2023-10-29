@@ -57,6 +57,9 @@
         home-environment-packages
         append=>
         (list emacs-pgtk
+              font-hack
+              ;; direnv
+              emacs-envrc
               ;; meow modal editing
               emacs-meow
               ;; completion bundle
@@ -67,7 +70,6 @@
               emacs-embark
               ;; editing tweaks
               emacs-unfill
-              emacs-visual-fill-column ;TODO DEPRECATED
               emacs-adaptive-wrap
               ;; git
               emacs-magit
