@@ -51,13 +51,35 @@
 (define games-src-steam
   (path-append-my-home "data/store/areas/games"))
 
+;; TODO probably better to put this mod elsewhere since it's more of a general
+;; tool than specifically for entertainment
+(define bottles-mod
+  (mod
+    (name 'bottles-mod)
+    (dependencies
+     (list flatpak-mod))
+    (apply
+     (apply-mod home-environment
+       (services
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-flatpak-profile-service-type
+                              '((flathub "com.usebottles.bottles")))
+              (simple-service name
+                              home-impure-symlinks-service-type
+                              `((".local/share/flatpak/overrides"
+                                 ,(path-append-my-files "impure/bottles")
+                                 "com.usebottles.bottles")))))))))
+
 (define game-managers-mod
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
          (steam-dest ".var/app/com.valvesoftware.Steam"))
     (mod
       (name 'game-managers-mod)
       (dependencies
-       (list flatpak-mod))
+       (list flatpak-mod
+             bottles-mod))
       (apply
        (apply-mod home-environment
          (packages
