@@ -86,13 +86,15 @@
          (lambda (remote)
            (let ((remote-name (symbol->string (car remote)))
                  (remote-url (cdr remote)))
-             ;; TODO fix case where remote does not exist, causing the
-             ;; following command to fail
-             (invoke flatpak
-                     "--user"
-                     "remote-delete"
-                     "--force"
-                     remote-name)
+             (call-with-port (%make-void-port "w")
+               (lambda (port)
+                 (with-error-to-port port
+                   (lambda ()
+                     (system* flatpak
+                              "--user"
+                              "remote-delete"
+                              "--force"
+                              remote-name)))))
              (invoke flatpak
                      "--user"
                      "remote-add"
