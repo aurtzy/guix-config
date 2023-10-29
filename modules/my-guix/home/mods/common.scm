@@ -34,6 +34,7 @@
   #:export (emacs-base-mod
             emacs-org-mod
             emacs-mod
+            common-fonts-mod
             flatpak-mod
             browsers-mod
             password-management-mod
@@ -43,7 +44,7 @@
             common-mods))
 
 (use-package-modules emacs emacs-xyz guile
-                     freedesktop
+                     fonts freedesktop
                      kde-plasma kde-frameworks
                      video music)
 
@@ -109,6 +110,17 @@
     (dependencies
      (list emacs-base-mod
            emacs-org-mod))))
+
+(define common-fonts-mod
+  (mod
+    (name 'common-fonts-mod)
+    (apply
+     (apply-mod home-environment
+       (packages
+        home-environment-packages
+        append=>
+        (list font-google-noto
+              font-wqy-zenhei))))))
 
 (define flatpak-mod
   (mod
@@ -243,6 +255,7 @@
 
 (define common-mods
   (list emacs-mod
+        common-fonts-mod
         flatpak-mod
         browsers-mod
         password-management-mod
