@@ -1,4 +1,5 @@
 (use-modules (gnu home)
+             (gnu packages minetest)
              (gnu services)
              (my-guix mods)
              (my-guix home base foreign-desktop)
@@ -15,29 +16,42 @@
              (guix utils))
 
 
-(apply-mods
- (let ((env base-foreign-desktop-home-environment))
-   (home-environment
-    (inherit env)
-    (packages
-     (cons* keyboard-center
-            (home-environment-packages env)))
-    (services
-     (cons* (simple-service 'home-impure-symlinks-data
-                            home-impure-symlinks-service-type
-                            '((""
-                               "data/store"
-                               "workshop"
-                               "areas")
-                              (""
-                               "/mnt/storage/data/store"
-                               "library"
-                               "attic")))
-            (home-environment-user-services env)))))
- (append common-mods
-         extra-mods
-         entertainment-mods
-         (list plasma-mod
-               pipewire-mod
-               web-server-mod
-               nonguix-channel-mod)))
+(define environment
+  (apply-mods
+   (let ((env base-foreign-desktop-home-environment))
+     (home-environment
+      (inherit env)
+      (packages
+       (cons* keyboard-center
+              (home-environment-packages env)))
+      (services
+       (cons* (simple-service 'home-impure-symlinks-data
+                              home-impure-symlinks-service-type
+                              '((""
+                                 "data/store"
+                                 "workshop"
+                                 "areas")
+                                (""
+                                 "/mnt/storage/data/store"
+                                 "library"
+                                 "attic")))
+              (home-environment-user-services env)))))
+   (append common-mods
+           extra-mods
+           entertainment-mods
+           (list plasma-mod
+                 pipewire-mod
+                 web-server-mod
+                 nonguix-channel-mod))))
+
+;; Use flatpak instead of minetest-mod since foreign system is
+;; not set up to use NVIDIA proprietary driver
+(home-environment
+ (inherit environment)
+ (packages
+  (delq minetest (home-environment-packages environment)))
+ (services
+  (cons* (simple-service 'home-flatpak-minetest
+                   home-flatpak-profile-service-type
+                   '((flathub "net.minetest.Minetest")))
+         (home-environment-user-services environment))))
