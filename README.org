@@ -159,10 +159,16 @@ environment (assuming that Flathub is already configured as shown above):
                     (flathub "com.brave.Browser")))
 #+end_src
 
-Due to complications with utilizing Flatpak's command-line interface for this
-service, the service may have to be bootstrapped by making sure that the
-Flatpak remotes have been manually configured (as dummy values or otherwise)
-before using the service.
+Note that on foreign systems, the Guix Flatpak package will fail to properly
+run if CA certificates cannot be found, which can be a problem for first-time
+reconfigures where certificates for Guix have not been set up yet (notably
+=SSL_CERT_FILE=).  However, as long as the relevant variable and package(s)
+are specified in the configuration, they will still be applied even if Flatpak
+fails to run, so subsequent reconfigures should work as intended after
+reloading the environment.
+
+Guix System users should not have this problem since certificates should
+already be properly set up by the time a home reconfigure takes place.
 
 * A System from Scratch
 

@@ -69,10 +69,12 @@
   ;; TODO check if all packages use valid remote names before proceeding and
   ;; deduplicate
   ;; 
-  ;; TODO this service only works on foreign distros when the SSL_CERT_FILE
-  ;; env var is set properly, which requires at least one run beforehand for
-  ;; Guix Home to set it if handling outside. Can this env var be somehow
-  ;; included here (without hardcoding)?
+  ;; TODO This service depends on SSL_CERT_FILE pointing to the CA
+  ;; certificates file, which is not possible on foreign systems without an
+  ;; initial reconfigure.  This file is special in that it is dynamically
+  ;; generated rather than built as part of a package (see
+  ;; `ca-certificates-bundle' in (guix profiles)), so there does not seem to
+  ;; be a way to insert it into this g-exp.
   #~(unless #$(getenv "GUIX_FLATPAK_DISABLE")
       (let ((flatpak (string-append
                       #$(home-flatpak-configuration-flatpak config)
