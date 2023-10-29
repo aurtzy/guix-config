@@ -1,2 +1,2 @@
 [Context]
-filesystems=!home;~/Games;~/areas/games
+filesystems=!home;~/.guix-home;~/Games;~/areas/games;
