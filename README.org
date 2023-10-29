@@ -233,5 +233,6 @@ usable environment:
 That's it! The system is fully configured with the mods I've included.
 
 After sourcing environment variables, subsequent reconfigures can be done
-without [[file:guix-with-env.scm][guix-with-env.scm]] due my base configurations (see ~(my-guix base)~ and
-~(my-guix home base)~) including services that make the load paths persistent.
+without [[file:guix-with-env.scm][guix-with-env.scm]] due to my base configurations (see ~(my-guix base)~
+and ~(my-guix home base)~) including services that make the load paths
+persistent.
