@@ -16,14 +16,8 @@
         gptfdisk
         ;; cryptsetup
         cryptsetup
-        ;; freedesktop
-        xdg-desktop-portal
-        xdg-desktop-portal-gtk
         ;; xorg
         xset
-        ;; fonts
-        font-google-noto
-        font-wqy-zenhei
 
         %base-packages
       ))
