@@ -241,8 +241,8 @@ in the way."
                         home-service-type
                         impure-symlinks-file-entry)
                        (service-extension
-                       home-activation-service-type
-                       update-impure-symlinks-gexp)))
+                        home-activation-service-type
+                        update-impure-symlinks-gexp)))
                 (description "Provide an @code{update-impure-symlinks} script,
 which is similar to that provided by @code{symlink-manager} but allows for
 symlinks to files outside of the store, dubbed \"impure symlinks\".  This
