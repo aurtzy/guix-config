@@ -38,7 +38,8 @@
         ;; texlive-bin should be somewhere in the profile since it sets the
         ;; GUIX_TEXMF search path - texlive-scheme-basic provides this
         (list texlive-scheme-basic
+              texlive-libertine
+              texlive-beamer
               texlive-capt-of
               texlive-ulem
-              texlive-wrapfig
-              texlive-beamer))))))
+              texlive-wrapfig))))))
