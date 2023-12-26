@@ -62,7 +62,7 @@
 
                        ;; Exclude certain commands from history
                        ("HISTCONTROL" . "ignoreboth")
-                       ("HISTIGNORE" . "history*")
+                       ("HISTIGNORE" . "history:history *:exit:exit *")
 
                        ;; Explicitly set application data directory
                        ("XDG_DATA_HOME" . ,$xdg-data-home)
