@@ -1,3 +1,2 @@
 [Context]
-devices=dri
 filesystems=xdg-pictures/screenshots;~/.fonts:ro;~/areas/firefox;/run/current-system/profile/share/fonts:ro;~/.guix-home:ro
