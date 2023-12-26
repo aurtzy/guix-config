@@ -73,6 +73,8 @@
               emacs-adaptive-wrap
               ;; git
               emacs-magit
+              emacs-magit-annex
+              emacs-git-annex
               ;; guix/guile/scheme hacking
               guile-3.0
               emacs-guix
