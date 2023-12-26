@@ -58,84 +58,83 @@
     (license gpl3+)))
 
 (define-public keyboard-center
-  (package
-    (name "keyboard-center")
-    (version "1.0.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/zocker-160/keyboard-center/")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1lwf20whr8ic90gf826387vi5qkn83w5kyavb2q7rwjb8s74a9r1"))))
-    (build-system copy-build-system)
-    (arguments
-     `(#:modules ((guix build copy-build-system)
-                  (guix build qt-utils)
-                  (guix build utils))
-       #:imported-modules (,@%copy-build-system-modules
-                           (guix build qt-utils))
-       #:install-plan '(("src/"
-                         "/lib/keyboard-center/"
-                         #:include-regexp ("assets/"
-                                           "config/"
-                                           "devices/"
-                                           "gui/"
-                                           "lib/"
-                                           "main.py"
-                                           "mainUi.py"
-                                           "service.py"
-                                           "constants.py"))
-                        ("linux_packaging/assets/keyboard-center.sh"
-                         "/bin/keyboard-center")
-                        ("linux_packaging/60-keyboard-center.rules"
-                         "/lib/udev/rules.d/")
-                        ("linux_packaging/uinput-keyboard-center.conf"
-                         "/lib/modules-load.d/keyboard-center.conf")
-                        ("linux_packaging/assets/keyboard-center.png"
-                         "/share/icons/hicolor/512x512/apps/")
-                        ("linux_packaging/assets/keyboard-center.desktop"
-                         "/share/applications/"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'patch-script
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "linux_packaging/assets/keyboard-center.sh"
-                 (("/usr/lib") (string-append out "/lib")))
-               (chmod "linux_packaging/assets/keyboard-center.sh" #o777))))
-         (add-after 'install 'wrap-prog
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((input-libpath (lambda (path)
-                                     (string-append
-                                      (assoc-ref inputs path)
-                                      "/lib")))
-                    (out (assoc-ref outputs "out"))
-                    (eudev (input-libpath "eudev"))
-                    (hidapi (input-libpath "hidapi")))
-               (wrap-program (string-append out "/bin/keyboard-center")
-                 `("LD_LIBRARY_PATH" ":" = ,(list eudev
-                                                  hidapi)))
-               (wrap-qt-program "keyboard-center"
-                                #:output %output
-                                #:inputs inputs)))))))
-    (inputs
-     (list bash-minimal
-           eudev
-           hidapi
-           qtwayland-5))
-    (propagated-inputs
-     (list python
-           python-pyqt
-           breeze
-           python-uinput
-           python-ruamel.yaml
-           python-pyusb
-           python-inotify-simple
-           libnotify))
-    (synopsis "Application for mapping macro keys on Logitech keyboards")
-    (description "")
-    (home-page "https://github.com/zocker-160/keyboard-center")
-    (license gpl3)))
+  (let ((version "1.0.6")
+        (hash "0mb7kap4cwljdi4z1j580xbs5cldlaa2m037gdzak2vi33mv85f4"))
+   (package
+     (name "keyboard-center")
+     (version version)
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/zocker-160/keyboard-center/")
+                     (commit version)))
+               (file-name (git-file-name name version))
+               (sha256 (base32 hash))))
+     (build-system copy-build-system)
+     (arguments
+      `(#:modules ((guix build copy-build-system)
+                   (guix build qt-utils)
+                   (guix build utils))
+        #:imported-modules (,@%copy-build-system-modules
+                            (guix build qt-utils))
+        #:install-plan '(("src/"
+                          "/lib/keyboard-center/"
+                          #:include-regexp ("assets/"
+                                            "config/"
+                                            "devices/"
+                                            "gui/"
+                                            "lib/"
+                                            "main.py"
+                                            "mainUi.py"
+                                            "service.py"
+                                            "constants.py"))
+                         ("linux_packaging/assets/keyboard-center.sh"
+                          "/bin/keyboard-center")
+                         ("linux_packaging/60-keyboard-center.rules"
+                          "/lib/udev/rules.d/")
+                         ("linux_packaging/uinput-keyboard-center.conf"
+                          "/lib/modules-load.d/keyboard-center.conf")
+                         ("linux_packaging/assets/keyboard-center.png"
+                          "/share/icons/hicolor/512x512/apps/")
+                         ("linux_packaging/assets/keyboard-center.desktop"
+                          "/share/applications/"))
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'install 'patch-script
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (substitute* "linux_packaging/assets/keyboard-center.sh"
+                  (("/opt") (string-append out "/lib")))
+                (chmod "linux_packaging/assets/keyboard-center.sh" #o777))))
+          (add-after 'install 'wrap-prog
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((input-libpath (lambda (path)
+                                      (string-append
+                                       (assoc-ref inputs path)
+                                       "/lib")))
+                     (out (assoc-ref outputs "out"))
+                     (eudev (input-libpath "eudev"))
+                     (hidapi (input-libpath "hidapi")))
+                (wrap-program (string-append out "/bin/keyboard-center")
+                  `("LD_LIBRARY_PATH" ":" = ,(list eudev hidapi)))
+                (wrap-qt-program "keyboard-center"
+                                 #:output %output
+                                 #:inputs inputs)))))))
+     (inputs
+      (list bash-minimal
+            eudev
+            hidapi
+            qtwayland-5))
+     (propagated-inputs
+      (list python
+            python-pyqt
+            breeze
+            python-uinput
+            python-ruamel.yaml
+            python-pyusb
+            python-inotify-simple
+            libnotify))
+     (synopsis "Application for mapping macro keys on Logitech keyboards")
+     (description "")
+     (home-page "https://github.com/zocker-160/keyboard-center")
+     (license gpl3))))
