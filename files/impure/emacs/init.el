@@ -131,13 +131,22 @@
 
 ;;;; POINT CONTROL
 
+(make-variable-buffer-local 'scroll-margin)
+(make-variable-buffer-local 'scroll-conservatively)
+
 (use-package emacs
   ;; Make point semi-centered with deadzone
+  :preface
+  (defun remove-scroll-margin ()
+    (setq scroll-margin 0))
   :custom
-  ;; TODO set buffer-local variables for modes that don't like the margin,
-  ;; e.g. eshell
   (scroll-margin 5)
   (scroll-conservatively 1000)
+  :config
+  (add-hook 'shell-mode-hook
+            'remove-scroll-margin)
+  (add-hook 'eshell-mode-hook
+            'remove-scroll-margin)
   ;; Configure scrollbar/mouse scrolling
   ;;
   ;; TODO check out mwheel.el and experiment with
@@ -351,17 +360,22 @@ simple rename to fit the keybind it will be mapped to."
   (adaptive-wrap-extra-indent 1))
 
 ;; TODO this is cool
-;; See: https://vernon-grant.com/discovering-emacs/using-whitespace-mode/
+;; See: https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
 (use-package whitespace
-  :init
-  (setq-default whitespace-style
-                '(face
-                  spaces
-                  empty
-                  tabs
-                  trailing
-                  space-mark
-                  tab-mark))
+  :custom
+  (whitespace-style '(face
+                      spaces
+                      empty
+                      tabs
+                      trailing
+                      space-mark
+                      tab-mark))
+  (whitespace-global-modes '(not shell-mode
+                                 help-mode
+                                 magit-mode
+                                 magit-diff-mode
+                                 ibuffer-mode
+                                 dired-mode))
   :config
   ;; (global-whitespace-mode 1)
   )
@@ -629,9 +643,7 @@ simple rename to fit the keybind it will be mapped to."
   :init
   (add-hook 'python-mode-hook
             (lambda ()
-              (set-fill-column 79)))
-  :custom
-  (python-interpreter "python3"))
+              (set-fill-column 79))))
 
 ;;;;; C
 ;;;;;
@@ -695,14 +707,19 @@ simple rename to fit the keybind it will be mapped to."
 
 (use-package org
   :preface
-  (defun org-export-output-file-name* (fun extension &optional subtreep pub-dir)
-    (let ((pub-dir (if pub-dir
-                       pub-dir
-                     "~/Documents/org")))
-      (make-directory pub-dir t)
-      (funcall fun extension subtreep pub-dir)))
+  (defun org-export-to-pdf-cd
+      (&optional _ _ _ _ _)
+    "Change default directory to the canonicalized dirname of this buffer.
+
+Fixes issue with export to pdf failing when it's not
+canonicalized.  Needs more investigation and might be a good idea
+to report upstream.  TODO."
+    (cd (file-name-directory (file-truename (buffer-file-name)))))
   :commands org-mode
-  :bind (("C-c C-x <backtab>" . org-clock-out))
+  :bind (("C-c C-x <backtab>" . org-clock-out)
+         ("C-c l" . org-store-link)
+         ("C-c a" . org-agenda)
+         ("C-c c" . org-capture))
   :custom
   (org-cycle-inline-images-display t)
   (org-export-in-background t)
@@ -717,7 +734,8 @@ simple rename to fit the keybind it will be mapped to."
         "#+title: " _ \n
         "#+author:" \n
         "#+date:" \n
-        "#+options: author:nil date:nil toc:nil tags:nil" \n
+        "#+options: author:nil date:nil num:nil toc:nil tags:nil" \n
+        "#+startup: showall" \n
         "#+export_file_name: " ,export-dir "/export" \n
         "#+latex_header: \\usepackage{libertine}" \n
         "#+latex_header: \\renewcommand*\\oldstylenums[1]{{\\fontfamily{fxlj}\\selectfont #1}}" \n
@@ -731,9 +749,10 @@ simple rename to fit the keybind it will be mapped to."
      (python . t)
      (C . t)))
   (plist-put org-format-latex-options :scale 2.0)
-  ;; (advice-add 'org-export-output-file-name
-  ;;             :around #'org-export-output-file-name*)
+  (advice-add 'org-latex-export-to-pdf
+              :before #'org-export-to-pdf-cd)
   (setcdr (assoc 'plain-list-item org-blank-before-new-entry) nil)
   (add-to-list 'org-latex-default-packages-alist '("hidelinks" "hyperref" nil)))
 
 ;;; init.el ends here
+(put 'downcase-region 'disabled nil)
