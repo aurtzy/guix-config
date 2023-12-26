@@ -183,32 +183,41 @@
        (services
         home-environment-user-services
         append=>
-        (list (simple-service name
-                              home-impure-symlinks-service-type
-                              `(("Downloads/_tab-session-manager-backups"
-                                 ,(string-append
-                                   (getenv "HOME")
-                                   "/areas/firefox/extension-backups"
-                                   "/tab-session-manager-backups"))
-                                (".var/app/org.mozilla.firefox/.mozilla/firefox/profile.default"
-                                 ,(string-append
-                                   (getenv "HOME")
-                                   "/areas/firefox/profile")
-                                 "bookmarkbackups"
-                                 "favicons.sqlite"
-                                 "search.json.mozlz4")
-                                (".local/share/flatpak/overrides"
-                                 ,(path-append-my-files "impure/brave")
-                                 "com.brave.Browser")
-                                (".local/share/flatpak/overrides"
-                                 ,(path-append-my-files "impure/firefox")
-                                 "org.mozilla.firefox")))
-              (simple-service name
-                              home-flatpak-profile-service-type
-                              '((flathub "org.mozilla.firefox")
-                                (flathub
-                                 "com.github.micahflee.torbrowser-launcher")
-                                (flathub "com.brave.Browser")))))))))
+        (let ((firefox-profile
+               ".var/app/org.mozilla.firefox/.mozilla/firefox/profile.default"))
+          (list (simple-service name
+                                home-impure-symlinks-service-type
+                                `(("Downloads/_tab-session-manager-backups"
+                                   ,(path-append-my-home
+                                     "/areas/firefox/extension-backups"
+                                     "/tab-session-manager-backups"))
+                                  (,firefox-profile
+                                   ,(path-append-my-home
+                                     "/areas/firefox/profile")
+                                   "bookmarkbackups")
+                                  (".local/share/flatpak/overrides"
+                                   ,(path-append-my-files "impure/brave")
+                                   "com.brave.Browser")
+                                  (".local/share/flatpak/overrides"
+                                   ,(path-append-my-files "impure/firefox")
+                                   "org.mozilla.firefox")))
+                (simple-service name
+                                home-activation-service-type
+                                ;; This file isn't /that/ important, and
+                                ;; Firefox keeps overwriting it, so we just
+                                ;; copy it without a backup instead
+                                #~(copy-file #$(path-append-my-home
+                                                "areas/firefox/profile"
+                                                "search.json.mozlz4")
+                                             #$(path-append-my-home
+                                                firefox-profile
+                                                "search.json.mozlz4")))
+                (simple-service name
+                                home-flatpak-profile-service-type
+                                '((flathub "org.mozilla.firefox")
+                                  (flathub
+                                   "com.github.micahflee.torbrowser-launcher")
+                                  (flathub "com.brave.Browser"))))))))))
 
 (define password-management-mod
   (mod
