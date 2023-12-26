@@ -13,8 +13,8 @@
              (my-guix home services)
              (my-guix home services package-management)
              (my-guix packages keyboard-center)
+             (my-guix utils)
              (guix utils))
-
 
 (define environment
   (apply-mods
@@ -52,6 +52,11 @@
   (delq minetest (home-environment-packages environment)))
  (services
   (cons* (simple-service 'home-flatpak-minetest
-                   home-flatpak-profile-service-type
-                   '((flathub "net.minetest.Minetest")))
+                         home-flatpak-profile-service-type
+                         '((flathub "net.minetest.Minetest")))
+         (simple-service 'home-impure-symlinks-minetest
+                         home-impure-symlinks-service-type
+                         `((".local/share/flatpak/overrides"
+                            ,(path-append-my-files "impure/minetest")
+                            "net.minetest.Minetest")))
          (home-environment-user-services environment))))
