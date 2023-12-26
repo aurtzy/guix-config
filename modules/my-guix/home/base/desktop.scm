@@ -93,5 +93,10 @@
                      (list (local-file
                             (path-append-my-files "bash/bashrc")
                             "bashrc")))))
+          (simple-service 'home-files
+                          home-files-service-type
+                          `((".inputrc" ,(plain-file
+                                          "inputrc"
+                                          "set revert-all-at-newline on\n"))))
           (service home-flatpak-service-type)
           (service home-impure-symlinks-service-type)))))
