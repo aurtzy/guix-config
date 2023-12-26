@@ -31,7 +31,7 @@
 (define-public syncplay
   (package
     (name "syncplay")
-    (version "1.7.0")
+    (version "1.7.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -40,9 +40,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "061kpnb48lad8rr8v58xac33mwpbrixfbhn7d0xa63zpxg43bvsd"))
-              (patches (search-my-patches
-                        "syncplay-fix-typeerror.patch"))))
+                "1xw9rl4bpmcskxs9f8zlvhhi1xlqfzzrfgmb0r6n50y2fbg7ycmc"))))
     (build-system python-build-system)
     (arguments
      (list #:imported-modules `(,@%python-build-system-modules
