@@ -1,4 +1,6 @@
 (use-modules (gnu)
+             (gnu packages gnome)
+             (gnu services networking)
              (gnu system file-systems)
              (guix packages)
              (my-guix config)
@@ -41,7 +43,13 @@
                (device (uuid "DC21-DB63"
                              'fat32))
                (type "vfat"))
-             (operating-system-file-systems os)))))
+             (operating-system-file-systems os)))
+     (services
+      (modify-services (operating-system-user-services os)
+        (network-manager-service-type
+         config => (network-manager-configuration
+                    (inherit config)
+                    (vpn-plugins (list network-manager-openconnect))))))))
  (list swapfile-mod
        gnome-mod
        battery-mod
