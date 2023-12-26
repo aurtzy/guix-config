@@ -1,2 +1,2 @@
 [Context]
-devices=dri
+filesystems=~/.fonts:ro;/run/current-system/profile/share/fonts:ro;~/.guix-home:ro
