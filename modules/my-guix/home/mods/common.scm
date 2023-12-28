@@ -26,12 +26,14 @@
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
   #:use-module (gnu services)
-  #:use-module (my-guix mods)
   #:use-module (my-guix home mods misc)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
+  #:use-module (my-guix mods)
+  #:use-module (my-guix packages git-annex-configure)
   #:use-module (my-guix utils)
-  #:export (emacs-base-mod
+  #:export (build-data-mod
+            emacs-base-mod
             emacs-org-mod
             emacs-mod
             common-fonts-mod
@@ -43,10 +45,84 @@
 
             common-mods))
 
-(use-package-modules emacs emacs-xyz guile
+(use-package-modules haskell-apps backup
+                     emacs emacs-xyz guile
                      fonts freedesktop
                      kde-plasma kde-frameworks
                      video music)
+
+(define (build-data-mod data-specs)
+  "Build a mod that includes packages and services for my data setup.
+
+DATA-SPECS is a list of symlink specifications.  A specification must have the
+path to the data repository, followed by the names of its store items to
+symlink from $HOME.
+
+Note that paths should not have whitespaces to prevent issues with building
+the shell alias."
+  (mod
+    (name 'data-mod)
+    (apply
+     (apply-mod home-environment
+       (packages
+        home-environment-packages
+        append=>
+        (list git-annex
+              borg
+              git-annex-configure))
+       (services
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-impure-symlinks-service-type
+                              (map
+                               (lambda (symlinks-spec)
+                                 (let* ((data-dir (car symlinks-spec))
+                                        (item-names (cdr symlinks-spec))
+                                        (store-dir (string-append data-dir
+                                                                  "/store")))
+                                   (cons* "" store-dir item-names)))
+                               data-specs))
+              (simple-service name
+                              home-bash-service-type
+                              (home-bash-extension
+                               (aliases
+                                `(("git-annex-assist-all"
+                                   . ,(let* ((echo
+                                              (lambda args
+                                                (string-join
+                                                 (cons "echo" args)
+                                                 " ")))
+                                             (cd
+                                              (lambda (dir)
+                                                (format
+                                                 #f
+                                                 (if (or (string-prefix?
+                                                          "/" dir)
+                                                         (equal? "-" dir))
+                                                     "cd ~a"
+                                                     "cd ~~/~a")
+                                                 dir)))
+                                             (annex-assist
+                                              (lambda (dir)
+                                                (string-join
+                                                 (list (echo "SYNCING:"
+                                                             dir)
+                                                       (cd dir)
+                                                       "git-annex assist"
+                                                       (cd "-"))
+                                                 " && ")))
+                                             (data-dirs
+                                              (map car data-specs)))
+                                        (string-append
+                                         (string-join
+                                          (map annex-assist data-dirs)
+                                          " && ")
+                                         ;; Flush buffers immediately to
+                                         ;; reduce chance that changes leave
+                                         ;; device in invalid state (i.e. via
+                                         ;; power failure)
+                                         "; sync")))))))))))))
 
 (define emacs-base-mod
   (mod
