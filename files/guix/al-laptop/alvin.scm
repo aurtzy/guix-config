@@ -9,23 +9,17 @@
              (my-guix home services)
              (my-guix home services package-management))
 
+(define data-mod
+  (build-data-mod '(("data" "workshop" "areas" "library" "attic"))))
+
 (apply-mods
  (let ((env base-desktop-home-environment))
    (home-environment
-    (inherit env)
-    (services
-     (cons* (simple-service 'home-impure-symlinks-data
-                            home-impure-symlinks-service-type
-                            `((""
-                               "data/store"
-                               "workshop"
-                               "areas"
-                               "library"
-                               "attic")))
-            (home-environment-user-services env)))))
+    (inherit env)))
  (append common-mods
          extra-mods
-         (list gnome-mod
+         (list data-mod
+               gnome-mod
                nonguix-channel-mod))
  #:exclude
  (list creative-mod

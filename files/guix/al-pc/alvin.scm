@@ -16,6 +16,10 @@
              (my-guix utils)
              (guix utils))
 
+(define data-mod
+  (build-data-mod '(("data" "workshop" "areas")
+                    ("storage/data" "library" "attic"))))
+
 (define environment
   (apply-mods
    (let ((env base-foreign-desktop-home-environment))
@@ -23,23 +27,12 @@
       (inherit env)
       (packages
        (cons* keyboard-center
-              (home-environment-packages env)))
-      (services
-       (cons* (simple-service 'home-impure-symlinks-data
-                              home-impure-symlinks-service-type
-                              '((""
-                                 "data/store"
-                                 "workshop"
-                                 "areas")
-                                (""
-                                 "/mnt/storage/data/store"
-                                 "library"
-                                 "attic")))
-              (home-environment-user-services env)))))
+              (home-environment-packages env)))))
    (append common-mods
            extra-mods
            entertainment-mods
-           (list plasma-mod
+           (list data-mod
+                 plasma-mod
                  pipewire-mod
                  web-server-mod
                  nonguix-channel-mod))))
