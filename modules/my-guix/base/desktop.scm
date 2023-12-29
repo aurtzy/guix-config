@@ -60,7 +60,15 @@
             ;;
             %base-packages))
     (services
-     (cons* (service cups-service-type)
+     (cons* (simple-service 'addon-channel-substitutes
+                            guix-service-type
+                            (guix-extension
+                             (authorized-keys
+                              (list (local-file (path-append-my-files
+                                                 "guix/nonguix.pub"))))
+                             (substitute-urls
+                              '("https://substitutes.nonguix.org"))))
+            (service cups-service-type)
             (service qemu-binfmt-service-type
                      (qemu-binfmt-configuration
                       (platforms (lookup-qemu-platforms

@@ -6,7 +6,6 @@
              (my-guix config)
              (my-guix mods)
              (my-guix base desktop)
-             (my-guix mods channels)
              (my-guix mods desktop))
 
 (define swapfile-mod
@@ -53,5 +52,4 @@
  (list swapfile-mod
        gnome-mod
        battery-mod
-       virtualization-mod
-       nonguix-channel-mod))
+       virtualization-mod))
