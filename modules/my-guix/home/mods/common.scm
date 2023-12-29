@@ -263,11 +263,7 @@ the shell alias."
                ".var/app/org.mozilla.firefox/.mozilla/firefox/profile.default"))
           (list (simple-service name
                                 home-impure-symlinks-service-type
-                                `(("Downloads/_tab-session-manager-backups"
-                                   ,(path-append-my-home
-                                     "/areas/firefox/extension-backups"
-                                     "/tab-session-manager-backups"))
-                                  (,firefox-profile
+                                `((,firefox-profile
                                    ,(path-append-my-home
                                      "/areas/firefox/profile")
                                    "bookmarkbackups")
