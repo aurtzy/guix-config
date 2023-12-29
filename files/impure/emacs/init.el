@@ -220,6 +220,8 @@ simple rename to fit the keybind it will be mapped to."
 ;;;; ENABLE AUTO INSERT MODE FOR FILES
 
 (use-package emacs
+  :custom
+  (auto-insert-directory (concat user-emacs-directory "inserts"))
   :config
   (auto-insert-mode 1))
 
