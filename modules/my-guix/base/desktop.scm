@@ -85,11 +85,13 @@
                  (keyboard-layout keyboard-layout)))
     (file-systems
      (cons* (file-system
-              (mount-point "/mnt/backup-usb")
+              (mount-point "/media/usb-backup")
               (device (uuid "207d03a2-8838-4578-baba-dfb1af375da1"))
               (type "f2fs")
               (options
                (alist->file-system-options
-                '("x-gvfs-show")))
+                ;; TODO with the change to /media mount, is this still needed?
+                '(;;"x-gvfs-show"
+                  )))
               (mount? #f))
             %base-file-systems))))
