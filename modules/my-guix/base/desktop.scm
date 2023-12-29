@@ -27,7 +27,7 @@
   #:use-module (my-guix utils)
   #:export (base-desktop-operating-system))
 
-(use-package-modules linux certs disk)
+(use-package-modules linux certs version-control disk)
 
 (use-service-modules cups desktop virtualization)
 
@@ -52,12 +52,11 @@
                                      "libvirt")))
             %base-user-accounts))
     (packages
-     (cons* nss-certs                   ;https certifications
-            ;; useful disk management utilities
+     (cons* nss-certs
+            git
             gparted
             gptfdisk
             btrfs-progs
-            ;;
             %base-packages))
     (services
      (cons* (simple-service 'addon-channel-substitutes
