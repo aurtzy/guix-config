@@ -112,16 +112,15 @@ automatically."
               gnome-shell-extension-clipboard-indicator))
        (services
         operating-system-user-services
-        services =>
-        (cons* (set-xorg-configuration
-                (xorg-configuration
-                 (keyboard-layout (operating-system-keyboard-layout os))))
-               (service gnome-desktop-service-type)
-               (modify-services services
-                 (gdm-service-type
-                  config => (gdm-configuration
-                             (inherit config)
-                             (wayland? #t))))))))))
+        append=>
+        (list
+         (set-xorg-configuration
+          (xorg-configuration
+           (keyboard-layout (operating-system-keyboard-layout os))))
+         (service gnome-desktop-service-type)
+         (service gdm-service-type
+                  (gdm-configuration
+                   (wayland? #t)))))))))
 
 (define battery-mod
   (mod

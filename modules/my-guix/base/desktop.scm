@@ -29,7 +29,7 @@
 
 (use-package-modules linux certs version-control disk)
 
-(use-service-modules cups desktop virtualization)
+(use-service-modules cups xorg desktop virtualization)
 
 (define base-desktop-operating-system
   ;; Base desktop operating system. This configuration is missing
@@ -73,7 +73,8 @@
                       (platforms (lookup-qemu-platforms
                                   "arm"
                                   "aarch64"))))
-            %desktop-services))
+            (modify-services %desktop-services
+              (delete gdm-service-type))))
     (sudoers-file
      (plain-file "sudoers"
                  (string-join
