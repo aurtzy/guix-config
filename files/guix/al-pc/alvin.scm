@@ -1,8 +1,10 @@
 (use-modules (gnu home)
+             (gnu home services desktop)
+             (gnu home services sound)
              (gnu packages minetest)
              (gnu services)
              (my-guix mods)
-             (my-guix home base foreign-desktop)
+             (my-guix home base desktop)
              (my-guix home mods channels)
              (my-guix home mods common)
              (my-guix home mods desktop-environment)
@@ -20,36 +22,18 @@
   (build-data-mod '(("data" "workshop" "areas")
                     ("storage/data" "library" "attic"))))
 
-(define environment
-  (apply-mods
-   (let ((env base-foreign-desktop-home-environment))
-     (home-environment
-      (inherit env)
-      (packages
-       (cons* keyboard-center
-              (home-environment-packages env)))))
-   (append common-mods
-           extra-mods
-           entertainment-mods
-           (list data-mod
-                 plasma-mod
-                 pipewire-mod
-                 web-server-mod
-                 nonguix-channel-mod))))
-
-;; Use flatpak instead of minetest-mod since foreign system is
-;; not set up to use NVIDIA proprietary driver
-(home-environment
- (inherit environment)
- (packages
-  (delq minetest (home-environment-packages environment)))
- (services
-  (cons* (simple-service 'home-flatpak-minetest
-                         home-flatpak-profile-service-type
-                         '((flathub "net.minetest.Minetest")))
-         (simple-service 'home-impure-symlinks-minetest
-                         home-impure-symlinks-service-type
-                         `((".local/share/flatpak/overrides"
-                            ,(path-append-my-files "impure/minetest")
-                            "net.minetest.Minetest")))
-         (home-environment-user-services environment))))
+(let ((base-env (apply-mods
+                 base-desktop-home-environment
+                 (append common-mods
+                         extra-mods
+                         entertainment-mods
+                         (list data-mod
+                               gnome-mod
+                               pipewire-mod
+                               web-server-mod)))))
+  (home-environment
+   (inherit base-env)
+   (services
+    (cons* (service home-dbus-service-type)
+           (service home-pipewire-service-type)
+           (home-environment-user-services base-env)))))
