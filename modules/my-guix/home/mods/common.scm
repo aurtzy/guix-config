@@ -84,45 +84,47 @@ the shell alias."
                                    (cons* "" store-dir item-names)))
                                data-specs))
               (simple-service name
-                              home-bash-service-type
-                              (home-bash-extension
-                               (aliases
-                                `(("git-annex-assist-all"
-                                   . ,(let* ((echo
-                                              (lambda args
-                                                (string-join
-                                                 (cons "echo" args)
-                                                 " ")))
-                                             (cd
-                                              (lambda (dir)
-                                                (format
-                                                 #f
-                                                 (if (or (string-prefix?
-                                                          "/" dir)
-                                                         (equal? "-" dir))
-                                                     "cd ~a"
-                                                     "cd ~~/~a")
-                                                 dir)))
-                                             (annex-assist
-                                              (lambda (dir)
-                                                (string-join
-                                                 (list (echo "SYNCING:"
-                                                             dir)
-                                                       (cd dir)
-                                                       "git-annex assist"
-                                                       (cd "-"))
-                                                 " && ")))
-                                             (data-dirs
-                                              (map car data-specs)))
-                                        (string-append
-                                         (string-join
-                                          (map annex-assist data-dirs)
-                                          " && ")
-                                         ;; Flush buffers immediately to
-                                         ;; reduce chance that changes leave
-                                         ;; device in invalid state (i.e. via
-                                         ;; power failure)
-                                         "; sync")))))))))))))
+                              home-files-service-type
+                              `((".local/bin/auto-sync-data"
+                                 ,(program-file
+                                   "auto-sync-data"
+                                   (with-imported-modules
+                                       '((guix build utils))
+                                     #~(begin
+                                         (use-modules (guix build utils))
+                                         (let*
+                                             ((data-dirs
+                                               '#$(map car data-specs))
+                                              (orig-dir (getcwd))
+                                              (with-chdir
+                                               (lambda (dir proc)
+                                                 (chdir
+                                                  (if (string-prefix? "/" dir)
+                                                      dir
+                                                      (format #f "~a/~a"
+                                                              (getenv "HOME")
+                                                              dir)))
+                                                 (proc)
+                                                 (chdir orig-dir))))
+                                           ;; Always flush buffers regardless
+                                           ;; of fails to minimize chance that
+                                           ;; changes leave device in invalid
+                                           ;; state (e.g. via power failure)
+                                           (with-exception-handler
+                                               (lambda () (sync) (exit #f))
+                                             (lambda ()
+                                               (for-each
+                                                (lambda (data-dir)
+                                                  (format #t
+                                                          "SYNCING: ~s\n"
+                                                          data-dir)
+                                                  (with-chdir
+                                                   data-dir
+                                                   (lambda ()
+                                                     (invoke #$git-annex
+                                                             "assist"))))
+                                                data-dirs)
+                                               (sync))))))))))))))))
 
 (define emacs-base-mod
   (mod
