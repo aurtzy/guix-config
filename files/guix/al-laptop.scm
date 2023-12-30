@@ -3,9 +3,9 @@
              (gnu services networking)
              (gnu system file-systems)
              (guix packages)
+             (my-guix base desktop)
              (my-guix config)
              (my-guix mods)
-             (my-guix base desktop)
              (my-guix mods desktop))
 
 (define swapfile-mod
