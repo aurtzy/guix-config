@@ -20,6 +20,19 @@
    (operating-system
      (inherit os)
      (host-name "al-laptop")
+     (users
+      (cons* (user-account
+              (name "alvin")
+              (comment "Alvin")
+              (group "users")
+              (home-directory "/home/alvin")
+              (supplementary-groups '("wheel"
+                                      "netdev"
+                                      "audio"
+                                      "video"
+                                      "kvm"
+                                      "libvirt")))
+             (operating-system-users os)))
      (mapped-devices
       (list (mapped-device
              (source

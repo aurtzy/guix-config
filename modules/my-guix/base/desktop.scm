@@ -39,18 +39,6 @@
     (timezone "America/New_York")
     (locale "en_US.utf8")
     (keyboard-layout (keyboard-layout "us"))
-    (users
-     (cons* (user-account
-             (name "alvin")
-             (group "users")
-             (home-directory "/home/alvin")
-             (supplementary-groups '("wheel"
-                                     "netdev"
-                                     "audio"
-                                     "video"
-                                     "kvm"
-                                     "libvirt")))
-            %base-user-accounts))
     (packages
      (cons* nss-certs
             git
