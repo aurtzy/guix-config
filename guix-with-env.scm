@@ -11,4 +11,6 @@
                 (dirname (current-filename))
                 (getenv "GUILE_LOAD_PATH")))
 
-(apply system* "guix" (cdr (command-line)))
+(exit
+ (status:exit-val
+  (apply system* "guix" (cdr (command-line)))))
