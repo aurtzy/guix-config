@@ -51,6 +51,39 @@
                      kde-plasma kde-frameworks
                      video music)
 
+(define (build-assist-data-script data-dirs)
+  (with-imported-modules
+      '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+        (let* ((data-dirs '#$data-dirs)
+               (orig-dir (getcwd))
+               (with-chdir
+                (lambda (dir proc)
+                  (chdir
+                   (if (string-prefix? "/" dir)
+                       dir
+                       (format #f "~a/~a"
+                               (getenv "HOME")
+                               dir)))
+                  (proc)
+                  (chdir orig-dir))))
+          ;; Always flush buffers regardless of fails to minimize chance that
+          ;; changes leave device in invalid state (e.g. via power failure)
+          (with-exception-handler
+              (lambda () (sync) (exit #f))
+            (lambda ()
+              (for-each
+               (lambda (data-dir)
+                 (format #t "SYNCING: ~s\n"
+                         data-dir)
+                 (with-chdir
+                  data-dir
+                  (lambda ()
+                    (invoke #$git-annex "assist"))))
+               data-dirs)
+              (sync)))))))
+
 (define (build-data-mod data-specs)
   "Build a mod that includes packages and services for my data setup.
 
@@ -85,46 +118,11 @@ the shell alias."
                                data-specs))
               (simple-service name
                               home-files-service-type
-                              `((".local/bin/auto-sync-data"
+                              `((".local/bin/assist-data"
                                  ,(program-file
-                                   "auto-sync-data"
-                                   (with-imported-modules
-                                       '((guix build utils))
-                                     #~(begin
-                                         (use-modules (guix build utils))
-                                         (let*
-                                             ((data-dirs
-                                               '#$(map car data-specs))
-                                              (orig-dir (getcwd))
-                                              (with-chdir
-                                               (lambda (dir proc)
-                                                 (chdir
-                                                  (if (string-prefix? "/" dir)
-                                                      dir
-                                                      (format #f "~a/~a"
-                                                              (getenv "HOME")
-                                                              dir)))
-                                                 (proc)
-                                                 (chdir orig-dir))))
-                                           ;; Always flush buffers regardless
-                                           ;; of fails to minimize chance that
-                                           ;; changes leave device in invalid
-                                           ;; state (e.g. via power failure)
-                                           (with-exception-handler
-                                               (lambda () (sync) (exit #f))
-                                             (lambda ()
-                                               (for-each
-                                                (lambda (data-dir)
-                                                  (format #t
-                                                          "SYNCING: ~s\n"
-                                                          data-dir)
-                                                  (with-chdir
-                                                   data-dir
-                                                   (lambda ()
-                                                     (invoke #$git-annex
-                                                             "assist"))))
-                                                data-dirs)
-                                               (sync))))))))))))))))
+                                   "assist-data"
+                                   (build-assist-data-script
+                                    (map car data-specs))))))))))))
 
 (define emacs-base-mod
   (mod
