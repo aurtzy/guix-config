@@ -44,11 +44,7 @@
     (list (service home-bash-service-type
                    (home-bash-configuration
                     (environment-variables
-                     `(("GUILE_LOAD_PATH"
-                        . ,(build-path-augmentation
-                            "GUILE_LOAD_PATH"
-                            $modules-dir))
-                       ("GUIX_PACKAGE_PATH"
+                     `(("GUIX_PACKAGE_PATH"
                         . ,(build-path-augmentation
                             "GUIX_PACKAGE_PATH"
                             $guix-package-path))
@@ -88,8 +84,16 @@
                             "bashrc")))))
           (simple-service 'home-files
                           home-files-service-type
-                          `((".inputrc" ,(plain-file
-                                          "inputrc"
-                                          "set revert-all-at-newline on\n"))))
+                          `((".local/bin/guix"
+                             ,(program-file
+                               "guix-with-env"
+                               #~(exit
+                                  (status:exit-val
+                                   (path-append $my-guix-config
+                                                "guix-with-env.scm")))))
+                            (".inputrc"
+                             ,(plain-file
+                               "inputrc"
+                               "set revert-all-at-newline on\n"))))
           (service home-flatpak-service-type)
           (service home-impure-symlinks-service-type)))))
