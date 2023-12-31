@@ -10,6 +10,16 @@ find_cmd () {
     fi
 }
 
+which () {
+    (alias; declare -f) | /usr/bin/env which \
+                                       --tty-only \
+                                       --read-alias \
+                                       --read-functions \
+                                       --show-tilde \
+                                       --show-dot \
+                                       $@
+}
+
 # Fetch "style palette" if ncurses is available
 if find_cmd tput &> /dev/null; then
     declare -A styles=(
