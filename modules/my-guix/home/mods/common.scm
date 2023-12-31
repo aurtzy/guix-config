@@ -71,7 +71,7 @@
           ;; Always flush buffers regardless of fails to minimize chance that
           ;; changes leave device in invalid state (e.g. via power failure)
           (with-exception-handler
-              (lambda () (sync) (exit #f))
+              (lambda (exn) (sync) (exit #f))
             (lambda ()
               (for-each
                (lambda (data-dir)
