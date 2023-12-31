@@ -75,8 +75,21 @@
                         . ,(build-path-augmentation
                             "PATH"
                             "$HOME/.local/bin"))))
-                    (aliases `(("guix-without-flatpak"
-                                . "GUIX_FLATPAK_DISABLE=1 guix")
+                    (aliases `(("reconfigure-home"
+                                . ,(format
+                                    #f
+                                    "guix home reconfigure ~a/~a"
+                                    $my-guix-config
+                                    "home.scm"))
+                               ("reconfigure-home-without-flatpak"
+                                . "GUIX_FLATPAK_DISABLE=1 reconfigure-home")
+                               ("reconfigure-system"
+                                . ,(format
+                                    #f
+                                    "sudo guix system -L ~a reconfigure ~a/~a"
+                                    $modules-dir
+                                    $my-guix-config
+                                    "system.scm"))
 
                                ("l." . "ls -d .*")
                                ("la" . "ls -a")
