@@ -71,9 +71,7 @@
                (base-file-system-flags-ref 'btrfs 'hdd))
               (options
                (alist->file-system-options
-                (append
-                 (base-file-system-options-ref 'btrfs 'hdd)
-                 '("x-gvfs-hide"))))
+                (base-file-system-options-ref 'btrfs 'hdd)))
               (type "btrfs")
               (create-mount-point? #t)
               (mount-may-fail? #t)
