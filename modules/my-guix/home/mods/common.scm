@@ -224,7 +224,7 @@ the shell alias."
        (services
         home-environment-user-services
         services =>
-        (cons (simple-service 'home-impure-symlinks-flatpak
+        (cons (simple-service name
                               home-impure-symlinks-service-type
                               (append
                                ;; Flatpak doesn't like dangling symlinks, so
