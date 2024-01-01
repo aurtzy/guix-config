@@ -1,2 +1,2 @@
 [Context]
-filesystems=~/.fonts:ro;/run/current-system/profile/share/fonts:ro;~/.guix-home:ro
+filesystems=~/.local/share/fonts:ro;/run/current-system/profile/share/fonts:ro;~/.guix-home:ro
