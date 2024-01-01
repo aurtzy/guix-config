@@ -33,9 +33,6 @@
              (ice-9 regex)
              (ice-9 textual-ports))
 
-;; TODO this script been recently refactored. remove this comment once
-;; everything looks good.
-
 (define PROGRAM (car (program-arguments)))
 
 (define CONFIG-FILE (string-append (dirname PROGRAM)
