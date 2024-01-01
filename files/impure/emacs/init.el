@@ -97,7 +97,7 @@
   (add-to-list 'default-frame-alist '(font . "Hack-11"))
   ;; TODO menu-bar was funky with frame transparency at the time of
   ;; writing so menu-bar has been disabled; try re-enabling in future
-  (add-to-list 'default-frame-alist '(alpha-background . 95))
+  (add-to-list 'default-frame-alist '(alpha-background . 90))
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (global-visual-line-mode 1)
