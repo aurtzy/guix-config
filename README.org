@@ -4,22 +4,11 @@
 
 * Introduction
 
-[[https://guix.gnu.org][GNU Guix]] configuration files for my various systems. This config extends Guix
-with a custom extension system (dubbed "mods") to modularize my setup.
+These are my [[https://guix.gnu.org][GNU Guix]] configuration files.  This config extends Guix with a
+custom data type (dubbed "mods") to modularize my setup.
 
-This repository also includes additional packages and services that are either
-being refined for upstreaming or are not suitable for upstream.
-
-These configurations allow me to accomplish two main goals:
-
-1. To have a bootstrapping mechanism for reliably (and to some extent,
-   reproducibly) initializing environments with the software I use to manage
-   my sibling project, which handles the organization and management of my
-   data (a link to documentation about this will exist at some point in the
-   future).
-2. To enable the full power of an awesome, fully capable programming
-   language - that is, [[https://www.gnu.org/software/guile][Guile]] - in order to build a robust, modular
-   configuration that I can hack around with ease.
+This repository also includes some additional packages and services that are
+either being refined for upstreaming or are not suitable for upstream.
 
 * Overview
 
