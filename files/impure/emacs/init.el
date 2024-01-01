@@ -723,7 +723,7 @@ to report upstream.  TODO."
          ("C-c c" . org-capture))
   :custom
   (org-todo-keywords
-   '((sequence "TODO(t)" "|" "DONE(d!)" "SKIP(k!)")))
+   '((sequence "TODO(t)" "PROG(p!)" "|" "DONE(d!)" "SKIP(k!)")))
   (org-cycle-inline-images-display t)
   (org-export-in-background t)
   ;; TODO add a cleaner function that deletes files after some time limit
