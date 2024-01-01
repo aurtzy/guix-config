@@ -722,6 +722,8 @@ to report upstream.  TODO."
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture))
   :custom
+  (org-todo-keywords
+   '((sequence "TODO(t)" "|" "DONE(d!)" "SKIP(k!)")))
   (org-cycle-inline-images-display t)
   (org-export-in-background t)
   ;; TODO add a cleaner function that deletes files after some time limit
@@ -754,6 +756,19 @@ to report upstream.  TODO."
               :before #'org-export-to-pdf-cd)
   (setcdr (assoc 'plain-list-item org-blank-before-new-entry) nil)
   (add-to-list 'org-latex-default-packages-alist '("hidelinks" "hyperref" nil)))
+
+(use-package org-agenda
+  :after org
+  :preface
+  (defun org-agenda-skip-todo (&optional _)
+    "test"
+    (interactive)
+    (org-agenda-todo "SKIP"))
+  :bind (:map
+         org-agenda-mode-map
+         ("K" . org-agenda-skip-todo))
+  :custom
+  (org-agenda-span 10))
 
 ;;; init.el ends here
 (put 'downcase-region 'disabled nil)
