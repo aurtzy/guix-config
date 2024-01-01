@@ -44,7 +44,6 @@ Here is a general overview of this repository's layout:
 - [[file:setup.scm][setup.scm]] is another script for setting up various tasks during the
   installation phase of Guix System.
 
-
 * Services
 
 ** Hardware Services
