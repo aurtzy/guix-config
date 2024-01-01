@@ -759,14 +759,6 @@ to report upstream.  TODO."
 
 (use-package org-agenda
   :after org
-  :preface
-  (defun org-agenda-skip-todo (&optional _)
-    "test"
-    (interactive)
-    (org-agenda-todo "SKIP"))
-  :bind (:map
-         org-agenda-mode-map
-         ("K" . org-agenda-skip-todo))
   :custom
   (org-agenda-span 10))
 
