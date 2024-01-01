@@ -201,7 +201,16 @@ the shell alias."
         home-environment-packages
         append=>
         (list font-google-noto
-              font-wqy-zenhei))))))
+              font-wqy-zenhei))
+       (services
+        home-environment-user-services
+        append=>
+        (list (simple-service name
+                              home-impure-symlinks-service-type
+                              `((".local/share"
+                                 ,(path-append-my-home
+                                   ".guix-home/profile/share")
+                                 "fonts")))))))))
 
 (define flatpak-mod
   (mod
