@@ -709,8 +709,7 @@ simple rename to fit the keybind it will be mapped to."
 
 (use-package org
   :preface
-  (defun org-export-to-pdf-cd
-      (&optional _ _ _ _ _)
+  (defun org-export-to-pdf-cd (&optional _ _ _ _ _)
     "Change default directory to the canonicalized dirname of this buffer.
 
 Fixes issue with export to pdf failing when it's not
