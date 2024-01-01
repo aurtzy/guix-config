@@ -12,26 +12,19 @@ either being refined for upstreaming or are not suitable for upstream.
 
 * Overview
 
-Here is a general overview of this repository's layout:
+Here is a general overview of the most notable files in this repository:
 
-- [[file:modules/][modules]] contains Guile modules which define all sorts of things, including
-  the extensions system in the ~(my-guix mods)~ module, other utility
-  functions, as well as packages and services.
-- [[file:files/][files]] contains everything used in my configuration that isn't a Guile
-  module. This includes the Guix Home/System configuration files for the
-  various systems I manage, in addition to all of the "impure" files that
-  aren't declared in Guile.
-- [[file:guix-package-path/][guix-package-path]] is used primarily for the =GUIX_PACKAGE_PATH= variable,
-  which enables Guix to see packages in this repository when doing
-  package-related tasks like =guix search=.
-
-  See the [[https://guix.gnu.org/en/manual/devel/en/html_node/Package-Modules.html][Package Modules]] section in the manual for more information about
-  this variable.
-- [[file:guix-with-env.scm][guix-with-env.scm]] is a script that runs =guix= with [[file:modules/][modules]] in the load
-  path, helpful for cases where the load path gets broken or when initializing
-  the system with Guix.
-- [[file:setup.scm][setup.scm]] is another script for setting up various tasks during the
-  installation phase of Guix System.
+- [[file:files]] contains configuration files that are not declared as Guile
+  modules. This includes the top-level Guix Home/System configuration files
+  for my systems ([[file:files/guix]]).
+- [[file:modules]] contains Guile modules, where packages, services, and other
+  utilities are defined.
+- [[file:guix-with-env.scm]] runs =guix= with [[file:modules]] in the load path, used
+  in cases where the persistent load path (defined in the [[file:modules/my-guix/home/base][base configuration]])
+  gets broken or when initially setting up the system.
+- [[file:setup.scm]] is used for setting up additional things that the installer
+  does not offer to do.  Currently, this is only used for initializing a
+  swapfile.
 
 * Services
 
