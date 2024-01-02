@@ -685,7 +685,7 @@ simple rename to fit the keybind it will be mapped to."
 
 (use-package geiser-guile
   :config
-  (add-to-list 'geiser-guile-load-path "~/workshop/git/guix"))
+  (add-to-list 'geiser-guile-load-path "~/git/guix"))
 
 ;;;;; STATIC ANALYSIS
 
