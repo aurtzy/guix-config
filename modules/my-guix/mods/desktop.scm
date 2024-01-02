@@ -89,6 +89,8 @@ automatically."
         operating-system-packages
         append=>
         (list xdg-desktop-portal
+              xdg-desktop-portal-gtk
+              xdg-desktop-portal-kde
               ;; qtwayland
               ))))))
 
@@ -103,8 +105,7 @@ automatically."
        (packages
         operating-system-packages
         append=>
-        (list xdg-desktop-portal-gtk
-              gvfs
+        (list gvfs
               gnome-tweaks
               gnome-shell-extensions
               gnome-shell-extension-sound-output-device-chooser
