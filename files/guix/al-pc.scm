@@ -21,7 +21,6 @@
     (device "/dev/mapper/cryptroot")
     (offset "5250304"))))
 
-
 (let ((base-os (apply-mods base-desktop-operating-system
                            (list swapfile-mod
                                  gnome-mod))))
