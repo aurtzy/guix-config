@@ -730,6 +730,7 @@ to report upstream.  TODO."
   (org-preview-latex-image-directory "~/.cache/emacs/ltximg")
   (org-log-redeadline 'note)
   (org-log-reschedule 'note)
+  (org-log-into-drawer t)
   :init
   (let ((export-dir "~/Documents/org"))
     (make-directory export-dir t)
