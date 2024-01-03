@@ -728,6 +728,8 @@ to report upstream.  TODO."
   (org-export-in-background t)
   ;; TODO add a cleaner function that deletes files after some time limit
   (org-preview-latex-image-directory "~/.cache/emacs/ltximg")
+  (org-log-redeadline 'note)
+  (org-log-reschedule 'note)
   :init
   (let ((export-dir "~/Documents/org"))
     (make-directory export-dir t)
