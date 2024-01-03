@@ -23,7 +23,8 @@
 
 (let ((base-os (apply-mods base-desktop-operating-system
                            (list swapfile-mod
-                                 gnome-mod))))
+                                 gnome-mod
+                                 virtualization-mod))))
   (operating-system
     (inherit base-os)
     (host-name "al-pc")
@@ -39,7 +40,9 @@
              (supplementary-groups '("wheel"
                                      "netdev"
                                      "audio"
-                                     "video")))
+                                     "video"
+                                     "kvm"
+                                     "libvirt")))
             %base-user-accounts))
     (mapped-devices
      (list (mapped-device
