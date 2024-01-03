@@ -755,7 +755,10 @@ to report upstream.  TODO."
   (advice-add 'org-latex-export-to-pdf
               :before #'org-export-to-pdf-cd)
   (setcdr (assoc 'plain-list-item org-blank-before-new-entry) nil)
-  (add-to-list 'org-latex-default-packages-alist '("hidelinks" "hyperref" nil)))
+  (add-to-list 'org-latex-default-packages-alist '("hidelinks" "hyperref" nil))
+  :config
+  (add-to-list 'org-file-apps
+               '("epub" . "xdg-open %s")))
 
 (use-package org-agenda
   :after org
