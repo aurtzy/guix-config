@@ -45,6 +45,7 @@
             gparted
             gptfdisk
             btrfs-progs
+            ntfs-3g
             %base-packages))
     (services
      (cons* (simple-service 'addon-channel-substitutes
