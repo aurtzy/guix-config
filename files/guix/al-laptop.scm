@@ -15,13 +15,9 @@
     (device "/dev/mapper/cryptroot")
     (offset "269568"))))
 
-(let ((base-os (apply-mods base-desktop-operating-system
-                           (list swapfile-mod
-                                 gnome-mod
-                                 battery-mod
-                                 virtualization-mod))))
+(apply-mods
  (operating-system
-   (inherit base-os)
+   (inherit base-desktop-operating-system)
    (host-name "al-laptop")
    (users
     (cons* (user-account
@@ -64,4 +60,8 @@
       (network-manager-service-type
        config => (network-manager-configuration
                   (inherit config)
-                  (vpn-plugins (list network-manager-openconnect))))))))
+                  (vpn-plugins (list network-manager-openconnect)))))))
+ (list swapfile-mod
+       gnome-mod
+       battery-mod
+       virtualization-mod))

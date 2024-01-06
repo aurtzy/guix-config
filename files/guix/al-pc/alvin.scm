@@ -22,18 +22,17 @@
   (build-data-mod '(("data" "workshop" "areas")
                     ("storage/data" "library" "attic"))))
 
-(let ((base-env (apply-mods
-                 base-desktop-home-environment
-                 (append common-mods
-                         extra-mods
-                         entertainment-mods
-                         (list data-mod
-                               gnome-mod
-                               pipewire-mod
-                               web-server-mod)))))
-  (home-environment
-   (inherit base-env)
-   (services
-    (cons* (service home-dbus-service-type)
-           (service home-pipewire-service-type)
-           (home-environment-user-services base-env)))))
+(apply-mods
+ (home-environment
+  (inherit base-desktop-home-environment)
+  (services
+   (cons* (service home-dbus-service-type)
+          (service home-pipewire-service-type)
+          (home-environment-user-services base-env))))
+ (append common-mods
+         extra-mods
+         entertainment-mods
+         (list data-mod
+               gnome-mod
+               pipewire-mod
+               web-server-mod)))
