@@ -23,12 +23,13 @@
                     ("storage/data" "library" "attic"))))
 
 (apply-mods
- (home-environment
-  (inherit base-desktop-home-environment)
-  (services
-   (cons* (service home-dbus-service-type)
-          (service home-pipewire-service-type)
-          (home-environment-user-services base-env))))
+ (let ((base-env base-desktop-home-environment))
+   (home-environment
+    (inherit base-env)
+    (services
+     (cons* (service home-dbus-service-type)
+            (service home-pipewire-service-type)
+            (home-environment-user-services base-env)))))
  (append common-mods
          extra-mods
          entertainment-mods
