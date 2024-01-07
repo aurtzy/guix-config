@@ -3,6 +3,7 @@
              (gnu home services sound)
              (gnu packages minetest)
              (gnu services)
+             (guix utils)
              (my-guix mods)
              (my-guix home base desktop)
              (my-guix home mods channels)
@@ -15,8 +16,7 @@
              (my-guix home services)
              (my-guix home services package-management)
              (my-guix packages keyboard-center)
-             (my-guix utils)
-             (guix utils))
+             (my-guix utils))
 
 (define data-mod
   (build-data-mod '(("data" "workshop" "areas")
