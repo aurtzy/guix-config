@@ -36,4 +36,5 @@
          (list data-mod
                gnome-mod
                pipewire-mod
-               web-server-mod)))
+               web-server-mod
+               nonguix-channel-mod)))
