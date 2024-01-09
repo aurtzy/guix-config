@@ -8,6 +8,7 @@
              (my-guix config)
              (my-guix mods)
              (my-guix mods desktop)
+             (my-guix packages linux)
              (my-guix services hardware)
              (nongnu packages linux)
              (nongnu packages nvidia)
@@ -26,9 +27,12 @@
    (operating-system
      (inherit base-os)
      (host-name "al-pc")
-     (kernel linux)
+     (kernel linux-6.7-rc)
      (initrd microcode-initrd)
      (firmware (list linux-firmware))
+     (kernel-arguments
+      (cons* "nouveau.config=NvGspRm=1"
+             (operating-system-user-kernel-arguments base-os)))
      (users
       (cons* (user-account
               (name "alvin")
