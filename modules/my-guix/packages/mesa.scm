@@ -148,9 +148,12 @@
 ;;
 ;; TODO Consider optimizations like the AUR package has done.
 (define-public mesa-git
-  (let ((version "23.3")
+  (let ((version "24.0")
         (revision "0")
-        (commit "a84729d36866bc79619523065a6038c3d8444f97"))
+        ;; This is no longer latest commit, due to mesa git updating libdrm
+        ;; past the current Guix package.  Updating may be straightforward,
+        ;; though.  See: https://issues.guix.gnu.org/67888
+        (commit "29fc135a55e65a0d3987ad40b0d25b57f31ed529"))
     (package/inherit mesa
       (name "mesa-git")
       (version (git-version version revision commit))
@@ -162,7 +165,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "0p3hv2x7icxvpirl0mnf0xm2qqlx630ccdpk1y1bpj71n6hh6d2g"))
+                  "1hq8jv6czscm8613casdpvk6p8cacrk5mv4blgki70dhv9q4chyr"))
          (patches
           (let* ((url "https://aur.archlinux.org/cgit/aur.git/plain")
                  (id "be7fab11e95214db6895b7de57b6017fd9ce7ca3")
