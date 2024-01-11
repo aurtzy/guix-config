@@ -18,7 +18,7 @@
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2023 Kaelyn Takata <kaelyn.alexi@protonmail.com>
 ;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -171,7 +171,8 @@
                      (base32
                       "0aa3gnpv4xq4q10qnd57kf3njppca9zxwfmnmymgqcq8dcyb8rhz"))))))))
       (arguments
-       (append
+       (cons*
+        #:meson meson/newest
         (substitute-keyword-arguments (package-arguments mesa)
           ((#:configure-flags original-flags)
            #~(append #$original-flags
@@ -211,8 +212,7 @@
                                     "^.*\\.rlib$"))
                    (map delete-file
                         (find-files "build/src/nouveau/compiler"
-                                    "^.*\\.rlib$")))))))
-        (list #:meson meson/newest)))
+                                    "^.*\\.rlib$")))))))))
       (native-inputs
        (cons* `("rust-syn"
                 ,(package-source rust-syn-2/newer))
