@@ -70,6 +70,13 @@
       #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
+          (add-before 'build 'set-cc
+            (lambda* (#:key inputs #:allow-other-keys)
+              (symlink (string-append (assoc-ref inputs "gcc") "/bin/gcc")
+                       "cc")
+              (setenv "PATH" (string-append
+                              (getenv "PATH")
+                              ":"(canonicalize-path ".")))))
           (replace 'install
             (lambda* (#:key outputs inputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
