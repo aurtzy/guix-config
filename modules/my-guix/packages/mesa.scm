@@ -140,6 +140,9 @@
 ;; Reference package: https://aur.archlinux.org/packages/vulkan-nouveau-git
 ;;
 ;; TODO Consider optimizations like the AUR package has done.
+;;
+;; This package does not work on its own; a newer Rust is required than the
+;; one used for inputs here, so it should be replaced with a newer version.
 (define-public mesa-git
   (let ((version "24.0")
         (revision "0")
