@@ -49,7 +49,9 @@
   #:use-module (guix build-system cargo)
   #:use-module (guix packages)
   #:use-module (guix gexp)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (my-guix packages rust)
+  #:use-module (ice-9 match))
 
 (define-public rust-bindgen-cli
   (package/inherit rust-bindgen-0.64
@@ -67,6 +69,10 @@
          "14xbg4r1bcdg4ni4amz9f9fmbvb9q8m026vgcf5r0w184sdjg91l"))))
     (arguments
      (cons*
+      #:rust (match (or (%current-target-system)
+                        (%current-system))
+               ("x86_64-linux" rust-binary-x86_64)
+               ("i686-linux" rust-binary-i686))
       #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
@@ -140,9 +146,6 @@
 ;; Reference package: https://aur.archlinux.org/packages/vulkan-nouveau-git
 ;;
 ;; TODO Consider optimizations like the AUR package has done.
-;;
-;; This package does not work on its own; a newer Rust is required than the
-;; one used for inputs here, so it should be replaced with a newer version.
 (define-public mesa-git
   (let ((version "24.0")
         (revision "0")
@@ -229,4 +232,8 @@
               `("rust-proc-macro2"
                 ,(package-source rust-proc-macro2-1/newer))
               (modify-inputs (package-native-inputs mesa)
-                (append rust rust-bindgen-cli)))))))
+                (append (match (or (%current-target-system)
+                                (%current-system))
+                          ("x86_64-linux" rust-binary-x86_64)
+                          ("i686-linux" rust-binary-i686))
+                        rust-bindgen-cli)))))))

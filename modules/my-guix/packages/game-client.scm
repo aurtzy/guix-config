@@ -7,7 +7,7 @@
 ;;; Copyright © 2023 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2023 Elijah Malaby
 ;;; Copyright © 2023 Timo Wilken <guix@twilken.net>
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -32,28 +32,35 @@
   #:use-module (nongnu packages game-client)
   #:use-module (ice-9 match))
 
-;; Custom Steam container with mesa-git replacing mesa.  Rust doesn't work on
-;; i686 architecture currently, so this package will not compile.
+(define (replace-inputs inputs replacements)
+  (let ((apply-replacements (apply compose replacements)))
+    (map (lambda (input)
+           (match input
+             ((name pkg)
+              (list name (apply-replacements pkg)))
+             ((name pkg output)
+              (list name (apply-replacements pkg) output))))
+         inputs)))
+
+;; TODO Custom Steam container with mesa-git replacing mesa.  Rust doesn't
+;; work on i686 architecture currently, so this package will not compile.
 ;;
 ;; Potentially related issue: https://issues.guix.gnu.org/35519
 (define-public steam-container-custom
   ;; Just using `package-input-rewriting' does not seem to work due to issues
-  ;; with inputs not actually being replaced, so we replace them at the source.
+  ;; with inputs not actually being replaced, so we replace them at the
+  ;; source.
   ;;
   ;; See: https://gitlab.com/nonguix/nonguix/-/issues/197
   (let* ((replace-mesa (package-input-rewriting `((,mesa . ,mesa-git))))
-         (replace-input (lambda (input)
-                          (match input
-                            ((name pkg)
-                             (list name (replace-mesa pkg)))
-                            ((name pkg output)
-                             (list name (replace-mesa pkg) output)))))
-         (steam-client-libs (map replace-input
-                                 (@@ (nongnu packages game-client)
-                                     steam-client-libs)))
-         (steam-gameruntime-libs (map replace-input
-                                      (@@ (nongnu packages game-client)
-                                          steam-gameruntime-libs))))
+         (steam-client-libs (replace-inputs
+                             (@@ (nongnu packages game-client)
+                                 steam-client-libs)
+                             (list replace-mesa)))
+         (steam-gameruntime-libs (replace-inputs
+                                  (@@ (nongnu packages game-client)
+                                      steam-gameruntime-libs)
+                                  (list replace-mesa))))
     (nonguix-container
      (inherit steam-container)
      (name "steam-custom")
@@ -69,5 +76,7 @@
                  #:name "fhs-union-32"
                  #:system "i686-linux")))))
 
-(define-public steam-custom (nonguix-container->package
-                             steam-container-custom))
+(define-public steam-custom
+  (package
+    (inherit (nonguix-container->package steam-container-custom))
+    (supported-systems (list "x86_64-linux"))))
