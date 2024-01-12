@@ -27,6 +27,7 @@
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages rust)
+  #:use-module (ice-9 match)
   #:use-module (nonguix build-system binary)
   #:export (rust-binary))
 
@@ -55,28 +56,21 @@
     (description (package-description gcc))
     (license (package-license gcc))))
 
-(define* (make-rust-binary version uri base32-hash
+(define* (make-rust-binary name version source
                            #:key
                            (outputs (list "out" "cargo")))
   (package
     (inherit rust)
-    (name "rust-binary")
+    (name name)
     (version version)
-    (source (origin
-              (method url-fetch)
-              (uri uri)
-              (sha256
-               (base32 base32-hash))))
+    (source source)
     (build-system binary-build-system)
     (outputs outputs)
-    (supported-systems (list "x86_64-linux"
-                             ;; TODO add i686 support
-                             ;; "i686-linux"
-                             ))
-    (native-inputs (modify-inputs (package-native-inputs rust)
-                     (append `(,gcc "lib"))))
-    (propagated-inputs (modify-inputs (package-propagated-inputs rust)
-                         (append gcc-toolchain)))
+    (native-inputs
+     (list `(,gcc "lib")))
+    (propagated-inputs
+     ;; This is needed for cargo, which specifically tries to run `cc'.
+     (list gcc-cc))
     (arguments
      (list
       #:strip-binaries? #t
@@ -92,15 +86,23 @@
                         (source (cond
                                  ((equal? "out" name) "rustc/")
                                  (else (string-append name "/"))))
-                        (target (assoc-ref outputs name)))
-
+                        (target (assoc-ref outputs name))
+                        (arch #$(match (or (%current-target-system)
+                                           (%current-system))
+                                  ("x86_64-linux"
+                                   "x86_64-unknown-linux-gnu")
+                                  ("i686-linux"
+                                   "i686-unknown-linux-gnu"))))
                    (if (equal? "out" name)
-                       (copy-recursively "rust-std-x86_64-unknown-linux-gnu/lib/"
-                                         (string-append target "/lib/")))
+                       (copy-recursively
+                        (format #f "rust-std-~a/lib/"
+                                arch)
+                        (string-append target "/lib/")))
                    (if (equal? "rust-analyzer-preview" name)
-                       (copy-recursively "rust-analysis-x86_64-unknown-linux-gnu/lib/"
-                                         (string-append target "/lib/")))
-
+                       (copy-recursively
+                        (format #f "rust-analysis-~a/lib/"
+                                arch)
+                        (string-append target "/lib/")))
                    (copy-recursively source target)))
                outputs)))
           (add-after 'install 'patchelf2
@@ -109,7 +111,6 @@
               (let* ((ld.so (string-append
                              (assoc-ref inputs "libc")
                              #$((@@ (gnu packages bootstrap) glibc-dynamic-linker)))))
-
                 (for-each
                  (lambda (output)
                    (let* ((name (car output))
@@ -119,12 +120,12 @@
                           (rpath (string-join
                                   (append
                                    (list "$ORIGIN" libdir)
-
                                    (if (equal? "out" name)
                                        (list)
                                        (list
-                                        (string-append (assoc-ref outputs "out") "/lib")))
-
+                                        (string-append
+                                         (assoc-ref outputs "out")
+                                         "/lib")))
                                    (map
                                     (lambda (input)
                                       (string-append (cdr input) "/lib"))
@@ -154,49 +155,31 @@
                   `("LIBRARY_PATH" ":"
                     suffix (,(string-append libc "/lib"))))))))))))
 
-(define-public (rust-stable-x86_64-linux version base32)
-  (let ((uri (string-append "https://static.rust-lang.org/dist/rust-"
-                            version "-x86_64-unknown-linux-gnu.tar.gz")))
-    (make-rust-binary version uri base32
-                      #:outputs (list "out"
-                                      "cargo"
-                                      "rust-docs"
-                                      "rust-docs-json-preview"
-                                      "clippy-preview"
-                                      "llvm-tools-preview"
-                                      "miri-preview"
-                                      "rls-preview"
-                                      "rust-analyzer-preview"
-                                      "rust-demangler-preview"
-                                      "rustfmt-preview"))))
+(define (stable-uri version arch)
+  (string-append "https://static.rust-lang.org/dist/rust-"
+                 version "-" arch ".tar.gz"))
 
-(define-public (rust-stable-i686-linux version base32)
-  (let ((uri (string-append "https://static.rust-lang.org/dist/rust-"
-                            version "-i686-unknown-linux-gnu.tar.gz")))
-    (make-rust-binary version uri base32
-                      #:outputs (list "out"
-                                      "cargo"
-                                      "rust-docs"
-                                      "rust-docs-json-preview"
-                                      "clippy-preview"
-                                      "llvm-tools-preview"
-                                      "miri-preview"
-                                      "rls-preview"
-                                      "rust-analyzer-preview"
-                                      "rust-demangler-preview"
-                                      "rustfmt-preview"))))
+(define-public rust-binary-x86_64
+  (let ((version "1.75.0"))
+    (make-rust-binary
+     "rust-binary-x86_64"
+     version
+     (origin
+       (method url-fetch)
+       (uri (stable-uri version "x86_64-unknown-linux-gnu"))
+       (sha256
+        (base32
+         "1xkl1p7yhijbj7krcqcnbbwkqs3b3hhib4z8z64n68gzz2v7hfa7"))))))
 
-(define-public rust-binary
-  (rust-stable-x86_64-linux
-   "1.75.0"
-   "1xkl1p7yhijbj7krcqcnbbwkqs3b3hhib4z8z64n68gzz2v7hfa7"))
+(define-public rust-binary-i686
+  (let ((version "1.75.0"))
+    (make-rust-binary
+     "rust-binary-i686"
+     version
+     (origin
+       (method url-fetch)
+       (uri (stable-uri version "i686-unknown-linux-gnu"))
+       (sha256
+        (base32
+         "13v7qrbhjvz98w47ji26nddj59lxh93z05cb6f7k7ayy4n48syqh"))))))
 
-;;; TODO Attempt to combine with rust-binary
-;;;
-;;; This does not actually work right now.
-(define rust-stable-1.75.0-i686-linux
-  (package
-    (inherit (rust-stable-i686-linux
-              "1.75.0"
-              "13v7qrbhjvz98w47ji26nddj59lxh93z05cb6f7k7ayy4n48syqh"))
-    (name "rust-i686")))
