@@ -56,6 +56,8 @@
     (description (package-description gcc))
     (license (package-license gcc))))
 
+;;; TODO Attempt to combine sources for different architectures
+
 (define* (make-rust-binary name version source
                            #:key
                            (outputs (list "out" "cargo")))
