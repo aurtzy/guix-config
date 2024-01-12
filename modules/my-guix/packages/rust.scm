@@ -17,6 +17,17 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Commentary:
+;;;
+;;; Guix supports Rust, but unfortunately not for i686 due to bootstrapping
+;;; issues.  The main purpose of this module is to provide a Rust package that
+;;; works with i686.
+;;;
+;;; See potentially related issue: https://issues.guix.gnu.org/35519
+;;;
+;;; The rust-binary package is based on the one found in this channel:
+;;; https://git.sr.ht/~declantsien/guix-channel
+
 (define-module (my-guix packages rust)
   #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
@@ -30,8 +41,6 @@
   #:use-module (ice-9 match)
   #:use-module (nonguix build-system binary)
   #:export (rust-binary))
-
-;;; Origin channel link: https://git.sr.ht/~declantsien/guix-channel
 
 (define gcc-cc
   (package
