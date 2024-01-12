@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (my-guix packages rust)
+  #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -31,8 +32,28 @@
 
 ;;; Origin channel link: https://git.sr.ht/~declantsien/guix-channel
 
-;;; TODO binary-build-system does not support compiling to anything other than
-;;; x86_64, apparently...  May have to be resolved upstream.
+(define gcc-cc
+  (package
+    (name "gcc-cc")
+    (version (package-version gcc))
+    (source #f)
+    (inputs (list gcc))
+    (build-system trivial-build-system)
+    (arguments
+     (list
+      #:builder
+      (with-imported-modules '((guix build utils))
+        #~(begin
+            (use-modules (guix build utils))
+            (let ((out (assoc-ref %outputs "out"))
+                  (gcc (assoc-ref %build-inputs "gcc")))
+              (mkdir-p (string-append out "/bin"))
+              (symlink (string-append gcc "/bin/gcc")
+                       (string-append out "/bin/cc")))))))
+    (home-page (package-home-page gcc))
+    (synopsis (package-synopsis gcc))
+    (description (package-description gcc))
+    (license (package-license gcc))))
 
 (define* (make-rust-binary version uri base32-hash
                            #:key
