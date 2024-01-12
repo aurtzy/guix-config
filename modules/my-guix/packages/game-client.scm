@@ -30,37 +30,25 @@
   #:use-module (my-guix packages mesa)
   #:use-module (nonguix multiarch-container)
   #:use-module (nongnu packages game-client)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1))
 
-(define (replace-inputs inputs replacements)
-  (let ((apply-replacements (apply compose replacements)))
-    (map (lambda (input)
-           (match input
-             ((name pkg)
-              (list name (apply-replacements pkg)))
-             ((name pkg output)
-              (list name (apply-replacements pkg) output))))
-         inputs)))
+(define (replace-mesa inputs)
+  ;; Because this is a hacky hack, do a sanity check to make sure mesa is
+  ;; actually matched, then remove it
+  (let ((matched (member "mesa" inputs (lambda (x input)
+                                         (equal? x (car input))))))
+    (unless matched
+      (display "SANITY CHECK FAILED: MESA NOT FOUND\n")
+      (raise-exception (make-exception)))
+    (cons `("mesa" ,mesa-git) (delq (car matched) inputs))))
 
-;; TODO Custom Steam container with mesa-git replacing mesa.  Rust doesn't
-;; work on i686 architecture currently, so this package will not compile.
-;;
-;; Potentially related issue: https://issues.guix.gnu.org/35519
 (define-public steam-container-custom
-  ;; Just using `package-input-rewriting' does not seem to work due to issues
-  ;; with inputs not actually being replaced, so we replace them at the
-  ;; source.
-  ;;
-  ;; See: https://gitlab.com/nonguix/nonguix/-/issues/197
-  (let* ((replace-mesa (package-input-rewriting `((,mesa . ,mesa-git))))
-         (steam-client-libs (replace-inputs
-                             (@@ (nongnu packages game-client)
-                                 steam-client-libs)
-                             (list replace-mesa)))
-         (steam-gameruntime-libs (replace-inputs
-                                  (@@ (nongnu packages game-client)
-                                      steam-gameruntime-libs)
-                                  (list replace-mesa))))
+  (let ((steam-client-libs (replace-mesa
+                            (@@ (nongnu packages game-client)
+                                steam-client-libs)))
+        (steam-gameruntime-libs (@@ (nongnu packages game-client)
+                                    steam-gameruntime-libs)))
     (nonguix-container
      (inherit steam-container)
      (name "steam-custom")
