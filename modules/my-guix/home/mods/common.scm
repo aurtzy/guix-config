@@ -119,7 +119,7 @@ the shell alias."
                                data-specs))
               (simple-service name
                               home-files-service-type
-                              `((".local/bin/assist-data"
+                              `((".local/bin/,annex-assist-all"
                                  ,(program-file
                                    "assist-data"
                                    (build-assist-data-script
