@@ -97,7 +97,7 @@
                 '("QT_X11_NO_MITSHM" = ("1"))
                 '("GUIX_SANDBOX_EXTRA_SHARES"
                   = ("$HOME/storage/steam-alt-library"
-                     "$HOME/data/store/areas/games"))))))))
+                     "$HOME/areas/games"))))))))
     (inputs
      (list steam-custom))
     (home-page (package-home-page steam-custom))
