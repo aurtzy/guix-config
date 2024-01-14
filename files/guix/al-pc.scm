@@ -84,6 +84,16 @@
                (mount-point "/boot/efi")
                (device (uuid "DC21-DB63" 'fat32))
                (type "vfat"))
+             (file-system
+               (mount-point "/media/backup")
+               (device "/dev/mapper/luks-f42810d8-c723-4521-9646-da12f6103b59")
+               (flags
+                (base-file-system-flags-ref 'btrfs 'hdd))
+               (options
+                (alist->file-system-options
+                 '(("compress-force" . "zstd:10"))))
+               (type "btrfs")
+               (mount? #f))
              (operating-system-file-systems base-os)))
      (services
       (cons* (service keyboard-center-service-type)
