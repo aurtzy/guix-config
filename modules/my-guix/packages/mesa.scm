@@ -164,10 +164,7 @@
   (let ((name (package-name mesa))
         (version "24.0")
         (revision "0")
-        ;; This is no longer latest commit, due to mesa git updating libdrm
-        ;; past the current Guix package.  Updating may be straightforward,
-        ;; though.  See: https://issues.guix.gnu.org/67888
-        (commit "29fc135a55e65a0d3987ad40b0d25b57f31ed529"))
+        (commit "3c7460c0238a4c7823aea22d9fbfb795ea738fc4"))
     (package/inherit mesa
       (version (git-version version revision commit))
       (source
@@ -178,7 +175,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "1hq8jv6czscm8613casdpvk6p8cacrk5mv4blgki70dhv9q4chyr"))
+                  "0im2b2i3fl3kgqf68y1lkni1lmb4zrzvw02knjrwvj37q2p9qvq9"))
          (patches
           (let* ((url "https://aur.archlinux.org/cgit/aur.git/plain")
                  (id "be7fab11e95214db6895b7de57b6017fd9ce7ca3")
@@ -250,4 +247,7 @@
                                    (%current-system))
                           ("x86_64-linux" rust-binary-x86_64)
                           ("i686-linux" rust-binary-i686))
-                        rust-bindgen-cli)))))))
+                        rust-bindgen-cli))))
+      (propagated-inputs
+       (modify-inputs (package-propagated-inputs mesa)
+         (replace "libdrm" libdrm/newer))))))
