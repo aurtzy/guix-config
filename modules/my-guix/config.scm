@@ -24,8 +24,7 @@
   #:use-module (guix utils)
   #:use-module (ice-9 exceptions)
   #:export ($my-guix-config
-            $modules-dir
-            $guix-package-path
+            $my-modules-dir
             $base-file-system-flags
             base-file-system-flags-ref
             $base-file-system-options
@@ -38,11 +37,8 @@
   ;; .../guix-config/modules/my-guix/../..
   (dirname (dirname (current-source-directory))))
 
-(define $modules-dir
+(define $my-modules-dir
   (string-append $my-guix-config "/modules"))
-
-(define $guix-package-path
-  (string-append $my-guix-config "/guix-package-path"))
 
 (define (base-file-system-config-ref alist file-system-type device-type)
   (let ((device-alist (assq-ref alist file-system-type)))
