@@ -27,6 +27,7 @@
   #:use-module (my-guix home mods common)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
+  #:use-module (my-guix packages game-client)
   #:use-module (my-guix packages minecraft-wayland)
   #:use-module (my-guix packages syncplay)
   #:use-module (my-guix utils)
@@ -42,14 +43,6 @@
 
 (define games-src
   (path-append-my-home "areas/games"))
-
-;; TODO Source paths for steam need to go through data store instead of
-;; symlinks in home currently due to steam flatpak currently not liking
-;; symlinks.  This is not optimal, so readjust whenever this is fixed.
-;;
-;; See: https://github.com/flatpak/flatpak/issues/1971
-(define games-src-steam
-  (path-append-my-home "data/store/areas/games"))
 
 ;; TODO probably better to put this mod elsewhere since it's more of a general
 ;; tool than specifically for entertainment
@@ -74,7 +67,7 @@
 
 (define game-managers-mod
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
-         (steam-dest ".var/app/com.valvesoftware.Steam"))
+         (steam-dest ".local/share/guix-sandbox-home"))
     (mod
       (name 'game-managers-mod)
       (dependencies
@@ -85,7 +78,8 @@
          (packages
           home-environment-packages
           append=>
-          (list sdl2))
+          (list steam-custom-wrapped
+                sdl2))
          (services
           home-environment-user-services
           append=>
@@ -105,15 +99,14 @@
                                    "settings.bin")
                                   ;; Factorio
                                   (,steam-dest
-                                   ,(path-append games-src-steam
+                                   ,(path-append games-src
                                                  "factorio/files")
                                    ".factorio")
                                   ;; tModLoader
                                   (,(path-append steam-dest
                                                  ".local/share/Terraria"
                                                  "tModLoader")
-                                   ,(path-append games-src-steam
-                                                 "tmodloader/files")
+                                   ,(path-append games-src "tmodloader/files")
                                    "Players/Backups"
                                    "Worlds/Backups"
                                    "Captures")))
@@ -121,7 +114,6 @@
                                 home-flatpak-profile-service-type
                                 '((flathub "net.lutris.Lutris")
                                   (flathub "net.davidotek.pupgui2")
-                                  (flathub "com.valvesoftware.Steam")
                                   (flathub "com.github.Matoking.protontricks"))))))))))
 
 (define minecraft-mod
