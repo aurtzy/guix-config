@@ -61,8 +61,12 @@
                                device-type))
 
 (define $base-file-system-options
-  '((btrfs . ((ssd . (("compress-force" . "zstd:2")))
-              (hdd . (("compress-force" . "zstd:6")))))))
+  '((btrfs
+     ;; Useful statistics for determining compression:
+     ;; - https://docs.google.com/spreadsheets/d/1x9-3OQF4ev1fOCrYuYWt1QmxYRmPilw_nLik5H_2_qA/edit?usp=sharing
+     ;; - https://linuxreviews.org/Comparison_of_Compression_Algorithms
+     . ((ssd . (("compress-force" . "zstd:2")))
+        (hdd . (("compress-force" . "zstd:6")))))))
 
 (define (base-file-system-options-ref file-system-type device-type)
   "This procedure retrieves the base file-system options for some type of
