@@ -161,14 +161,14 @@
 ;;
 ;; TODO Consider optimizations like the AUR package has done.
 (define-public mesa-git
-  (let ((version "24.0")
+  (let ((name (package-name mesa))
+        (version "24.0")
         (revision "0")
         ;; This is no longer latest commit, due to mesa git updating libdrm
         ;; past the current Guix package.  Updating may be straightforward,
         ;; though.  See: https://issues.guix.gnu.org/67888
         (commit "29fc135a55e65a0d3987ad40b0d25b57f31ed529"))
     (package/inherit mesa
-      (name "mesa-git")
       (version (git-version version revision commit))
       (source
        (origin
