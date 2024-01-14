@@ -27,9 +27,9 @@
   #:use-module (my-guix utils)
   #:export (base-desktop-operating-system))
 
-(use-package-modules linux certs version-control disk)
+(use-package-modules linux certs tor version-control disk)
 
-(use-service-modules cups xorg desktop virtualization)
+(use-service-modules cups networking xorg desktop virtualization)
 
 (define base-desktop-operating-system
   ;; Base desktop operating system. This configuration is missing
@@ -41,6 +41,7 @@
     (keyboard-layout (keyboard-layout "us"))
     (packages
      (cons* nss-certs
+            torsocks
             git
             gparted
             gptfdisk
@@ -56,6 +57,7 @@
                                                  "guix/nonguix.pub"))))
                              (substitute-urls
                               '("https://substitutes.nonguix.org"))))
+            (service tor-service-type)
             (service cups-service-type)
             (service qemu-binfmt-service-type
                      (qemu-binfmt-configuration
