@@ -85,7 +85,7 @@
                (device (uuid "DC21-DB63" 'fat32))
                (type "vfat"))
              (file-system
-               (mount-point "/media/backup")
+               (mount-point "/mnt/backup")
                (device "/dev/mapper/luks-f42810d8-c723-4521-9646-da12f6103b59")
                (flags
                 (base-file-system-flags-ref 'btrfs 'hdd))
