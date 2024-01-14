@@ -12,16 +12,13 @@ either being refined for upstreaming or are not suitable for upstream.
 
 * Overview
 
-Here is a general overview of the most notable files in this repository:
+Here is a general overview of notable files in this repository:
 
 - [[file:files]] contains configuration files that are not declared as Guile
   modules. This includes the top-level Guix Home/System configuration files
   for my systems ([[file:files/guix]]).
 - [[file:modules]] contains Guile modules, where packages, services, and other
   utilities are defined.
-- [[file:guix-with-env.scm]] runs =guix= with [[file:modules]] in the load path, used
-  in cases where the persistent load path (defined in the [[file:modules/my-guix/home/base][base configuration]])
-  gets broken or when initially setting up the system.
 - [[file:setup.scm]] is used for setting up additional things that the installer
   does not offer to do.  Currently, this is only used for initializing a
   swapfile.
