@@ -44,6 +44,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages rust)
+  #:use-module (gnu packages xdisorg)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
@@ -142,6 +143,19 @@
          (sha256
           (base32
            "0fzxg3dkrjy101vv5b6llc8mh74xz1vhhsaiwrn68kzvynxqy9rr")))))))
+
+(define-public libdrm/newer
+  (package
+    (inherit libdrm)
+    (version "2.4.120")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://dri.freedesktop.org/libdrm/libdrm-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0yijzgg6rdsa68bz03sw0lcfa2nclv9m3as1cja50wkcyxim7x9v"))))))
 
 ;; Reference package: https://aur.archlinux.org/packages/vulkan-nouveau-git
 ;;
