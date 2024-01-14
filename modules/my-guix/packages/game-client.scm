@@ -25,7 +25,10 @@
 ;;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (my-guix packages game-client)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages gl)
+  #:use-module (guix build-system trivial)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (my-guix packages mesa)
   #:use-module (nonguix multiarch-container)
@@ -52,7 +55,6 @@
                                     steam-gameruntime-libs)))
     (nonguix-container
      (inherit steam-container)
-     (name "steam-custom")
      (union64
       (fhs-union `(,@steam-client-libs
                    ,@steam-gameruntime-libs
@@ -65,7 +67,40 @@
                  #:name "fhs-union-32"
                  #:system "i686-linux")))))
 
-(define-public steam-custom
+(define steam-custom
+  (let ((steam-pkg (nonguix-container->package steam-container-custom)))
+    (package
+      (inherit steam-pkg)
+      (version (string-append (package-version steam-pkg) "-custom")))))
+
+;;; TODO This probably belongs in mods.
+(define-public steam-custom-wrapped
   (package
-    (inherit (nonguix-container->package steam-container-custom))
-    (supported-systems (list "x86_64-linux"))))
+    (name "steam-custom")
+    (version (package-version steam-custom))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     (list
+      #:builder
+      (with-imported-modules '((guix build utils))
+        #~(begin
+            (use-modules (guix build utils))
+            (let* ((out (assoc-ref %outputs "out"))
+                   (out-steam (string-append out "/bin/steam"))
+                   (steam (assoc-ref %build-inputs "steam")))
+              (mkdir-p (string-append out "/bin"))
+              (symlink (string-append steam "/bin/steam")
+                       out-steam)
+              (wrap-program out-steam
+                #:sh #$(file-append bash-minimal "/bin/bash")
+                '("QT_X11_NO_MITSHM" = ("1"))
+                '("GUIX_SANDBOX_EXTRA_SHARES"
+                  = ("$HOME/storage/steam-alt-library"
+                     "$HOME/data/store/areas/games"))))))))
+    (inputs
+     (list steam-custom))
+    (home-page (package-home-page steam-custom))
+    (synopsis (package-synopsis steam-custom))
+    (description (package-description steam-custom))
+    (license (package-license steam-custom))))
