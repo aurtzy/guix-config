@@ -78,7 +78,7 @@
                                     $my-guix-config
                                     "home.scm"))
                                (",home-reconfigure-without-flatpak"
-                                . "GUIX_FLATPAK_DISABLE=1 home-reconfigure")
+                                . "GUIX_FLATPAK_DISABLE=1 ,home-reconfigure")
                                (",system-reconfigure"
                                 . ,(format
                                     #f
