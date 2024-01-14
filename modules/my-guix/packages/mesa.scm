@@ -247,7 +247,7 @@
                 ,(package-source rust-proc-macro2-1/newer))
               (modify-inputs (package-native-inputs mesa)
                 (append (match (or (%current-target-system)
-                                (%current-system))
+                                   (%current-system))
                           ("x86_64-linux" rust-binary-x86_64)
                           ("i686-linux" rust-binary-i686))
                         rust-bindgen-cli)))))))
