@@ -36,12 +36,13 @@
 (define (replace-mesa inputs)
   ;; Because this is a hacky hack, do a sanity check to make sure mesa is
   ;; actually matched, then remove it
-  (let ((matched (member "mesa" inputs (lambda (x input)
-                                         (equal? x (car input))))))
+  (let ((matched (and=> (member "mesa" inputs (lambda (x input)
+                                                (equal? x (car input))))
+                        car)))
     (unless matched
       (display "SANITY CHECK FAILED: MESA NOT FOUND\n")
       (raise-exception (make-exception)))
-    (cons `("mesa" ,mesa-git) (delq (car matched) inputs))))
+    (cons `("mesa" ,mesa-git) (delq matched inputs))))
 
 (define-public steam-container-custom
   (let ((steam-client-libs (replace-mesa
