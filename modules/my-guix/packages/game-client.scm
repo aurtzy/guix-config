@@ -92,6 +92,9 @@
               (mkdir-p (string-append out "/bin"))
               (symlink (string-append steam "/bin/steam")
                        out-steam)
+              (mkdir-p (string-append out "/share"))
+              (symlink (string-append steam "/share/applications")
+                       (string-append out "/share/applications"))
               (wrap-program out-steam
                 #:sh #$(file-append bash-minimal "/bin/bash")
                 '("QT_X11_NO_MITSHM" = ("1"))
