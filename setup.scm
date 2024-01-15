@@ -136,7 +136,7 @@
    (format-usage "install [OPTION ...] TARGET")
    "Sets up Guix System at TARGET root using the system configuration from"
    "the guix-config that this script is located in."
-   (string-append "(" (format #f "~s" CONFIG-FILE) ")")
+   (format #f "(~s)" CONFIG-FILE)
    ""
    "Options: none"))
 
