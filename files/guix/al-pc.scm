@@ -51,12 +51,15 @@
              (source
               (uuid "7ccff0a3-b181-4788-9892-e68306566325"))
              (target "cryptroot")
+             ;; TODO Get key file working with root drive
              (type luks-device-mapping))
             (mapped-device
              (source
               (uuid "d50f62c1-e312-4c83-8b55-b0af00a4de2a"))
              (target "cryptstorage")
-             (type luks-device-mapping))))
+             (type (luks-device-mapping-with-options
+                    #:key-file (string-append "/root/keys/"
+                                              (uuid->string source)))))))
      (file-systems
       (cons* (file-system
                (mount-point "/")
@@ -67,7 +70,11 @@
                 (alist->file-system-options
                  (base-file-system-options-ref 'btrfs 'ssd)))
                (type "btrfs")
-               (dependencies mapped-devices))
+               (dependencies (filter
+                              (lambda (dev)
+                                (member "cryptroot"
+                                        (mapped-device-targets dev)))
+                              mapped-devices)))
              (file-system
                (mount-point "/home/alvin/storage")
                (device "/dev/mapper/cryptstorage")
