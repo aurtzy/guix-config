@@ -77,7 +77,8 @@
         append=>
         (list (simple-service name
                               home-flatpak-profile-service-type
-                              '((flathub "fr.handbrake.ghb")
+                              '((flathub "org.kde.kdenlive")
+                                (flathub "fr.handbrake.ghb")
                                 (flathub "org.kde.krita")))))))))
 
 (define office-mod
