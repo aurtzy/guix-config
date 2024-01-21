@@ -165,6 +165,55 @@
       (else
        (setup-install-help)))))
 
+(define (display-luks-keyfile-configuration keyfile)
+  (pretty-print
+   `(luks-device-mapping-with-options
+     #:key-file ,keyfile)))
+
+(define (setup-luks-keyfile-help)
+  (display-help
+   (format-usage "luks-keyfile UUID")
+   "Create a keyfile for partition with UUID and add it to the LUKS header."
+   ""
+   "Options: none"))
+
+(define (setup-luks-keyfile-parse-options args)
+  (getopt-long args
+               '()))
+
+(define (setup-luks-keyfile args)
+  (when (need-help? args)
+    (setup-luks-keyfile-help))
+  (let* ((options (setup-luks-keyfile-parse-options args))
+         (cmd-args (option-ref options '() #f)))
+    (match cmd-args
+      ((uuid)
+       (let ((target-partition (string-append "/dev/disk/by-uuid/" uuid))
+             (keyfile (string-append "/root/keys/" uuid)))
+         (unless (file-exists? target-partition)
+           (format (current-error-port)
+                   "error: Partition does not exist: ~s\n"
+                   target-partition)
+           (exit #f))
+         (invoke "dd"
+                 "bs=512"
+                 "count=4"
+                 "if=/dev/random"
+                 (string-append "of=" keyfile)
+                 "iflag=fullblock")
+         (invoke "guix"
+                 "shell"
+                 "cryptsetup"
+                 "--"
+                 "cryptsetup"
+                 "luksAddKey"
+                 target-partition
+                 keyfile)
+         (format (current-error-port) "\n")
+         (display-luks-keyfile-configuration keyfile)))
+      (else
+       (setup-luks-keyfile-help)))))
+
 (define (setup-help)
   (display-help
    (format-usage "COMMAND ARG ...")
@@ -172,7 +221,9 @@
    ""
    "Commands:"
    "  swapfile"
-   "  install"))
+   "  install"
+   ;; TODO remove experimental tag once it's field-tested
+   "  luks-keyfile  (experimental)"))
 
 (define (main args)
   (let ((cmd-args (if (null? args)
@@ -183,6 +234,8 @@
        (setup-swapfile cmd-args))
       (("install" _ ...)
        (setup-install cmd-args))
+      (("luks-keyfile" _ ...)
+       (setup-luks-keyfile cmd-args))
       (else
        (setup-help)))))
 
