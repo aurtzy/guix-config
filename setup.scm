@@ -151,8 +151,9 @@
          (cmd-args (option-ref options '() #f)))
     (unless (file-exists? CONFIG-FILE)
       (format (current-error-port)
-              "error: config file does not exist: ~s"
-              CONFIG-FILE))
+              "error: config file does not exist: ~s\n"
+              CONFIG-FILE)
+      (exit #f))
     (match cmd-args
       ((target)
        (invoke "herd" "start" "cow-store" (canonicalize-path target))
