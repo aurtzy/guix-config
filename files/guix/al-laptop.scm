@@ -19,6 +19,10 @@
  (let ((base-os base-desktop-operating-system))
    (operating-system
      (inherit base-os)
+     (kernel-arguments
+      ;; Fix keyboard not working when resuming from suspend
+      (cons* "i8042.dumbkbd"
+             (operating-system-user-kernel-arguments base-os)))
      (host-name "al-laptop")
      (users
       (cons* (user-account
