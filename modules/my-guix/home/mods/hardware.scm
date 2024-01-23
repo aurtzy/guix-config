@@ -22,6 +22,7 @@
 (define-module (my-guix home mods hardware)
   #:use-module (gnu)
   #:use-module (gnu home)
+  #:use-module (gnu home services sound)
   #:use-module (gnu services)
   #:use-module (my-guix mods)
   #:use-module (my-guix home mods common)
@@ -40,7 +41,8 @@
        (services
         home-environment-user-services
         append=>
-        (list (simple-service name
+        (list (service home-pipewire-service-type)
+              (simple-service name
                               home-impure-symlinks-service-type
                               `((".config/easyeffects/input"
                                  ,(path-append-my-files "impure/pipewire")
