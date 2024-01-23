@@ -26,10 +26,7 @@
  (let ((base-env base-desktop-home-environment))
    (home-environment
     (inherit base-env)
-    (services
-     (cons* (service home-dbus-service-type)
-            (service home-pipewire-service-type)
-            (home-environment-user-services base-env)))))
+    ))
  (append common-mods
          extra-mods
          entertainment-mods
