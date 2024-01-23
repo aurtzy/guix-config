@@ -23,6 +23,7 @@
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
+  #:use-module (gnu home services desktop)
   #:use-module (gnu home services shells)
   #:use-module (gnu services)
   #:use-module (guix gexp)
@@ -41,7 +42,8 @@
           openssh ;; ssh
           ))
    (services
-    (list (service home-bash-service-type
+    (list (service home-dbus-service-type)
+          (service home-bash-service-type
                    (home-bash-configuration
                     (environment-variables
                      `(("GUIX_PACKAGE_PATH"
