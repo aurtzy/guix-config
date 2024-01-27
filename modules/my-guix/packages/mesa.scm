@@ -238,15 +238,7 @@
                       ("subprojects/quote.wrap"
                        . "rust-quote")
                       ("subprojects/proc-macro2.wrap"
-                       . "rust-proc-macro2")))))
-               (add-before 'configure 'fix-files-causing-errors
-                 (lambda _
-                   (map delete-file
-                        (find-files "build/subprojects"
-                                    "^.*\\.rlib$"))
-                   (map delete-file
-                        (find-files "build/src/nouveau/compiler"
-                                    "^.*\\.rlib$")))))))))
+                       . "rust-proc-macro2"))))))))))
       (native-inputs
        (cons* `("rust-syn"
                 ,(package-source rust-syn-2/newer))
