@@ -21,6 +21,7 @@
 
 (define-module (my-guix base desktop)
   #:use-module (gnu)
+  #:use-module (gnu services base)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system pam)
   #:use-module (my-guix config)
@@ -64,6 +65,10 @@
                       (platforms (lookup-qemu-platforms
                                   "arm"
                                   "aarch64"))))
+            (service pam-limits-service-type
+                     (list
+                      ;; Make system Esync compatible
+                      (pam-limits-entry "*" 'hard 'nofile 524288)))
             (modify-services %desktop-services
               (delete gdm-service-type))))
     (sudoers-file
