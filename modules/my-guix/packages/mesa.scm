@@ -164,7 +164,7 @@
   (let ((name (package-name mesa))
         (version "24.0")
         (revision "0")
-        (commit "b69345fcfcd01a13bbf7cfab169cd417b26e5bb9"))
+        (commit "a0a453e43f6efec864267a20a555a5c1ffe7eabc"))
     (package/inherit mesa
       (version (git-version version revision commit))
       (source
@@ -175,7 +175,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "0a2hfvy9cv2wakxrm9lwq0967pdaa7j9si2845a90n054p74vdmw"))
+                  "1l3mx7wbk48apca068sibvi4a9nzglp1mkax5n1gqbz3l8jz0xvl"))
          (patches
           (let* ((url "https://aur.archlinux.org/cgit/aur.git/plain")
                  (id "1f6789230c9167f695de871d1cdaef8d6179ae3d")
