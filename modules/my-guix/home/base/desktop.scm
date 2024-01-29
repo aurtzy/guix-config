@@ -34,6 +34,24 @@
 
 (use-package-modules ncurses package-management xdisorg ssh)
 
+(define guix-system-reconfigure-script
+  #~(exit
+     (status:exit-val
+      (system* "guix"
+               "system"
+               "-L" #$$my-modules-dir
+               "reconfigure"
+               #$(string-append $my-guix-config "/system.scm")))))
+
+(define guix-home-reconfigure-script
+  #~(exit
+     (status:exit-val
+      (system* "guix"
+               "home"
+               "-L" #$$my-modules-dir
+               "reconfigure"
+               #$(string-append $my-guix-config "/home.scm")))))
+
 (define-public base-desktop-home-environment
   (home-environment
    (packages
@@ -73,25 +91,12 @@
                         . ,(build-path-augmentation
                             "PATH"
                             "$HOME/.local/bin"))))
-                    (aliases `((",home-reconfigure"
-                                . ,(format
-                                    #f
-                                    "guix home reconfigure ~a/~a"
-                                    $my-guix-config
-                                    "home.scm"))
-                               (",home-reconfigure-without-flatpak"
-                                . "GUIX_FLATPAK_DISABLE=1 ,home-reconfigure")
-                               (",system-reconfigure"
-                                . ,(format
-                                    #f
-                                    "sudo guix system -L ~a reconfigure ~a/~a"
-                                    $my-modules-dir
-                                    $my-guix-config
-                                    "system.scm"))
-
-                               ("l." . "ls -d .*")
-                               ("la" . "ls -a")
-                               ("diff" . "diff --color=auto")))
+                    (aliases
+                     `((",guix-home-reconfigure-without-flatpak"
+                        . "GUIX_FLATPAK_DISABLE=1 ,guix-home-reconfigure")
+                       ("l." . "ls -d .*")
+                       ("la" . "ls -a")
+                       ("diff" . "diff --color=auto")))
                     (bashrc
                      ;; Import function definitions in bashrc file
                      (list (local-file
@@ -99,7 +104,15 @@
                             "bashrc")))))
           (simple-service 'home-files
                           home-files-service-type
-                          `((".inputrc"
+                          `((".local/bin/,guix-system-reconfigure"
+                             ,(program-file
+                               "guix-system-reconfigure"
+                               guix-system-reconfigure-script))
+                            (".local/bin/,guix-home-reconfigure"
+                             ,(program-file
+                               "guix-home-reconfigure"
+                               guix-home-reconfigure-script))
+                            (".inputrc"
                              ,(plain-file
                                "inputrc"
                                "set revert-all-at-newline on\n"))))
