@@ -100,7 +100,8 @@
                 '("QT_X11_NO_MITSHM" = ("1"))
                 '("GUIX_SANDBOX_EXTRA_SHARES"
                   prefix ("$HOME/storage/steam-alt-library"
-                          "$HOME/areas/games"))))))))
+                          "$HOME/areas/games"
+                          "$HOME/.config/r2modmanPlus-local"))))))))
     (inputs
      (list steam-custom))
     (home-page (package-home-page steam-custom))
