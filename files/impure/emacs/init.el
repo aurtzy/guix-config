@@ -645,7 +645,9 @@ simple rename to fit the keybind it will be mapped to."
   :init
   (add-hook 'python-mode-hook
             (lambda ()
-              (set-fill-column 79))))
+              (set-fill-column 79)))
+  :custom
+  (python-shell-dedicated 'project))
 
 ;;;;; C
 ;;;;;
