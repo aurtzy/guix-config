@@ -6,7 +6,6 @@
              (my-guix home mods common)
              (my-guix home mods desktop-environment)
              (my-guix home mods extra)
-             (my-guix home mods hardware)
              (my-guix home services)
              (my-guix home services package-management))
 
@@ -19,8 +18,7 @@
          extra-mods
          (list data-mod
                gnome-mod
-               nonguix-channel-mod
-               pipewire-mod))
+               nonguix-channel-mod))
  #:exclude (list creative-mod
                  personal-comms-mod))
 

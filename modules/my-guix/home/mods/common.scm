@@ -379,6 +379,7 @@ the shell alias."
   (list emacs-mod
         common-fonts-mod
         flatpak-mod
+        audio-mod
         browsers-mod
         password-management-mod
         breeze-theme-mod

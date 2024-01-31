@@ -11,7 +11,6 @@
              (my-guix home mods desktop-environment)
              (my-guix home mods entertainment)
              (my-guix home mods extra)
-             (my-guix home mods hardware)
              (my-guix home mods server)
              (my-guix home services)
              (my-guix home services package-management)
@@ -32,6 +31,5 @@
          entertainment-mods
          (list data-mod
                gnome-mod
-               pipewire-mod
                web-server-mod
                nonguix-channel-mod)))
