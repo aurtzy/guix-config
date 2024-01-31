@@ -1,4 +1,4 @@
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -25,6 +25,7 @@
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
+  #:use-module (gnu home services sound)
   #:use-module (gnu services)
   #:use-module (my-guix home mods misc)
   #:use-module (my-guix home services)
@@ -38,6 +39,7 @@
             emacs-mod
             common-fonts-mod
             flatpak-mod
+            audio-mod
             browsers-mod
             password-management-mod
             breeze-theme-mod
@@ -47,6 +49,7 @@
 
 (use-package-modules haskell-apps backup
                      emacs emacs-xyz guile
+                     pulseaudio
                      fonts freedesktop
                      kde-plasma kde-frameworks
                      video music)
@@ -258,6 +261,30 @@ the shell alias."
                    (cons '(flathub "com.github.tchx84.Flatseal")
                          (home-flatpak-configuration-profile
                           config))))))))))))
+
+(define audio-mod
+  (mod
+    (name 'pipewire-mod)
+    (dependencies
+     (list flatpak-mod))
+    (apply
+     (apply-mod home-environment
+       (packages
+        home-environment-packages
+        append=>
+        (list pavucontrol))
+       (services
+        home-environment-user-services
+        append=>
+        (list (service home-pipewire-service-type)
+              (simple-service name
+                              home-impure-symlinks-service-type
+                              `((".config/easyeffects/input"
+                                 ,(path-append-my-files "impure/pipewire")
+                                 "main-mic.json")))
+              (simple-service name
+                              home-flatpak-profile-service-type
+                              '((flathub "com.github.wwmm.easyeffects")))))))))
 
 (define browsers-mod
   (mod
