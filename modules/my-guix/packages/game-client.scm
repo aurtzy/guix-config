@@ -60,6 +60,8 @@
                    ,@steam-gameruntime-libs
                    ,@fhs-min-libs)
                  #:name "fhs-union-64"))
+     ;; If 32-bit games are not played, this can be commented out to save on
+     ;; build time.
      (union32
       (fhs-union `(,@steam-client-libs
                    ,@steam-gameruntime-libs
