@@ -6,7 +6,9 @@
              (my-guix base desktop)
              (my-guix config)
              (my-guix mods)
-             (my-guix mods desktop))
+             (my-guix mods desktop)
+             (nongnu packages linux)
+             (nongnu system linux-initrd))
 
 (define swapfile-mod
   (build-swapfile-mod 
@@ -19,6 +21,8 @@
  (let ((base-os base-desktop-operating-system))
    (operating-system
      (inherit base-os)
+     (kernel linux)
+     (initrd microcode-initrd)
      (kernel-arguments
       ;; Fix keyboard not working when resuming from suspend
       (cons* "i8042.dumbkbd"
