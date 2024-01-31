@@ -8,6 +8,7 @@
              (my-guix config)
              (my-guix mods)
              (my-guix mods desktop)
+             (my-guix packages linux)
              (my-guix services hardware)
              (nongnu packages linux)
              (nongnu packages nvidia)
@@ -26,7 +27,9 @@
    (operating-system
      (inherit base-os)
      (host-name "al-pc")
-     (kernel linux-6.7)
+     ;; Issue: https://gitlab.com/nonguix/nonguix/-/issues/312
+     ;; Potentially related issue: https://gitlab.freedesktop.org/drm/nouveau/-/issues/314
+     (kernel linux-6.7-rc)
      (initrd microcode-initrd)
      (firmware (list linux-firmware))
      (kernel-arguments
