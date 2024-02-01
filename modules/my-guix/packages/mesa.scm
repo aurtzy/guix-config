@@ -162,9 +162,9 @@
 ;; TODO Consider optimizations like the AUR package has done.
 (define-public mesa-git
   (let ((name (package-name mesa))
-        (version "24.0")
+        (version "24.0.0")
         (revision "0")
-        (commit "a0a453e43f6efec864267a20a555a5c1ffe7eabc"))
+        (commit "cdfbd3323d9e2dc653b7f2f02dc67f014b892804"))
     (package/inherit mesa
       (version (git-version version revision commit))
       (source
@@ -175,7 +175,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "1l3mx7wbk48apca068sibvi4a9nzglp1mkax5n1gqbz3l8jz0xvl"))
+                  "05991jmqh89k1bz6ys9g46shk4vslfk8ga437n51nya7jcanc15f"))
          (patches
           (let* ((url "https://aur.archlinux.org/cgit/aur.git/plain")
                  (id "1f6789230c9167f695de871d1cdaef8d6179ae3d")
@@ -196,14 +196,7 @@
                     (file-name "nak-iadd3-imad.patch")
                     (sha256
                      (base32
-                      "17dzp3jgf7pm55rkirgckhrf0q13l9zz522sjzpdm440r222bh1r")))
-                  (origin
-                    (method url-fetch)
-                    (uri (patch-uri "nvk-compressed-image"))
-                    (file-name "nvk-compressed-image.patch")
-                    (sha256
-                     (base32
-                      "1i4jdjn5g3r0xk8ddk36scinwism09jsfxabmvjjnbsiis9hfa7b"))))))))
+                      "17dzp3jgf7pm55rkirgckhrf0q13l9zz522sjzpdm440r222bh1r"))))))))
       (arguments
        (cons*
         #:meson meson/newest
