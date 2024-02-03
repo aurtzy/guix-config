@@ -25,8 +25,10 @@
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
+  #:use-module (gnu home services shepherd)
   #:use-module (gnu home services sound)
   #:use-module (gnu services)
+  #:use-module (gnu services shepherd)
   #:use-module (my-guix home mods misc)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
@@ -49,6 +51,7 @@
 
 (use-package-modules haskell-apps backup
                      emacs emacs-xyz guile
+                     package-management
                      pulseaudio
                      fonts freedesktop
                      kde-plasma kde-frameworks
@@ -284,7 +287,27 @@ the shell alias."
                                  "main-mic.json")))
               (simple-service name
                               home-flatpak-profile-service-type
-                              '((flathub "com.github.wwmm.easyeffects")))))))))
+                              '((flathub "com.github.wwmm.easyeffects")))
+              (simple-service name
+                              home-shepherd-service-type
+                              (list
+                               (shepherd-service
+                                (documentation
+                                 "Run Easy Effects (easyeffects).")
+                                (provision
+                                 '(easyeffects))
+                                (requirement
+                                 '(pipewire))
+                                (start
+                                 #~(make-forkexec-constructor
+                                    (list #$(file-append flatpak
+                                                         "/bin/flatpak")
+                                          "run"
+                                          "--user"
+                                          "com.github.wwmm.easyeffects"
+                                          "--gapplication-service")))
+                                (stop
+                                 #~(make-kill-destructor)))))))))))
 
 (define browsers-mod
   (mod
