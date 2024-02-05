@@ -174,10 +174,6 @@
   :bind (("M-u" . upcase-dwim)
          ("M-l" . downcase-dwim)))
 
-(use-package emacs
-  :config
-  (electric-pair-mode 1))
-
 (use-package autorevert
   :custom
   (global-auto-revert-non-file-buffers t)
@@ -401,6 +397,10 @@
   (auto-insert-directory (concat user-emacs-directory "inserts"))
   :config
   (auto-insert-mode 1))
+
+(use-package elec-pair
+  :config
+  (electric-pair-mode 1))
 
 (use-package envrc
   :preface
