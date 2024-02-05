@@ -462,14 +462,6 @@
   :config
   (dashboard-setup-startup-hook))
 
-(use-package python
-  :init
-  (add-hook 'python-mode-hook
-            (lambda ()
-              (set-fill-column 79)))
-  :custom
-  (python-shell-dedicated 'project))
-
 ;; https://reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/
 (use-package ccls
   :when (package-installed-p 'ccls)
@@ -486,24 +478,6 @@
   ;; to unavailable feature; see: https://github.com/joaotavora/eglot/issues/615
   ;; depending on its implementation the above may need to be tweaked
   )
-
-(use-package elisp-mode
-  :hook ((emacs-lisp-mode . enable-paredit-mode)))
-
-(use-package lisp-mode
-  :hook ((lisp-mode . enable-paredit-mode)))
-
-(use-package scheme
-  :hook ((scheme-mode . enable-paredit-mode))
-  :init
-  (font-lock-add-keywords 'scheme-mode
-                          '(("(\\(lambda\\*\\)"
-                             (1 font-lock-keyword-face))))
-  (put 'lambda* 'scheme-indent-function 1))
-
-(use-package geiser-guile
-  :config
-  (add-to-list 'geiser-guile-load-path "~/git/guix"))
 
 ;; TODO: explore magit configurations
 (use-package magit
@@ -569,6 +543,34 @@ to report upstream.  TODO."
   :after org
   :custom
   (org-agenda-span 10))
+
+;;;;; Programming languages
+
+(use-package python
+  :init
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (set-fill-column 79)))
+  :custom
+  (python-shell-dedicated 'project))
+
+(use-package elisp-mode
+  :hook ((emacs-lisp-mode . enable-paredit-mode)))
+
+(use-package lisp-mode
+  :hook ((lisp-mode . enable-paredit-mode)))
+
+(use-package scheme
+  :hook ((scheme-mode . enable-paredit-mode))
+  :init
+  (font-lock-add-keywords 'scheme-mode
+                          '(("(\\(lambda\\*\\)"
+                             (1 font-lock-keyword-face))))
+  (put 'lambda* 'scheme-indent-function 1))
+
+(use-package geiser-guile
+  :config
+  (add-to-list 'geiser-guile-load-path "~/git/guix"))
 
 ;;; init.el ends here
 (put 'downcase-region 'disabled nil)
