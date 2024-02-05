@@ -50,7 +50,7 @@
             common-mods))
 
 (use-package-modules haskell-apps backup
-                     emacs emacs-xyz guile
+                     emacs emacs-xyz tree-sitter guile
                      package-management
                      pulseaudio
                      fonts freedesktop
@@ -141,6 +141,13 @@ the shell alias."
         append=>
         (list emacs-pgtk
               font-hack
+              ;; tree-sitter
+              tree-sitter-bash
+              tree-sitter-c
+              tree-sitter-go
+              tree-sitter-javascript
+              tree-sitter-python
+              tree-sitter-rust
               ;; direnv
               emacs-envrc
               ;; completion bundle
