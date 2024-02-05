@@ -143,8 +143,6 @@ the shell alias."
               font-hack
               ;; direnv
               emacs-envrc
-              ;; meow modal editing
-              emacs-meow
               ;; completion bundle
               emacs-vertico
               emacs-consult
