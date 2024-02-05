@@ -569,6 +569,7 @@ to report upstream.  TODO."
             (lambda ()
               (set-fill-column 79)))
   :custom
+  (python-interpreter "python3")
   (python-shell-dedicated 'project))
 
 (use-package sh-script
