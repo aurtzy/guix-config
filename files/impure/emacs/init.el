@@ -409,7 +409,24 @@
   (envrc-global-mode t))
 
 (use-package eglot
-  :commands eglot)
+  :commands eglot
+  :config
+  ;; https://reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/
+  (use-package ccls
+    :when (package-installed-p 'ccls)
+    :after eglot
+    :defines ccls-sem-highlight-method
+    :custom
+    (ccls-initialization-options '(:index
+                                   (:comments 2)
+                                   :completion
+                                   (:detailedLabel t)))
+    :config
+    (setq ccls-sem-highlight-method 'font-lock)
+    ;; TODO remove this comment when the above works; this does not work yet due
+    ;; to unavailable feature; see: https://github.com/joaotavora/eglot/issues/615
+    ;; depending on its implementation the above may need to be tweaked
+    ))
 
 (use-package flymake
   :hook prog-mode
@@ -461,23 +478,6 @@
   (dashboard-set-init-info nil)
   :config
   (dashboard-setup-startup-hook))
-
-;; https://reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/
-(use-package ccls
-  :when (package-installed-p 'ccls)
-  :after eglot
-  :defines ccls-sem-highlight-method
-  :custom
-  (ccls-initialization-options '(:index
-                                 (:comments 2)
-                                 :completion
-                                 (:detailedLabel t)))
-  :config
-  (setq ccls-sem-highlight-method 'font-lock)
-  ;; TODO remove this comment when the above works; this does not work yet due
-  ;; to unavailable feature; see: https://github.com/joaotavora/eglot/issues/615
-  ;; depending on its implementation the above may need to be tweaked
-  )
 
 ;; TODO: explore magit configurations
 (use-package magit
