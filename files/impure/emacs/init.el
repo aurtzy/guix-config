@@ -494,8 +494,8 @@ simple rename to fit the keybind it will be mapped to."
 
 ;; https://reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/
 (use-package ccls
-  :after eglot
   :when (package-installed-p 'ccls)
+  :after eglot
   :defines ccls-sem-highlight-method
   :custom
   (ccls-initialization-options '(:index
