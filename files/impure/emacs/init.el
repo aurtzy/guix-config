@@ -174,23 +174,6 @@
 (use-package emacs
   :bind ("C-<tab>" . completion-at-point))
 
-;;;;; REMAP `kill-sexp'
-
-(use-package emacs
-  :preface
-  (defun into-list (&optional arg interactive)
-    "(into-list &optional ARG INTERACTIVE)
-
-Move forward into one level of parentheses.
-This command is identical to \"down-list\" as a
-simple rename to fit the keybind it will be mapped to."
-    (interactive "^p\nd")
-    (down-list arg interactive))
-  :bind (("C-M-d" . kill-sexp)
-         ("C-M-i" . into-list)
-         :map emacs-lisp-mode-map
-         ("C-M-i" . nil)))
-
 ;;;;; REMAP UP/DOWN CASE COMMANDS
 
 (use-package emacs
