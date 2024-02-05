@@ -546,13 +546,30 @@ to report upstream.  TODO."
 
 ;;;;; Programming languages
 
+(use-package cc-mode
+  :init
+  (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode)))
+
+(use-package go-ts-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode)))
+
+(use-package js
+  :init
+  (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode)))
+
 (use-package python
   :init
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   (add-hook 'python-mode-hook
             (lambda ()
               (set-fill-column 79)))
   :custom
   (python-shell-dedicated 'project))
+
+(use-package sh-script
+  :init
+  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
 
 (use-package elisp-mode
   :hook ((emacs-lisp-mode . enable-paredit-mode)))
@@ -571,6 +588,10 @@ to report upstream.  TODO."
 (use-package geiser-guile
   :config
   (add-to-list 'geiser-guile-load-path "~/git/guix"))
+
+(use-package rust-ts-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.\\(rs\\|rlib\\)\\'" . rust-ts-mode)))
 
 ;;; init.el ends here
 (put 'downcase-region 'disabled nil)
