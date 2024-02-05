@@ -79,15 +79,6 @@
   (load-theme 'modus-vivendi))
 
 (use-package emacs
-  :preface
-  (defun toggle-frame-transparency ()
-    "Toggles frame transparency."
-    (interactive)
-    (if (not (eql 100 (frame-parameter nil 'alpha-background)))
-        (set-frame-parameter nil 'alpha-background 100)
-      (set-frame-parameter nil 'alpha-background
-                           (alist-get 'alpha-background
-                                      default-frame-alist))))
   :custom
   (inhibit-startup-message t)
   (visible-bell t)
@@ -98,11 +89,23 @@
   (add-to-list 'default-frame-alist '(font . "Hack-11"))
   ;; TODO menu-bar was funky with frame transparency at the time of
   ;; writing so menu-bar has been disabled; try re-enabling in future
-  (add-to-list 'default-frame-alist '(alpha-background . 90))
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (global-visual-line-mode 1)
   (global-hl-line-mode 1))
+
+(use-package emacs
+  :preface
+  (defun toggle-frame-transparency ()
+    "Toggles frame transparency."
+    (interactive)
+    (if (not (eql 100 (frame-parameter nil 'alpha-background)))
+        (set-frame-parameter nil 'alpha-background 100)
+      (set-frame-parameter nil 'alpha-background
+                           (alist-get 'alpha-background
+                                      default-frame-alist))))
+  :config
+  (add-to-list 'default-frame-alist '(alpha-background . 90)))
 
 (use-package uniquify
   :custom
