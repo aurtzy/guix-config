@@ -145,6 +145,7 @@ the shell alias."
               tree-sitter-bash
               tree-sitter-c
               tree-sitter-go
+              tree-sitter-gomod
               tree-sitter-javascript
               tree-sitter-python
               tree-sitter-rust
