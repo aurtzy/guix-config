@@ -1,6 +1,6 @@
 ;;; init.el --- my init.el -*- lexical-binding: t -*-
-;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
 ;; Copyright © 2013-2022 Phil Hagelberg and contributors
+;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;
 ;; This file is NOT part of GNU Emacs.
 ;;
@@ -28,17 +28,19 @@
 
 ;;; Code:
 
-;;; SETTINGS
+;;; Global configurations
 
-(setq user-full-name "aurtzy"
-      user-mail-address "aurtzy@gmail.com")
-
-;;;; STATE LOCATION
+;;;; User-defined variables
 
 (defconst state-dir
   (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
 
-;;;; CUSTOM FILE
+;;;; User info
+
+(setq user-full-name "aurtzy"
+      user-mail-address "aurtzy@gmail.com")
+
+;;;; Emacs-managed files
 
 (use-package emacs
   :init
@@ -46,36 +48,35 @@
   :config
   (load custom-file 'noerror 'nomessage))
 
-;;; CONFIGURATIONS
-
-;;;; DASHBOARD
-
-(use-package dashboard
-  :preface
-  (declare-function dashboard-setup-startup-hook "dashboard")
-  :custom
-  (dashboard-set-init-info nil)
-  :config
-  (dashboard-setup-startup-hook))
-
-;;;; MORE CUSTOM KEYMAPS
-
-(use-package emacs
-  :bind (("C-z" . nil)))
-
-;;;; PREFER NEWER FILES
-
 (use-package emacs
   :custom
   (load-prefer-newer t))
 
-;;;; ENABLE REMOTE dir-locals.el
+(use-package emacs
+  :custom
+  (backup-directory-alist `(("." . ,state-dir)))
+  (backup-by-copying t)
+  (version-control t)
+  (delete-old-versions t)
+  (kept-new-versions 4))
+
+(use-package emacs
+  :config
+  (savehist-mode 1)
+  (save-place-mode 1)
+  (recentf-mode 1))
+
+;;;; Emacs management files
 
 (use-package emacs
   :custom
   (enable-remote-dir-locals t))
 
-;;;; GUI TWEAKS
+;;;; Visual interface
+
+(use-package emacs
+  :config
+  (load-theme 'modus-vivendi))
 
 (use-package emacs
   :preface
@@ -103,33 +104,11 @@
   (global-visual-line-mode 1)
   (global-hl-line-mode 1))
 
-;;;; UNIQUE FILENAME IDENTIFIERS
-
 (use-package uniquify
   :custom
   (uniquify-buffer-name-style 'post-forward))
 
-;;;; SESSION STATE
-
-;;;;; BACKUPS
-
-(use-package emacs
-  :custom
-  (backup-directory-alist `(("." . ,state-dir)))
-  (backup-by-copying t)
-  (version-control t)
-  (delete-old-versions t)
-  (kept-new-versions 4))
-
-;;;;; PERSISTENCE ACROSS SESSIONS
-
-(use-package emacs
-  :config
-  (savehist-mode 1)
-  (save-place-mode 1)
-  (recentf-mode 1))
-
-;;;; POINT CONTROL
+;;;; Point control
 
 (make-variable-buffer-local 'scroll-margin)
 (make-variable-buffer-local 'scroll-conservatively)
@@ -172,14 +151,16 @@
   ;; - closest solution right now: https://www.emacswiki.org/emacs/Scrolling
   )
 
-;;;; DEFAULT FILE FORMATTING
+;;;; Editing
+
+;;;;; DEFAULT FILE FORMATTING
 
 (use-package emacs
   :custom
   (indent-tabs-mode nil)
   (require-final-newline t))
 
-;;;; DEFAULT TO REGEXP ISEARCH
+;;;;; DEFAULT TO REGEXP ISEARCH
 
 (use-package emacs
   :bind (("C-s" . isearch-forward-regexp)
@@ -187,7 +168,7 @@
          ("C-M-s" . isearch-forward)
          ("C-M-r" . isearch-backward)))
 
-;;;; REMAP `kill-sexp'
+;;;;; REMAP `kill-sexp'
 
 (use-package emacs
   :preface
@@ -205,27 +186,19 @@ simple rename to fit the keybind it will be mapped to."
          :map emacs-lisp-mode-map
          ("C-M-i" . nil)))
 
-;;;; REMAP UP/DOWN CASE COMMANDS
+;;;;; REMAP UP/DOWN CASE COMMANDS
 
 (use-package emacs
   :bind (("M-u" . upcase-dwim)
          ("M-l" . downcase-dwim)))
 
-;;;; ENABLE ELECTRIC PARENS
+;;;;; ENABLE ELECTRIC PARENS
 
 (use-package emacs
   :config
   (electric-pair-mode 1))
 
-;;;; ENABLE AUTO INSERT MODE FOR FILES
-
-(use-package emacs
-  :custom
-  (auto-insert-directory (concat user-emacs-directory "inserts"))
-  :config
-  (auto-insert-mode 1))
-
-;;;; EDITING TWEAKS
+;;;;; EDITING TWEAKS
 
 (use-package autorevert
   :custom
@@ -268,15 +241,7 @@ simple rename to fit the keybind it will be mapped to."
   ;; (global-whitespace-mode 1)
   )
 
-;;;; THEME
-
-(use-package emacs
-  :config
-  (load-theme 'modus-vivendi))
-
-;;;; COMPLETION
-
-;;;;; VERTICAL INTERACTIVE COMPLETION
+;;;; Completion suite
 
 (use-package vertico
   :defines (crm-separator)
@@ -299,8 +264,6 @@ simple rename to fit the keybind it will be mapped to."
   (enable-recursive-minibuffers t)
   :config
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator))
-
-;;;;; HANDY `completing-read' COMMANDS
 
 (use-package consult
   ;; Enable automatic preview at point in the *Completions* buffer. This is
@@ -435,8 +398,6 @@ simple rename to fit the keybind it will be mapped to."
   ;; (setq consult-project-function nil)
   )
 
-;;;;; RICH ANNOTATIONS
-
 (use-package marginalia
   :preface
   (declare-function marginalia-mode "marginalia")
@@ -444,14 +405,10 @@ simple rename to fit the keybind it will be mapped to."
   :init
   (marginalia-mode 1))
 
-;;;;; COMPLETION STYLE
-
 (use-package orderless
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion)))))
-
-;;;;; ACTION SUGGESTIONS BASED ON CONTEXT
 
 (use-package embark
   :bind (("C-." . embark-act)
@@ -476,9 +433,13 @@ simple rename to fit the keybind it will be mapped to."
 (use-package embark-consult
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
-;;;; PROGRAMMING
+;;;; Minor modes
 
-;;;;; DIRENV
+(use-package emacs
+  :custom
+  (auto-insert-directory (concat user-emacs-directory "inserts"))
+  :config
+  (auto-insert-mode 1))
 
 (use-package envrc
   :preface
@@ -486,18 +447,28 @@ simple rename to fit the keybind it will be mapped to."
   :config
   (envrc-global-mode t))
 
-;;;;; PROJECT SUPPORT
-;;;;;
-;;;;; TEMP: properly set project root based on files found
-;;;;;
-;;;;; project.el does not have such a feature for manually selecting at
-;;;;; the moment; this will suffice for now. Comes from:
-;;;;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
-;;;;;
-;;;;; Extra links for more info:
-;;;;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
-;;;;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41955#26
+(use-package eglot
+  :commands eglot)
 
+(use-package flymake
+  :hook prog-mode
+  :custom
+  (flymake-number-of-errors-to-display 4))
+
+;;;; Miscellaneous
+
+(use-package emacs
+  :bind (("C-z" . nil)))
+
+;; TEMP: properly set project root based on files found
+;;
+;; project.el does not have such a feature for manually selecting at
+;; the moment; this will suffice for now. Comes from:
+;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
+;;
+;; Extra links for more info:
+;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
+;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41955#26
 (use-package project
   :preface
   (defcustom project-root-markers
@@ -520,12 +491,15 @@ simple rename to fit the keybind it will be mapped to."
   :config
   (add-to-list 'project-find-functions #'project-find-root))
 
-;;;;; LSP SUPPORT
+;;; Major modes
 
-(use-package eglot
-  :commands eglot)
-
-;;;;; PYTHON
+(use-package dashboard
+  :preface
+  (declare-function dashboard-setup-startup-hook "dashboard")
+  :custom
+  (dashboard-set-init-info nil)
+  :config
+  (dashboard-setup-startup-hook))
 
 (use-package python
   :init
@@ -535,12 +509,7 @@ simple rename to fit the keybind it will be mapped to."
   :custom
   (python-shell-dedicated 'project))
 
-;;;;; C
-;;;;;
-;;;;; https://reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/
-
-
-;; Optionally installed
+;; https://reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/
 (use-package ccls
   :after eglot
   :when (package-installed-p 'ccls)
@@ -556,8 +525,6 @@ simple rename to fit the keybind it will be mapped to."
   ;; to unavailable feature; see: https://github.com/joaotavora/eglot/issues/615
   ;; depending on its implementation the above may need to be tweaked
   )
-
-;;;;; LISP/SCHEME
 
 (use-package paredit
   :hook ((emacs-lisp-mode . enable-paredit-mode)
@@ -575,25 +542,9 @@ simple rename to fit the keybind it will be mapped to."
   :config
   (add-to-list 'geiser-guile-load-path "~/git/guix"))
 
-;;;;; STATIC ANALYSIS
-
-(use-package flymake
-  :hook prog-mode
-  :custom
-  (flymake-number-of-errors-to-display 4))
-
-;;;;; TODO: DAP mode?
-
-;;;;; TODO: treemacs?
-
-;;;; GIT CLIENT
-
-;;;;; TODO: explore magit configurations
-
+;; TODO: explore magit configurations
 (use-package magit
   :commands magit)
-
-;;;; ORG
 
 (use-package org
   :preface
