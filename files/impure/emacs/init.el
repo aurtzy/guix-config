@@ -43,8 +43,8 @@
 ;;;; Emacs-managed files
 
 (use-package emacs
-  :init
-  (setq custom-file (locate-user-emacs-file "custom.el"))
+  :custom
+  (custom-file (locate-user-emacs-file "custom.el"))
   :config
   (load custom-file 'noerror 'nomessage))
 
