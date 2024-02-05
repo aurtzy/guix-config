@@ -159,6 +159,7 @@
 (use-package emacs
   :custom
   (indent-tabs-mode nil)
+  (tab-always-indent 'complete)
   (require-final-newline t))
 
 (use-package emacs
@@ -166,9 +167,6 @@
          ("C-r" . isearch-backward-regexp)
          ("C-M-s" . isearch-forward)
          ("C-M-r" . isearch-backward)))
-
-(use-package emacs
-  :bind ("C-<tab>" . completion-at-point))
 
 (use-package emacs
   :bind (("M-u" . upcase-dwim)
