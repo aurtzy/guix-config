@@ -75,10 +75,6 @@
 ;;;; Visual interface
 
 (use-package emacs
-  :config
-  (load-theme 'modus-vivendi))
-
-(use-package emacs
   :custom
   (inhibit-startup-message t)
   (visible-bell t)
@@ -93,6 +89,10 @@
   (tool-bar-mode -1)
   (global-visual-line-mode 1)
   (global-hl-line-mode 1))
+
+(use-package emacs
+  :config
+  (load-theme 'modus-vivendi))
 
 (use-package emacs
   :preface
