@@ -171,6 +171,9 @@
          ("C-M-s" . isearch-forward)
          ("C-M-r" . isearch-backward)))
 
+(use-package emacs
+  :bind ("C-<tab>" . completion-at-point))
+
 ;;;;; REMAP `kill-sexp'
 
 (use-package emacs
@@ -185,7 +188,6 @@ simple rename to fit the keybind it will be mapped to."
     (down-list arg interactive))
   :bind (("C-M-d" . kill-sexp)
          ("C-M-i" . into-list)
-         ("C-<tab>" . completion-at-point)
          :map emacs-lisp-mode-map
          ("C-M-i" . nil)))
 
