@@ -156,14 +156,10 @@
 
 ;;;; Editing
 
-;;;;; DEFAULT FILE FORMATTING
-
 (use-package emacs
   :custom
   (indent-tabs-mode nil)
   (require-final-newline t))
-
-;;;;; DEFAULT TO REGEXP ISEARCH
 
 (use-package emacs
   :bind (("C-s" . isearch-forward-regexp)
@@ -174,19 +170,13 @@
 (use-package emacs
   :bind ("C-<tab>" . completion-at-point))
 
-;;;;; REMAP UP/DOWN CASE COMMANDS
-
 (use-package emacs
   :bind (("M-u" . upcase-dwim)
          ("M-l" . downcase-dwim)))
 
-;;;;; ENABLE ELECTRIC PARENS
-
 (use-package emacs
   :config
   (electric-pair-mode 1))
-
-;;;;; EDITING TWEAKS
 
 (use-package autorevert
   :custom
