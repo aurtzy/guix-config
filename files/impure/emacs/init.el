@@ -487,12 +487,14 @@
   ;; depending on its implementation the above may need to be tweaked
   )
 
-(use-package paredit
-  :hook ((emacs-lisp-mode . enable-paredit-mode)
-         (lisp-mode . enable-paredit-mode)
-         (scheme-mode . enable-paredit-mode)))
+(use-package elisp-mode
+  :hook ((emacs-lisp-mode . enable-paredit-mode)))
+
+(use-package lisp-mode
+  :hook ((lisp-mode . enable-paredit-mode)))
 
 (use-package scheme
+  :hook ((scheme-mode . enable-paredit-mode))
   :init
   (font-lock-add-keywords 'scheme-mode
                           '(("(\\(lambda\\*\\)"
