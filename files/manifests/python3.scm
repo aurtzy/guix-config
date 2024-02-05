@@ -1,6 +1,7 @@
 (use-modules (gnu))
 
-(use-package-modules python python-xyz emacs-xyz)
+(use-package-modules python-xyz tree-sitter)
 
 (packages->manifest (list python-lsp-server
-                          python-isort))
+                          python-isort
+                          tree-sitter-python))
