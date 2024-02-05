@@ -550,7 +550,8 @@ to report upstream.  TODO."
 
 (use-package go-ts-mode
   :init
-  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode)))
+  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+  (add-to-list 'auto-mode-alist '("^go\\.mod\\'" . go-mod-ts-mode)))
 
 (use-package js
   :init
