@@ -232,7 +232,8 @@ the shell alias."
        (packages
         home-environment-packages
         append=>
-        (list flatpak-xdg-utils))
+        (list flatpak-xdg-utils
+              xdg-utils))
        (services
         home-environment-user-services
         services =>
