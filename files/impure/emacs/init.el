@@ -455,7 +455,7 @@
   (defcustom project-root-markers
     '(".project-root"
       "manifest.scm"
-      "main.py")
+      ".envrc")
     "Files or directories that indicate the root of a project."
     :type '(repeat string)
     :group 'project)
