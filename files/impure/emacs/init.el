@@ -436,6 +436,10 @@
   :custom
   (flymake-number-of-errors-to-display 4))
 
+(use-package guix-prettify
+  :hook ((shell-mode . guix-prettify-mode)
+         (dired-mode . guix-prettify-mode)))
+
 ;;;; Miscellaneous
 
 (use-package emacs
