@@ -1,4 +1,4 @@
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -32,7 +32,7 @@
   #:use-module (guix profiles))
 
 (define-public xsb
-  (let ((commit "8631adcab4de5503e3376d0ca48a51c4958f1f5a")
+  (let ((commit "8e9117c6c28cbdf56217f1f4805b9f493d505cab")
         (revision "0"))
     (package
       (name "xsb")
@@ -44,7 +44,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0j6b5ycq1dv86cycg74p7r5yvsh73h4lf1cyn5il6v6kzpfmyjy1"))))
+                  "0jy9afk8lrl0bnyfjkbmfyrhdbpgjy3sd17wzlv290a2ichv1jal"))))
       (build-system gnu-build-system)
       (arguments
        (list
@@ -63,18 +63,19 @@
                                           "/bin/rm"))
                        (touch (string-append coreutils-pref
                                              "/bin/touch")))
-                  (substitute*
-                      (find-files "."
-                                  (lambda (file stat)
-                                    (and ((file-name-predicate "^[^\\.]*$|\\.sh$") file stat)
-                                         (eq? 'regular (stat:type stat))))
-                                  #:stat lstat)
-                    (("(^.*\\s?)(SHELL=)/bin/sh" all begin shell)
-                     (string-append begin shell sh))
-                    (("(^.*\\s?)/bin/rm" all begin)
-                     (string-append begin rm))
-                    (("(^.*\\s?)/bin/touch" all begin)
-                     (string-append begin touch))))))
+                  (with-fluids ((%default-port-encoding #f))
+                    (substitute*
+                        (find-files "."
+                                    (lambda (file stat)
+                                      (and ((file-name-predicate "^[^\\.]*$|\\.sh$") file stat)
+                                           (eq? 'regular (stat:type stat))))
+                                    #:stat lstat)
+                      (("(^.*\\s?)(SHELL=)/bin/sh" all begin shell)
+                       (string-append begin shell sh))
+                      (("(^.*\\s?)/bin/rm" all begin)
+                       (string-append begin rm))
+                      (("(^.*\\s?)/bin/touch" all begin)
+                       (string-append begin touch)))))))
             (add-after 'patch-calls 'patch-consult-recompilation
               ;; This patches the needs_recompile condition so that
               ;; rebuilds do not happen when Guix resets timestamps to
