@@ -190,7 +190,20 @@
   :config
   (global-display-fill-column-indicator-mode 1))
 
-(use-package unfill)
+(use-package unfill
+  :after embark
+  :defines (embark-region-map
+            embark-sentence-map
+            embark-paragraph-map)
+  :bind (:map
+         embark-region-map
+         ("M-f" . unfill-region)
+         :map
+         embark-sentence-map
+         ("M-f" . unfill-paragraph)
+         :map
+         embark-paragraph-map
+         ("M-f" . unfill-paragraph)))
 
 (use-package adaptive-wrap
   :hook (visual-line-mode . adaptive-wrap-prefix-mode)
