@@ -149,8 +149,9 @@ the shell alias."
               tree-sitter-javascript
               tree-sitter-python
               tree-sitter-rust
-              ;; direnv
+              ;; project-specific files
               emacs-envrc
+              emacs-editorconfig
               ;; completion bundle
               emacs-vertico
               emacs-consult
