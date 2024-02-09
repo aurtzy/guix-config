@@ -453,6 +453,10 @@
   :hook ((shell-mode . guix-prettify-mode)
          (dired-mode . guix-prettify-mode)))
 
+(use-package editorconfig
+  :config
+  (editorconfig-mode 1))
+
 ;;;; Miscellaneous
 
 (use-package emacs
