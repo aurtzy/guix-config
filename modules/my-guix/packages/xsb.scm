@@ -33,7 +33,7 @@
 
 (define-public xsb
   (let ((commit "8e9117c6c28cbdf56217f1f4805b9f493d505cab")
-        (revision "1"))
+        (revision "0"))
     (package
       (name "xsb")
       (version (git-version "5.0" revision commit))
@@ -151,8 +151,9 @@
        (list curl
              mysql
              pcre
-             unixodbc
-             coreutils
+             unixodbc))
+      (propagated-inputs
+       (list coreutils
              grep
              python
              sed))
