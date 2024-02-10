@@ -34,23 +34,19 @@
 
 (use-package-modules ncurses package-management xdisorg ssh)
 
-(define guix-system-reconfigure-script
-  #~(exit
-     (status:exit-val
-      (system* "guix"
-               "system"
-               "-L" #$$my-modules-dir
-               "reconfigure"
-               #$(string-append $my-guix-config "/system.scm")))))
+(define guix-path
+  (let ((local-guix (path-append (getenv "HOME")
+                                 ".config/guix/current/bin/guix"))
+        (global-guix "/run/current-system/profile/bin/guix"))
+    (if (file-exists? local-guix)
+        local-guix
+        global-guix)))
 
-(define guix-home-reconfigure-script
-  #~(exit
-     (status:exit-val
-      (system* "guix"
-               "home"
-               "-L" #$$my-modules-dir
-               "reconfigure"
-               #$(string-append $my-guix-config "/home.scm")))))
+(define wrapped-guix-script
+  #~(begin
+      (setenv "GUIX_PACKAGE_PATH" #$$my-modules-dir)
+      (apply execl #$guix-path (command-line))))
+
 
 (define-public base-desktop-home-environment
   (home-environment
@@ -92,8 +88,8 @@
                             "PATH"
                             "$HOME/.local/bin"))))
                     (aliases
-                     `((",guix-home-reconfigure-without-flatpak"
-                        . "GUIX_FLATPAK_DISABLE=1 ,guix-home-reconfigure")
+                     `((",guix-without-flatpak"
+                        . "GUIX_FLATPAK_DISABLE=1 guix")
                        ("l." . "ls -d .*")
                        ("la" . "ls -a")
                        ("diff" . "diff --color=auto")))
@@ -104,14 +100,10 @@
                             "bashrc")))))
           (simple-service 'home-files
                           home-files-service-type
-                          `((".local/bin/,guix-system-reconfigure"
+                          `((".local/bin/guix"
                              ,(program-file
-                               "guix-system-reconfigure"
-                               guix-system-reconfigure-script))
-                            (".local/bin/,guix-home-reconfigure"
-                             ,(program-file
-                               "guix-home-reconfigure"
-                               guix-home-reconfigure-script))
+                               "wrapped-guix-script"
+                               wrapped-guix-script))
                             (".inputrc"
                              ,(plain-file
                                "inputrc"
