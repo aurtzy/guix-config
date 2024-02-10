@@ -35,8 +35,9 @@
 
 (define PROGRAM (car (program-arguments)))
 
-(define CONFIG-FILE (string-append (dirname PROGRAM)
-                                   "/system.scm"))
+(define GUIX_CONFIG_DIR (dirname (dirname PROGRAM)))
+
+(define CONFIG-FILE (string-append GUIX_CONFIG_DIR "/system.scm"))
 
 (define (format-usage . args)
   (format #f
@@ -159,7 +160,7 @@
        (invoke "herd" "start" "cow-store" (canonicalize-path target))
        (guix-system "init"
                     ;; Enable loading custom guix-config modules
-                    "-L" (string-append (dirname PROGRAM) "/modules")
+                    "-L" (string-append GUIX_CONFIG_DIR "/modules")
                     CONFIG-FILE
                     target))
       (else
