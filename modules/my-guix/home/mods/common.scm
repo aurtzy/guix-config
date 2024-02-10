@@ -86,8 +86,9 @@
                  (with-chdir
                   data-dir
                   (lambda ()
-                    (invoke #$(file-append git-annex "/bin/git-annex")
-                            "assist"))))
+                    (execl #$(file-append git-annex "/bin/git-annex")
+                           "git-annex"
+                           "assist"))))
                data-dirs)
               (sync)))))))
 
