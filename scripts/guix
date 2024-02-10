@@ -1,0 +1,9 @@
+#!/usr/bin/env -S guile --no-auto-compile
+!#
+
+(let* ((args (command-line))
+       (filename (canonicalize-path (car args)))
+       (cmd-args (cdr args)))
+  ;; Should end up in guix-config directory
+  (setenv "GUIX_PACKAGE_PATH" (dirname (dirname filename)))
+  (apply execlp "guix" "guix" cmd-args))
