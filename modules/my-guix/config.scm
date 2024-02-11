@@ -25,7 +25,7 @@
   #:use-module (ice-9 exceptions)
   #:export (GUIX_CONFIG_DIR
             GUIX_CONFIG_MODULES_DIR
-            $base-file-system-flags
+            BASE_FILE_SYSTEM_FLAGS
             base-file-system-flags-ref
             $base-file-system-options
             base-file-system-options-ref
@@ -51,12 +51,12 @@
            (list "base file-system device-config entry not available"
                  (list file-system-type device-type))))))))
 
-(define $base-file-system-flags
+(define BASE_FILE_SYSTEM_FLAGS
   '((btrfs . ((ssd . (no-atime))
               (hdd . (no-atime))))))
 
 (define (base-file-system-flags-ref file-system-type device-type)
-  (base-file-system-config-ref $base-file-system-flags
+  (base-file-system-config-ref BASE_FILE_SYSTEM_FLAGS
                                file-system-type
                                device-type))
 
