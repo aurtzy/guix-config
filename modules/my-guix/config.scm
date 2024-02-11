@@ -23,7 +23,7 @@
   #:use-module (gnu system file-systems)
   #:use-module (guix utils)
   #:use-module (ice-9 exceptions)
-  #:export ($my-guix-config
+  #:export (GUIX_CONFIG_DIR
             $my-modules-dir
             $base-file-system-flags
             base-file-system-flags-ref
@@ -32,13 +32,13 @@
             $xdg-data-home))
 
 ;; Base directory for Guix configurations
-(define $my-guix-config
+(define GUIX_CONFIG_DIR
   ;; Value is based off of module directory location (my-guix config) =>
   ;; .../guix-config/modules/my-guix/../..
   (dirname (dirname (current-source-directory))))
 
 (define $my-modules-dir
-  (string-append $my-guix-config "/modules"))
+  (string-append GUIX_CONFIG_DIR "/modules"))
 
 (define (base-file-system-config-ref alist file-system-type device-type)
   (let ((device-alist (assq-ref alist file-system-type)))

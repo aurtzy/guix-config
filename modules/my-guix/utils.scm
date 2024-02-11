@@ -38,7 +38,7 @@
 
 (define (path-append-my-files . paths)
   (apply path-append
-         $my-guix-config
+         GUIX_CONFIG_DIR
          "files"
          paths))
 
