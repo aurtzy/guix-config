@@ -44,7 +44,7 @@
 
 (define wrapped-guix-script
   #~(begin
-      (setenv "GUIX_PACKAGE_PATH" #$$my-modules-dir)
+      (setenv "GUIX_PACKAGE_PATH" #$GUIX_CONFIG_MODULES_DIR)
       (apply execl #$guix-path (command-line))))
 
 
@@ -63,7 +63,7 @@
                      `(("GUIX_PACKAGE_PATH"
                         . ,(build-path-augmentation
                             "GUIX_PACKAGE_PATH"
-                            $my-modules-dir))
+                            GUIX_CONFIG_MODULES_DIR))
 
                        ;; Exclude certain commands from history
                        ("HISTCONTROL" . "ignoreboth")
