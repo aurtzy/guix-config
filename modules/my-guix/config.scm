@@ -29,7 +29,7 @@
             base-file-system-flags-ref
             BASE_FILE_SYSTEM_OPTIONS
             base-file-system-options-ref
-            $xdg-data-home))
+            XDG_DATA_HOME))
 
 ;; Base directory for Guix configurations
 (define GUIX_CONFIG_DIR
@@ -76,6 +76,6 @@ order: FILE-SYSTEM-TYPE => DEVICE-TYPE"
                                file-system-type
                                device-type))
 
-(define $xdg-data-home (string-append
-                        (getenv "HOME")
-                        "/.local/share"))
+(define XDG_DATA_HOME (string-append
+                       (getenv "HOME")
+                       "/.local/share"))

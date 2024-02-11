@@ -70,14 +70,14 @@
                        ("HISTIGNORE" . "history:history *:exit:exit *")
 
                        ;; Explicitly set application data directory
-                       ("XDG_DATA_HOME" . ,$xdg-data-home)
+                       ("XDG_DATA_HOME" . ,XDG_DATA_HOME)
 
                        ;; Add flatpak data directory
                        ("XDG_DATA_DIRS"
                         . ,(build-path-augmentation
                             "XDG_DATA_DIRS"
                             (string-append
-                             $xdg-data-home "/flatpak/exports/share")
+                             XDG_DATA_HOME "/flatpak/exports/share")
                             ;; This won't actually be used since we always do
                             ;; user installation, but it make should make
                             ;; flatpak stop complaining
