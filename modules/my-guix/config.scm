@@ -27,7 +27,7 @@
             GUIX_CONFIG_MODULES_DIR
             BASE_FILE_SYSTEM_FLAGS
             base-file-system-flags-ref
-            $base-file-system-options
+            BASE_FILE_SYSTEM_OPTIONS
             base-file-system-options-ref
             $xdg-data-home))
 
@@ -60,7 +60,7 @@
                                file-system-type
                                device-type))
 
-(define $base-file-system-options
+(define BASE_FILE_SYSTEM_OPTIONS
   '((btrfs
      ;; Useful statistics for determining compression:
      ;; - https://docs.google.com/spreadsheets/d/1x9-3OQF4ev1fOCrYuYWt1QmxYRmPilw_nLik5H_2_qA/edit?usp=sharing
@@ -72,7 +72,7 @@
   "This procedure retrieves the base file-system options for some type of
 storage device. The format of keys expected to be symbols in the following
 order: FILE-SYSTEM-TYPE => DEVICE-TYPE"
-  (base-file-system-config-ref $base-file-system-options
+  (base-file-system-config-ref BASE_FILE_SYSTEM_OPTIONS
                                file-system-type
                                device-type))
 
