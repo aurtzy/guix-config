@@ -19,8 +19,10 @@ Here is a general overview of notable files in this repository:
   for my systems ([[file:files/guix]]).
 - [[file:modules]] contains Guile modules, where packages, services, and other
   utilities are defined.
-- [[file:setup.scm]] is used for setting up additional things that the installer
+- [[file:scripts/setup]] is used for setting up additional things that the installer
   does not offer to do.
+- [[file:scripts/guix]] is used for bootstrapping the configuration when
+  =GUIX_PACKAGE_PATH= is not set yet.
 
 * Services
 
