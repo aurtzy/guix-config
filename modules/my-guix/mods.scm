@@ -105,6 +105,20 @@ The returned procedure consumes"
           (inherit os)
           (services
            (append value (operating-system-user-services os))))))
+    (kernel-arguments
+     .
+     ,(lambda (os value)
+        (operating-system
+          (inherit os)
+          (kernel-arguments
+           (append value (operating-system-user-kernel-arguments os))))))
+    (swap-devices
+     .
+     ,(lambda (os value)
+        (operating-system
+          (inherit os)
+          (swap-devices
+           (append value (operating-system-swap-devices os))))))
     (apply
      .
      ,(lambda (os value)
