@@ -61,7 +61,8 @@ new record that has been extended with the value."
     (unless (procedure? extend)
       (raise-exception
        (make-exception-with-message
-        (format #f "Invalid extendable (not a procedure): ~a"
+        (format #f
+                "Invalid extendable (not a procedure or doesn't exist): ~a"
                 extendable-name))))
     (extend record value)))
 
