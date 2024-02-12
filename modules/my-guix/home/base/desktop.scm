@@ -47,7 +47,6 @@
       (setenv "GUIX_PACKAGE_PATH" #$GUIX_CONFIG_MODULES_DIR)
       (apply execl #$guix-path (command-line))))
 
-
 (define-public base-desktop-home-environment
   (home-environment
    (packages
