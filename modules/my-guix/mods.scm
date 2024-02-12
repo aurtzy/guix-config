@@ -41,7 +41,6 @@
             mod-apply
             mods-eq?
 
-            apply-mod
             mod-dependencies-all
             apply-mods))
 
@@ -169,61 +168,6 @@ The returned procedure consumes"
 (define (mods-eq? ext1 ext2)
   (eq? (mod-name ext1)
        (mod-name ext2)))
-
-(define-syntax modify-field
-  (syntax-rules (=>
-                 append=>)
-    "Modifies a record field and return the resulting modified value.
-
-The `=>' symbol and its variations instruct how the record field will be
-handled. The most basic form assigns a BINDING to the field value obtained
-from applying FIELD-GETTER to RECORD which is then made available in the body.
-
-The basic form purposefully disallows omitting BINDING so that errors like
-forgetting to merge the existing value cannot happen; if this is desired, the
-value must be explicitly discarded (e.g. by doing `_ =>').
-
-More abstracted forms like `append=>' may also be used which automatically
-apply some operation to the field value."
-    ((_ record
-        field-getter binding => exp)
-     (let ((binding (field-getter record)))
-       exp))
-    ((_ record
-        field-getter binding append=> exp)
-     (modify-field record field-getter binding => (append exp binding)))
-    ((_ record
-        field-getter append=> exp)
-     (modify-field record field-getter %binding append=> exp))))
-
-(define-syntax %modify-fields
-  (syntax-rules ()
-    "Applies each FIELD modification specified to RECORD using CONSTRUCTOR as
-the record constructor."
-    ((_ record constructor fields)
-     (constructor
-      (inherit record)
-      .
-      fields))
-    ((_ record constructor field ... (field-name args ...) fields)
-     (%modify-fields record
-                     constructor
-                     field ...
-                     ((field-name (modify-field record args ...))
-                      . fields)))))
-
-(define-syntax apply-mod
-  (syntax-rules (=>)
-    "Returns a procedure that - when passed RECORD - will apply the
-modifications specified by each FIELD using CONSTRUCTOR as the record
-constructor.
-
-This form should be used when specifying the apply field for mods."
-    ((_ constructor record => field ...)
-     (lambda (record)
-       (%modify-fields record constructor field ... ())))
-    ((_ constructor field ...)
-     (apply-mod constructor %record => field ...))))
 
 (define exclude-mods (make-parameter '()))
 

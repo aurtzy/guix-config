@@ -174,7 +174,6 @@
    (eval . (put 'mod-operating-system 'scheme-indent-function 0))
    (eval . (put 'mod-home-environment 'scheme-indent-function 0))
    (eval . (put 'mod 'scheme-indent-function 0))
-   (eval . (put 'apply-mod 'scheme-indent-function 1))
    
    ;; This notably allows '(' in Paredit to not insert a space when the
    ;; preceding symbol is one of these.
