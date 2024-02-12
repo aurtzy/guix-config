@@ -104,16 +104,12 @@ the shell alias."
   (mod
     (name 'data-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list git-annex
               borg
               git-annex-configure))
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-impure-symlinks-service-type
                               (map

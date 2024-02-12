@@ -64,19 +64,15 @@ automatically."
     (mod
       (name 'swapfile-mod)
       (apply
-       (apply-mod operating-system
+       (mod-operating-system
          os =>
          (swap-devices
-          operating-system-swap-devices
-          append=>
           (list (swap-space (target file)
                             (dependencies
                              (filter
                               (file-system-mount-point-predicate "/")
                               (operating-system-file-systems os))))))
          (kernel-arguments
-          operating-system-user-kernel-arguments
-          append=>
           (list (string-append "resume=" device)
                 (string-append "resume_offset=" offset))))))))
 
