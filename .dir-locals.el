@@ -171,6 +171,8 @@
 
    (eval . (put 'with-http-server 'scheme-indent-function 1))
 
+   (eval . (put 'mod-operating-system 'scheme-indent-function 0))
+   (eval . (put 'mod-home-environment 'scheme-indent-function 0))
    (eval . (put 'mod 'scheme-indent-function 0))
    (eval . (put 'apply-mod 'scheme-indent-function 1))
    

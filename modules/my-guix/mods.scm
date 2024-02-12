@@ -1,4 +1,4 @@
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -20,12 +20,20 @@
 ;;; This module provides an interface for extending Guix records.
 
 (define-module (my-guix mods)
+  #:use-module (gnu)
+  #:use-module (gnu home)
   #:use-module (guix records)
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix utils)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
-  #:export (<mod>
+  #:export (OPERATING_SYSTEM_EXTENDABLES
+            mod-operating-system
+
+            HOME_ENVIRONMENT_EXTENDABLES
+            mod-home-environment
+
+            <mod>
             mod mod?
             this-mod
             mod-name
@@ -36,6 +44,96 @@
             apply-mod
             mod-dependencies-all
             apply-mods))
+
+;;; TODO Add assertions in extendables procedures for better error-checking.
+
+(define-syntax-rule (extend-extendable record
+                                       extendable-name
+                                       value
+                                       extendables)
+  "Extend RECORD with VALUE using the procedure defined in EXTENDABLES
+corresponding to EXTENDABLE-NAME.
+
+EXTENDABLES is an alist that maps a symbol (representing what to extend) to a
+procedure.  This procedure should consume a record and a value, and return a
+new record that has been extended with the value."
+  (let ((extend (assq-ref extendables extendable-name)))
+    (unless (procedure? extend)
+      (raise-exception
+       (make-exception-with-message
+        (format #f "Invalid extendable (not a procedure): ~a"
+                extendable-name))))
+    (extend record value)))
+
+(define-syntax mod-record
+  (syntax-rules (=>)
+    "Build a procedure that consumes a record and extends the extendable
+values using EXTENDABLES for the specified FIELD arguments.
+
+The returned procedure consumes"
+    ((_ record => extenders extendables)
+     (lambda (record)
+       ((compose . extenders) record)))
+    ((_ record => (field-name value) field* ... extenders extendables)
+     (mod-record
+       record =>
+       field* ...
+       ((lambda (record)
+          (extend-extendable record
+                             'field-name
+                             value
+                             extendables))
+        .
+        extenders)
+       extendables))
+    ((_ field* ... extenders extendables)
+     (mod-record record => field* ... extenders extendables))))
+
+(define OPERATING_SYSTEM_EXTENDABLES
+  `((packages
+     .
+     ,(lambda (os value)
+        (operating-system
+          (inherit os)
+          (packages
+           (append value (operating-system-packages os))))))
+    (services
+     .
+     ,(lambda (os value)
+        (operating-system
+          (inherit os)
+          (services
+           (append value (operating-system-user-services os))))))
+    (apply
+     .
+     ,(lambda (os value)
+        (value os)))))
+
+(define-syntax-rule (mod-operating-system field* ...)
+  (mod-record field* ... () OPERATING_SYSTEM_EXTENDABLES))
+
+(define HOME_ENVIRONMENT_EXTENDABLES
+  `((packages
+     .
+     ,(lambda (he value)
+        (home-environment
+         (inherit he)
+         (packages
+          (append value (home-environment-packages he))))))
+    (services
+     .
+     ,(lambda (he value)
+        (home-environment
+         (inherit he)
+         (services
+          (append value (home-environment-user-services he))))))
+    (apply
+     .
+     ,(lambda (he value)
+        (value he)))))
+
+(define-syntax-rule (mod-home-environment field* ...)
+  (mod-record field* ... () HOME_ENVIRONMENT_EXTENDABLES))
 
 (define-record-type* <mod>
   mod make-mod
@@ -164,3 +262,7 @@ the EXCLUDE keyword."
                  (parameterize ((exclude-mods exclude))
                    (apply mod-dependencies-all
                           mods))))))
+
+;; Local Variables:
+;; eval: (put 'mod-record 'scheme-indent-function 0)
+;; End:
