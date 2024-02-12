@@ -84,10 +84,8 @@ automatically."
   (mod
     (name 'wayland-mod)
     (apply
-     (apply-mod operating-system
+     (mod-operating-system
        (packages
-        operating-system-packages
-        append=>
         (list xdg-desktop-portal
               xdg-desktop-portal-gtk
               xdg-desktop-portal-kde
@@ -100,11 +98,9 @@ automatically."
     (dependencies
      (list wayland-mod))
     (apply
-     (apply-mod operating-system
+     (mod-operating-system
        os =>
        (packages
-        operating-system-packages
-        append=>
         (list gvfs
               gnome-tweaks
               gnome-shell-extensions
@@ -112,29 +108,22 @@ automatically."
               gnome-shell-extension-gsconnect
               gnome-shell-extension-clipboard-indicator))
        (services
-        operating-system-user-services
-        append=>
-        (list
-         (set-xorg-configuration
-          (xorg-configuration
-           (keyboard-layout (operating-system-keyboard-layout os))))
-         (service gnome-desktop-service-type)
-         (service gdm-service-type
-                  (gdm-configuration
-                   (wayland? #t)))))))))
+        (list (set-xorg-configuration
+               (xorg-configuration
+                (keyboard-layout (operating-system-keyboard-layout os))))
+              (service gnome-desktop-service-type)
+              (service gdm-service-type
+                       (gdm-configuration
+                        (wayland? #t)))))))))
 
 (define battery-mod
   (mod
     (name 'battery-mod)
     (apply
-     (apply-mod operating-system
+     (mod-operating-system
        (packages
-        operating-system-packages
-        append=>
         (list tlp))
        (services
-        operating-system-user-services
-        append=>
         (list (service tlp-service-type
                        (tlp-configuration
                         (cpu-boost-on-ac? #t)))))))))
@@ -143,15 +132,11 @@ automatically."
   (mod
     (name 'virtualization-mod)
     (apply
-     (apply-mod operating-system
+     (mod-operating-system
        (packages
-        operating-system-packages
-        append=>
         (list virt-manager
               gnome-boxes))
        (services
-        operating-system-user-services
-        append=>
         (list (service libvirt-service-type
                        (libvirt-configuration
                         (unix-sock-group "libvirt")))
