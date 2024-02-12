@@ -46,10 +46,8 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-flatpak-profile-service-type
                               '((flathub "org.mozilla.Thunderbird")
@@ -71,10 +69,8 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-flatpak-profile-service-type
                               '((flathub "org.kde.kdenlive")
@@ -85,10 +81,8 @@
   (mod
     (name 'office-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list libreoffice))))))
 
 (define personal-comms-mod
@@ -97,10 +91,8 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-impure-symlinks-service-type
                               `((".local/share/flatpak/overrides"
@@ -118,10 +110,8 @@
     (dependencies
      (list emacs-mod))
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-impure-symlinks-service-type
                               `((""

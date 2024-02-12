@@ -32,8 +32,6 @@
   (mod
     (name 'web-server-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list darkhttpd))))))

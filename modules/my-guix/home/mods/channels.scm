@@ -30,10 +30,8 @@
   (mod
     (name 'nonguix-channel-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (services
-        home-environment-user-services
-        append=>
         (list
          (simple-service name
                          home-channels-service-type

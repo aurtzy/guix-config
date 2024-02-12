@@ -38,10 +38,8 @@
   (mod
     (name 'wayland-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-bash-service-type
                               (home-bash-extension
@@ -84,10 +82,8 @@
     (dependencies
      (list wayland-mod))
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-activation-service-type
                               plasma-mod-shortcuts)))))))

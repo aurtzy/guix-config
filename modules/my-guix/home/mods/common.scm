@@ -136,10 +136,8 @@ the shell alias."
   (mod
     (name 'emacs-base-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list emacs-pgtk
               font-hack
               ;; tree-sitter
@@ -177,8 +175,6 @@ the shell alias."
               ;; markdown
               emacs-markdown-mode))
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-impure-symlinks-service-type
                               `((".config/emacs"
@@ -210,15 +206,11 @@ the shell alias."
   (mod
     (name 'common-fonts-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list font-google-noto
               font-wqy-zenhei))
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-impure-symlinks-service-type
                               `((".local/share"
@@ -230,16 +222,12 @@ the shell alias."
   (mod
     (name 'flatpak-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list flatpak-xdg-utils
               xdg-utils))
        (services
-        home-environment-user-services
-        services =>
-        (cons (simple-service name
+        (list (simple-service name
                               home-impure-symlinks-service-type
                               (append
                                ;; Flatpak doesn't like dangling symlinks, so
@@ -260,19 +248,24 @@ the shell alias."
                                   "global")
                                  (".local/share/flatpak/overrides"
                                   ,(path-append-my-files "impure/flatpak")
-                                  "com.github.tchx84.Flatseal"))))
-              (modify-services services
-                (home-flatpak-service-type
-                 config =>
-                 (home-flatpak-configuration
-                  (remotes
-                   (acons 'flathub
-                          "https://flathub.org/repo/flathub.flatpakrepo"
-                          (home-flatpak-configuration-remotes config)))
-                  (profile
-                   (cons '(flathub "com.github.tchx84.Flatseal")
-                         (home-flatpak-configuration-profile
-                          config))))))))))))
+                                  "com.github.tchx84.Flatseal"))))))
+       (apply
+        (lambda (he)
+          (home-environment
+           (inherit he)
+           (services
+            (modify-services (home-environment-user-services he)
+              (home-flatpak-service-type
+               config =>
+               (home-flatpak-configuration
+                (remotes
+                 (acons 'flathub
+                        "https://flathub.org/repo/flathub.flatpakrepo"
+                        (home-flatpak-configuration-remotes config)))
+                (profile
+                 (cons '(flathub "com.github.tchx84.Flatseal")
+                       (home-flatpak-configuration-profile
+                        config))))))))))))))
 
 (define audio-mod
   (mod
@@ -280,14 +273,10 @@ the shell alias."
     (dependencies
      (list flatpak-mod))
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list pavucontrol))
        (services
-        home-environment-user-services
-        append=>
         (list (service home-pipewire-service-type)
               (simple-service name
                               home-impure-symlinks-service-type
@@ -324,10 +313,8 @@ the shell alias."
     (dependencies
      (list flatpak-mod))
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (services
-        home-environment-user-services
-        append=>
         (let ((firefox-profile
                ".var/app/org.mozilla.firefox/.mozilla/firefox/profile.default"))
           (list (simple-service name
@@ -366,10 +353,8 @@ the shell alias."
     (dependencies
      (list flatpak-mod))
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-flatpak-profile-service-type
                               '((flathub "org.keepassxc.KeePassXC")))))))))
@@ -379,10 +364,8 @@ the shell alias."
   (mod
     (name 'breeze-theme-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list breeze
               breeze-icons))))))
 
@@ -390,16 +373,12 @@ the shell alias."
   (mod
     (name 'media-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list yt-dlp
               mpv
               quodlibet))
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-bash-service-type
                               (home-bash-extension

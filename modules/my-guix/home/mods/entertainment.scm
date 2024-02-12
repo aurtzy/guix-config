@@ -52,10 +52,8 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-flatpak-profile-service-type
                               '((flathub "com.usebottles.bottles")))
@@ -74,15 +72,11 @@
        (list flatpak-mod
              bottles-mod))
       (apply
-       (apply-mod home-environment
+       (mod-home-environment
          (packages
-          home-environment-packages
-          append=>
           (list steam-custom-wrapped
                 sdl2))
          (services
-          home-environment-user-services
-          append=>
           (list (simple-service name
                                 home-impure-symlinks-service-type
                                 `( ;; Flatpak overrides
@@ -122,14 +116,10 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list glfw-wayland-minecraft))
        (services
-        home-environment-user-services
-        append=>
         (list (simple-service name
                               home-flatpak-profile-service-type
                               '((flathub "org.prismlauncher.PrismLauncher")))))))))
@@ -138,20 +128,16 @@
   (mod
     (name 'minetest-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list minetest))))))
 
 (define syncplay-mod
   (mod
     (name 'syncplay-mod)
     (apply
-     (apply-mod home-environment
+     (mod-home-environment
        (packages
-        home-environment-packages
-        append=>
         (list syncplay))))))
 
 (define entertainment-mods
