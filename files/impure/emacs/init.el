@@ -457,6 +457,11 @@
   :config
   (editorconfig-mode 1))
 
+;;;; Un-disabled commands
+
+(put 'downcase-region 'disabled nil)
+(put 'magit-clean 'disabled nil)
+
 ;;;; Miscellaneous
 
 (use-package emacs
@@ -620,4 +625,3 @@ to report upstream.  TODO."
   (add-to-list 'auto-mode-alist '("\\.\\(rs\\|rlib\\)\\'" . rust-ts-mode)))
 
 ;;; init.el ends here
-(put 'downcase-region 'disabled nil)
