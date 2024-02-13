@@ -164,7 +164,7 @@
   (let ((name (package-name mesa))
         (version "24.0.0")
         (revision "1")
-        (commit "b10ee44308c44836b872174638ba3ae97264f772"))
+        (commit "98b62434bd99ab962d4a7c3d23ec142154ee5cf7"))
     (package/inherit mesa
       (version (git-version version revision commit))
       (source
@@ -175,7 +175,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "185k32268fbf5286sv1jyay6r3hai8x6xv89dgfhnkgycp05m3zp"))
+                  "0071jjc8zcxa1dxlx28jscalpf766kdx39fyad04x3wnm6birxrw"))
          (patches
           (let* ((url "https://aur.archlinux.org/cgit/aur.git/plain")
                  (id "1f6789230c9167f695de871d1cdaef8d6179ae3d")
@@ -249,4 +249,5 @@
                         rust-bindgen-cli))))
       (propagated-inputs
        (modify-inputs (package-propagated-inputs mesa)
+         (append libclc)
          (replace "libdrm" libdrm/newer))))))
