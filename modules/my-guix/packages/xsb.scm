@@ -29,22 +29,27 @@
   #:use-module ((guix licenses)
                 #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (guix profiles))
+  #:use-module (guix profiles)
+  #:use-module (my-guix utils))
 
 (define-public xsb
-  (let ((commit "8e9117c6c28cbdf56217f1f4805b9f493d505cab")
+  (let ((commit "660f0f79b1007f2f0be5bfa4e079abaf12b4f1d9")
         (revision "1"))
     (package
       (name "xsb")
       (version (git-version "5.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.code.sf.net/p/xsb/code")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0jy9afk8lrl0bnyfjkbmfyrhdbpgjy3sd17wzlv290a2ichv1jal"))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.code.sf.net/p/xsb/code")
+               (commit commit)))
+         (sha256
+          (base32
+           "0svb6hg7bv0y8x3qs8yhnrk6zsma12z5vmqw95vfw9rlsb0a91ns"))
+         (patches
+          (search-my-patches
+           "0001-Avoid-recompiling-when-modification-times-are-equal.patch"))))
       (build-system gnu-build-system)
       (arguments
        (list
@@ -76,20 +81,13 @@
                        (string-append begin rm))
                       (("(^.*\\s?)/bin/touch" all begin)
                        (string-append begin touch)))))))
-            (add-after 'patch-calls 'patch-consult-recompilation
-              ;; This patches the needs_recompile condition so that
-              ;; rebuilds do not happen when Guix resets timestamps to
-              ;; Unix epoch, since the newerthan path_sysop considers
-              ;; equal timestamps to be newer than each other
+            (add-after 'patch-calls 'trigger-consult-recompilation
+              ;; Since the recompilation patch is not upstreamed and the
+              ;; precompiled binary that needs to be recompiled is the module
+              ;; that decides recompilation, we forcefully trigger
+              ;; recompilation by setting its modtime.
               (lambda _
-                (substitute*
-                    "syslib/consult.P"
-                  (("path_sysop\\(newerthan,PFileName,Obj\\)" all)
-                   (string-append
-                    all
-                    ", path_sysop(modtime, PFileName, PFileNameMod)"
-                    ", path_sysop(modtime, Obj, ObjMod)"
-                    ", PFileNameMod \\== ObjMod")))))
+                (utime "syslib/consult.P" 2 2)))
             (add-after 'patch-calls 'patch-configure
               (lambda _
                 (substitute*

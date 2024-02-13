@@ -1,0 +1,28 @@
+From 5cf5c18d6f3d9a63a0e49e3a8b79095943ba7907 Mon Sep 17 00:00:00 2001
+From: aurtzy <aurtzy@gmail.com>
+Date: Tue, 13 Feb 2024 02:13:17 -0500
+Subject: [PATCH] Avoid recompiling when modification times are equal
+
+---
+ XSB/syslib/consult.P | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/XSB/syslib/consult.P b/XSB/syslib/consult.P
+index 339334029..664deed60 100644
+--- a/XSB/syslib/consult.P
++++ b/XSB/syslib/consult.P
+@@ -217,7 +217,10 @@ i_want_compile(SExt, Base, Obj) :-
+ :- mode needs_recompile(+,+,+).
+ needs_recompile(XSB_SRC_EXTENSION_ATOM_SANS_DOT, Base, Obj) :-
+ 	( str_cat(Base, XSB_SRC_EXTENSION_ATOM, PFileName),
+-	    path_sysop(newerthan,PFileName,Obj)
++	  path_sysop(newerthan, PFileName, Obj),
++	  path_sysop(modtime, PFileName, PFileNameMod),
++	  path_sysop(modtime, Obj, ObjMod),
++	  PFileNameMod \== ObjMod
+ 	)
+ 	;
+ 	(str_cat(Base, XSB_HDR_EXTENSION_ATOM, HFileName),
+-- 
+2.41.0
+
