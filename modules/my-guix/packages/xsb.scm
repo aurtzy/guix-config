@@ -33,7 +33,7 @@
   #:use-module (my-guix utils))
 
 (define-public xsb
-  (let ((commit "660f0f79b1007f2f0be5bfa4e079abaf12b4f1d9")
+  (let ((commit "8f187d97fc781f6e7f45017290daaa22d3d3349b")
         (revision "1"))
     (package
       (name "xsb")
@@ -46,10 +46,7 @@
                (commit commit)))
          (sha256
           (base32
-           "0svb6hg7bv0y8x3qs8yhnrk6zsma12z5vmqw95vfw9rlsb0a91ns"))
-         (patches
-          (search-my-patches
-           "0001-Avoid-recompiling-when-modification-times-are-equal.patch"))))
+           "1ivycqwxjzyr06rp7ldlqkq3z3znik5iyicbxky15af31rgrz6ik"))))
       (build-system gnu-build-system)
       (arguments
        (list
@@ -81,13 +78,6 @@
                        (string-append begin rm))
                       (("(^.*\\s?)/bin/touch" all begin)
                        (string-append begin touch)))))))
-            (add-after 'patch-calls 'trigger-consult-recompilation
-              ;; Since the recompilation patch is not upstreamed and the
-              ;; precompiled binary that needs to be recompiled is the module
-              ;; that decides recompilation, we forcefully trigger
-              ;; recompilation by setting its modtime.
-              (lambda _
-                (utime "syslib/consult.P" 2 2)))
             (add-after 'patch-calls 'patch-configure
               (lambda _
                 (substitute*
