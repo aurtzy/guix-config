@@ -87,7 +87,6 @@
                   data-dir
                   (lambda ()
                     (system* #$(file-append git-annex "/bin/git-annex")
-                             "git-annex"
                              "assist"))))
                data-dirs)
               (sync)))))))
