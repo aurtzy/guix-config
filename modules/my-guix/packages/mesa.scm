@@ -161,11 +161,12 @@
 ;;
 ;; TODO Consider optimizations like the AUR package has done.
 (define-public mesa-git
-  (let ((name (package-name mesa))
+  (let ((name "mesa-git")
         (version "24.0.0")
-        (revision "1")
-        (commit "98b62434bd99ab962d4a7c3d23ec142154ee5cf7"))
+        (revision "0")
+        (commit "da391650f534cc78c4907010010a475a72e49422"))
     (package/inherit mesa
+      (name name)
       (version (git-version version revision commit))
       (source
        (origin
@@ -175,7 +176,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "0071jjc8zcxa1dxlx28jscalpf766kdx39fyad04x3wnm6birxrw"))
+                  "09bw0xp6pm4lwd44hhsbk2si8zi89nimhwm766blr6kc292zk1xd"))
          (patches
           (let* ((url "https://aur.archlinux.org/cgit/aur.git/plain")
                  (id "1f6789230c9167f695de871d1cdaef8d6179ae3d")
@@ -247,7 +248,9 @@
                           ("x86_64-linux" rust-binary-x86_64)
                           ("i686-linux" rust-binary-i686))
                         rust-bindgen-cli))))
+      (inputs
+       (modify-inputs (package-inputs mesa)
+         (append libclc)))
       (propagated-inputs
        (modify-inputs (package-propagated-inputs mesa)
-         (append libclc)
          (replace "libdrm" libdrm/newer))))))
