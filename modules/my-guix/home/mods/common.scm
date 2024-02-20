@@ -159,6 +159,7 @@ the shell alias."
               emacs-magit
               emacs-magit-annex
               emacs-git-annex
+              emacs-forge
               ;; guix/guile/scheme hacking
               guile-3.0
               emacs-guix
