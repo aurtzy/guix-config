@@ -265,7 +265,7 @@ the shell alias."
 
 (define audio-mod
   (mod
-    (name 'pipewire-mod)
+    (name 'audio-mod)
     (dependencies
      (list flatpak-mod))
     (apply
