@@ -276,9 +276,12 @@ the shell alias."
         (list (service home-pipewire-service-type)
               (simple-service name
                               home-impure-symlinks-service-type
-                              `((".config/easyeffects/input"
-                                 ,(path-append-my-files "impure/pipewire")
-                                 "main-mic.json")))
+                              `((".local/share/flatpak/overrides"
+                                  ,(path-append-my-files "easyeffects/impure")
+                                  "com.github.wwmm.easyeffects")
+                                (".var/app/com.github.wwmm.easyeffects/config/easyeffects"
+                                 ,(path-append-my-files
+                                   "easyeffects/impure/config"))))
               (simple-service name
                               home-flatpak-profile-service-type
                               '((flathub "com.github.wwmm.easyeffects")))
