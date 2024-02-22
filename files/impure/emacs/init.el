@@ -512,6 +512,9 @@
 (use-package magit
   :commands magit)
 
+(use-package forge
+  :after magit)
+
 (use-package org
   :preface
   (defun org-export-to-pdf-cd (&optional _ _ _ _ _)
