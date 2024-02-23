@@ -164,7 +164,7 @@
   (let ((name "mesa-git")
         (version "24.0.0")
         (revision "0")
-        (commit "da391650f534cc78c4907010010a475a72e49422"))
+        (commit "944ef1771e19b2eb5b0ffc8017652a155a4838e4"))
     (package/inherit mesa
       (name name)
       (version (git-version version revision commit))
@@ -176,10 +176,10 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "09bw0xp6pm4lwd44hhsbk2si8zi89nimhwm766blr6kc292zk1xd"))
+                  "1c18vcyb4mgrxxjgkf1m8yaxy4xxgydn27a5nlcr34fjhrv424kd"))
          (patches
           (let* ((url "https://aur.archlinux.org/cgit/aur.git/plain")
-                 (id "1f6789230c9167f695de871d1cdaef8d6179ae3d")
+                 (id "a9f8ffba8b0c2c90003c169f2fe74a38cbe1f29a")
                  (patch-uri
                   (lambda (file)
                     (format #f "~a/~a.patch?h=vulkan-nouveau-git&id=~a"
@@ -190,7 +190,7 @@
                     (file-name "nvk-memory-budget.patch")
                     (sha256
                      (base32
-                      "0aa3gnpv4xq4q10qnd57kf3njppca9zxwfmnmymgqcq8dcyb8rhz")))
+                      "0xb5absvhiarvfrj200i5s9sxssnbh1ggqpd9mh5x5j957z0ji57")))
                   (origin
                     (method url-fetch)
                     (uri (patch-uri "nak-iadd3-imad"))
@@ -243,14 +243,17 @@
               `("rust-proc-macro2"
                 ,(package-source rust-proc-macro2-1/newer))
               (modify-inputs (package-native-inputs mesa)
-                (append (match (or (%current-target-system)
-                                   (%current-system))
-                          ("x86_64-linux" rust-binary-x86_64)
-                          ("i686-linux" rust-binary-i686))
-                        rust-bindgen-cli))))
+                (prepend rust
+                         ;; (match (or (%current-target-system)
+                         ;;            (%current-system))
+                         ;;   ("x86_64-linux" rust-binary-x86_64)
+                         ;;   ("i686-linux" rust-binary-i686))
+                         rust-bindgen-cli
+                         llvm-15
+                         clang-15))))
       (inputs
        (modify-inputs (package-inputs mesa)
-         (append libclc)))
+         (prepend libclc)))
       (propagated-inputs
        (modify-inputs (package-propagated-inputs mesa)
          (replace "libdrm" libdrm/newer))))))
