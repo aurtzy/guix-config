@@ -70,10 +70,10 @@
          "14xbg4r1bcdg4ni4amz9f9fmbvb9q8m026vgcf5r0w184sdjg91l"))))
     (arguments
      (cons*
-      #:rust (match (or (%current-target-system)
-                        (%current-system))
-               ("x86_64-linux" rust-binary-x86_64)
-               ("i686-linux" rust-binary-i686))
+      ;; #:rust (match (or (%current-target-system)
+      ;;                   (%current-system))
+      ;;          ("x86_64-linux" rust-binary-x86_64)
+      ;;          ("i686-linux" rust-binary-i686))
       #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
