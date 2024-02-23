@@ -174,7 +174,7 @@ the shell alias."
         (list (simple-service name
                               home-impure-symlinks-service-type
                               `((".config/emacs"
-                                 ,(path-append-my-files "impure/emacs")
+                                 ,(path-append-my-files "emacs/impure")
                                  "init.el")))
               (simple-service name
                               home-environment-variables-service-type
