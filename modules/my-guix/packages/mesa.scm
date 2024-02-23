@@ -100,9 +100,9 @@
            ("rust-block" ,rust-block-0.1)
            ("rust-objc" ,rust-objc-0.2)
            ,@original-inputs)))))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs rust-bindgen-0.64)
-       (append clang)))))
+    (native-inputs
+     (modify-inputs (package-native-inputs rust-bindgen-0.64)
+       (prepend clang)))))
 
 (define-public meson/newest
   (package/inherit meson/newer
