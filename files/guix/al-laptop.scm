@@ -1,5 +1,6 @@
 (use-modules (gnu)
              (gnu packages gnome)
+             (gnu packages radio)
              (gnu services networking)
              (gnu system file-systems)
              (guix packages)
@@ -26,6 +27,7 @@
      (kernel-arguments
       ;; Fix keyboard not working when resuming from suspend
       (cons* "i8042.dumbkbd"
+             "modprobe.blacklist=dvb_usb_rtl28xxu"
              (operating-system-user-kernel-arguments base-os)))
      (host-name "al-laptop")
      (users
@@ -39,7 +41,9 @@
                                       "audio"
                                       "video"
                                       "kvm"
-                                      "libvirt")))
+                                      "libvirt"
+                                      ;; rtl-sdr
+                                      "dialout")))
              (operating-system-users base-os)))
      (mapped-devices
       (list (mapped-device
@@ -64,12 +68,17 @@
                              'fat32))
                (type "vfat"))
              (operating-system-file-systems base-os)))
+     (packages
+      (cons* rtl-sdr
+             (operating-system-packages base-os)))
      (services
-      (modify-services (operating-system-user-services base-os)
-        (network-manager-service-type
-         config => (network-manager-configuration
-                    (inherit config)
-                    (vpn-plugins (list network-manager-openconnect))))))))
+      (cons*
+       (udev-rules-service 'rtl-sdr rtl-sdr)
+       (modify-services (operating-system-user-services base-os)
+         (network-manager-service-type
+          config => (network-manager-configuration
+                     (inherit config)
+                     (vpn-plugins (list network-manager-openconnect)))))))))
  (list swapfile-mod
        gnome-mod
        battery-mod
