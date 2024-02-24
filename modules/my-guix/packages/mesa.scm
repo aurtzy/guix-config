@@ -164,7 +164,7 @@
   (let ((name "mesa-git")
         (version "24.0.0")
         (revision "0")
-        (commit "944ef1771e19b2eb5b0ffc8017652a155a4838e4"))
+        (commit "a9214460eec38500919cd0eec5513dce987ffb32"))
     (package/inherit mesa
       (name name)
       (version (git-version version revision commit))
@@ -176,7 +176,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "1c18vcyb4mgrxxjgkf1m8yaxy4xxgydn27a5nlcr34fjhrv424kd"))
+                  "0vsiv43b339pzc9929v1bpk59njyrgq71hfiralcrzd1a93iyr01"))
          (patches
           (let* ((url "https://aur.archlinux.org/cgit/aur.git/plain")
                  (id "a9f8ffba8b0c2c90003c169f2fe74a38cbe1f29a")
@@ -185,13 +185,6 @@
                     (format #f "~a/~a.patch?h=vulkan-nouveau-git&id=~a"
                             url file id))))
             (list (origin
-                    (method url-fetch)
-                    (uri (patch-uri "nvk-memory-budget"))
-                    (file-name "nvk-memory-budget.patch")
-                    (sha256
-                     (base32
-                      "0xb5absvhiarvfrj200i5s9sxssnbh1ggqpd9mh5x5j957z0ji57")))
-                  (origin
                     (method url-fetch)
                     (uri (patch-uri "nak-iadd3-imad"))
                     (file-name "nak-iadd3-imad.patch")
