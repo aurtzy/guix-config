@@ -384,7 +384,9 @@
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package embark
-  :bind (("C-." . embark-act)
+  :bind (:map
+         override-global-map
+         ("C-." . embark-act)
          ("M-." . embark-dwim)
          ("C-h B" . embark-bindings))
   :custom
