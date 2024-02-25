@@ -508,6 +508,10 @@
   :config
   (dashboard-setup-startup-hook))
 
+(use-package dired
+  :custom
+  (dired-listing-switches "-alh"))
+
 ;; TODO: explore magit configurations
 (use-package magit
   :commands magit)
