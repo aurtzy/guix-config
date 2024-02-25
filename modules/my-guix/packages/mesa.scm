@@ -52,6 +52,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (my-guix packages rust)
+  #:use-module (my-guix utils)
   #:use-module (ice-9 match))
 
 (define-public rust-bindgen-cli
@@ -184,13 +185,15 @@
                   (lambda (file)
                     (format #f "~a/~a.patch?h=vulkan-nouveau-git&id=~a"
                             url file id))))
-            (list (origin
-                    (method url-fetch)
-                    (uri (patch-uri "nak-iadd3-imad"))
-                    (file-name "nak-iadd3-imad.patch")
-                    (sha256
-                     (base32
-                      "17dzp3jgf7pm55rkirgckhrf0q13l9zz522sjzpdm440r222bh1r"))))))))
+            (cons* (origin
+                     (method url-fetch)
+                     (uri (patch-uri "nak-iadd3-imad"))
+                     (file-name "nak-iadd3-imad.patch")
+                     (sha256
+                      (base32
+                       "17dzp3jgf7pm55rkirgckhrf0q13l9zz522sjzpdm440r222bh1r")))
+                   ;; TODO test dis
+                   (search-my-patches "nvk-eso-gpl.patch"))))))
       (arguments
        (cons*
         #:meson meson/newest
