@@ -60,14 +60,18 @@
                    ,@steam-gameruntime-libs
                    ,@fhs-min-libs)
                  #:name "fhs-union-64"))
-     ;; If 32-bit games are not played, this can be commented out to save on
-     ;; build time.
-     (union32
-      (fhs-union `(,@steam-client-libs
-                   ,@steam-gameruntime-libs
-                   ,@fhs-min-libs)
-                 #:name "fhs-union-32"
-                 #:system "i686-linux")))))
+     ;; Uncomment this to apply 32-bit version of mesa-git.  Requires
+     ;; i686-linux rust, which is not available in Guix at the moment
+     ;; (although rust-binary from (my-guix packages rust) may be used with
+     ;; mesa-git to achieve this).
+     ;;
+     ;; (union32
+     ;;  (fhs-union `(,@steam-client-libs
+     ;;               ,@steam-gameruntime-libs
+     ;;               ,@fhs-min-libs)
+     ;;             #:name "fhs-union-32"
+     ;;             #:system "i686-linux"))
+     )))
 
 (define steam-custom
   (let ((steam-pkg (nonguix-container->package steam-container-custom)))
