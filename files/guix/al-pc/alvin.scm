@@ -6,7 +6,6 @@
              (guix utils)
              (my-guix mods)
              (my-guix home base desktop)
-             (my-guix home mods channels)
              (my-guix home mods common)
              (my-guix home mods desktop-environment)
              (my-guix home mods entertainment)
@@ -31,5 +30,4 @@
          entertainment-mods
          (list data-mod
                gnome-mod
-               web-server-mod
-               nonguix-channel-mod)))
+               web-server-mod)))

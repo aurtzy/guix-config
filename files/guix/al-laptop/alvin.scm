@@ -2,7 +2,6 @@
              (gnu services)
              (my-guix mods)
              (my-guix home base desktop)
-             (my-guix home mods channels)
              (my-guix home mods common)
              (my-guix home mods desktop-environment)
              (my-guix home mods extra)
@@ -17,8 +16,7 @@
  (append common-mods
          extra-mods
          (list data-mod
-               gnome-mod
-               nonguix-channel-mod))
+               gnome-mod))
  #:exclude (list creative-mod
                  personal-comms-mod))
 
