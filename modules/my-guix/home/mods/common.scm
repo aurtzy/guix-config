@@ -51,6 +51,7 @@
 
 (use-package-modules haskell-apps backup
                      emacs emacs-xyz tree-sitter guile
+                     protobuf
                      package-management
                      pulseaudio
                      fonts freedesktop
@@ -168,8 +169,9 @@ the shell alias."
               emacs-paredit
               ;; dashboard on init
               emacs-dashboard
-              ;; markdown
-              emacs-markdown-mode))
+              ;; additional modes
+              emacs-markdown-mode
+              emacs-protobuf-mode))
        (services
         (list (simple-service name
                               home-impure-symlinks-service-type
