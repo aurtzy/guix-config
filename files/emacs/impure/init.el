@@ -625,6 +625,10 @@ to report upstream.  TODO."
                              (1 font-lock-keyword-face))))
   (put 'lambda* 'scheme-indent-function 1))
 
+;; TODO I have embark override "C-." and "M-.", which are both useful; "C-."
+;; has another keybind so it can be ignored, but "M-."
+;; (geiser-edit-symbol-at-point) does not.  It might be a good idea to add it
+;; to embark-dwim.
 (use-package geiser-guile
   :config
   (add-to-list 'geiser-guile-load-path "~/git/guix"))
