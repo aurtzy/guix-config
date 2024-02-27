@@ -1,4 +1,4 @@
-From f39340c86b3b58b671e6a15e71107a302bb3f9fd Mon Sep 17 00:00:00 2001
+From 6f987a98117fa6beb9c53dacbff1df99d3486683 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Tue, 2 Jan 2024 11:55:53 -0600
 Subject: [PATCH 01/22] vulkan: Add a vk_get_subgroup_size() helper
@@ -105,7 +105,7 @@ index 1ca32a1428ee8..b003e41442662 100644
 GitLab
 
 
-From 6235dc1001540f4709b8f7563f4995a6cbaca8ca Mon Sep 17 00:00:00 2001
+From 6d58dc84ca99a2a9a26560ab49e3c66f0afcaa98 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Tue, 2 Jan 2024 16:48:18 -0600
 Subject: [PATCH 02/22] vulkan: Move the descriptor set limit to vk_limits.h
@@ -177,7 +177,7 @@ index 17fde98379517..4bffdc906c7f4 100644
 GitLab
 
 
-From 6c14d26525dbd28bbd9ccf2653cfe172242f861e Mon Sep 17 00:00:00 2001
+From a47a7b82ed6d726b5c9a92124e5541d66e9f6d61 Mon Sep 17 00:00:00 2001
 From: Connor Abbott <cwabbott0@gmail.com>
 Date: Thu, 5 Oct 2023 16:24:36 +0200
 Subject: [PATCH 03/22] vk/graphics_state: Remove bogus assert in
@@ -209,7 +209,7 @@ index db2bd178e7b2c..c8ea2545a151c 100644
 GitLab
 
 
-From fbd8cd543d001251a63f6598117c8aab2358cbd9 Mon Sep 17 00:00:00 2001
+From 9b65b740862e441361e1cd86a7e09b7fa649549f Mon Sep 17 00:00:00 2001
 From: Connor Abbott <cwabbott0@gmail.com>
 Date: Thu, 12 Oct 2023 13:03:50 +0200
 Subject: [PATCH 04/22] vk/graphics_state: Add stubs required by
@@ -315,7 +315,7 @@ index c8ea2545a151c..0efcb1a5bde06 100644
 GitLab
 
 
-From 0d11bb1d7383aa65517e9cb1d0b51406257af8b4 Mon Sep 17 00:00:00 2001
+From 0435ba56d5b770fc7d201cf43ec767cb12e0e059 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Tue, 2 Jan 2024 10:41:11 -0600
 Subject: [PATCH 05/22] vulkan: Add runtime code for VK_EXT_shader_object
@@ -333,6 +333,8 @@ and handles rejecting invalid binaries based on shaderBinaryUUID and
 shaderBinaryVersion.  This should make life a bit easier for driver
 authors as well as provides a bit nicer interface for building the
 common pipeline implementation on top of shader objects.
+
+Reviewed-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
 ---
  src/vulkan/runtime/meson.build |   2 +
  src/vulkan/runtime/vk_device.h |   4 +
@@ -1138,7 +1140,7 @@ index 0000000000000..0ee6e7681c343
 GitLab
 
 
-From f2f575f97559ca3c07cb64999a2f1730d1d05fda Mon Sep 17 00:00:00 2001
+From 8ba3f7afdd37bc90de6d582de49656958ff33e24 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Tue, 9 Jan 2024 22:06:20 -0600
 Subject: [PATCH 06/22] vulkan: Add a
@@ -1260,12 +1262,14 @@ index d18b4d5eb8440..7d9339f119efc 100644
 GitLab
 
 
-From d4152091ade0a1da0dbf8d8e8dafa65e9e60bd27 Mon Sep 17 00:00:00 2001
+From c67ebbe18fd284306f44c45dd965c83dfb0af3af Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Tue, 9 Jan 2024 22:07:14 -0600
 Subject: [PATCH 07/22] vulkan: Rework vk_render_pass_state::attachments
 
 The new bitfield has a separat flag for each of the color attachments.
+
+Reviewed-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
 ---
  src/freedreno/vulkan/tu_pipeline.cc    | 40 ++++++++++++++------------
  src/imagination/vulkan/pvr_pipeline.c  | 14 +++++----
@@ -1544,7 +1548,7 @@ index 7d9339f119efc..e55fea832cd2a 100644
 GitLab
 
 
-From 9c343051d42fbb31d60be834f2e93dfb46d4a7a0 Mon Sep 17 00:00:00 2001
+From 5b664f68fd965f1e6387d34b2dddfdfdca596366 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Tue, 9 Jan 2024 22:19:49 -0600
 Subject: [PATCH 08/22] vulkan: Add a new dynamic state for render pass
@@ -1653,7 +1657,7 @@ index e55fea832cd2a..38b88356134ae 100644
 GitLab
 
 
-From 583fc82c82e2547e14284c13ea468cedf0314f72 Mon Sep 17 00:00:00 2001
+From e38ec890ddc9d4212520618381c8285f3613e373 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Wed, 3 Jan 2024 11:59:21 -0600
 Subject: [PATCH 09/22] vulkan: Add a vk_pipeline base struct
@@ -1871,11 +1875,12 @@ index b003e41442662..62ae730e1e440 100644
 GitLab
 
 
-From 207a093bb7424de9b055658cbb63589774837de6 Mon Sep 17 00:00:00 2001
+From e388bf261b92818fe4eb9444634764e4b934b880 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Wed, 3 Jan 2024 14:55:51 -0600
 Subject: [PATCH 10/22] vulkan: Add push constant ranges to vk_pipeline_layout
 
+Reviewed-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
 ---
  src/vulkan/runtime/vk_limits.h          | 36 +++++++++++++++++++++++++
  src/vulkan/runtime/vk_pipeline_layout.c |  6 +++++
@@ -1967,7 +1972,7 @@ index 4bffdc906c7f4..f71110c20a596 100644
 GitLab
 
 
-From 459f447819c23179ddc98d5fcbc0d0797fa8e7fb Mon Sep 17 00:00:00 2001
+From 4f439e718ef2ba93c79f9c03babd964439feda00 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Thu, 11 Jan 2024 11:08:57 -0600
 Subject: [PATCH 11/22] vulkan: Add a BLAKE3 hash to vk_descriptor_set_layout
@@ -2007,7 +2012,7 @@ index 857ec1a7beaea..b01f30157e4fa 100644
 GitLab
 
 
-From 461d34d4fc31b363b7363d08c4fae94e2515f4d7 Mon Sep 17 00:00:00 2001
+From 6b32cf04a820538863baea87b5a4083d56a73e84 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Tue, 2 Jan 2024 17:37:47 -0600
 Subject: [PATCH 12/22] vulkan: Add generic graphics and compute VkPipeline
@@ -2022,6 +2027,8 @@ state object will be NULL indicating that all state is unknown.  Besides
 that, all the rest of the differences between Vulkan 1.0 pipelines,
 VK_EXT_graphics_pipeline_library, and VK_EXT_shader_object are handled
 by the Vulkan runtime code.
+
+Reviewed-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
 ---
  src/vulkan/runtime/vk_command_buffer.h |    8 +
  src/vulkan/runtime/vk_limits.h         |    3 +
@@ -2065,7 +2072,7 @@ index e4756794b0802..50bfde0c0ebee 100644
  
  /* From the Vulkan 1.3.274 spec:
 diff --git a/src/vulkan/runtime/vk_pipeline.c b/src/vulkan/runtime/vk_pipeline.c
-index ac7b66a13f46f..cb0acf8608169 100644
+index ac7b66a13f46f..28c66dd6f0fff 100644
 --- a/src/vulkan/runtime/vk_pipeline.c
 +++ b/src/vulkan/runtime/vk_pipeline.c
 @@ -23,18 +23,23 @@
@@ -2491,7 +2498,7 @@ index ac7b66a13f46f..cb0acf8608169 100644
 +   }
 +
 +   if (pipeline_flags &
-+       VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT)
++       VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_KHR)
 +      return VK_PIPELINE_COMPILE_REQUIRED;
 +
 +   const struct nir_shader_compiler_options *nir_options =
@@ -2707,7 +2714,7 @@ index ac7b66a13f46f..cb0acf8608169 100644
 +{
 +   VkShaderCreateFlagsEXT shader_flags = 0;
 +
-+   if (pipeline_flags & VK_PIPELINE_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR)
++   if (pipeline_flags & VK_PIPELINE_CREATE_2_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR)
 +      shader_flags |= VK_SHADER_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_MESA;
 +
 +   if (stage == MESA_SHADER_FRAGMENT) {
@@ -2940,7 +2947,7 @@ index ac7b66a13f46f..cb0acf8608169 100644
 +      }
 +
 +      if (pipeline->base.flags &
-+          VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT)
++          VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_KHR)
 +         return VK_PIPELINE_COMPILE_REQUIRED;
 +
 +      struct vk_shader_compile_info infos[MESA_VK_MAX_GRAPHICS_PIPELINE_STAGES];
@@ -3471,7 +3478,7 @@ index ac7b66a13f46f..cb0acf8608169 100644
 +
 +      const VkPipelineCreateFlags2KHR flags =
 +         vk_graphics_pipeline_create_flags(&pCreateInfos[i]);
-+      if (flags & VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT)
++      if (flags & VK_PIPELINE_CREATE_2_EARLY_RETURN_ON_FAILURE_BIT_KHR)
 +         return result;
 +   }
 +
@@ -3581,7 +3588,7 @@ index ac7b66a13f46f..cb0acf8608169 100644
 +   }
 +
 +   if (pipeline->base.flags &
-+       VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT)
++       VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_KHR)
 +      return VK_PIPELINE_COMPILE_REQUIRED;
 +
 +   const struct nir_shader_compiler_options *nir_options =
@@ -3802,7 +3809,7 @@ index ac7b66a13f46f..cb0acf8608169 100644
 +
 +      const VkPipelineCreateFlags2KHR flags =
 +         vk_compute_pipeline_create_flags(&pCreateInfos[i]);
-+      if (flags & VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT)
++      if (flags & VK_PIPELINE_CREATE_2_EARLY_RETURN_ON_FAILURE_BIT_KHR)
 +         return result;
 +   }
 +
@@ -3997,7 +4004,7 @@ index 0ee6e7681c343..67f69fff301ed 100644
 GitLab
 
 
-From 8cb9188ea9222ff8cf1be7760ee3557c6bf33d43 Mon Sep 17 00:00:00 2001
+From 4900cb5b8d9c116426a4c51ca5bc675af5f0d374 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Thu, 4 Jan 2024 15:51:54 -0600
 Subject: [PATCH 13/22] nvk: Populate vk_descriptor_set_layout::blake3
@@ -4092,7 +4099,7 @@ index dc137bef5f9d3..db2396b837e65 100644
 GitLab
 
 
-From cc22e493e39e96fc1aff298b2a72a37c1f5f40c3 Mon Sep 17 00:00:00 2001
+From c56f8464a6c29605e63e63705695bbe93ee50170 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Thu, 4 Jan 2024 16:13:20 -0600
 Subject: [PATCH 14/22] nvk/shader: Refactor some helpers
@@ -4227,7 +4234,7 @@ index 47ac49dc68131..ee392110dac79 100644
 GitLab
 
 
-From 2214c98ba6b7d67a38d47e9768baf3ffd5039b15 Mon Sep 17 00:00:00 2001
+From ed875668aabbb1474d93dcbd0e7c73970c4a4716 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Thu, 4 Jan 2024 16:19:26 -0600
 Subject: [PATCH 15/22] nvk: Move populate_fs_key to nvk_shader.c
@@ -4239,7 +4246,7 @@ Subject: [PATCH 15/22] nvk: Move populate_fs_key to nvk_shader.c
  3 files changed, 29 insertions(+), 24 deletions(-)
 
 diff --git a/src/nouveau/vulkan/nvk_graphics_pipeline.c b/src/nouveau/vulkan/nvk_graphics_pipeline.c
-index 2f66aa97a82ca..f7ec44947c116 100644
+index e212ca61b26ac..6e8efc597d372 100644
 --- a/src/nouveau/vulkan/nvk_graphics_pipeline.c
 +++ b/src/nouveau/vulkan/nvk_graphics_pipeline.c
 @@ -4,7 +4,6 @@
@@ -4265,7 +4272,7 @@ index 2f66aa97a82ca..f7ec44947c116 100644
 -   key->sample_locations_offset = nvk_root_descriptor_offset(draw.sample_locations);
 -
 -   if (state->pipeline_flags &
--       VK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT)
+-       VK_PIPELINE_CREATE_2_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT)
 -      key->zs_self_dep = true;
 -
 -   if (ms == NULL || ms->rasterization_samples <= 1)
@@ -4289,7 +4296,7 @@ index 2f66aa97a82ca..f7ec44947c116 100644
  
     for (uint32_t i = 0; i < pCreateInfo->stageCount; i++) {
 diff --git a/src/nouveau/vulkan/nvk_shader.c b/src/nouveau/vulkan/nvk_shader.c
-index 86dd4c94b25db..c8acb1e9b8aff 100644
+index 86dd4c94b25db..0d4ffb338e0ab 100644
 --- a/src/nouveau/vulkan/nvk_shader.c
 +++ b/src/nouveau/vulkan/nvk_shader.c
 @@ -4,6 +4,7 @@
@@ -4314,7 +4321,7 @@ index 86dd4c94b25db..c8acb1e9b8aff 100644
 +   key->sample_locations_offset = nvk_root_descriptor_offset(draw.sample_locations);
 +
 +   if (state->pipeline_flags &
-+       VK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT)
++       VK_PIPELINE_CREATE_2_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT)
 +      key->zs_self_dep = true;
 +
 +   const struct vk_multisample_state *ms = state->ms;
@@ -4356,7 +4363,7 @@ index ee392110dac79..9e77b2f78baaf 100644
 GitLab
 
 
-From 8fe49323ade31e7250309b854ac4928110830a70 Mon Sep 17 00:00:00 2001
+From 331c500202bd235596da3156724a8fdba32a5ff6 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Thu, 4 Jan 2024 17:46:30 -0600
 Subject: [PATCH 16/22] nvk: Pass an array of descriptor sets to nvk_lower_nir
@@ -4369,7 +4376,7 @@ Subject: [PATCH 16/22] nvk: Pass an array of descriptor sets to nvk_lower_nir
  4 files changed, 27 insertions(+), 10 deletions(-)
 
 diff --git a/src/nouveau/vulkan/nvk_compute_pipeline.c b/src/nouveau/vulkan/nvk_compute_pipeline.c
-index 33856e60f7f4b..c7e0f7f902dcf 100644
+index e51b45794c31e..5788666c1327b 100644
 --- a/src/nouveau/vulkan/nvk_compute_pipeline.c
 +++ b/src/nouveau/vulkan/nvk_compute_pipeline.c
 @@ -214,7 +214,9 @@ nvk_compute_pipeline_create(struct nvk_device *dev,
@@ -4384,7 +4391,7 @@ index 33856e60f7f4b..c7e0f7f902dcf 100644
  
        result = nvk_compile_nir(dev, nir, pipeline_flags, &robustness, NULL, cache, shader);
 diff --git a/src/nouveau/vulkan/nvk_graphics_pipeline.c b/src/nouveau/vulkan/nvk_graphics_pipeline.c
-index f7ec44947c116..4a0cb35b05d64 100644
+index 6e8efc597d372..a57891e4d18e9 100644
 --- a/src/nouveau/vulkan/nvk_graphics_pipeline.c
 +++ b/src/nouveau/vulkan/nvk_graphics_pipeline.c
 @@ -248,7 +248,9 @@ nvk_graphics_pipeline_create(struct nvk_device *dev,
@@ -4399,7 +4406,7 @@ index f7ec44947c116..4a0cb35b05d64 100644
  
           result = nvk_compile_nir(dev, nir[stage],
 diff --git a/src/nouveau/vulkan/nvk_shader.c b/src/nouveau/vulkan/nvk_shader.c
-index c8acb1e9b8aff..64710bfddd55f 100644
+index 0d4ffb338e0ab..77d4c66aea876 100644
 --- a/src/nouveau/vulkan/nvk_shader.c
 +++ b/src/nouveau/vulkan/nvk_shader.c
 @@ -259,14 +259,20 @@ lower_load_global_constant_offset_instr(nir_builder *b,
@@ -4478,7 +4485,7 @@ index 9e77b2f78baaf..08128bb95bceb 100644
 GitLab
 
 
-From 1511a36e0625b240ff348fc6171cae0c70f7e40b Mon Sep 17 00:00:00 2001
+From b556f7ed0f299dbc092eccbb0ca47892e0068965 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Thu, 11 Jan 2024 16:04:09 -0600
 Subject: [PATCH 17/22] nvk: Move nir_lower_patch_vertices to nvk_lower_nir()
@@ -4492,7 +4499,7 @@ just an optimization anyway.
  2 files changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/src/nouveau/vulkan/nvk_graphics_pipeline.c b/src/nouveau/vulkan/nvk_graphics_pipeline.c
-index 4a0cb35b05d64..9f291e5038d95 100644
+index a57891e4d18e9..a59b18721bc83 100644
 --- a/src/nouveau/vulkan/nvk_graphics_pipeline.c
 +++ b/src/nouveau/vulkan/nvk_graphics_pipeline.c
 @@ -224,7 +224,6 @@ nvk_graphics_pipeline_create(struct nvk_device *dev,
@@ -4504,7 +4511,7 @@ index 4a0cb35b05d64..9f291e5038d95 100644
     }
  
 diff --git a/src/nouveau/vulkan/nvk_shader.c b/src/nouveau/vulkan/nvk_shader.c
-index 64710bfddd55f..c43731f253a8f 100644
+index 77d4c66aea876..b2b70011a7843 100644
 --- a/src/nouveau/vulkan/nvk_shader.c
 +++ b/src/nouveau/vulkan/nvk_shader.c
 @@ -365,6 +365,11 @@ nvk_lower_nir(struct nvk_device *dev, nir_shader *nir,
@@ -4523,7 +4530,7 @@ index 64710bfddd55f..c43731f253a8f 100644
 GitLab
 
 
-From 7c6126ded815b5dcac83a75b813e2ef013a31a34 Mon Sep 17 00:00:00 2001
+From ef6aca83ee38998258ec568260645f9c9e71f7a0 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Tue, 9 Jan 2024 22:33:00 -0600
 Subject: [PATCH 18/22] nvk: Use vk_render_pass_state::attachments for write
@@ -4540,10 +4547,10 @@ common vk_pipeline code.
  3 files changed, 17 insertions(+), 43 deletions(-)
 
 diff --git a/src/nouveau/vulkan/nvk_cmd_draw.c b/src/nouveau/vulkan/nvk_cmd_draw.c
-index 5f7c96ae9c2e4..2e9fff9336aa8 100644
+index 6d4f846ce2db3..1e0b7240a585d 100644
 --- a/src/nouveau/vulkan/nvk_cmd_draw.c
 +++ b/src/nouveau/vulkan/nvk_cmd_draw.c
-@@ -1712,20 +1712,15 @@ void
+@@ -1706,20 +1706,15 @@ void
  nvk_mme_set_write_mask(struct mme_builder *b)
  {
     struct mme_value count = mme_load(b);
@@ -4569,7 +4576,7 @@ index 5f7c96ae9c2e4..2e9fff9336aa8 100644
     struct mme_value common_mask = mme_mov(b, mme_imm(1));
     struct mme_value first = mme_and(b, mask, mme_imm(BITFIELD_RANGE(0, 4)));
     struct mme_value i = mme_mov(b, mme_zero());
-@@ -1812,22 +1807,29 @@ nvk_flush_cb_state(struct nvk_cmd_buffer *cmd)
+@@ -1806,22 +1801,29 @@ nvk_flush_cb_state(struct nvk_cmd_buffer *cmd)
     }
  
     if (BITSET_TEST(dyn->dirty, MESA_VK_DYNAMIC_CB_WRITE_MASKS) ||
@@ -4605,7 +4612,7 @@ index 5f7c96ae9c2e4..2e9fff9336aa8 100644
  
     if (BITSET_TEST(dyn->dirty, MESA_VK_DYNAMIC_CB_BLEND_CONSTANTS)) {
 diff --git a/src/nouveau/vulkan/nvk_graphics_pipeline.c b/src/nouveau/vulkan/nvk_graphics_pipeline.c
-index 9f291e5038d95..d28314a9f7f3b 100644
+index a59b18721bc83..a705a89f05c2c 100644
 --- a/src/nouveau/vulkan/nvk_graphics_pipeline.c
 +++ b/src/nouveau/vulkan/nvk_graphics_pipeline.c
 @@ -23,30 +23,6 @@
@@ -4639,7 +4646,7 @@ index 9f291e5038d95..d28314a9f7f3b 100644
  static void
  emit_pipeline_xfb_state(struct nv_push *p, const struct nak_xfb_info *xfb)
  {
-@@ -397,8 +373,6 @@ nvk_graphics_pipeline_create(struct nvk_device *dev,
+@@ -402,8 +378,6 @@ nvk_graphics_pipeline_create(struct nvk_device *dev,
  
     emit_pipeline_xfb_state(&push, &last_geom->info.vtg.xfb);
  
@@ -4665,7 +4672,7 @@ index 0a635f8c37b2c..d9ce76d66fcc9 100644
 GitLab
 
 
-From dcbac6210796f2e4745533f399f1736af679b10d Mon Sep 17 00:00:00 2001
+From 004c08429ccc602c568a2bbb443e3905864a629f Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Thu, 11 Jan 2024 18:18:54 -0600
 Subject: [PATCH 19/22] nvk: Switch to shader objects
@@ -4675,15 +4682,15 @@ Subject: [PATCH 19/22] nvk: Switch to shader objects
  src/nouveau/vulkan/nvk_cmd_buffer.c        |  42 +-
  src/nouveau/vulkan/nvk_cmd_buffer.h        |  22 +-
  src/nouveau/vulkan/nvk_cmd_dispatch.c      | 146 ++++++-
- src/nouveau/vulkan/nvk_cmd_draw.c          | 242 +++++++++--
+ src/nouveau/vulkan/nvk_cmd_draw.c          | 247 +++++++++--
  src/nouveau/vulkan/nvk_cmd_meta.c          |  14 +-
  src/nouveau/vulkan/nvk_device.c            |   3 +
- src/nouveau/vulkan/nvk_graphics_pipeline.c | 412 ------------------
+ src/nouveau/vulkan/nvk_graphics_pipeline.c | 417 ------------------
  src/nouveau/vulkan/nvk_pipeline.h          |  74 ----
  src/nouveau/vulkan/nvk_query_pool.c        |  15 +-
  src/nouveau/vulkan/nvk_shader.c            | 484 ++++++++++++++-------
  src/nouveau/vulkan/nvk_shader.h            |  53 +--
- 12 files changed, 735 insertions(+), 776 deletions(-)
+ 12 files changed, 740 insertions(+), 781 deletions(-)
  delete mode 100644 src/nouveau/vulkan/nvk_graphics_pipeline.c
  delete mode 100644 src/nouveau/vulkan/nvk_pipeline.h
 
@@ -5043,7 +5050,7 @@ index 077349db39635..981adb4423e5d 100644
        const struct nvk_cbuf *cbuf = &shader->cbuf_map.cbufs[c];
  
 diff --git a/src/nouveau/vulkan/nvk_cmd_draw.c b/src/nouveau/vulkan/nvk_cmd_draw.c
-index 2e9fff9336aa8..b753bae0d40d6 100644
+index 1e0b7240a585d..7a17022100a78 100644
 --- a/src/nouveau/vulkan/nvk_cmd_draw.c
 +++ b/src/nouveau/vulkan/nvk_cmd_draw.c
 @@ -11,7 +11,7 @@
@@ -5055,7 +5062,7 @@ index 2e9fff9336aa8..b753bae0d40d6 100644
  
  #include "nil_format.h"
  #include "util/bitpack_helpers.h"
-@@ -376,13 +376,6 @@ nvk_push_draw_state_init(struct nvk_device *dev, struct nv_push *p)
+@@ -370,13 +370,6 @@ nvk_push_draw_state_init(struct nvk_device *dev, struct nv_push *p)
        P_NV9097_SET_PROGRAM_REGION_B(p, shader_base_addr);
     }
  
@@ -5069,7 +5076,7 @@ index 2e9fff9336aa8..b753bae0d40d6 100644
     for (uint32_t group = 0; group < 5; group++) {
        for (uint32_t slot = 0; slot < 16; slot++) {
           P_IMMD(p, NV9097, BIND_GROUP_CONSTANT_BUFFER(group), {
-@@ -501,6 +494,8 @@ nvk_cmd_buffer_begin_graphics(struct nvk_cmd_buffer *cmd,
+@@ -495,6 +488,8 @@ nvk_cmd_buffer_begin_graphics(struct nvk_cmd_buffer *cmd,
           nvk_cmd_buffer_dirty_render_pass(cmd);
        }
     }
@@ -5078,7 +5085,7 @@ index 2e9fff9336aa8..b753bae0d40d6 100644
  }
  
  void
-@@ -520,6 +515,8 @@ nvk_cmd_invalidate_graphics_state(struct nvk_cmd_buffer *cmd)
+@@ -514,6 +509,8 @@ nvk_cmd_invalidate_graphics_state(struct nvk_cmd_buffer *cmd)
     struct nvk_rendering_state render_save = cmd->state.gfx.render;
     memset(&cmd->state.gfx, 0, sizeof(cmd->state.gfx));
     cmd->state.gfx.render = render_save;
@@ -5087,7 +5094,7 @@ index 2e9fff9336aa8..b753bae0d40d6 100644
  }
  
  static void
-@@ -957,23 +954,218 @@ nvk_CmdEndRendering(VkCommandBuffer commandBuffer)
+@@ -951,23 +948,223 @@ nvk_CmdEndRendering(VkCommandBuffer commandBuffer)
  }
  
  void
@@ -5285,6 +5292,11 @@ index 2e9fff9336aa8..b753bae0d40d6 100644
 +                    CONTROL_V_SELECTS_LAYER,
 +      });
 +
++      P_IMMD(p, NV9097, SET_ATTRIBUTE_POINT_SIZE, {
++         .enable  = last_vtgm->info.vtg.writes_point_size,
++         .slot    = 0,
++      });
++
 +      const uint8_t clip_enable = last_vtgm->info.vtg.clip_enable;
 +      const uint8_t cull_enable = last_vtgm->info.vtg.cull_enable;
 +      P_IMMD(p, NV9097, SET_USER_CLIP_ENABLE, {
@@ -5315,7 +5327,7 @@ index 2e9fff9336aa8..b753bae0d40d6 100644
  }
  
  static void
-@@ -1051,11 +1243,10 @@ nvk_flush_ts_state(struct nvk_cmd_buffer *cmd)
+@@ -1045,11 +1242,10 @@ nvk_flush_ts_state(struct nvk_cmd_buffer *cmd)
     }
  
     if (BITSET_TEST(dyn->dirty, MESA_VK_DYNAMIC_TS_DOMAIN_ORIGIN)) {
@@ -5329,7 +5341,7 @@ index 2e9fff9336aa8..b753bae0d40d6 100644
           enum nak_ts_prims prims = shader->info.ts.prims;
           /* When the origin is lower-left, we have to flip the winding order */
           if (dyn->ts.domain_origin == VK_TESSELLATION_DOMAIN_ORIGIN_LOWER_LEFT) {
-@@ -1439,9 +1630,10 @@ nvk_flush_ms_state(struct nvk_cmd_buffer *cmd)
+@@ -1433,9 +1629,10 @@ nvk_flush_ms_state(struct nvk_cmd_buffer *cmd)
                  dyn->ms.rasterization_samples == render->samples);
        }
  
@@ -5342,7 +5354,7 @@ index 2e9fff9336aa8..b753bae0d40d6 100644
        min_samples = util_next_power_of_two(MAX2(1, min_samples));
  
        P_IMMD(p, NV9097, SET_HYBRID_ANTI_ALIAS_CONTROL, {
-@@ -1929,7 +2121,6 @@ nvk_flush_descriptors(struct nvk_cmd_buffer *cmd)
+@@ -1923,7 +2120,6 @@ nvk_flush_descriptors(struct nvk_cmd_buffer *cmd)
     struct nvk_device *dev = nvk_cmd_buffer_device(cmd);
     struct nvk_physical_device *pdev = nvk_device_physical(dev);
     const uint32_t min_cbuf_alignment = nvk_min_cbuf_alignment(&pdev->info);
@@ -5350,7 +5362,7 @@ index 2e9fff9336aa8..b753bae0d40d6 100644
     struct nvk_descriptor_state *desc = &cmd->state.gfx.descriptors;
     VkResult result;
  
-@@ -1958,8 +2149,8 @@ nvk_flush_descriptors(struct nvk_cmd_buffer *cmd)
+@@ -1952,8 +2148,8 @@ nvk_flush_descriptors(struct nvk_cmd_buffer *cmd)
     /* Find cbuf maps for the 5 cbuf groups */
     const struct nvk_shader *cbuf_shaders[5] = { NULL, };
     for (gl_shader_stage stage = 0; stage < MESA_SHADER_STAGES; stage++) {
@@ -5361,7 +5373,7 @@ index 2e9fff9336aa8..b753bae0d40d6 100644
           continue;
  
        uint32_t group = nvk_cbuf_binding_for_stage(stage);
-@@ -2059,6 +2250,7 @@ nvk_flush_descriptors(struct nvk_cmd_buffer *cmd)
+@@ -2053,6 +2249,7 @@ nvk_flush_descriptors(struct nvk_cmd_buffer *cmd)
  static void
  nvk_flush_gfx_state(struct nvk_cmd_buffer *cmd)
  {
@@ -5409,7 +5421,7 @@ index 39135ae596770..e038743125c1d 100644
     nvk_cmd_bind_vertex_buffer(cmd, 0, save->vb0);
  
 diff --git a/src/nouveau/vulkan/nvk_device.c b/src/nouveau/vulkan/nvk_device.c
-index dbe891ff5ea13..d0bd6b72f41f8 100644
+index f2c266e89f311..1639c5ce217ab 100644
 --- a/src/nouveau/vulkan/nvk_device.c
 +++ b/src/nouveau/vulkan/nvk_device.c
 @@ -8,6 +8,7 @@
@@ -5431,10 +5443,10 @@ index dbe891ff5ea13..d0bd6b72f41f8 100644
     if (ret != 0) {
 diff --git a/src/nouveau/vulkan/nvk_graphics_pipeline.c b/src/nouveau/vulkan/nvk_graphics_pipeline.c
 deleted file mode 100644
-index d28314a9f7f3b..0000000000000
+index a705a89f05c2c..0000000000000
 --- a/src/nouveau/vulkan/nvk_graphics_pipeline.c
 +++ /dev/null
-@@ -1,412 +0,0 @@
+@@ -1,417 +0,0 @@
 -/*
 - * Copyright © 2022 Collabora Ltd. and Red Hat Inc.
 - * SPDX-License-Identifier: MIT
@@ -5551,7 +5563,7 @@ index d28314a9f7f3b..0000000000000
 -      vk_graphics_pipeline_create_flags(pCreateInfo);
 -
 -   if (pipeline_flags &
--       VK_PIPELINE_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR)
+-       VK_PIPELINE_CREATE_2_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR)
 -      cache = NULL;
 -
 -   struct vk_graphics_pipeline_all_state all;
@@ -5619,7 +5631,7 @@ index d28314a9f7f3b..0000000000000
 -      }
 -
 -      if (!cache_objs[stage] &&
--          pCreateInfo->flags & VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT) {
+-          pCreateInfo->flags & VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_KHR) {
 -         result = VK_PIPELINE_COMPILE_REQUIRED;
 -         goto fail;
 -      }
@@ -5808,6 +5820,11 @@ index d28314a9f7f3b..0000000000000
 -                 CONTROL_V_SELECTS_LAYER,
 -   });
 -
+-   P_IMMD(p, NV9097, SET_ATTRIBUTE_POINT_SIZE, {
+-      .enable  = last_geom->info.vtg.writes_point_size,
+-      .slot    = 0,
+-   });
+-
 -   emit_pipeline_xfb_state(&push, &last_geom->info.vtg.xfb);
 -
 -   pipeline->push_dw_count = nv_push_dw_count(&push);
@@ -5971,7 +5988,7 @@ index e9c6cf40e8bcc..eeef9761c9e51 100644
  }
  
 diff --git a/src/nouveau/vulkan/nvk_shader.c b/src/nouveau/vulkan/nvk_shader.c
-index c43731f253a8f..4797c21d24076 100644
+index b2b70011a7843..181205d9ba57e 100644
 --- a/src/nouveau/vulkan/nvk_shader.c
 +++ b/src/nouveau/vulkan/nvk_shader.c
 @@ -8,12 +8,11 @@
@@ -6005,7 +6022,7 @@ index c43731f253a8f..4797c21d24076 100644
 +      return;
 +
     if (state->pipeline_flags &
-        VK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT)
+        VK_PIPELINE_CREATE_2_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT)
        key->zs_self_dep = true;
 @@ -208,6 +210,25 @@ nvk_populate_fs_key(struct nak_fs_key *key,
        key->force_sample_shading = true;
@@ -6689,18 +6706,19 @@ index 08128bb95bceb..9e6e93e6f9500 100644
 GitLab
 
 
-From c2f47563a2cf3a2c50260dc139a3d5fad94613ef Mon Sep 17 00:00:00 2001
+From 65ffe926cc21c05a662b9f6380b1e0934d7a65b6 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Tue, 9 Jan 2024 18:42:54 -0600
 Subject: [PATCH 20/22] nvk: Advertise VK_KHR_graphics_pipeline_library
 
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/9635
 ---
  docs/features.txt                        | 2 +-
  src/nouveau/vulkan/nvk_physical_device.c | 8 ++++++++
  2 files changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/docs/features.txt b/docs/features.txt
-index 693b3f1eadc83..e76343ef7ee42 100644
+index e17976d906450..1b13d7166984c 100644
 --- a/docs/features.txt
 +++ b/docs/features.txt
 @@ -585,7 +585,7 @@ Khronos extensions that are not part of any Vulkan version:
@@ -6713,10 +6731,10 @@ index 693b3f1eadc83..e76343ef7ee42 100644
    VK_EXT_image_2d_view_of_3d                            DONE (anv, hasvk, lvp, nvk, radv, tu, vn)
    VK_EXT_image_compression_control                      DONE (radv)
 diff --git a/src/nouveau/vulkan/nvk_physical_device.c b/src/nouveau/vulkan/nvk_physical_device.c
-index aceb35460d7a0..e5446f5ada769 100644
+index dc79f0fc4fb47..cf6fc0056ed4f 100644
 --- a/src/nouveau/vulkan/nvk_physical_device.c
 +++ b/src/nouveau/vulkan/nvk_physical_device.c
-@@ -168,6 +168,7 @@ nvk_get_device_extensions(const struct nvk_instance *instance,
+@@ -177,6 +177,7 @@ nvk_get_device_extensions(const struct nvk_instance *instance,
        .EXT_extended_dynamic_state2 = true,
        .EXT_extended_dynamic_state3 = true,
        .EXT_external_memory_dma_buf = true,
@@ -6724,7 +6742,7 @@ index aceb35460d7a0..e5446f5ada769 100644
        .EXT_host_query_reset = true,
        .EXT_image_2d_view_of_3d = true,
        .EXT_image_robustness = true,
-@@ -451,6 +452,9 @@ nvk_get_device_features(const struct nv_device_info *info,
+@@ -464,6 +465,9 @@ nvk_get_device_features(const struct nv_device_info *info,
        .extendedDynamicState3RepresentativeFragmentTestEnable = false,
        .extendedDynamicState3ShadingRateImageEnable = false,
  
@@ -6734,7 +6752,7 @@ index aceb35460d7a0..e5446f5ada769 100644
        /* VK_EXT_image_2d_view_of_3d */
        .image2DViewOf3D = true,
        .sampler2DViewOf3D = true,
-@@ -792,6 +796,10 @@ nvk_get_device_properties(const struct nvk_instance *instance,
+@@ -805,6 +809,10 @@ nvk_get_device_properties(const struct nvk_instance *instance,
        /* VK_EXT_extended_dynamic_state3 */
        .dynamicPrimitiveTopologyUnrestricted = true,
  
@@ -6749,18 +6767,19 @@ index aceb35460d7a0..e5446f5ada769 100644
 GitLab
 
 
-From bc8ed6374d85fefc6e2bbe60125d463d64ea8bbc Mon Sep 17 00:00:00 2001
+From 723cae3b56c2de59c346fa0f0f8be22e2cafe920 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Mon, 8 Jan 2024 16:23:24 -0600
 Subject: [PATCH 21/22] nvk: Advertise VK_EXT_shader_object
 
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/9648
 ---
  docs/features.txt                        | 2 +-
  src/nouveau/vulkan/nvk_physical_device.c | 8 ++++++++
  2 files changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/docs/features.txt b/docs/features.txt
-index e76343ef7ee42..eba387078004f 100644
+index 1b13d7166984c..f8a5b06574aed 100644
 --- a/docs/features.txt
 +++ b/docs/features.txt
 @@ -618,7 +618,7 @@ Khronos extensions that are not part of any Vulkan version:
@@ -6773,10 +6792,10 @@ index e76343ef7ee42..eba387078004f 100644
    VK_EXT_shader_subgroup_ballot                         DONE (anv, dzn, hasvk, lvp, nvk, radv, vn)
    VK_EXT_shader_subgroup_vote                           DONE (anv, dzn, hasvk, lvp, nvk, radv)
 diff --git a/src/nouveau/vulkan/nvk_physical_device.c b/src/nouveau/vulkan/nvk_physical_device.c
-index e5446f5ada769..396a54bf92e43 100644
+index cf6fc0056ed4f..aad9b52e31c35 100644
 --- a/src/nouveau/vulkan/nvk_physical_device.c
 +++ b/src/nouveau/vulkan/nvk_physical_device.c
-@@ -199,6 +199,7 @@ nvk_get_device_extensions(const struct nvk_instance *instance,
+@@ -209,6 +209,7 @@ nvk_get_device_extensions(const struct nvk_instance *instance,
                                         nvk_use_nak(info),
        .EXT_shader_demote_to_helper_invocation = true,
        .EXT_shader_module_identifier = true,
@@ -6784,7 +6803,7 @@ index e5446f5ada769..396a54bf92e43 100644
        .EXT_shader_subgroup_ballot = true,
        .EXT_shader_subgroup_vote = true,
        .EXT_shader_viewport_index_layer = info->cls_eng3d >= MAXWELL_B,
-@@ -514,6 +515,9 @@ nvk_get_device_features(const struct nv_device_info *info,
+@@ -527,6 +528,9 @@ nvk_get_device_features(const struct nv_device_info *info,
        /* VK_EXT_shader_module_identifier */
        .shaderModuleIdentifier = true,
  
@@ -6794,7 +6813,7 @@ index e5446f5ada769..396a54bf92e43 100644
        /* VK_EXT_texel_buffer_alignment */
        .texelBufferAlignment = true,
  
-@@ -833,6 +837,9 @@ nvk_get_device_properties(const struct nvk_instance *instance,
+@@ -854,6 +858,9 @@ nvk_get_device_properties(const struct nvk_instance *instance,
        .sampleLocationSubPixelBits = 4,
        .variableSampleLocations = true,
  
@@ -6804,7 +6823,7 @@ index e5446f5ada769..396a54bf92e43 100644
        /* VK_EXT_transform_feedback */
        .maxTransformFeedbackStreams = 4,
        .maxTransformFeedbackBuffers = 4,
-@@ -903,6 +910,7 @@ nvk_physical_device_init_pipeline_cache(struct nvk_physical_device *pdev)
+@@ -924,6 +931,7 @@ nvk_physical_device_init_pipeline_cache(struct nvk_physical_device *pdev)
  
     STATIC_ASSERT(SHA1_DIGEST_LENGTH >= VK_UUID_SIZE);
     memcpy(pdev->vk.properties.pipelineCacheUUID, sha, VK_UUID_SIZE);
@@ -6816,7 +6835,7 @@ index e5446f5ada769..396a54bf92e43 100644
 GitLab
 
 
-From cd419a2b073f785af7ac50b9f2d03689104a0dfe Mon Sep 17 00:00:00 2001
+From 6540561f3ed3df2b1ac018751a8023418d3cc309 Mon Sep 17 00:00:00 2001
 From: Faith Ekstrand <faith.ekstrand@collabora.com>
 Date: Thu, 11 Jan 2024 19:13:53 -0600
 Subject: [PATCH 22/22] WIP: vulkan: Add a lightweight linking mechanism
@@ -6829,7 +6848,7 @@ Subject: [PATCH 22/22] WIP: vulkan: Add a lightweight linking mechanism
  4 files changed, 72 insertions(+), 10 deletions(-)
 
 diff --git a/src/nouveau/vulkan/nvk_shader.c b/src/nouveau/vulkan/nvk_shader.c
-index 4797c21d24076..38047551d19a7 100644
+index 181205d9ba57e..12e950564688e 100644
 --- a/src/nouveau/vulkan/nvk_shader.c
 +++ b/src/nouveau/vulkan/nvk_shader.c
 @@ -171,7 +171,8 @@ nvk_get_spirv_options(struct vk_physical_device *vk_pdev,
@@ -6843,7 +6862,7 @@ index 4797c21d24076..38047551d19a7 100644
     const struct nvk_physical_device *pdev =
        container_of(vk_pdev, struct nvk_physical_device, vk);
 diff --git a/src/vulkan/runtime/vk_pipeline.c b/src/vulkan/runtime/vk_pipeline.c
-index cb0acf8608169..8dcd34c6343d2 100644
+index 28c66dd6f0fff..794fc3dd31752 100644
 --- a/src/vulkan/runtime/vk_pipeline.c
 +++ b/src/vulkan/runtime/vk_pipeline.c
 @@ -601,6 +601,8 @@ struct vk_pipeline_precomp_shader {
