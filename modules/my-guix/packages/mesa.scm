@@ -165,7 +165,7 @@
   (let ((name "mesa-git")
         (version "24.0.0")
         (revision "0")
-        (commit "8ab337047cda1d23f624aa5839742094c3700d2c"))
+        (commit "b8c3d18fba579b57aa483cf3de08573b31991fbf"))
     (package/inherit mesa
       (name name)
       (version (git-version version revision commit))
@@ -177,7 +177,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "0d7iq8lx1fz7pimrjv2ix3y5875i9lgjn9dvmki6790r1crrypd7"))
+                  "1idb8hpywdxgd4ywqi4v64w3x7r4qycwhkqydvw5wxbzv52p47yb"))
          (patches
           (let* ((url "https://aur.archlinux.org/cgit/aur.git/plain")
                  (id "a9f8ffba8b0c2c90003c169f2fe74a38cbe1f29a")
@@ -185,15 +185,13 @@
                   (lambda (file)
                     (format #f "~a/~a.patch?h=vulkan-nouveau-git&id=~a"
                             url file id))))
-            (cons* (origin
-                     (method url-fetch)
-                     (uri (patch-uri "nak-iadd3-imad"))
-                     (file-name "nak-iadd3-imad.patch")
-                     (sha256
-                      (base32
-                       "17dzp3jgf7pm55rkirgckhrf0q13l9zz522sjzpdm440r222bh1r")))
-                   ;; TODO test dis
-                   (search-my-patches "nvk-eso-gpl.patch"))))))
+            (list (origin
+                    (method url-fetch)
+                    (uri (patch-uri "nak-iadd3-imad"))
+                    (file-name "nak-iadd3-imad.patch")
+                    (sha256
+                     (base32
+                      "17dzp3jgf7pm55rkirgckhrf0q13l9zz522sjzpdm440r222bh1r"))))))))
       (arguments
        (cons*
         #:meson meson/newest
