@@ -163,9 +163,9 @@
 ;; TODO Consider optimizations like the AUR package has done.
 (define-public mesa-git
   (let ((name "mesa-git")
-        (version "24.0.0")
+        (version "24.0")
         (revision "0")
-        (commit "b8c3d18fba579b57aa483cf3de08573b31991fbf"))
+        (commit "cdab305e36e6c7f3e3b7d749c54af43e30280410"))
     (package/inherit mesa
       (name name)
       (version (git-version version revision commit))
@@ -177,28 +177,14 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "1idb8hpywdxgd4ywqi4v64w3x7r4qycwhkqydvw5wxbzv52p47yb"))
-         (patches
-          (let* ((url "https://aur.archlinux.org/cgit/aur.git/plain")
-                 (id "a9f8ffba8b0c2c90003c169f2fe74a38cbe1f29a")
-                 (patch-uri
-                  (lambda (file)
-                    (format #f "~a/~a.patch?h=vulkan-nouveau-git&id=~a"
-                            url file id))))
-            (list (origin
-                    (method url-fetch)
-                    (uri (patch-uri "nak-iadd3-imad"))
-                    (file-name "nak-iadd3-imad.patch")
-                    (sha256
-                     (base32
-                      "17dzp3jgf7pm55rkirgckhrf0q13l9zz522sjzpdm440r222bh1r"))))))))
+                  "18i2wdhp67324f5pv7xd6c8ifhshffqvbc9ap235912r8i792881"))))
       (arguments
        (cons*
         #:meson meson/newest
         (substitute-keyword-arguments (package-arguments mesa)
           ((#:configure-flags original-flags)
            #~(append #$original-flags
-                     '("-Dvulkan-drivers=nouveau-experimental")))
+                     '("-Dvulkan-drivers=nouveau")))
           ((#:phases original-phases)
            #~(modify-phases #$original-phases
                (add-after 'unpack 'change-subproject-sources
