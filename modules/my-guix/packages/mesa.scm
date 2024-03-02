@@ -155,20 +155,18 @@
                 "0vyvry6ba1xmpd45hpi6savd8mbx09jpmvnnwkf6z62pk6s4zc61"))))))
 
 (define-public rust-proc-macro2-1.0.70
-  (let ((name (package-name rust-proc-macro2-1))
-        (version "1.0.70"))
-    (package
-      (inherit rust-proc-macro2-1)
-      (name "rust-proc-macro2")
-      (version version)
-      (source
-       (origin
-         (method url-fetch)
-         (uri (crate-uri "proc-macro2" version))
-         (file-name (string-append name "-" version ".tar.gz"))
-         (sha256
-          (base32
-           "0fzxg3dkrjy101vv5b6llc8mh74xz1vhhsaiwrn68kzvynxqy9rr")))))))
+  (package
+    (inherit rust-proc-macro2-1)
+    (name "rust-proc-macro2")
+    (version "1.0.70")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "proc-macro2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fzxg3dkrjy101vv5b6llc8mh74xz1vhhsaiwrn68kzvynxqy9rr"))))))
 
 (define-public rust-quote-1.0.33
   (package
