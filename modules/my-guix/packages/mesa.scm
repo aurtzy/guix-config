@@ -174,6 +174,19 @@
                (base32
                 "1biw54hbbr12wdwjac55z1m2x2rylciw83qnjn564a3096jgqrsj"))))))
 
+(define-public rust-unicode-ident-1.0.6
+  (package
+    (inherit rust-unicode-ident-1)
+    (name "rust-unicode-ident")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "unicode-ident" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1g2fdsw5sv9l1m73whm99za3lxq3nw4gzx5kvi562h4b46gjp8l4"))))))
+
 (define-public libdrm/newer
   (package
     (inherit libdrm)
