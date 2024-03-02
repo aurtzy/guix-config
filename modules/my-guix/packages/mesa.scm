@@ -118,7 +118,7 @@
                (base32
                 "1mra0gh5jz254p8wg2m25pazbvrqpqaq5qj1zga465nyvs5mc830"))))))
 
-(define-public rust-syn-2/newer
+(define-public rust-syn-2.0.39
   (let ((name (package-name rust-syn-2))
         (version "2.0.39"))
     (package/inherit rust-syn-2
@@ -216,7 +216,7 @@
                        . "rust-proc-macro2"))))))))))
       (native-inputs
        (cons* `("rust-syn"
-                ,(package-source rust-syn-2/newer))
+                ,(package-source rust-syn-2.0.39))
               `("rust-unicode-ident"
                 ,(package-source rust-unicode-ident-1))
               `("rust-quote"
