@@ -39,6 +39,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages build-tools)
+  #:use-module (gnu packages crates-apple)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages llvm)
@@ -55,10 +56,11 @@
   #:use-module (my-guix utils)
   #:use-module (ice-9 match))
 
-(define-public rust-bindgen-cli
-  (package/inherit rust-bindgen-0.64
+(define-public rust-bindgen-cli-0.69
+  (package
+    (inherit rust-bindgen-0.69)
     (name "rust-bindgen-cli")
-    (version "0.64.0")
+    (version "0.69.4")
     (source
      (origin
        (method git-fetch)
@@ -68,7 +70,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "14xbg4r1bcdg4ni4amz9f9fmbvb9q8m026vgcf5r0w184sdjg91l"))))
+         "0mksvspqymdypgflgx6xqfxdr9a5wwx534imgcnn3mk7ffz0sqlm"))))
     (arguments
      (cons*
       ;; #:rust (match (or (%current-target-system)
@@ -90,19 +92,23 @@
                 (copy-file "target/release/bindgen" bindgen)
                 (wrap-program bindgen
                   `("LIBCLANG_PATH" = (,llvm-dir)))))))
-      (substitute-keyword-arguments (package-arguments rust-bindgen-0.64)
+      (substitute-keyword-arguments (package-arguments rust-bindgen-0.69)
         ((#:skip-build? _)
          #f)
         ((#:cargo-inputs original-inputs)
-         `(("rust-bindgen" ,rust-bindgen-0.64)
-           ("rust-diff" ,rust-diff-0.1)
-           ("rust-quickcheck" ,rust-quickcheck-0.4)
-           ("rust-tempdir" ,rust-tempdir-0.3)
+         `(("rust-bindgen" ,rust-bindgen-0.69)
            ("rust-block" ,rust-block-0.1)
+           ("rust-clap" ,rust-clap-complete-4)
+           ("rust-env-logger" ,rust-env-logger-0.10)
+           ("rust-libloading" ,rust-libloading-0.7)
            ("rust-objc" ,rust-objc-0.2)
+           ("rust-owo-colors" ,rust-owo-colors-3.5)
+           ("rust-prettyplease" ,rust-prettyplease-0.2)
+           ("rust-quickcheck" ,rust-quickcheck-0.4)
+           ("rust-similar" ,rust-similar-2)
            ,@original-inputs)))))
     (native-inputs
-     (modify-inputs (package-native-inputs rust-bindgen-0.64)
+     (modify-inputs (package-native-inputs rust-bindgen-0.69)
        (prepend clang)))))
 
 (define-public meson-1.3
@@ -271,7 +277,7 @@
                          ;;            (%current-system))
                          ;;   ("x86_64-linux" rust-binary-x86_64)
                          ;;   ("i686-linux" rust-binary-i686))
-                         rust-bindgen-cli
+                         rust-bindgen-cli-0.69
                          llvm-15
                          clang-15))))
       (inputs
