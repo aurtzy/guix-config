@@ -143,7 +143,7 @@
 
 (define-public rust-owo-colors-3.5
   (package
-    (inherit rust-owo-colors-4)
+    (inherit rust-owo-colors-3)
     (name "rust-owo-colors")
     (version "3.5.0")
     (source (origin
