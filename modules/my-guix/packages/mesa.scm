@@ -128,19 +128,18 @@
                 "1mra0gh5jz254p8wg2m25pazbvrqpqaq5qj1zga465nyvs5mc830"))))))
 
 (define-public rust-syn-2.0.39
-  (let ((name (package-name rust-syn-2))
-        (version "2.0.39"))
-    (package
-      (inherit rust-syn-2)
-      (version version)
-      (source
-       (origin
-         (method url-fetch)
-         (uri (crate-uri "syn" version))
-         (file-name (string-append name "-" version ".tar.gz"))
-         (sha256
-          (base32
-           "0ymyhxnk1yi4pzf72qk3lrdm9lgjwcrcwci0hhz5vx7wya88prr3")))))))
+  (package
+    (inherit rust-syn-2)
+    (name "rust-syn")
+    (version "2.0.39")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "syn" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ymyhxnk1yi4pzf72qk3lrdm9lgjwcrcwci0hhz5vx7wya88prr3"))))))
 
 (define-public rust-owo-colors-3.5
   (package
