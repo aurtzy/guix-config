@@ -262,7 +262,7 @@
               `("rust-unicode-ident"
                 ,(package-source rust-unicode-ident-1))
               `("rust-quote"
-                ,(package-source rust-quote-1))
+                ,(package-source rust-quote-1.0.33))
               `("rust-proc-macro2"
                 ,(package-source rust-proc-macro2-1.0.70))
               (modify-inputs (package-native-inputs mesa)
