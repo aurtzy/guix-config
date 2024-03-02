@@ -105,8 +105,9 @@
      (modify-inputs (package-native-inputs rust-bindgen-0.64)
        (prepend clang)))))
 
-(define-public meson/newest
-  (package/inherit meson/newer
+(define-public meson-1.3
+  (package
+    (inherit meson/newer)
     (version "1.3.1")
     (source (origin
               (method url-fetch)
@@ -180,7 +181,7 @@
                   "13rv85sgl4xc36v92kamhy44rm2ksjwsmq86spkzkh3b8najkz00"))))
       (arguments
        (cons*
-        #:meson meson/newest
+        #:meson meson-1.3
         (substitute-keyword-arguments (package-arguments mesa)
           ((#:configure-flags original-flags)
            #~(append #$original-flags
