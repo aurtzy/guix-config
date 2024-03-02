@@ -121,7 +121,8 @@
 (define-public rust-syn-2.0.39
   (let ((name (package-name rust-syn-2))
         (version "2.0.39"))
-    (package/inherit rust-syn-2
+    (package
+      (inherit rust-syn-2)
       (version version)
       (source
        (origin
@@ -135,7 +136,8 @@
 (define-public rust-proc-macro2-1.0.70
   (let ((name (package-name rust-proc-macro2-1))
         (version "1.0.70"))
-    (package/inherit rust-proc-macro2-1
+    (package
+      (inherit rust-proc-macro2-1)
       (version version)
       (source
        (origin
