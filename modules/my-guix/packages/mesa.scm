@@ -151,6 +151,7 @@
         (version "1.0.70"))
     (package
       (inherit rust-proc-macro2-1)
+      (name "rust-proc-macro2")
       (version version)
       (source
        (origin
