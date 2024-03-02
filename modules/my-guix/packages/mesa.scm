@@ -77,6 +77,9 @@
       ;;                   (%current-system))
       ;;          ("x86_64-linux" rust-binary-x86_64)
       ;;          ("i686-linux" rust-binary-i686))
+
+      ;; 1 test case fails (header_ptr32_has_different_size_h); related issue:
+      ;; https://github.com/rust-lang/rust-bindgen/issues/2638
       #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
