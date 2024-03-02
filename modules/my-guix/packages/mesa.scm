@@ -161,6 +161,19 @@
           (base32
            "0fzxg3dkrjy101vv5b6llc8mh74xz1vhhsaiwrn68kzvynxqy9rr")))))))
 
+(define-public rust-quote-1.0.33
+  (package
+    (inherit rust-quote-1)
+    (name "rust-quote")
+    (version "1.0.33")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "quote" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1biw54hbbr12wdwjac55z1m2x2rylciw83qnjn564a3096jgqrsj"))))))
+
 (define-public libdrm/newer
   (package
     (inherit libdrm)
