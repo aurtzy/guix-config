@@ -132,7 +132,7 @@
           (base32
            "0ymyhxnk1yi4pzf72qk3lrdm9lgjwcrcwci0hhz5vx7wya88prr3")))))))
 
-(define-public rust-proc-macro2-1/newer
+(define-public rust-proc-macro2-1.0.70
   (let ((name (package-name rust-proc-macro2-1))
         (version "1.0.70"))
     (package/inherit rust-proc-macro2-1
@@ -222,7 +222,7 @@
               `("rust-quote"
                 ,(package-source rust-quote-1))
               `("rust-proc-macro2"
-                ,(package-source rust-proc-macro2-1/newer))
+                ,(package-source rust-proc-macro2-1.0.70))
               (modify-inputs (package-native-inputs mesa)
                 (prepend rust
                          ;; (match (or (%current-target-system)
