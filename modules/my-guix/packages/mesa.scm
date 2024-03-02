@@ -133,6 +133,19 @@
           (base32
            "0ymyhxnk1yi4pzf72qk3lrdm9lgjwcrcwci0hhz5vx7wya88prr3")))))))
 
+(define-public rust-owo-colors-3.5
+  (package
+    (inherit rust-owo-colors-4)
+    (name "rust-owo-colors")
+    (version "3.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (crate-uri "owo-colors" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vyvry6ba1xmpd45hpi6savd8mbx09jpmvnnwkf6z62pk6s4zc61"))))))
+
 (define-public rust-proc-macro2-1.0.70
   (let ((name (package-name rust-proc-macro2-1))
         (version "1.0.70"))
