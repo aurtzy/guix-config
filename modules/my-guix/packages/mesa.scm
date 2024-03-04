@@ -44,6 +44,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rust)
   #:use-module (gnu packages xdisorg)
   #:use-module (guix download)
@@ -202,7 +203,8 @@
         (version "24.0")
         (revision "0")
         (commit "3ea1d4787d73d6846043de8e79bc1bb2ca6541d3"))
-    (package/inherit mesa
+    (package
+      (inherit mesa)
       (name name)
       (version (git-version version revision commit))
       (source
@@ -224,49 +226,33 @@
           ((#:phases original-phases)
            #~(modify-phases #$original-phases
                (add-after 'unpack 'change-subproject-sources
-                 ;; As downloading is not allowed in the build, we 1. download
-                 ;; them ahead of time via inputs, then 2. patch the defined
-                 ;; URLs to point to the inputs in the Guix store.  This is
-                 ;; done with the assumption that we are unable to properly
-                 ;; build Rust dependencies using meson-build-system, so we
-                 ;; rely on cargo to do it for us using its fallback method;
-                 ;; however, this assumption is probably wrong, and this hacky
-                 ;; code could probably be improved.
+                 ;; Subproject source URLs are patched to point to the store,
+                 ;; which avoids an attempt to download them mid-build.
                  (lambda _
                    (for-each
                     (lambda (subproject)
                       (let ((file (car subproject))
-                            (input (assoc-ref %build-inputs
-                                              (cdr subproject))))
+                            (input (cdr subproject)))
                         (substitute* file
                           (("https.*/download")
                            (string-append "file://" input)))))
-                    '(("subprojects/syn.wrap"
-                       . "rust-syn")
-                      ("subprojects/unicode-ident.wrap"
-                       . "rust-unicode-ident")
-                      ("subprojects/quote.wrap"
-                       . "rust-quote")
-                      ("subprojects/proc-macro2.wrap"
-                       . "rust-proc-macro2"))))))))))
+                    '#$(if (target-x86-64?)
+                           #~(("subprojects/syn.wrap"
+                               . #$(package-source rust-syn-2.0.39))
+                              ("subprojects/unicode-ident.wrap"
+                               . #$(package-source rust-unicode-ident-1))
+                              ("subprojects/quote.wrap"
+                               . #$(package-source rust-quote-1.0.33))
+                              ("subprojects/proc-macro2.wrap"
+                               . #$(package-source rust-proc-macro2-1.0.70)))
+                           '())))))))))
       (native-inputs
-       (cons* `("rust-syn"
-                ,(package-source rust-syn-2.0.39))
-              `("rust-unicode-ident"
-                ,(package-source rust-unicode-ident-1))
-              `("rust-quote"
-                ,(package-source rust-quote-1.0.33))
-              `("rust-proc-macro2"
-                ,(package-source rust-proc-macro2-1.0.70))
-              (modify-inputs (package-native-inputs mesa)
-                (prepend rust
-                         ;; (match (or (%current-target-system)
-                         ;;            (%current-system))
-                         ;;   ("x86_64-linux" rust-binary-x86_64)
-                         ;;   ("i686-linux" rust-binary-i686))
-                         rust-bindgen-cli-0.69
-                         llvm-15
-                         clang-15))))
+       (modify-inputs (package-native-inputs mesa)
+         (prepend rust
+                  rust-bindgen-cli-0.69
+                  clang-15
+                  llvm-15
+                  python-ply)))
       (inputs
        (modify-inputs (package-inputs mesa)
          (prepend libclc)))
