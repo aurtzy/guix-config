@@ -117,7 +117,7 @@
 (define-public meson-1.3
   (package
     (inherit meson/newer)
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -125,7 +125,7 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mra0gh5jz254p8wg2m25pazbvrqpqaq5qj1zga465nyvs5mc830"))))))
+                "1ajvkcyly1nsxwjc2vly1vlvfjrwpfnza5prfr104wxhr18b8bj9"))))))
 
 (define-public rust-syn-2.0.39
   (package
