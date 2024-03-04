@@ -33,8 +33,8 @@
   #:use-module (my-guix utils))
 
 (define-public xsb
-  (let ((commit "8f187d97fc781f6e7f45017290daaa22d3d3349b")
-        (revision "1"))
+  (let ((commit "c4f937f27da5b0c2a14a78de3794799155f164da")
+        (revision "0"))
     (package
       (name "xsb")
       (version (git-version "5.0" revision commit))
@@ -46,7 +46,7 @@
                (commit commit)))
          (sha256
           (base32
-           "1ivycqwxjzyr06rp7ldlqkq3z3znik5iyicbxky15af31rgrz6ik"))))
+           "1iz660gnplsqs52w5pfylqh1iivgzpzsmsplybi33iprn9700qq3"))))
       (build-system gnu-build-system)
       (arguments
        (list
