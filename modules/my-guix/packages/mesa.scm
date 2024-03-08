@@ -106,7 +106,7 @@
            ("rust-env-logger" ,rust-env-logger-0.10)
            ("rust-libloading" ,rust-libloading-0.7)
            ("rust-objc" ,rust-objc-0.2)
-           ("rust-owo-colors" ,rust-owo-colors-3.5)
+           ("rust-owo-colors" ,rust-owo-colors-3)
            ("rust-prettyplease" ,rust-prettyplease-0.2)
            ("rust-quickcheck" ,rust-quickcheck-0.4)
            ("rust-similar" ,rust-similar-2)
@@ -141,19 +141,6 @@
        (sha256
         (base32
          "0ymyhxnk1yi4pzf72qk3lrdm9lgjwcrcwci0hhz5vx7wya88prr3"))))))
-
-(define-public rust-owo-colors-3.5
-  (package
-    (inherit rust-owo-colors-3)
-    (name "rust-owo-colors")
-    (version "3.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (crate-uri "owo-colors" version))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0vyvry6ba1xmpd45hpi6savd8mbx09jpmvnnwkf6z62pk6s4zc61"))))))
 
 (define-public rust-proc-macro2-1.0.70
   (package
