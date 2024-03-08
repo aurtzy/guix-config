@@ -202,7 +202,7 @@
   (let ((name "mesa-git")
         (version "24.0")
         (revision "0")
-        (commit "3ea1d4787d73d6846043de8e79bc1bb2ca6541d3"))
+        (commit "4b7bf9a6db0e06f34710e16679a6fff161143648"))
     (package
       (inherit mesa)
       (name name)
@@ -215,7 +215,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "13rv85sgl4xc36v92kamhy44rm2ksjwsmq86spkzkh3b8najkz00"))))
+                  "0lldk572p3b48d7xcav64hyy43zx18w4cv65r3p52kryc6jqjpzg"))))
       (arguments
        (cons*
         #:meson meson-1.3
