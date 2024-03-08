@@ -56,7 +56,7 @@ update_ps1 () {
 
 # Simulates rolling dice.
 roll () {
-    if ! find_cmd python; then
+    if ! find_cmd guix; then
         return $?
     elif [ "bash" != "$(basename $SHELL)" ]; then
         msg_error "this function might not work correctly since it depends on Bash features"
@@ -74,7 +74,7 @@ roll () {
         else local -i ndice="${BASH_REMATCH[1]}"
         fi
         local -i nfaces="${BASH_REMATCH[2]}"
-        python -c "
+        guix shell python@3 -- python3 -c "
 import random
 for i in range($ndice):
         print(random.randint(1, $nfaces))
