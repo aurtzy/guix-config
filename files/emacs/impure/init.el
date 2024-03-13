@@ -33,6 +33,8 @@
 
 ;;; Code:
 
+(require 'dash)
+
 ;;; Global configurations
 
 ;;;; User-defined variables
@@ -579,8 +581,26 @@ to report upstream.  TODO."
 
 (use-package org-agenda
   :after org
+  :preface
+  (defvar original-org-agenda-files '())
+  (defun refresh-org-agendas ()
+    (interactive)
+    (setq org-agenda-files
+          (let ((data-dirs '("~/workshop" "~/areas")))
+            (flatten-tree
+             (list
+              original-org-agenda-files
+              (-map (lambda (dir)
+                      (file-expand-wildcards (concat dir "/*/agenda.org")))
+                    data-dirs)
+              (-map (lambda (dir)
+                      (file-expand-wildcards (concat dir "/agenda.org")))
+                    data-dirs))))))
   :custom
-  (org-agenda-span 10))
+  (org-agenda-span 10)
+  :config
+  (setq original-org-agenda-files org-agenda-files)
+  (refresh-org-agendas))
 
 ;;;;; Programming languages
 
