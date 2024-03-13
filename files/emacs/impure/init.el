@@ -508,7 +508,10 @@
   :preface
   (declare-function dashboard-setup-startup-hook "dashboard")
   :custom
-  (dashboard-set-init-info nil)
+  (dashboard-projects-backend 'project-el)
+  (dashboard-items '((recents . 5)
+                     (projects . 10)
+                     (bookmarks . 10)))
   :config
   (dashboard-setup-startup-hook))
 
