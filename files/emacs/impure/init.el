@@ -88,6 +88,7 @@
   (frame-inhibit-implied-resize t)
   (frame-resize-pixelwise t)
   (use-dialog-box nil)
+  (echo-keystrokes 0.25)
   :config
   (add-to-list 'default-frame-alist '(font . "Hack-11"))
   ;; TODO menu-bar was funky with frame transparency at the time of
