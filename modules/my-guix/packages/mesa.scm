@@ -187,7 +187,7 @@
   (let ((name "mesa-git")
         (version "24.0")
         (revision "0")
-        (commit "626502d7c7f6b2266e2bdc7979e512b7a7292e44"))
+        (commit "9b6d6c1d2d0c8a517e974abbf7b75a47a607f6ec"))
     (package
       (inherit mesa)
       (name name)
@@ -200,7 +200,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "0zry20yj5i8n9z0pch57aa34a60rjsp0qmciijx3php1kqqpl9da"))))
+                  "12r0ggrpaqzqlalpni33kxgd8zg7mcrccxs90kv5y44xjxlhqkdg"))))
       (arguments
        (cons*
         #:meson meson-1.3
@@ -216,20 +216,24 @@
                  (lambda _
                    (for-each
                     (lambda (subproject)
-                      (let ((file (car subproject))
-                            (input (cdr subproject)))
-                        (substitute* file
-                          (("https.*/download")
-                           (string-append "file://" input)))))
+                      (match subproject
+                        ((file input)
+                         (substitute* file
+                           (("source_url = .*$")
+                            "")
+                           (("source_hash = .*$")
+                            "")
+                           (("(source_filename = ).*$" all assign)
+                            (string-append assign input "\n"))))))
                     '#$(if (target-x86-64?)
                            #~(("subprojects/syn.wrap"
-                               . #$(package-source rust-syn-2.0.39))
+                               #$(package-source rust-syn-2.0.39))
                               ("subprojects/unicode-ident.wrap"
-                               . #$(package-source rust-unicode-ident-1))
+                               #$(package-source rust-unicode-ident-1))
                               ("subprojects/quote.wrap"
-                               . #$(package-source rust-quote-1.0.33))
+                               #$(package-source rust-quote-1.0.33))
                               ("subprojects/proc-macro2.wrap"
-                               . #$(package-source rust-proc-macro2-1.0.70)))
+                               #$(package-source rust-proc-macro2-1.0.70)))
                            '())))))))))
       (native-inputs
        (modify-inputs (package-native-inputs mesa)
