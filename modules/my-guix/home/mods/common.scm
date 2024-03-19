@@ -128,6 +128,7 @@ the shell alias."
                                    (build-assist-data-script
                                     (map car data-specs))))))))))))
 
+;; TODO: emacs-dape?  https://github.com/svaante/dape
 (define emacs-base-mod
   (mod
     (name 'emacs-base-mod)
