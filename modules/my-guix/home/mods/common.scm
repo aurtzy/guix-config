@@ -345,7 +345,7 @@ the shell alias."
                                 home-flatpak-profile-service-type
                                 '((flathub "org.mozilla.firefox")
                                   (flathub
-                                   "com.github.micahflee.torbrowser-launcher")
+                                   "org.torproject.torbrowser-launcher")
                                   (flathub "com.brave.Browser"))))))))))
 
 (define password-management-mod
