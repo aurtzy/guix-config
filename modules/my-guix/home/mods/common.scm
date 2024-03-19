@@ -156,6 +156,7 @@ the shell alias."
               ;; editing tweaks
               emacs-unfill
               emacs-adaptive-wrap
+              emacs-vundo
               ;; git
               emacs-magit
               emacs-magit-annex
