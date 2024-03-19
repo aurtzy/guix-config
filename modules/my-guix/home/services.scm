@@ -1,7 +1,7 @@
 ;;; Copyright © 2021-2023 Andrew Tropin <andrew@trop.in>
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2022-2023 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -180,8 +180,6 @@ even if both SOURCE and TARGET lead to the same file."
              (backup-file target))
            (format #t (G_ "Symlinking ~a -> ~a...")
                    (target-file target) source)
-           (unless (file-exists? source)
-             (format #t (G_ "Warning: ~a does not exist.") source))
            (mkdir-p (dirname (target-file target)))
            (symlink source (target-file target))
            (display (G_ " done\n")))
