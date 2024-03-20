@@ -47,6 +47,12 @@
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
 
+;;;; Make it harder to exit Emacs
+
+(use-package emacs
+  :custom
+  (confirm-kill-emacs #'yes-or-no-p))
+
 ;;;; Emacs-managed files
 
 (use-package emacs
