@@ -46,6 +46,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rust)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages xdisorg)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -54,64 +55,6 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (ice-9 match))
-
-(define-public rust-bindgen-cli-0.69
-  (package
-    (inherit rust-bindgen-0.69)
-    (name "rust-bindgen-cli")
-    (version "0.69.4")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/rust-lang/rust-bindgen.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0mksvspqymdypgflgx6xqfxdr9a5wwx534imgcnn3mk7ffz0sqlm"))))
-    (arguments
-     (cons*
-      ;; #:rust (match (or (%current-target-system)
-      ;;                   (%current-system))
-      ;;          ("x86_64-linux" rust-binary-x86_64)
-      ;;          ("i686-linux" rust-binary-i686))
-
-      ;; 1 test case fails (header_ptr32_has_different_size_h); related issue:
-      ;; https://github.com/rust-lang/rust-bindgen/issues/2638
-      #:tests? #f
-      #:phases
-      #~(modify-phases %standard-phases
-          (replace 'install
-            (lambda* (#:key outputs inputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (bin (string-append out "/bin"))
-                     (bindgen (string-append bin "/bindgen"))
-                     (llvm-dir (string-append
-                                (assoc-ref inputs "clang")
-                                "/lib")))
-                (mkdir-p bin)
-                (copy-file "target/release/bindgen" bindgen)
-                (wrap-program bindgen
-                  `("LIBCLANG_PATH" = (,llvm-dir)))))))
-      (substitute-keyword-arguments (package-arguments rust-bindgen-0.69)
-        ((#:skip-build? _)
-         #f)
-        ((#:cargo-inputs original-inputs)
-         `(("rust-bindgen" ,rust-bindgen-0.69)
-           ("rust-block" ,rust-block-0.1)
-           ("rust-clap" ,rust-clap-complete-4)
-           ("rust-env-logger" ,rust-env-logger-0.10)
-           ("rust-libloading" ,rust-libloading-0.7)
-           ("rust-objc" ,rust-objc-0.2)
-           ("rust-owo-colors" ,rust-owo-colors-3)
-           ("rust-prettyplease" ,rust-prettyplease-0.2)
-           ("rust-quickcheck" ,rust-quickcheck-0.4)
-           ("rust-similar" ,rust-similar-2)
-           ,@original-inputs)))))
-    (native-inputs
-     (modify-inputs (package-native-inputs rust-bindgen-0.69)
-       (prepend clang)))))
 
 (define-public meson-1.3
   (package
@@ -238,7 +181,7 @@
       (native-inputs
        (modify-inputs (package-native-inputs mesa)
          (prepend rust
-                  rust-bindgen-cli-0.69
+                  rust-bindgen-cli
                   clang-15
                   llvm-15
                   python-ply)))
