@@ -126,11 +126,14 @@
 ;; Reference package: https://aur.archlinux.org/packages/vulkan-nouveau-git
 ;;
 ;; TODO Consider optimizations like the AUR package has done.
+;;
+;; TODO: Updating mesa further requires Linux > 6.8, apparently.  Likely
+;; related issue: https://gitlab.freedesktop.org/mesa/mesa/-/issues/10816
 (define-public mesa-git
   (let ((name "mesa-git")
-        (version "24.0")
+        (version "24.1")
         (revision "0")
-        (commit "9b6d6c1d2d0c8a517e974abbf7b75a47a607f6ec"))
+        (commit "647a2d1f6b6fc0b95effdfb0f4a6bfbfc6bba1fa"))
     (package
       (inherit mesa)
       (name name)
@@ -143,7 +146,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "12r0ggrpaqzqlalpni33kxgd8zg7mcrccxs90kv5y44xjxlhqkdg"))))
+                  "0gmnyf8l43qzn8ghhdymfw9wi0yn23ffkn220cfdx2pqbfpnraax"))))
       (arguments
        (cons*
         #:meson meson-1.3
@@ -158,16 +161,15 @@
                  ;; which avoids an attempt to download them mid-build.
                  (lambda _
                    (for-each
-                    (lambda (subproject)
-                      (match subproject
-                        ((file input)
-                         (substitute* file
-                           (("source_url = .*$")
-                            "")
-                           (("source_hash = .*$")
-                            "")
-                           (("(source_filename = ).*$" all assign)
-                            (string-append assign input "\n"))))))
+                    (match-lambda
+                      ((file input)
+                       (substitute* file
+                         (("source_url = .*$")
+                          "")
+                         (("source_hash = .*$")
+                          "")
+                         (("(source_filename = ).*$" all assign)
+                          (string-append assign input "\n")))))
                     '#$(if (target-x86-64?)
                            #~(("subprojects/syn.wrap"
                                #$(package-source rust-syn-2.0.39))
