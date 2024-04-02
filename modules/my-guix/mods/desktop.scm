@@ -100,17 +100,13 @@ automatically."
         (list gvfs
               gnome-tweaks
               gnome-shell-extensions
-              gnome-shell-extension-sound-output-device-chooser
-              gnome-shell-extension-gsconnect
-              gnome-shell-extension-clipboard-indicator))
+              gnome-shell-extension-gsconnect))
        (services
         (list (set-xorg-configuration
                (xorg-configuration
                 (keyboard-layout (operating-system-keyboard-layout os))))
               (service gnome-desktop-service-type)
-              (service gdm-service-type
-                       (gdm-configuration
-                        (wayland? #t)))))))))
+              (service gdm-service-type)))))))
 
 (define battery-mod
   (mod
