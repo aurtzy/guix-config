@@ -79,7 +79,6 @@
                                 (member "cryptroot"
                                         (mapped-device-targets dev)))
                               mapped-devices)))
-             #;
              (file-system
                (mount-point "/home/alvin/storage")
                (device "/dev/mapper/cryptstorage")
