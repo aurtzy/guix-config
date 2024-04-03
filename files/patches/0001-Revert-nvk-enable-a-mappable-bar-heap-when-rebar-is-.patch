@@ -1,0 +1,70 @@
+From 1ada08b6b5dc0511503fdce45cfd41d3def45df1 Mon Sep 17 00:00:00 2001
+From: aurtzy <aurtzy@gmail.com>
+Date: Sat, 30 Mar 2024 21:14:59 -0400
+Subject: [PATCH] Revert "nvk: enable a mappable bar heap when rebar is
+ disabled."
+
+This reverts commit 133c73da8560f689f8d560b30b1557a353b44995.
+---
+ src/nouveau/vulkan/nvk_physical_device.c | 15 +++------------
+ src/nouveau/vulkan/nvk_physical_device.h |  2 +-
+ 2 files changed, 4 insertions(+), 13 deletions(-)
+
+diff --git a/src/nouveau/vulkan/nvk_physical_device.c b/src/nouveau/vulkan/nvk_physical_device.c
+index 651cbd9336b..fc18c0b31cd 100644
+--- a/src/nouveau/vulkan/nvk_physical_device.c
++++ b/src/nouveau/vulkan/nvk_physical_device.c
+@@ -1170,21 +1170,11 @@ nvk_create_drm_physical_device(struct vk_instance *_instance,
+ 
+    if (pdev->info.vram_size_B > 0) {
+       uint32_t vram_heap_idx = pdev->mem_heap_count++;
+-      uint32_t bar_heap_idx = vram_heap_idx;
+       pdev->mem_heaps[vram_heap_idx] = (struct nvk_memory_heap) {
+          .size = pdev->info.vram_size_B,
+          .flags = VK_MEMORY_HEAP_DEVICE_LOCAL_BIT,
+       };
+ 
+-      if (pdev->info.bar_size_B > 0 &&
+-          pdev->info.bar_size_B < pdev->info.vram_size_B) {
+-         bar_heap_idx = pdev->mem_heap_count++;
+-         pdev->mem_heaps[bar_heap_idx] = (struct nvk_memory_heap) {
+-            .size = pdev->info.bar_size_B,
+-            .flags = VK_MEMORY_HEAP_DEVICE_LOCAL_BIT,
+-         };
+-      }
+-
+       /* Only set available if we have the ioctl. */
+       if (nouveau_ws_device_vram_used(ws_dev) > 0)
+          pdev->mem_heaps[vram_heap_idx].available = nvk_get_vram_heap_available;
+@@ -1194,12 +1184,13 @@ nvk_create_drm_physical_device(struct vk_instance *_instance,
+          .heapIndex = vram_heap_idx,
+       };
+ 
+-      if (pdev->info.cls_eng3d >= MAXWELL_A) {
++      if (pdev->info.cls_eng3d >= MAXWELL_A &&
++          pdev->info.bar_size_B >= pdev->info.vram_size_B) {
+          pdev->mem_types[pdev->mem_type_count++] = (VkMemoryType) {
+             .propertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT |
+                              VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                              VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+-            .heapIndex = bar_heap_idx,
++            .heapIndex = vram_heap_idx,
+          };
+       }
+    }
+diff --git a/src/nouveau/vulkan/nvk_physical_device.h b/src/nouveau/vulkan/nvk_physical_device.h
+index a329f6f35b4..ac963111798 100644
+--- a/src/nouveau/vulkan/nvk_physical_device.h
++++ b/src/nouveau/vulkan/nvk_physical_device.h
+@@ -49,7 +49,7 @@ struct nvk_physical_device {
+    uint8_t device_uuid[VK_UUID_SIZE];
+ 
+    // TODO: add mapable VRAM heap if possible
+-   struct nvk_memory_heap mem_heaps[3];
++   struct nvk_memory_heap mem_heaps[2];
+    VkMemoryType mem_types[3];
+    uint8_t mem_heap_count;
+    uint8_t mem_type_count;
+-- 
+2.41.0
+

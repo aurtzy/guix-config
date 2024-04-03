@@ -55,7 +55,8 @@
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (guix utils)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (my-guix utils))
 
 (define-public meson-1.3
   (package
@@ -138,17 +139,11 @@
         (base32
          "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
 
-;; Reference package: https://aur.archlinux.org/packages/vulkan-nouveau-git
-;;
-;; TODO Consider optimizations like the AUR package has done.
-;;
-;; TODO: Updating mesa further requires Linux > 6.8, apparently.  Likely
-;; related issue: https://gitlab.freedesktop.org/mesa/mesa/-/issues/10816
 (define-public mesa-nvk-git
   (let ((name "mesa-nvk-git")
         (version "24.1")
         (revision "0")
-        (commit "4311314891280e829444fb0733e30f2f0c49fa09"))
+        (commit "185e9b4a75bb0b7335e95cfbe8a0b65a4833f85e"))
     (package
       (inherit mesa)
       (name name)
@@ -161,7 +156,10 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "1dsx0mcmwl8hxf6lzkvq8vpqpr8q1i72s9p28sdvfmfh4wxcp6yd"))))
+                  "0sxh18lfxg0h7zjkl1g9agx4f6xys0g73j3xcrcmbc2l3fllw0s7"))
+         (patches
+          (search-my-patches
+           "0001-Revert-nvk-enable-a-mappable-bar-heap-when-rebar-is-.patch"))))
       (arguments
        (cons*
         #:meson meson-1.3
@@ -204,7 +202,8 @@
                   python-ply)))
       (inputs
        (modify-inputs (package-inputs mesa)
-         (prepend libclc)))
+         (prepend libclc
+                  wayland-protocols/newer)))
       (propagated-inputs
        (modify-inputs (package-propagated-inputs mesa)
          (replace "libdrm" libdrm/newer))))))
