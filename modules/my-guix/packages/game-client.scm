@@ -45,7 +45,7 @@
     (unless matched
       (display "SANITY CHECK FAILED: MESA NOT FOUND\n")
       (raise-exception (make-exception)))
-    (cons `("mesa" ,mesa-git) (delq matched inputs))))
+    (cons `("mesa" ,mesa-nvk-git) (delq matched inputs))))
 
 (define-public steam-container-custom
   (let ((steam-client-libs (replace-mesa

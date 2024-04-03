@@ -144,8 +144,8 @@
 ;;
 ;; TODO: Updating mesa further requires Linux > 6.8, apparently.  Likely
 ;; related issue: https://gitlab.freedesktop.org/mesa/mesa/-/issues/10816
-(define-public mesa-git
-  (let ((name "mesa-git")
+(define-public mesa-nvk-git
+  (let ((name "mesa-nvk-git")
         (version "24.1")
         (revision "0")
         (commit "4311314891280e829444fb0733e30f2f0c49fa09"))
