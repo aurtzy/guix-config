@@ -41,6 +41,7 @@
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages crates-apple)
   #:use-module (gnu packages crates-io)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
@@ -122,6 +123,20 @@
               (sha256
                (base32
                 "0yijzgg6rdsa68bz03sw0lcfa2nclv9m3as1cja50wkcyxim7x9v"))))))
+
+(define-public wayland-protocols/newer
+  (package/inherit wayland-protocols
+    (name "wayland-protocols")
+    (version "1.34")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.freedesktop.org/wayland/"
+                           name "/-/releases/" version "/downloads/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
 
 ;; Reference package: https://aur.archlinux.org/packages/vulkan-nouveau-git
 ;;
