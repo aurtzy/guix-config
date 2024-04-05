@@ -143,7 +143,7 @@
   (let ((name "mesa-nvk-git")
         (version "24.1")
         (revision "0")
-        (commit "185e9b4a75bb0b7335e95cfbe8a0b65a4833f85e"))
+        (commit "c6686fda28e27565ff16c3f646899b8d9d05c428"))
     (package
       (inherit mesa)
       (name name)
@@ -156,7 +156,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "0sxh18lfxg0h7zjkl1g9agx4f6xys0g73j3xcrcmbc2l3fllw0s7"))
+                  "0iw3660xlqrqaxqyawmg988hfd2hjd9wppbr6kajih9mhc2ai6wy"))
          (patches
           (search-my-patches
            "0001-Revert-nvk-enable-a-mappable-bar-heap-when-rebar-is-.patch"))))
