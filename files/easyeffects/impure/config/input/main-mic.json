@@ -80,7 +80,7 @@
             "release": 5.0,
             "sidechain-preamp": 0.0,
             "stereo-link": 100.0,
-            "threshold": -4.0
+            "threshold": -5.0
         },
         "loudness#1": {
             "bypass": false,
