@@ -4,6 +4,8 @@
              (gnu services xorg)
              (gnu system)
              (gnu system file-systems)
+             (guix download)
+             (guix packages)
              (my-guix base desktop)
              (my-guix config)
              (my-guix mods)
@@ -13,6 +15,21 @@
              (nongnu packages nvidia)
              (nongnu services nvidia)
              (nongnu system linux-initrd))
+
+(define linux-6.9-rc
+  (package
+    (inherit
+     (customize-linux
+      #:name "linux"
+      #:linux linux-libre-6.8
+      #:source (origin
+                 (method url-fetch)
+                 (uri
+                  "https://git.kernel.org/torvalds/t/linux-6.9-rc2.tar.gz")
+                 (sha256
+                  (base32
+                   "0nmzqha7lf8dwahdv2adv7jhkdfwhqp5a2fgygx7pfnh09z0iqaw")))))
+    (version "6.9-rc2")))
 
 (define swapfile-mod
   (build-swapfile-mod
@@ -31,7 +48,7 @@
    (operating-system
      (inherit base-os)
      (host-name "al-pc")
-     (kernel linux-6.8)
+     (kernel linux-6.9-rc)
      (initrd microcode-initrd)
      (firmware (list linux-firmware))
      (kernel-arguments
