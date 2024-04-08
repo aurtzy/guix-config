@@ -170,7 +170,8 @@ the shell alias."
               emacs-paredit
               ;; dashboard on init
               emacs-dashboard
-              ;; additional modes
+              ;; misc
+              emacs-eat
               emacs-markdown-mode
               emacs-protobuf-mode
               ;; packages being tried out go below here
