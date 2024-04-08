@@ -128,7 +128,6 @@ the shell alias."
                                    (build-assist-data-script
                                     (map car data-specs))))))))))))
 
-;; TODO: emacs-dape?  https://github.com/svaante/dape
 (define emacs-base-mod
   (mod
     (name 'emacs-base-mod)
@@ -173,7 +172,11 @@ the shell alias."
               emacs-dashboard
               ;; additional modes
               emacs-markdown-mode
-              emacs-protobuf-mode))
+              emacs-protobuf-mode
+              ;; packages being tried out go below here
+              emacs-dape
+              emacs-org-noter
+              emacs-pdf-tools))
        (services
         (list (simple-service name
                               home-impure-symlinks-service-type
