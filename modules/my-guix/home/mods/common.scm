@@ -29,6 +29,7 @@
   #:use-module (gnu home services sound)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module (guix transformations)
   #:use-module (my-guix home mods misc)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
@@ -170,6 +171,12 @@ the shell alias."
               emacs-paredit
               ;; dashboard on init
               emacs-dashboard
+              ;; data science stuff
+              (let ((transform (options->transformation
+                                '((with-version . "emacs-jupyter=1.0")))))
+                (transform emacs-jupyter))
+              emacs-code-cells
+              emacs-csv-mode
               ;; misc
               emacs-eat
               emacs-markdown-mode
