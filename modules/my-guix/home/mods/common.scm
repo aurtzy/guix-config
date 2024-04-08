@@ -182,7 +182,7 @@ the shell alias."
               emacs-markdown-mode
               emacs-protobuf-mode
               ;; packages being tried out go below here
-              emacs-dape
+              ;; emacs-dape                ;TODO package this?
               emacs-org-noter
               emacs-pdf-tools))
        (services
