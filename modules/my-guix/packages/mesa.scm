@@ -143,7 +143,7 @@
   (let ((name "mesa-nvk-git")
         (version "24.1")
         (revision "0")
-        (commit "aac2a31b3d3d4bd2aefdc10cb50a8d8b2e2ab4bf"))
+        (commit "6b383ca810bb853f11c127d9e1d284dc4dcb0992"))
     (package
       (inherit mesa)
       (name name)
@@ -156,7 +156,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "0q6x5dmlmx7yfkv412zprshzyn9vji2l5svqya2jk58yg2m9fqgx"))))
+                  "103c79bsjd8x3rz9gmdjklhcrf4dnz7ydakliz7klrbglk8aygbr"))))
       (arguments
        (cons*
         #:meson meson-1.3
@@ -188,15 +188,18 @@
                               ("subprojects/quote.wrap"
                                #$(package-source rust-quote-1.0.33))
                               ("subprojects/proc-macro2.wrap"
-                               #$(package-source rust-proc-macro2-1.0.70)))
+                               #$(package-source rust-proc-macro2-1.0.70))
+                              ("subprojects/paste.wrap"
+                               #$(package-source rust-paste-1)))
                            '())))))))))
       (native-inputs
        (modify-inputs (package-native-inputs mesa)
-         (prepend rust
-                  rust-bindgen-cli
-                  clang-15
+         (prepend clang-15
                   llvm-15
-                  python-ply)))
+                  python-ply
+                  rust
+                  rust-bindgen-cli
+                  rust-cbindgen-0.26)))
       (inputs
        (modify-inputs (package-inputs mesa)
          (prepend libclc
