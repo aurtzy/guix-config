@@ -63,6 +63,8 @@
                                  ,(path-append-my-files "impure/bottles")
                                  "com.usebottles.bottles")))))))))
 
+;; TODO Set sysctl config option to optimize for gaming
+;; https://www.phoronix.com/news/Arch-Linux-vm.max_map_count
 (define game-managers-mod
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
          (steam-dest ".local/share/guix-sandbox-home"))
