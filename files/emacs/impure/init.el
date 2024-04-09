@@ -215,9 +215,7 @@
          ("M-f" . unfill-paragraph)))
 
 (use-package adaptive-wrap
-  :hook (visual-line-mode . adaptive-wrap-prefix-mode)
-  :custom
-  (adaptive-wrap-extra-indent 1))
+  :hook (visual-line-mode . adaptive-wrap-prefix-mode))
 
 ;; TODO this is cool
 ;; See: https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
