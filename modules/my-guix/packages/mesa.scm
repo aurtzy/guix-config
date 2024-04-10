@@ -99,6 +99,8 @@
          "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
 
 (define (patch-crate-wrap-file-script wrap-file package)
+  "Writes a wrap file for PACKAGE at path WRAP-FILE to enable using the
+non-pinned package version in meson builds."
   (let* ((crate-name (package-upstream-name* package))
          (crate #~#$(file-append package
                                  "/share/cargo/src/"
