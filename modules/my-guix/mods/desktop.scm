@@ -76,30 +76,9 @@ automatically."
           (list (string-append "resume=" device)
                 (string-append "resume_offset=" offset))))))))
 
-(define wayland-mod
-  (mod
-    (name 'wayland-mod)
-    (apply
-     (mod-operating-system
-       (packages
-        ;; TODO Fix strange issue on GNOME with file chooser not showing up as
-        ;; expected, currently leading to some applications freezing while
-        ;; waiting for a nonexistant window to close.
-        ;;
-        ;; Workaround: run
-        ;; `/run/current-system/profile/libexec/xdg-desktop-portal-gnome --replace`
-        (list xdg-desktop-portal
-              ;; xdg-desktop-portal-gtk
-              xdg-desktop-portal-gnome
-              xdg-desktop-portal-kde
-              ;; qtwayland
-              ))))))
-
 (define gnome-mod
   (mod
     (name 'gnome-mod)
-    (dependencies
-     (list wayland-mod))
     (apply
      (mod-operating-system
        os =>
@@ -107,7 +86,8 @@ automatically."
         (list gvfs
               gnome-tweaks
               gnome-shell-extensions
-              gnome-shell-extension-gsconnect))
+              gnome-shell-extension-gsconnect
+              xdg-desktop-portal-kde))
        (services
         (list (set-xorg-configuration
                (xorg-configuration
