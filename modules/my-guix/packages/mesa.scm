@@ -102,28 +102,27 @@
   "Writes a wrap file for PACKAGE at path WRAP-FILE to enable using the
 non-pinned package version in meson builds."
   (let* ((crate-name (package-upstream-name* package))
+         (crate-full-name (string-append
+                           crate-name "-" (package-version package)))
          (crate #~#$(file-append package
                                  "/share/cargo/src/"
-                                 (string-append
-                                  crate-name "-" (package-version package))))
+                                 crate-full-name))
          (wrap-dir (dirname wrap-file)))
     #~(call-with-output-file #$wrap-file
         (lambda (port)
           (copy-recursively #$crate
-                            #$(string-append wrap-dir "/" crate-name))
-          (copy-recursively (string-append #$wrap-dir
-                                           "/packagefiles/"
-                                           #$crate-name)
-                            (string-append #$wrap-dir
-                                           "/"
-                                           #$crate-name))
+                            #$(string-append wrap-dir "/" crate-full-name))
+          (copy-recursively #$(string-append wrap-dir
+                                             "/packagefiles/"
+                                             crate-name)
+                            #$(string-append wrap-dir "/" crate-full-name))
           (format
            port
            "[wrap-file]
 directory = ~a
 patch_directory = ~a
 "
-           #$crate-name
+           #$crate-full-name
            #$crate-name)))))
 
 (define-public mesa-nvk-git
