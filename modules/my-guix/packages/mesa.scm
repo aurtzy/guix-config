@@ -139,6 +139,32 @@
         (base32
          "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
 
+(define (replace-crate-wrap-file-script wrap-file package)
+  (let* ((crate-name (package-upstream-name* package))
+         (crate #~#$(file-append package
+                                 "/share/cargo/src/"
+                                 (string-append
+                                  crate-name "-" (package-version package))))
+         (wrap-dir (dirname wrap-file)))
+    #~(call-with-output-file #$wrap-file
+        (lambda (port)
+          (copy-recursively #$crate
+                            #$(string-append wrap-dir "/" crate-name))
+          (copy-recursively (string-append #$wrap-dir
+                                           "/packagefiles/"
+                                           #$crate-name)
+                            (string-append #$wrap-dir
+                                           "/"
+                                           #$crate-name))
+          (format
+           port
+           "[wrap-file]
+directory = ~a
+patch_directory = ~a
+"
+           #$crate-name
+           #$crate-name)))))
+
 (define-public mesa-nvk-git
   (let ((name "mesa-nvk-git")
         (version "24.1")
