@@ -143,7 +143,7 @@
   (let ((name "mesa-nvk-git")
         (version "24.1")
         (revision "0")
-        (commit "6b383ca810bb853f11c127d9e1d284dc4dcb0992"))
+        (commit "1fb74672a91b28cc62f2bcb881047135f0258a8c"))
     (package
       (inherit mesa)
       (name name)
@@ -156,7 +156,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "103c79bsjd8x3rz9gmdjklhcrf4dnz7ydakliz7klrbglk8aygbr"))))
+                  "0yi51ip6jb26k3s9cqszc55qfp084iqxlyr2ch8wqy40xqkyy3bq"))))
       (arguments
        (cons*
         #:meson meson-1.3
