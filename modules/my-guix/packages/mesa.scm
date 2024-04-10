@@ -98,7 +98,7 @@
         (base32
          "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
 
-(define (replace-crate-wrap-file-script wrap-file package)
+(define (patch-crate-wrap-file-script wrap-file package)
   (let* ((crate-name (package-upstream-name* package))
          (crate #~#$(file-append package
                                  "/share/cargo/src/"
@@ -157,19 +157,19 @@ patch_directory = ~a
                  (lambda _
                    #$@(if (target-x86-64?)
                           (list
-                           (replace-crate-wrap-file-script
+                           (patch-crate-wrap-file-script
                             "subprojects/syn.wrap"
                             rust-syn-2)
-                           (replace-crate-wrap-file-script
+                           (patch-crate-wrap-file-script
                             "subprojects/unicode-ident.wrap"
                             rust-unicode-ident-1)
-                           (replace-crate-wrap-file-script
+                           (patch-crate-wrap-file-script
                             "subprojects/quote.wrap"
                             rust-quote-1)
-                           (replace-crate-wrap-file-script
+                           (patch-crate-wrap-file-script
                             "subprojects/proc-macro2.wrap"
                             rust-proc-macro2-1)
-                           (replace-crate-wrap-file-script
+                           (patch-crate-wrap-file-script
                             "subprojects/paste.wrap"
                             rust-paste-1))
                           '()))))))))
