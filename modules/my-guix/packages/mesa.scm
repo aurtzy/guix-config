@@ -196,28 +196,24 @@ patch_directory = ~a
                  ;; Subproject source URLs are patched to point to the store,
                  ;; which avoids an attempt to download them mid-build.
                  (lambda _
-                   (for-each
-                    (match-lambda
-                      ((file input)
-                       (substitute* file
-                         (("source_url = .*$")
-                          "")
-                         (("source_hash = .*$")
-                          "")
-                         (("(source_filename = ).*$" all assign)
-                          (string-append assign input "\n")))))
-                    '#$(if (target-x86-64?)
-                           #~(("subprojects/syn.wrap"
-                               #$(package-source rust-syn-2.0.39))
-                              ("subprojects/unicode-ident.wrap"
-                               #$(package-source rust-unicode-ident-1))
-                              ("subprojects/quote.wrap"
-                               #$(package-source rust-quote-1.0.33))
-                              ("subprojects/proc-macro2.wrap"
-                               #$(package-source rust-proc-macro2-1.0.70))
-                              ("subprojects/paste.wrap"
-                               #$(package-source rust-paste-1)))
-                           '())))))))))
+                   #$@(if (target-x86-64?)
+                          (list
+                           (replace-crate-wrap-file-script
+                            "subprojects/syn.wrap"
+                            rust-syn-2)
+                           (replace-crate-wrap-file-script
+                            "subprojects/unicode-ident.wrap"
+                            rust-unicode-ident-1)
+                           (replace-crate-wrap-file-script
+                            "subprojects/quote.wrap"
+                            rust-quote-1)
+                           (replace-crate-wrap-file-script
+                            "subprojects/proc-macro2.wrap"
+                            rust-proc-macro2-1)
+                           (replace-crate-wrap-file-script
+                            "subprojects/paste.wrap"
+                            rust-paste-1))
+                          '()))))))))
       (native-inputs
        (modify-inputs (package-native-inputs mesa)
          (prepend clang-15
