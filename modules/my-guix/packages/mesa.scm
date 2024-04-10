@@ -71,47 +71,6 @@
                (base32
                 "1ajvkcyly1nsxwjc2vly1vlvfjrwpfnza5prfr104wxhr18b8bj9"))))))
 
-(define-public rust-syn-2.0.39
-  (package
-    (inherit rust-syn-2)
-    (name "rust-syn")
-    (version "2.0.39")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "syn" version))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0ymyhxnk1yi4pzf72qk3lrdm9lgjwcrcwci0hhz5vx7wya88prr3"))))))
-
-(define-public rust-proc-macro2-1.0.70
-  (package
-    (inherit rust-proc-macro2-1)
-    (name "rust-proc-macro2")
-    (version "1.0.70")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "proc-macro2" version))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0fzxg3dkrjy101vv5b6llc8mh74xz1vhhsaiwrn68kzvynxqy9rr"))))))
-
-(define-public rust-quote-1.0.33
-  (package
-    (inherit rust-quote-1)
-    (name "rust-quote")
-    (version "1.0.33")
-    (source (origin
-              (method url-fetch)
-              (uri (crate-uri "quote" version))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1biw54hbbr12wdwjac55z1m2x2rylciw83qnjn564a3096jgqrsj"))))))
-
 (define-public libdrm/newer
   (package
     (inherit libdrm)
