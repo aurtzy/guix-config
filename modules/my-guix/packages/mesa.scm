@@ -56,7 +56,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
-  #:use-module (my-guix utils))
+  #:use-module (my-guix build utils))
 
 (define-public meson-1.3
   (package
@@ -97,33 +97,6 @@
        (sha256
         (base32
          "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
-
-(define (patch-crate-wrap-file-script wrap-file package)
-  "Writes a wrap file for PACKAGE at path WRAP-FILE to enable using the
-non-pinned package version in meson builds."
-  (let* ((crate-name (package-upstream-name* package))
-         (crate-full-name (string-append
-                           crate-name "-" (package-version package)))
-         (crate #~#$(file-append package
-                                 "/share/cargo/src/"
-                                 crate-full-name))
-         (wrap-dir (dirname wrap-file)))
-    #~(call-with-output-file #$wrap-file
-        (lambda (port)
-          (copy-recursively #$crate
-                            #$(string-append wrap-dir "/" crate-full-name))
-          (copy-recursively #$(string-append wrap-dir
-                                             "/packagefiles/"
-                                             crate-name)
-                            #$(string-append wrap-dir "/" crate-full-name))
-          (format
-           port
-           "[wrap-file]
-directory = ~a
-patch_directory = ~a
-"
-           #$crate-full-name
-           #$crate-name)))))
 
 (define-public mesa-nvk-git
   (let ((name "mesa-nvk-git")
