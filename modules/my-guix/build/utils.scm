@@ -22,7 +22,9 @@
 (define-module (my-guix build utils)
   #:use-module (guix gexp)
   #:use-module (guix packages)
+  #:use-module (ice-9 match)
   #:export (patch-crate-wrap-file-script
+            patch-wrap-file-script
             crate-package-source))
 
 (define (patch-crate-wrap-file-script wrap-file package)
@@ -51,6 +53,61 @@ patch_directory = ~a
 "
            #$crate-full-name
            #$crate-name)))))
+
+(define* (patch-wrap-file-script subproject-name
+                                 gexp-dir
+                                 #:key
+                                 (subprojects-dir "subprojects")
+                                 (provides '()))
+  "Return a gexp script that generates a local directory with GEXP-DIR
+recursively copied to it, and then patches the wrap file for SUBPROJECT-NAME
+to use it.  This is particularly useful for wrap files that would otherwise
+attempt to fetch the content from the Internet.
+
+SUBPROJECT-NAME is the name of the subproject that the wrap file will apply
+to.  It should match the base name of the wrap file (without the \".wrap\"
+extension) to patch.
+
+GEXP-DIR is a g-expression that should evaluate to a string directory path.
+This is the path that SUBPROJECT-NAME will be patched to use.
+
+SUBPROJECTS-DIR is a string path to the directory where wrap files are
+located for a project.
+
+The [provide] section of the wrap file can also be configured via an alist
+specification provided to PROVIDES."
+  #~(let* ((subproject-name #$subproject-name)
+           (subprojects-dir #$subprojects-dir)
+           (wrap-file (string-append
+                       subprojects-dir "/" subproject-name ".wrap"))
+           (subproject-source #$gexp-dir)
+           (subproject-dest (string-append
+                             subprojects-dir "/" subproject-name))
+           (package-file (string-append
+                          subprojects-dir "/packagefiles/" subproject-name)))
+      (copy-recursively subproject-source subproject-dest)
+      ;; Apply packagefiles when available
+      (when (file-exists? package-file)
+        (copy-recursively package-file subproject-dest))
+      (call-with-output-file wrap-file
+        (lambda (port)
+          (format port
+                  "[wrap-file]
+directory = ~a
+"
+                  subproject-name)
+          ;; TODO this hasn't been tested yet.
+          (unless #$(null? provides)
+            (format port
+                    "[provide]
+~a"
+                    '#$(string-join
+                        (map (match-lambda
+                               ((key . value)
+                                (string-append key " = " value)))
+                             provides)
+                        "\n"
+                        'suffix)))))))
 
 (define* (crate-package-source file
                                #:key
