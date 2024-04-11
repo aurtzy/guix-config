@@ -130,22 +130,15 @@
                  ;; which avoids an attempt to download them mid-build.
                  (lambda _
                    #$@(if (target-x86-64?)
-                          (list
-                           (patch-crate-wrap-file-script
-                            "subprojects/syn.wrap"
-                            rust-syn-2)
-                           (patch-crate-wrap-file-script
-                            "subprojects/unicode-ident.wrap"
-                            rust-unicode-ident-1)
-                           (patch-crate-wrap-file-script
-                            "subprojects/quote.wrap"
-                            rust-quote-1)
-                           (patch-crate-wrap-file-script
-                            "subprojects/proc-macro2.wrap"
-                            rust-proc-macro2-1)
-                           (patch-crate-wrap-file-script
-                            "subprojects/paste.wrap"
-                            rust-paste-1))
+                          (map (lambda (pkg)
+                                 (patch-wrap-file-script
+                                  (package-upstream-name* pkg)
+                                  (crate-package-source pkg)))
+                               (list rust-syn-2
+                                     rust-unicode-ident-1
+                                     rust-quote-1
+                                     rust-proc-macro2-1
+                                     rust-paste-1))
                           '()))))))))
       (native-inputs
        (modify-inputs (package-native-inputs mesa)
