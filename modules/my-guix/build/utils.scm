@@ -22,14 +22,9 @@
 (define-module (my-guix build utils)
   #:use-module (guix gexp)
   #:use-module (guix packages)
-  #:export (patch-crate-wrap-file-script))
+  #:export (patch-crate-wrap-file-script
+            crate-package-source))
 
-;; TODO Generalize this somehow?  Consider:
-;; - package -> source ?  Can have this parameter be a gexp that evaluate to
-;;   a path to the source.
-;; - Any other needed specifications from wrap files?  Is it necessary to
-;;   allow for specifying the entire wrap file?
-;; - What to do about packagefiles?  Is this standardized?
 (define (patch-crate-wrap-file-script wrap-file package)
   "Writes a wrap file for PACKAGE at path WRAP-FILE to enable using the
 non-pinned package version in meson builds."
@@ -56,3 +51,13 @@ patch_directory = ~a
 "
            #$crate-full-name
            #$crate-name)))))
+
+(define* (crate-package-source file
+                               #:key
+                               (name (package-upstream-name* file))
+                               (version (package-version file)))
+  "Return a <file-append> object that concatenates FILE to the crate source
+code location designated by cargo-build-system.  By default, the file is
+assumed to be a package, where the crate source directory name is constructed
+from the package's VERSION and upstream NAME."
+  (file-append file "/share/cargo/src/" name "-" version))
