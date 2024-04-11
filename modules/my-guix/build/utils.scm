@@ -23,36 +23,9 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (ice-9 match)
-  #:export (patch-crate-wrap-file-script
-            patch-wrap-file-script
+  #:export (patch-wrap-file-script
             crate-package-source))
 
-(define (patch-crate-wrap-file-script wrap-file package)
-  "Writes a wrap file for PACKAGE at path WRAP-FILE to enable using the
-non-pinned package version in meson builds."
-  (let* ((crate-name (package-upstream-name* package))
-         (crate-full-name (string-append
-                           crate-name "-" (package-version package)))
-         (crate #~#$(file-append package
-                                 "/share/cargo/src/"
-                                 crate-full-name))
-         (wrap-dir (dirname wrap-file)))
-    #~(call-with-output-file #$wrap-file
-        (lambda (port)
-          (copy-recursively #$crate
-                            #$(string-append wrap-dir "/" crate-full-name))
-          (copy-recursively #$(string-append wrap-dir
-                                             "/packagefiles/"
-                                             crate-name)
-                            #$(string-append wrap-dir "/" crate-full-name))
-          (format
-           port
-           "[wrap-file]
-directory = ~a
-patch_directory = ~a
-"
-           #$crate-full-name
-           #$crate-name)))))
 
 (define* (patch-wrap-file-script subproject-name
                                  gexp-dir
