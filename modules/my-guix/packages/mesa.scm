@@ -56,7 +56,7 @@
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
-  #:use-module (my-guix build utils))
+  #:use-module (my-guix utils))
 
 (define-public meson-1.3
   (package
