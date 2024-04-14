@@ -189,8 +189,11 @@ images."))
              xcb-util-wm
              xorg-server-xwayland))
       (home-page "https://github.com/Plagman/gamescope")
-      (synopsis "Gamescope: The micro-compositor formerly known as steamcompmgr.")
-      (description "")
+      (synopsis "Session compositing window manager")
+      (description "Gamescope is a Wayland compositor for running games,
+formerly known as steamcompmgr.  It is designed for use in embedded sessions
+and as a nested compositor on top of a regular desktop environment through
+sandboxed Xwayland sessions.")
       (license license:gpl3+))))
 
 (define (replace-mesa inputs)
