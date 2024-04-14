@@ -25,16 +25,56 @@
 ;;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (my-guix packages game-client)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages cmake)
+  #:use-module (gnu packages commencement)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages pciutils)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages stb)
+  #:use-module (gnu packages vulkan)
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
+  #:use-module (guix download)
   #:use-module (guix gexp)
+  #:use-module (guix git-download)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (my-guix packages mesa)
+  #:use-module (my-guix utils)
   #:use-module (nonguix multiarch-container)
   #:use-module (nongnu packages game-client)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
+
+(define-public vulkan-headers/newer
+  (package
+    (inherit vulkan-headers)
+    (name "vulkan-headers")
+    (version "vulkan-sdk-1.3.280.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/Vulkan-Headers")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "13mmv5621z73hlfnsrccbcb4z0d7kwj92a081701vbpss45a4whj"))))))
 
 (define (replace-mesa inputs)
   ;; Because this is a hacky hack, do a sanity check to make sure mesa is
