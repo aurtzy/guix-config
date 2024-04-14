@@ -76,6 +76,103 @@
         (base32
          "13mmv5621z73hlfnsrccbcb4z0d7kwj92a081701vbpss45a4whj"))))))
 
+;; From: https://gitlab.com/nonguix/nonguix/-/merge_requests/200
+;;
+;; Use older than 3.14.3 due to a bug:
+;; https://github.com/ValveSoftware/gamescope/issues/1218
+;;
+;; Doesn't work for NVK yet :c
+;; (https://gitlab.freedesktop.org/mesa/mesa/-/issues/9480)
+(define-public gamescope
+  (let ((version "3.14.2")
+        (revision "0")
+        (commit "d0d23c4c3010c81add1bd90cbe478ce4a386e28d"))
+    (package
+      (name "gamescope")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ValveSoftware/gamescope")
+               (commit commit)
+               (recursive? #t)))
+         (sha256
+          (base32 "1sw2br3g16mird7jc7idbcxf5xxjmiyr6hjw3966s0nsv6bn8vb2"))
+         (file-name (git-file-name name version))))
+      (build-system meson-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-subprojects
+              (lambda _
+                ;; TODO Look for a better way to do this.  Kind of a hacky way
+                ;; to handle zip files, and it doesn't seem like I can
+                ;; auto-extract the zip without making it a package (also not
+                ;; preferable).
+                (invoke
+                 #+(file-append unzip "/bin/unzip")
+                 #+(origin
+                     (method url-fetch)
+                     (uri
+                      "https://wrapdb.mesonbuild.com/v2/glm_0.9.9.8-2/get_patch")
+                     (sha256
+                      (base32
+                       "0gfqg3j1kfhycg7bygdxxfhp1qarzxqlrk4j9sz893d2sgya2c6r")))
+                 "-d" "subprojects/packagefiles/")
+                (copy-recursively "subprojects/packagefiles/glm-0.9.9.8"
+                                  "subprojects/packagefiles/glm")
+                #+(patch-wrap-file-script
+                   "stb"
+                   (@@ (gnu packages stb) stb))
+                (substitute* "src/meson.build"
+                  ((", '< 0\\.2\\.0'")  ;libdisplay-info
+                   "")))))))
+      (native-inputs
+       (list cmake
+             pkg-config
+             python-3))
+      (inputs
+       (list clang
+             eudev
+             gcc-toolchain-12
+             glm
+             glslang
+             ;; (list hwdata "pnp")
+             (@ (my-guix packages minecraft-wayland) libdecor) ;TODO make not
+                                        ;part of
+                                        ;minecraft-wayland
+             libdisplay-info
+             libdrm/newer
+             libinput
+             libseat
+             libx11
+             libxcomposite
+             libxcursor
+             libxdamage
+             libxext
+             libxkbcommon
+             libxmu
+             libxres
+             libxt
+             libxtst
+             libxxf86vm
+             ;; openvr ;does not build on this older gamescope
+             pipewire
+             pixman
+             sdl2
+             vulkan-headers/newer
+             vulkan-loader
+             wayland
+             wayland-protocols/newer
+             xcb-util-wm
+             xorg-server-xwayland))
+      (home-page "https://github.com/Plagman/gamescope")
+      (synopsis "Gamescope: The micro-compositor formerly known as steamcompmgr.")
+      (description "")
+      (license license:gpl3+))))
+
 (define (replace-mesa inputs)
   ;; Because this is a hacky hack, do a sanity check to make sure mesa is
   ;; actually matched, then remove it
