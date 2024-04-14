@@ -7,6 +7,7 @@
 ;;; Copyright © 2023 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2023 Elijah Malaby
 ;;; Copyright © 2023 Timo Wilken <guix@twilken.net>
+;;; Copyright © 2022 Demis Balbach
 ;;; Copyright © 2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
