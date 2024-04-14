@@ -193,9 +193,17 @@
     (nonguix-container
      (inherit steam-container)
      (union64
-      (fhs-union `(,@steam-client-libs
+      (fhs-union `(,@(delete "gcc:lib"
+                             steam-client-libs
+                             (lambda (x elem)
+                               (equal? x
+                                       (car elem))))
                    ,@steam-gameruntime-libs
-                   ,@fhs-min-libs)
+                   ,@fhs-min-libs
+                   ;; Use newer version for gamescope (and remove older one
+                   ;; above)
+                   ("gcc:lib" ,gcc-12 "lib")
+                   ("gamescope" ,gamescope))
                  #:name "fhs-union-64"))
      ;; Uncomment this to apply 32-bit version of mesa-git.  Requires
      ;; i686-linux rust, which is not available in Guix at the moment
