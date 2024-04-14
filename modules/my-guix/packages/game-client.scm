@@ -131,7 +131,12 @@ images."))
                                   "subprojects/packagefiles/glm")
                 #+(patch-wrap-file-script
                    "stb"
-                   (@@ (gnu packages stb) stb))
+                   (directory-union "stb" (list stb-image
+                                                stb-image-write
+                                                stb-image-resize)))
+                (substitute* "subprojects/stb/meson.build"
+                  (("include_directories\\('\\.'\\)")
+                   (string-append "include_directories('./include')")))
                 ;; Allow use of newer libdisplay-info
                 (substitute* "src/meson.build"
                   (("(version: \\['>= 0\\.0\\.0'), '< 0\\.2\\.0'(\\])"
