@@ -141,7 +141,14 @@ images."))
                 (substitute* "src/meson.build"
                   (("(version: \\['>= 0\\.0\\.0'), '< 0\\.2\\.0'(\\])"
                     _ left-part right-part)
-                   (string-append left-part right-part))))))))
+                   (string-append left-part right-part)))
+                (substitute* "meson.build"
+                  (("warning\\('Building without hwdata pnp id support\\.'\\)")
+                   (string-append
+                    "add_project_arguments("
+                    "'-DHWDATA_PNP_IDS=\"" #$hwdata:pnp "/share/hwdata\"',"
+                    "language: 'cpp'"
+                    ")"))))))))
       (native-inputs
        (list cmake
              pkg-config
