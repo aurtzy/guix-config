@@ -33,7 +33,7 @@
             "wet": 0.0
         },
         "deepfilternet#0": {
-            "attenuation-limit": 10.0,
+            "attenuation-limit": 12.0,
             "max-df-processing-threshold": 20.0,
             "max-erb-processing-threshold": 30.0,
             "min-processing-buffer": 0,
