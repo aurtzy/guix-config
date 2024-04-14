@@ -135,7 +135,6 @@ specification provided to PROVIDES."
 directory = ~a
 "
                   subproject-name)
-          ;; TODO this hasn't been tested yet.
           (unless #$(null? provides)
             (format port
                     "[provide]
