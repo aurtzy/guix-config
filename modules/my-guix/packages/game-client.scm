@@ -76,6 +76,12 @@
         (base32
          "13mmv5621z73hlfnsrccbcb4z0d7kwj92a081701vbpss45a4whj"))))))
 
+(define-public stb-image-resize
+  ((@@ (gnu packages stb) make-stb-header-package)
+   "stb-image-resize" "0.96"
+   "stb-image-resize is a library that supports scaling and translation of
+images."))
+
 ;; From: https://gitlab.com/nonguix/nonguix/-/merge_requests/200
 ;;
 ;; Use older than 3.14.3 due to a bug:
