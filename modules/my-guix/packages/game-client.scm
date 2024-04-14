@@ -132,9 +132,11 @@ images."))
                 #+(patch-wrap-file-script
                    "stb"
                    (@@ (gnu packages stb) stb))
+                ;; Allow use of newer libdisplay-info
                 (substitute* "src/meson.build"
-                  ((", '< 0\\.2\\.0'")  ;libdisplay-info
-                   "")))))))
+                  (("(version: \\['>= 0\\.0\\.0'), '< 0\\.2\\.0'(\\])"
+                    _ left-part right-part)
+                   (string-append left-part right-part))))))))
       (native-inputs
        (list cmake
              pkg-config
