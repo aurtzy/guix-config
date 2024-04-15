@@ -80,38 +80,8 @@
   #:use-module (guix utils)
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:hide (zip))
+  #:use-module (my-guix packages xorg)
   #:use-module (my-guix utils))
-
-(define-public libdecor
-  (package
-    (name "libdecor")
-    (version "0.2.2")
-    (source
-     (origin (method git-fetch)
-             (uri (git-reference
-                   (url "https://gitlab.freedesktop.org/libdecor/libdecor")
-                   (recursive? #t)
-                   (commit version)))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "05rxchwzhnkm91kcr30mavizkp25wgjlhb6lcraa456pw7vgb04q"))))
-    (build-system meson-build-system)
-    (native-inputs (list cmake
-                         pkg-config))
-    (inputs (list cairo
-                  dbus
-                  egl-wayland
-                  gtk+
-                  libglvnd
-                  libxkbcommon
-                  pango
-                  wayland
-                  wayland-protocols))
-    (home-page "https://gitlab.freedesktop.org/libdecor/libdecor")
-    (synopsis "TODO")
-    (description "TODO")
-    (license license:expat)))
 
 (define-public glfw-wayland-minecraft
   (package
