@@ -85,31 +85,30 @@
 (define-public libdecor
   (package
     (name "libdecor")
-    (version "0.1.0")
+    (version "0.2.2")
     (source
      (origin (method git-fetch)
              (uri (git-reference
-                   (url "https://gitlab.gnome.org/jadahl/libdecor.git")
+                   (url "https://gitlab.freedesktop.org/libdecor/libdecor")
                    (recursive? #t)
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
               (base32
-               ;; cd /tmp && rm -rf libdecor && git clone https://gitlab.gnome.org/jadahl/libdecor.git --recursive && cd libdecor && git checkout 0.1.0 && guix hash -rx .
-               "0qdg3r7k086wzszr969s0ljlqdvfqm31zpl8p5h397bw076zr6p2"))))
+               "05rxchwzhnkm91kcr30mavizkp25wgjlhb6lcraa456pw7vgb04q"))))
     (build-system meson-build-system)
-    (native-inputs
-     (list wayland
-           wayland-protocols
-           dbus
-           pkg-config
-           cmake
-           cairo
-           pango
-           mesa ;; for libEGL.so 
-           egl-wayland
-           libxkbcommon))
-    (home-page "https://gitlab.gnome.org/jadahl/libdecor.git")
+    (native-inputs (list cmake
+                         pkg-config))
+    (inputs (list cairo
+                  dbus
+                  egl-wayland
+                  gtk+
+                  libglvnd
+                  libxkbcommon
+                  pango
+                  wayland
+                  wayland-protocols))
+    (home-page "https://gitlab.freedesktop.org/libdecor/libdecor")
     (synopsis "TODO")
     (description "TODO")
     (license license:expat)))
