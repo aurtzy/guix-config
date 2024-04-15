@@ -52,6 +52,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
+  #:use-module (guix build-system meson)
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (guix utils)
@@ -119,7 +120,13 @@
       (arguments
        (cons*
         #:meson meson-1.3
+        #:imported-modules `(,@%meson-build-system-modules
+                             (guix build utils)
+                             (my-guix build utils))
         (substitute-keyword-arguments (package-arguments mesa)
+          ((#:modules original-modules)
+           (append original-modules
+                   '((my-guix build utils))))
           ((#:configure-flags original-flags)
            #~(append #$original-flags
                      '("-Dvulkan-drivers=nouveau")))
@@ -129,17 +136,20 @@
                  ;; Subproject source URLs are patched to point to the store,
                  ;; which avoids an attempt to download them mid-build.
                  (lambda _
-                   #$@(if (target-x86-64?)
-                          (map (lambda (pkg)
-                                 (patch-wrap-file-script
-                                  (package-upstream-name* pkg)
-                                  (crate-package-source pkg)))
-                               (list rust-syn-2
-                                     rust-unicode-ident-1
-                                     rust-quote-1
-                                     rust-proc-macro2-1
-                                     rust-paste-1))
-                          '()))))))))
+                   #+(if (target-x86-64?)
+                         #~(for-each
+                            (match-lambda
+                              ((name source)
+                               (patch-wrap-file-script name source)))
+                            '#+(map (lambda (pkg)
+                                      (list (package-upstream-name* pkg)
+                                            (crate-package-source pkg)))
+                                    (list rust-syn-2
+                                          rust-unicode-ident-1
+                                          rust-quote-1
+                                          rust-proc-macro2-1
+                                          rust-paste-1)))
+                         #~()))))))))
       (native-inputs
        (modify-inputs (package-native-inputs mesa)
          (prepend clang-15

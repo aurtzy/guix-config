@@ -110,6 +110,12 @@ images."))
       (build-system meson-build-system)
       (arguments
        (list
+        #:modules '((guix build meson-build-system)
+                    (guix build utils)
+                    (my-guix build utils))
+        #:imported-modules `(,@%meson-build-system-modules
+                             (guix build utils)
+                             (my-guix build utils))
         #:phases
         #~(modify-phases %standard-phases
             (add-after 'unpack 'patch-subprojects
@@ -130,9 +136,9 @@ images."))
                  "-d" "subprojects/packagefiles/")
                 (copy-recursively "subprojects/packagefiles/glm-0.9.9.8"
                                   "subprojects/packagefiles/glm")
-                #+(patch-wrap-file-script
-                   "stb"
-                   (directory-union "stb" (list stb-image
+                (patch-wrap-file-script
+                 "stb"
+                 #+(directory-union "stb" (list stb-image
                                                 stb-image-write
                                                 stb-image-resize)))
                 (substitute* "subprojects/stb/meson.build"
