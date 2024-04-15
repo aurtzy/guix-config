@@ -25,11 +25,11 @@
       #:source (origin
                  (method url-fetch)
                  (uri
-                  "https://git.kernel.org/torvalds/t/linux-6.9-rc3.tar.gz")
+                  "https://git.kernel.org/torvalds/t/linux-6.9-rc4.tar.gz")
                  (sha256
                   (base32
-                   "0j7qxiiglchg6w1g9bmhpz7ad40spq4cy0j0rm4bkp15ihkahlwy")))))
-    (version "6.9-rc3")))
+                   "1c4k3lkx47yh85xcm8mlqxf1gwz1wjf9cqn48lx5hbf1hyq0n65j")))))
+    (version "6.9-rc4")))
 
 (define swapfile-mod
   (build-swapfile-mod
