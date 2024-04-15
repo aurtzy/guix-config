@@ -133,7 +133,8 @@ images."))
                      (sha256
                       (base32
                        "0gfqg3j1kfhycg7bygdxxfhp1qarzxqlrk4j9sz893d2sgya2c6r")))
-                 "-d" "subprojects/packagefiles/")
+                 "-d"
+                 "subprojects/packagefiles/")
                 (copy-recursively "subprojects/packagefiles/glm-0.9.9.8"
                                   "subprojects/packagefiles/glm")
                 (patch-wrap-file-script
@@ -166,7 +167,6 @@ images."))
              gcc-toolchain-12
              glm
              glslang
-             ;; (list hwdata "pnp")
              (@ (my-guix packages minecraft-wayland) libdecor) ;TODO make not
                                         ;part of
                                         ;minecraft-wayland
