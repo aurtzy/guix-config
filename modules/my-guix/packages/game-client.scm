@@ -194,7 +194,7 @@ images."))
              wayland-protocols/newer
              xcb-util-wm
              xorg-server-xwayland))
-      (home-page "https://github.com/Plagman/gamescope")
+      (home-page "https://github.com/ValveSoftware/gamescope")
       (synopsis "Session compositing window manager")
       (description "Gamescope is a Wayland compositor for running games,
 formerly known as steamcompmgr.  It is designed for use in embedded sessions
