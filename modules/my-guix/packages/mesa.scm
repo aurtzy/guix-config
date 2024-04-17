@@ -140,7 +140,7 @@
                          #~(for-each
                             (match-lambda
                               ((name source)
-                               (patch-wrap-file-script name source)))
+                               (patch-wrap-file name source)))
                             '#+(map (lambda (pkg)
                                       (list (package-upstream-name* pkg)
                                             (crate-package-source pkg)))

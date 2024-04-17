@@ -22,17 +22,17 @@
 (define-module (my-guix build utils)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
-  #:export (patch-wrap-file-script))
+  #:export (patch-wrap-file))
 
-(define* (patch-wrap-file-script subproject-name
-                                 source-dir
-                                 #:key
-                                 (subprojects-dir "subprojects")
-                                 (overlay-dir (string-append
-                                               subprojects-dir
-                                               "/packagefiles/"
-                                               subproject-name))
-                                 (provides '()))
+(define* (patch-wrap-file subproject-name
+                          source-dir
+                          #:key
+                          (subprojects-dir "subprojects")
+                          (overlay-dir (string-append
+                                        subprojects-dir
+                                        "/packagefiles/"
+                                        subproject-name))
+                          (provides '()))
   "Generate a local directory with SOURCE-DIR recursively copied to it, and
 then patches the wrap file for SUBPROJECT-NAME to use it.  This is
 particularly useful for wrap files that would otherwise attempt to fetch the

@@ -140,7 +140,7 @@ images."))
                 (copy-recursively "subprojects/packagefiles/glm-0.9.9.8"
                                   "subprojects/packagefiles/glm")
                 ;; stb
-                (patch-wrap-file-script
+                (patch-wrap-file
                  "stb"
                  #+(directory-union "stb" (list stb-image
                                                 stb-image-write
