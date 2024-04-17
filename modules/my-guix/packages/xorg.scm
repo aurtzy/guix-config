@@ -1,4 +1,4 @@
-;;; Copyright © 2022 Samuel Culpepper
+;;; Copyright © 2022 Samuel Culpepper <sculpepper@newstore.com>
 ;;; Copyright © 2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
