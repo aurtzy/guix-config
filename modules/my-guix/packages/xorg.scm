@@ -43,7 +43,6 @@
      (origin (method git-fetch)
              (uri (git-reference
                    (url "https://gitlab.freedesktop.org/libdecor/libdecor")
-                   (recursive? #t)
                    (commit version)))
              (file-name (git-file-name name version))
              (sha256
