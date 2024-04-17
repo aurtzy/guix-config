@@ -174,7 +174,7 @@ images."))
              glslang
              libdecor
              libdisplay-info
-             libdrm/newer
+             libdrm
              libinput
              libseat
              libx11
@@ -188,14 +188,14 @@ images."))
              libxt
              libxtst
              libxxf86vm
-             ;; openvr ;does not build on this older gamescope
+             ;; openvr ;does not build when included
              pipewire
              pixman
              sdl2
              vulkan-headers/newer
              vulkan-loader
              wayland
-             wayland-protocols/newer
+             wayland-protocols
              xcb-util-wm
              xorg-server-xwayland))
       (home-page "https://github.com/ValveSoftware/gamescope")
