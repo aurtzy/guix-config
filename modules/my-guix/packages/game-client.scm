@@ -86,12 +86,11 @@ images."))
 
 ;; From: https://gitlab.com/nonguix/nonguix/-/merge_requests/200
 ;;
-;; Use older than 3.14.3 due to a bug:
-;; https://github.com/ValveSoftware/gamescope/issues/1218
-;;
 ;; Doesn't work for NVK yet :c
 ;; (https://gitlab.freedesktop.org/mesa/mesa/-/issues/9480)
 (define-public gamescope
+  ;; Use older than 3.14.3 due to a bug:
+  ;; https://github.com/ValveSoftware/gamescope/issues/1218
   (let ((version "3.14.2")
         (revision "0")
         (commit "d0d23c4c3010c81add1bd90cbe478ce4a386e28d"))
@@ -121,6 +120,8 @@ images."))
         #~(modify-phases %standard-phases
             (add-after 'unpack 'patch-subprojects
               (lambda _
+                ;; glm
+                ;;
                 ;; TODO Look for a better way to do this.  Kind of a hacky way
                 ;; to handle zip files, and it doesn't seem like I can
                 ;; auto-extract the zip without making it a package (also not
@@ -138,6 +139,7 @@ images."))
                  "subprojects/packagefiles/")
                 (copy-recursively "subprojects/packagefiles/glm-0.9.9.8"
                                   "subprojects/packagefiles/glm")
+                ;; stb
                 (patch-wrap-file-script
                  "stb"
                  #+(directory-union "stb" (list stb-image
@@ -146,11 +148,13 @@ images."))
                 (substitute* "subprojects/stb/meson.build"
                   (("include_directories\\('\\.'\\)")
                    (string-append "include_directories('./include')")))
-                ;; Allow use of newer libdisplay-info
+                ;; libdisplay-info
                 (substitute* "src/meson.build"
+                  ;; Allow newer versions
                   (("(version: \\['>= 0\\.0\\.0'), '< 0\\.2\\.0'(\\])"
                     _ left-part right-part)
                    (string-append left-part right-part)))
+                ;; hwdata:pnp
                 (substitute* "meson.build"
                   (("warning\\('Building without hwdata pnp id support\\.'\\)")
                    (string-append
