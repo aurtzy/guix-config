@@ -44,8 +44,7 @@
     ;; Support '.local' host name lookups (mainly for printing)
     (name-service-switch %mdns-host-lookup-nss)
     (packages
-     (cons* nss-certs
-            nss-mdns ;for printing
+     (cons* nss-mdns ;for printing
             torsocks
             git
             gparted
