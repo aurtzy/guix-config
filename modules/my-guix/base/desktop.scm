@@ -29,9 +29,9 @@
   #:use-module (my-guix utils)
   #:export (base-desktop-operating-system))
 
-(use-package-modules avahi linux certs tor version-control disk)
+(use-package-modules avahi certs disk linux tor version-control)
 
-(use-service-modules cups networking xorg desktop virtualization)
+(use-service-modules cups desktop networking virtualization xorg)
 
 (define base-desktop-operating-system
   ;; Base desktop operating system. This configuration is missing
