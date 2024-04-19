@@ -23,12 +23,13 @@
   #:use-module (gnu)
   #:use-module (gnu services base)
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system nss)
   #:use-module (gnu system pam)
   #:use-module (my-guix config)
   #:use-module (my-guix utils)
   #:export (base-desktop-operating-system))
 
-(use-package-modules linux certs tor version-control disk)
+(use-package-modules avahi linux certs tor version-control disk)
 
 (use-service-modules cups networking xorg desktop virtualization)
 
@@ -40,8 +41,11 @@
     (timezone "America/New_York")
     (locale "en_US.utf8")
     (keyboard-layout (keyboard-layout "us"))
+    ;; Support '.local' host name lookups (mainly for printing)
+    (name-service-switch %mdns-host-lookup-nss)
     (packages
      (cons* nss-certs
+            nss-mdns ;for printing
             torsocks
             git
             gparted
