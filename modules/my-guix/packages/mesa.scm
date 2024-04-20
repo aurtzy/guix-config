@@ -48,6 +48,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rust)
   #:use-module (gnu packages rust-apps)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xdisorg)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -99,11 +100,29 @@
         (base32
          "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
 
+(define-public spirv-llvm-translator/newer
+  ;; Current Guix version does not build due to a name mismatch (causing "not
+  ;; found" error) in headers:
+  ;; https://github.com/KhronosGroup/SPIRV-LLVM-Translator/issues/2261
+  (package/inherit spirv-llvm-translator
+    (name "spirv-llvm-translator")
+    (version "15.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/SPIRV-LLVM-Translator")
+             ;; Take commit from llvm_release_150 branch
+             (commit "a12739b11c191605a11bfa7bab92c040e7c53344")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0a84p01y40wf31jmh05yq094zzna09b9dvj4ymzp8pn0222jxgdf"))))))
+
 (define-public mesa-nvk-git
   (let ((name "mesa-nvk-git")
         (version "24.1")
         (revision "0")
-        (commit "706691a7152d88c110068ea7bb4c3725ff6916c7"))
+        (commit "d097a60d5762df2d557362deea84e275794d1e35"))
     (package
       (inherit mesa)
       (name name)
