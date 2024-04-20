@@ -179,7 +179,12 @@
                   rust-cbindgen-0.26)))
       (inputs
        (modify-inputs (package-inputs mesa)
-         (prepend libclc
+         (prepend (package/inherit libclc
+                    (name "libclc")
+                    (propagated-inputs
+                     (modify-inputs (package-propagated-inputs libclc)
+                       (replace "spirv-llvm-translator"
+                         spirv-llvm-translator/newer))))
                   wayland-protocols/newer)))
       (propagated-inputs
        (modify-inputs (package-propagated-inputs mesa)
