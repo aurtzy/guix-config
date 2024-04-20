@@ -62,28 +62,6 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
-(define-public vulkan-headers/newer
-  (package
-    (inherit vulkan-headers)
-    (name "vulkan-headers")
-    (version "vulkan-sdk-1.3.280.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/KhronosGroup/Vulkan-Headers")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "13mmv5621z73hlfnsrccbcb4z0d7kwj92a081701vbpss45a4whj"))))))
-
-(define-public stb-image-resize
-  ((@@ (gnu packages stb) make-stb-header-package)
-   "stb-image-resize" "0.96"
-   "stb-image-resize is a library that supports scaling and translation of
-images."))
-
 ;; From: https://gitlab.com/nonguix/nonguix/-/merge_requests/200
 ;;
 ;; Doesn't work for NVK yet :c
