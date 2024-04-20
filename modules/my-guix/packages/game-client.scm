@@ -192,7 +192,7 @@ images."))
              pipewire
              pixman
              sdl2
-             vulkan-headers/newer
+             vulkan-headers
              vulkan-loader
              wayland
              wayland-protocols
