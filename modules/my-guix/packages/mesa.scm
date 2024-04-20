@@ -135,7 +135,7 @@
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "19hvakw89p3043dhivs71zm5j5sscx1xqf72c61618yfw66z2nsy"))))
+                  "06sirzz6d451phc6hx39bx4w2ndkcf96ic2xpdinx71sp5i1hlzy"))))
       (arguments
        (cons*
         #:meson meson-1.3
