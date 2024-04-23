@@ -38,11 +38,6 @@
     (device "/dev/mapper/cryptroot")
     (offset "5250304"))))
 
-;; Issue with computer hanging right before GDM is supposed to start; commit
-;; where it appears to have been introduced:
-;; 6f9d844d2ece7b369d17bbe678978462425f869c
-;;
-;; Issue related to commit: https://issues.guix.gnu.org/67649
 (apply-mods
  (let ((base-os base-desktop-operating-system))
    (operating-system
