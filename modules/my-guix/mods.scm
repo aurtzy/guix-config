@@ -27,10 +27,10 @@
   #:use-module (my-guix utils)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
-  #:export (OPERATING_SYSTEM_EXTENDABLES
+  #:export (%base-operating-system-extendables
             mod-operating-system
 
-            HOME_ENVIRONMENT_EXTENDABLES
+            %base-home-environment-extendables
             mod-home-environment
 
             <mod>
@@ -89,7 +89,7 @@ The returned procedure consumes"
     ((_ field* ... extenders extendables)
      (mod-record record => field* ... extenders extendables))))
 
-(define OPERATING_SYSTEM_EXTENDABLES
+(define %base-operating-system-extendables
   `((packages
      .
      ,(lambda (os value)
@@ -124,9 +124,9 @@ The returned procedure consumes"
         (value os)))))
 
 (define-syntax-rule (mod-operating-system field* ...)
-  (mod-record field* ... () OPERATING_SYSTEM_EXTENDABLES))
+  (mod-record field* ... () %base-operating-system-extendables))
 
-(define HOME_ENVIRONMENT_EXTENDABLES
+(define %base-home-environment-extendables
   `((packages
      .
      ,(lambda (he value)
@@ -147,7 +147,7 @@ The returned procedure consumes"
         (value he)))))
 
 (define-syntax-rule (mod-home-environment field* ...)
-  (mod-record field* ... () HOME_ENVIRONMENT_EXTENDABLES))
+  (mod-record field* ... () %base-home-environment-extendables))
 
 (define-record-type* <mod>
   mod make-mod
