@@ -73,19 +73,6 @@
                (base32
                 "1ajvkcyly1nsxwjc2vly1vlvfjrwpfnza5prfr104wxhr18b8bj9"))))))
 
-(define-public libdrm/newer
-  (package
-    (inherit libdrm)
-    (version "2.4.120")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://dri.freedesktop.org/libdrm/libdrm-"
-                    version ".tar.xz"))
-              (sha256
-               (base32
-                "0yijzgg6rdsa68bz03sw0lcfa2nclv9m3as1cja50wkcyxim7x9v"))))))
-
 (define-public wayland-protocols/newer
   (package/inherit wayland-protocols
     (name "wayland-protocols")
