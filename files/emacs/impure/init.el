@@ -488,7 +488,8 @@
 (use-package project
   :preface
   (defcustom project-root-markers
-    '(".project-root"
+    '(".git"
+      ".project-root"
       "manifest.scm"
       ".envrc")
     "Files or directories that indicate the root of a project."
