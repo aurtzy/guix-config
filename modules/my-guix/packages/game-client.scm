@@ -55,7 +55,6 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (my-guix packages mesa)
-  #:use-module (my-guix packages xorg)
   #:use-module (my-guix utils)
   #:use-module (nonguix multiarch-container)
   #:use-module (nongnu packages game-client)

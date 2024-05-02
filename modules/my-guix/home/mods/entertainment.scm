@@ -38,8 +38,7 @@
 
             entertainment-mods))
 
-(use-package-modules minetest
-                     sdl)
+(use-package-modules freedesktop minetest sdl)
 
 (define games-src
   (path-append-my-home "areas/games"))

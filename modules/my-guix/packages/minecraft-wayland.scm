@@ -80,7 +80,6 @@
   #:use-module (guix utils)
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:hide (zip))
-  #:use-module (my-guix packages xorg)
   #:use-module (my-guix utils))
 
 (define-public glfw-wayland-minecraft
