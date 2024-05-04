@@ -29,7 +29,7 @@
   #:use-module (my-guix utils)
   #:export (base-desktop-operating-system))
 
-(use-package-modules avahi certs disk linux tor version-control)
+(use-package-modules avahi certs cryptsetup disk linux tor version-control)
 
 (use-service-modules cups desktop networking virtualization xorg)
 
@@ -45,9 +45,11 @@
     (name-service-switch %mdns-host-lookup-nss)
     (packages
      (cons* btrfs-progs
+            cryptsetup
             git
             gparted
             gptfdisk
+            lvm2
             nss-mdns ;for printing
             ntfs-3g
             torsocks
