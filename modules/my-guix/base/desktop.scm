@@ -44,13 +44,13 @@
     ;; Support '.local' host name lookups (mainly for printing)
     (name-service-switch %mdns-host-lookup-nss)
     (packages
-     (cons* nss-mdns ;for printing
-            torsocks
+     (cons* btrfs-progs
             git
             gparted
             gptfdisk
-            btrfs-progs
+            nss-mdns ;for printing
             ntfs-3g
+            torsocks
             %base-packages))
     (services
      (cons* (simple-service 'addon-channel-substitutes
