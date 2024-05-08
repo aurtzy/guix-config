@@ -667,7 +667,8 @@ to report upstream.  TODO."
 ;; to embark-dwim.
 (use-package geiser-guile
   :config
-  (add-to-list 'geiser-guile-load-path "~/git/guix"))
+  (add-to-list 'geiser-guile-load-path "~/git/guix")
+  (add-to-list 'geiser-guile-load-path "~/data/guix-config/modules"))
 
 (use-package rust-ts-mode
   :init
