@@ -39,6 +39,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages build-tools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages crates-apple)
   #:use-module (gnu packages crates-io)
   #:use-module (gnu packages freedesktop)
@@ -53,9 +54,11 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
-  #:use-module (guix packages)
   #:use-module (guix gexp)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
   #:use-module (my-guix utils))
@@ -87,11 +90,13 @@
         (base32
          "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
 
-(define-public spirv-llvm-translator/newer
-  ;; Current Guix version does not build due to a name mismatch (causing "not
-  ;; found" error) in headers:
+(define-public spirv-llvm-translator-15
+  ;; Use commit from branch llvm_release_150 instead of tag due to issue
+  ;; (causing "not found" error) in headers:
   ;; https://github.com/KhronosGroup/SPIRV-LLVM-Translator/issues/2261
-  (package/inherit spirv-llvm-translator
+  ;;
+  ;; Mesa requires version < 15.1, so current Guix package cannot be used
+  (package
     (name "spirv-llvm-translator")
     (version "15.0.0")
     (source
@@ -99,11 +104,28 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/KhronosGroup/SPIRV-LLVM-Translator")
-             ;; Take commit from llvm_release_150 branch
              (commit "a12739b11c191605a11bfa7bab92c040e7c53344")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0a84p01y40wf31jmh05yq094zzna09b9dvj4ymzp8pn0222jxgdf"))))))
+        (base32 "0a84p01y40wf31jmh05yq094zzna09b9dvj4ymzp8pn0222jxgdf"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DLLVM_EXTERNAL_SPIRV_HEADERS_SOURCE_DIR="
+                            (assoc-ref %build-inputs "spirv-headers")
+                            "/include/spirv")
+             (string-append "-DLLVM_EXTERNAL_LIT="
+                            (assoc-ref %build-inputs "python-lit")
+                            "/bin/lit")
+             "-DLLVM_SPIRV_INCLUDE_TESTS=ON")))
+    (inputs (list llvm-15))
+    (native-inputs (list clang-15 llvm-15 python-lit spirv-headers))
+    (home-page "https://github.com/KhronosGroup/SPIRV-LLVM-Translator")
+    (synopsis "Bi-directional translation between SPIR-V and LLVM IR")
+    (description
+     "The LLVM/SPIR-V Bi-Directional Translator is a library and tool for
+translation between LLVM IR and SPIR-V.")
+    (license license:asl2.0)))
 
 (define-public mesa-nvk-git
   (let ((name "mesa-nvk-git")
@@ -171,5 +193,5 @@
                     (propagated-inputs
                      (modify-inputs (package-propagated-inputs libclc)
                        (replace "spirv-llvm-translator"
-                                spirv-llvm-translator/newer))))
+                                spirv-llvm-translator-15))))
                   wayland-protocols/newer))))))
