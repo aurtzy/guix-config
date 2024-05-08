@@ -415,6 +415,12 @@
 (use-package embark-consult
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
+;;;; Guix
+
+(use-package guix-prettify
+  :hook ((shell-mode . guix-prettify-mode)
+         (dired-mode . guix-prettify-mode)))
+
 ;;;; Minor modes
 
 (use-package emacs
@@ -457,10 +463,6 @@
   :hook prog-mode
   :custom
   (flymake-number-of-errors-to-display 4))
-
-(use-package guix-prettify
-  :hook ((shell-mode . guix-prettify-mode)
-         (dired-mode . guix-prettify-mode)))
 
 (use-package editorconfig
   :config
