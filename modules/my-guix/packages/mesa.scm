@@ -171,5 +171,5 @@
                     (propagated-inputs
                      (modify-inputs (package-propagated-inputs libclc)
                        (replace "spirv-llvm-translator"
-                         spirv-llvm-translator/newer))))
+                                spirv-llvm-translator/newer))))
                   wayland-protocols/newer))))))
