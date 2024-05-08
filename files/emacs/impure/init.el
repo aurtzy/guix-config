@@ -417,6 +417,11 @@
 
 ;;;; Guix
 
+(use-package guix-popup
+  :bind ((:map
+          mode-specific-map
+          ("g" . guix))))
+
 (use-package guix-prettify
   :hook ((shell-mode . guix-prettify-mode)
          (dired-mode . guix-prettify-mode)))
