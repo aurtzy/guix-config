@@ -195,16 +195,15 @@ sandboxed Xwayland sessions.")
     (cons `("mesa" ,mesa-nvk-git) (delq matched inputs))))
 
 (define-public steam-container-custom
-  (let ((steam-client-libs (replace-mesa
-                            (@@ (nongnu packages game-client)
-                                steam-client-libs)))
+  (let ((steam-client-libs (@@ (nongnu packages game-client)
+                               steam-client-libs))
         (steam-gameruntime-libs (@@ (nongnu packages game-client)
                                     steam-gameruntime-libs)))
     (nonguix-container
      (inherit steam-container)
      (union64
       (fhs-union `(,@(delete "gcc:lib"
-                             steam-client-libs
+                             (replace-mesa steam-client-libs)
                              (lambda (x elem)
                                (equal? x
                                        (car elem))))
