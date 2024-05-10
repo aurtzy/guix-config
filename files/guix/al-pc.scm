@@ -48,6 +48,9 @@
      (firmware (list linux-firmware))
      (kernel-arguments
       (cons* "nouveau.config=NvGspRm=1"
+             ;; vfio
+             ;; "intel_iommu=on"
+             ;; "iommu=pt"
              (operating-system-user-kernel-arguments base-os)))
      (bootloader
       (bootloader-configuration
