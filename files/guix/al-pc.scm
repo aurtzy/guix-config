@@ -52,16 +52,6 @@
              ;; "intel_iommu=on"
              ;; "iommu=pt"
              (operating-system-user-kernel-arguments base-os)))
-     (bootloader
-      (bootloader-configuration
-       (inherit (operating-system-bootloader base-os))
-       (menu-entries
-        (cons* (menu-entry
-                (label "EndeavourOS")
-                (device "/dev/sda3")
-                (chain-loader "/EFI/endeavouros/grubx64.efi"))
-               (bootloader-configuration-menu-entries
-                (operating-system-bootloader base-os))))))
      (users
       (cons* (user-account
               (name "alvin")
