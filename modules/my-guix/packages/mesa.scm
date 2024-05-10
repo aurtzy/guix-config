@@ -131,7 +131,7 @@ translation between LLVM IR and SPIR-V.")
   (let ((name "mesa-nvk-git")
         (version "24.1")
         (revision "0")
-        (commit "d77a1762bd3da3216b7935ac856ba3f56c61f64d"))
+        (commit "c44e76676b7ff246b9d3455dcb1cd2f3a750535b"))
     (package
       (inherit mesa)
       (name name)
@@ -144,7 +144,7 @@ translation between LLVM IR and SPIR-V.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256 (base32
-                  "1yc2ryrqkb51drv2fagw25f45garnngsvj81wapwmlrzikacl2kb"))))
+                  "154gm8zif496rkclb50l8bg8h39qinink0z925csdhgg222lzbf2"))))
       (arguments
        (cons*
         #:meson meson-1.3
