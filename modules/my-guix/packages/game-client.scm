@@ -202,17 +202,23 @@ sandboxed Xwayland sessions.")
     (nonguix-container
      (inherit steam-container)
      (union64
-      (fhs-union `(,@(delete "gcc:lib"
-                             (replace-mesa steam-client-libs)
-                             (lambda (x elem)
-                               (equal? x
-                                       (car elem))))
-                   ,@steam-gameruntime-libs
-                   ,@fhs-min-libs
-                   ;; Use newer version for gamescope (and remove older one
-                   ;; above)
-                   ("gcc:lib" ,gcc-12 "lib")
-                   ("gamescope" ,gamescope))
+      (fhs-union (map
+                  (match-lambda
+                    ((_ pkg)
+                     (replace-mesa->mesa-nvk-git pkg))
+                    ((_ pkg _)
+                     (replace-mesa->mesa-nvk-git pkg)))
+                  `(,@(delete "gcc:lib"
+                              steam-client-libs
+                              (lambda (x elem)
+                                (equal? x
+                                        (car elem))))
+                    ,@steam-gameruntime-libs
+                    ,@fhs-min-libs
+                    ;; Use newer version for gamescope (and remove older one
+                    ;; above)
+                    ("gcc:lib" ,gcc-12 "lib")
+                    ("gamescope" ,gamescope)))
                  #:name "fhs-union-64"))
      ;; Requires i686-linux rust, which is not available in Guix at the moment
      ;; (although rust-binary from (my-guix packages rust) may be used as a
