@@ -214,10 +214,9 @@ sandboxed Xwayland sessions.")
                    ("gcc:lib" ,gcc-12 "lib")
                    ("gamescope" ,gamescope))
                  #:name "fhs-union-64"))
-     ;; Uncomment this to apply 32-bit version of mesa-git.  Requires
-     ;; i686-linux rust, which is not available in Guix at the moment
-     ;; (although rust-binary from (my-guix packages rust) may be used with
-     ;; mesa-git to achieve this).
+     ;; Requires i686-linux rust, which is not available in Guix at the moment
+     ;; (although rust-binary from (my-guix packages rust) may be used as a
+     ;; substitute input to achieve this).
      ;;
      ;; (union32
      ;;  (fhs-union `(,@steam-client-libs
