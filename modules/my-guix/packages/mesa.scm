@@ -128,70 +128,73 @@ translation between LLVM IR and SPIR-V.")
     (license license:asl2.0)))
 
 (define-public mesa-nvk-git
-  (let ((name "mesa-nvk-git")
-        (version "24.1")
-        (revision "0")
-        (commit "c44e76676b7ff246b9d3455dcb1cd2f3a750535b"))
-    (package
-      (inherit mesa)
-      (name name)
-      (version (git-version version revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256 (base32
-                  "154gm8zif496rkclb50l8bg8h39qinink0z925csdhgg222lzbf2"))))
-      (arguments
-       (cons*
-        #:meson meson-1.3
-        #:imported-modules `(,@%meson-build-system-modules
-                             (guix build utils)
-                             (my-guix build utils))
-        (substitute-keyword-arguments (package-arguments mesa)
-          ((#:modules original-modules)
-           (append original-modules
-                   '((my-guix build utils))))
-          ((#:configure-flags original-flags)
-           #~(append #$original-flags
-                     '("-Dvulkan-drivers=nouveau")))
-          ((#:phases original-phases)
-           #~(modify-phases #$original-phases
-               (add-after 'unpack 'change-subproject-sources
-                 ;; Subproject source URLs are patched to point to the store,
-                 ;; which avoids an attempt to download them mid-build.
-                 (lambda _
-                   #+(if (target-x86-64?)
-                         #~(for-each
-                            (match-lambda
-                              ((name source)
-                               (patch-wrap-file name source)))
-                            '#+(map (lambda (pkg)
-                                      (list (package-upstream-name* pkg)
-                                            (crate-package-source pkg)))
-                                    (list rust-syn-2
-                                          rust-unicode-ident-1
-                                          rust-quote-1
-                                          rust-proc-macro2-1
-                                          rust-paste-1)))
-                         #~()))))))))
-      (native-inputs
-       (modify-inputs (package-native-inputs mesa)
-         (prepend clang-15
-                  llvm-15
-                  python-ply
-                  rust
-                  rust-bindgen-cli
-                  rust-cbindgen-0.26)))
-      (inputs
-       (modify-inputs (package-inputs mesa)
-         (prepend (package/inherit libclc
-                    (name "libclc")
-                    (propagated-inputs
-                     (modify-inputs (package-propagated-inputs libclc)
-                       (replace "spirv-llvm-translator"
-                                spirv-llvm-translator-15))))
-                  wayland-protocols/newer))))))
+  (package
+    (inherit mesa)
+    (name "mnvk")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/mesa/mesa.git")
+             (commit "c44e76676b7ff246b9d3455dcb1cd2f3a750535b")))
+       (file-name (git-file-name name "git"))
+       (sha256 (base32
+                "154gm8zif496rkclb50l8bg8h39qinink0z925csdhgg222lzbf2"))))
+    (arguments
+     (cons*
+      #:meson meson-1.3
+      #:imported-modules `(,@%meson-build-system-modules
+                           (guix build utils)
+                           (my-guix build utils))
+      (substitute-keyword-arguments (package-arguments mesa)
+        ((#:modules original-modules)
+         (append original-modules
+                 '((my-guix build utils))))
+        ((#:configure-flags original-flags)
+         #~(append #$original-flags
+                   '("-Dvulkan-drivers=nouveau")))
+        ((#:phases original-phases)
+         #~(modify-phases #$original-phases
+             (add-after 'unpack 'change-subproject-sources
+               ;; Subproject source URLs are patched to point to the store,
+               ;; which avoids an attempt to download them mid-build.
+               (lambda _
+                 #+(if (target-x86-64?)
+                       #~(for-each
+                          (match-lambda
+                            ((name source)
+                             (patch-wrap-file name source)))
+                          '#+(map (lambda (pkg)
+                                    (list (package-upstream-name* pkg)
+                                          (crate-package-source pkg)))
+                                  (list rust-syn-2
+                                        rust-unicode-ident-1
+                                        rust-quote-1
+                                        rust-proc-macro2-1
+                                        rust-paste-1)))
+                       #~()))))))))
+    (native-inputs
+     (modify-inputs (package-native-inputs mesa)
+       (prepend clang-15
+                llvm-15
+                python-ply
+                rust
+                rust-bindgen-cli
+                rust-cbindgen-0.26)))
+    (inputs
+     (modify-inputs (package-inputs mesa)
+       (prepend (package/inherit libclc
+                  (name "libclc")
+                  (propagated-inputs
+                   (modify-inputs (package-propagated-inputs libclc)
+                     (replace "spirv-llvm-translator"
+                       spirv-llvm-translator-15))))
+                wayland-protocols/newer)))))
+
+(define mesa/nvk
+  (package
+    (inherit mesa)
+    (replacement mesa-nvk-git)))
+
+(define-public replace-mesa->mesa-nvk-git
+  (package-input-rewriting `((,mesa . ,mesa/nvk))))
