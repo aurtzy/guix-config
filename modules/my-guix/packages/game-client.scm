@@ -183,17 +183,6 @@ and as a nested compositor on top of a regular desktop environment through
 sandboxed Xwayland sessions.")
       (license license:gpl3+))))
 
-(define (replace-mesa inputs)
-  ;; Because this is a hacky hack, do a sanity check to make sure mesa is
-  ;; actually matched, then remove it
-  (let ((matched (and=> (member "mesa" inputs (lambda (x input)
-                                                (equal? x (car input))))
-                        car)))
-    (unless matched
-      (display "SANITY CHECK FAILED: MESA NOT FOUND\n")
-      (raise-exception (make-exception)))
-    (cons `("mesa" ,mesa-nvk-git) (delq matched inputs))))
-
 (define-public steam-container-custom
   (let ((steam-client-libs (@@ (nongnu packages game-client)
                                steam-client-libs))
