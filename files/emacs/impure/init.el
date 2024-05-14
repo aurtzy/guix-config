@@ -442,6 +442,12 @@
   :preface
   (declare-function envrc-global-mode "envrc")
   :config
+  ;; Override envrc-global-mode to fix issue with it not working.  See:
+  ;; https://github.com/purcell/envrc/pull/80
+  (define-globalized-minor-mode envrc-global-mode envrc-mode
+    (lambda () (when (and (not (minibufferp)) (not (file-remote-p default-directory))
+                          (executable-find envrc-direnv-executable))
+                 (envrc-mode 1))))
   (envrc-global-mode t))
 
 (use-package eglot
