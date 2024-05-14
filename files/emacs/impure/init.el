@@ -578,6 +578,7 @@ to report upstream.  TODO."
         "#+latex_header: \\usepackage{libertine}" \n
         "#+latex_header: \\renewcommand*\\oldstylenums[1]{{\\fontfamily{fxlj}\\selectfont #1}}" \n
         "#+latex_header: \\usepackage{lmodern}" \n
+        "#+latex_header: \\usepackage[margin=3cm]{geometry}" \n
         "#+options: timestamp:nil" \n
         \n
         \n)))
