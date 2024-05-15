@@ -173,7 +173,6 @@
 (use-package emacs
   :custom
   (indent-tabs-mode nil)
-  (tab-always-indent 'complete)
   (require-final-newline t))
 
 (use-package emacs
