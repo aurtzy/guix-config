@@ -5,6 +5,7 @@
              (gnu system)
              (gnu system file-systems)
              (guix download)
+             (guix git-download)
              (guix packages)
              (my-guix base desktop)
              (my-guix config)
@@ -31,6 +32,25 @@
                    "0hwxpqd7rgidkphkpj923si47nafi75lpjwz64zwvh7svxyp8ans")))))
     (version "6.9-rc6")))
 
+(define linux-gfxstrand-nvk
+  (let ((revision "0")
+        (commit "d6820f36f375ece63226b26568be3a893985dc60"))
+    (package
+      (inherit
+       (customize-linux
+        #:name "linux"
+        #:linux linux-libre-6.8
+        #:source (origin
+                   (method git-fetch)
+                   (uri
+                    (git-reference
+                     (url "https://gitlab.freedesktop.org/gfxstrand/linux")
+                     (commit commit)))
+                   (sha256
+                    (base32
+                     "1yirhgjaipja17jd0mzf0zcajghzpln6a9qmiwq6glz69qf5hm1l")))))
+      (version (git-version "gfxstrand-nvk" revision commit)))))
+
 (define swapfile-mod
   (build-swapfile-mod
    (swapfile-configuration
@@ -43,7 +63,7 @@
    (operating-system
      (inherit base-os)
      (host-name "al-pc")
-     (kernel linux-6.9-rc)
+     (kernel linux-gfxstrand-nvk)
      (initrd microcode-initrd)
      (firmware (list linux-firmware))
      (kernel-arguments
