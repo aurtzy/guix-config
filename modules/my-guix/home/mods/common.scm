@@ -172,9 +172,7 @@ the shell alias."
               ;; dashboard on init
               emacs-dashboard
               ;; data science stuff
-              (let ((transform (options->transformation
-                                '((with-version . "emacs-jupyter=1.0")))))
-                (transform emacs-jupyter))
+              emacs-jupyter
               emacs-code-cells
               emacs-csv-mode
               ;; misc
