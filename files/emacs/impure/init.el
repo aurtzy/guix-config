@@ -193,8 +193,8 @@
   (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode))
 
 (use-package emacs
-  :init
-  (setq-default fill-column 80)
+  :custom
+  (fill-column 80)
   :config
   (global-display-fill-column-indicator-mode 1))
 
