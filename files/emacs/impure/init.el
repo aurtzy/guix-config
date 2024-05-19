@@ -500,7 +500,8 @@
 (use-package project
   :preface
   (defcustom project-root-markers
-    '(".git"
+    '(".dir-locals.el"
+      ".git"
       ".project-root"
       "manifest.scm"
       ".envrc")
