@@ -101,7 +101,6 @@
   ;; writing so menu-bar has been disabled; try re-enabling in future
   (menu-bar-mode -1)
   (tool-bar-mode -1)
-  (global-visual-line-mode 1)
   (global-hl-line-mode 1))
 
 (use-package emacs
