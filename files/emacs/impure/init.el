@@ -498,6 +498,12 @@
 ;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
 ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41955#26
 (use-package project
+  :bind (:map
+         project-prefix-map
+         ("S" . eat-project)
+         :map
+         project-other-window-map
+         ("S" . eat-project-other-window))
   :preface
   (defcustom project-root-markers
     '(".dir-locals.el"
