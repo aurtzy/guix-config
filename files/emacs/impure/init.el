@@ -213,7 +213,13 @@
          ("M-f" . unfill-paragraph)))
 
 (use-package adaptive-wrap
-  :hook (visual-line-mode . adaptive-wrap-prefix-mode))
+  :preface
+  (define-globalized-minor-mode global-adaptive-wrap-prefix-mode
+    adaptive-wrap-prefix-mode
+    (lambda ()
+      (adaptive-wrap-prefix-mode 1)))
+  :config
+  (global-adaptive-wrap-prefix-mode 1))
 
 ;; TODO this is cool
 ;; See: https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
