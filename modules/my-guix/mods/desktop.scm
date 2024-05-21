@@ -154,6 +154,8 @@ configurations.")
 (define virtualization-mod
   (mod
     (name 'virtualization-mod)
+    (description
+     "Adds virtualization packages and services to the system environment.")
     (apply
      (compose (mod-os-packages
                (list virt-manager
