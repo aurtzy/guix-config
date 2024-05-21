@@ -23,13 +23,20 @@
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (guix records)
+  #:use-module (ice-9 curried-definitions)
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix utils)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
-  #:export (%base-operating-system-extendables
+  #:export (mod-os-packages
+            mod-os-services
+            mod-os-kernel-arguments
+            mod-os-swap-devices
+            %base-operating-system-extendables
             mod-operating-system
 
+            mod-he-packages
+            mod-he-services
             %base-home-environment-extendables
             mod-home-environment
 
@@ -89,35 +96,47 @@ The returned procedure consumes"
     ((_ field* ... extenders extendables)
      (mod-record record => field* ... extenders extendables))))
 
+(define ((mod-os-packages packages) os)
+  (operating-system
+    (inherit os)
+    (packages
+     (append packages (operating-system-packages os)))))
+
+(define ((mod-os-services services) os)
+  (operating-system
+    (inherit os)
+    (services
+     (append services (operating-system-user-services os)))))
+
+(define ((mod-os-kernel-arguments arguments) os)
+  (operating-system
+    (inherit os)
+    (kernel-arguments
+     (append arguments (operating-system-user-kernel-arguments os)))))
+
+(define ((mod-os-swap-devices devices) os)
+  (operating-system
+    (inherit os)
+    (swap-devices
+     (append devices (operating-system-swap-devices os)))))
+
 (define %base-operating-system-extendables
   `((packages
      .
      ,(lambda (os value)
-        (operating-system
-          (inherit os)
-          (packages
-           (append value (operating-system-packages os))))))
+        ((mod-os-packages value) os)))
     (services
      .
      ,(lambda (os value)
-        (operating-system
-          (inherit os)
-          (services
-           (append value (operating-system-user-services os))))))
+        ((mod-os-services value) os)))
     (kernel-arguments
      .
      ,(lambda (os value)
-        (operating-system
-          (inherit os)
-          (kernel-arguments
-           (append value (operating-system-user-kernel-arguments os))))))
+        ((mod-os-kernel-arguments value) os)))
     (swap-devices
      .
      ,(lambda (os value)
-        (operating-system
-          (inherit os)
-          (swap-devices
-           (append value (operating-system-swap-devices os))))))
+        ((mod-os-swap-devices value) os)))
     (apply
      .
      ,(lambda (os value)
@@ -126,21 +145,27 @@ The returned procedure consumes"
 (define-syntax-rule (mod-operating-system field* ...)
   (mod-record field* ... () %base-operating-system-extendables))
 
+(define ((mod-he-packages packages) he)
+  (home-environment
+   (inherit he)
+   (packages
+    (append packages (home-environment-packages he)))))
+
+(define ((mod-he-services services) he)
+  (home-environment
+   (inherit he)
+   (services
+    (append services (home-environment-user-services he)))))
+
 (define %base-home-environment-extendables
   `((packages
      .
      ,(lambda (he value)
-        (home-environment
-         (inherit he)
-         (packages
-          (append value (home-environment-packages he))))))
+        ((mod-he-packages value) he)))
     (services
      .
      ,(lambda (he value)
-        (home-environment
-         (inherit he)
-         (services
-          (append value (home-environment-user-services he))))))
+        ((mod-he-services value) he)))
     (apply
      .
      ,(lambda (he value)
