@@ -1,4 +1,4 @@
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -21,10 +21,15 @@
 
 (define-module (my-guix mods desktop)
   #:use-module (gnu)
+  #:use-module (guix packages)
   #:use-module (guix records)
+  #:use-module (ice-9 exceptions)
   #:use-module (my-guix mods)
+  #:use-module (my-guix packages mesa)
   #:use-module (srfi srfi-1)
-  #:export (<swapfile-configuration>
+  #:export (replace-mesa
+
+            <swapfile-configuration>
             swapfile-configuration
             swapfile-configuration?
             swapfile-configuration-file
@@ -37,11 +42,34 @@
             virtualization-mod))
 
 (use-package-modules linux freedesktop
-                     gnome gnome-xyz
+                     gl gnome gnome-xyz
                      qt kde-plasma kde-frameworks
                      virtualization)
 
 (use-service-modules xorg desktop pm virtualization)
+
+;; replace-mesa: Parameter storing a procedure that consumes a package and
+;; replaces its mesa inputs with another input.  By default, it is the
+;; identity function (i.e. returns the same package).
+;;
+;; This parameter can be directly set to the replacement procedure, but can
+;; also accept a package, in which case the converter will turn it into a
+;; procedure that grafts mesa with that package.
+(define replace-mesa
+  (make-parameter identity
+                  (lambda (val)
+                    (cond
+                     ((procedure? val)
+                      val)
+                     ((package? val)
+                      (package-input-rewriting `((,mesa . ,val))))
+                     (else
+                      (raise-exception
+                       (make-exception
+                        (make-exception-with-message
+                         "Not a procedure or package")
+                        (make-exception-with-irritants
+                         (list val)))))))))
 
 (define-record-type* <swapfile-configuration>
   swapfile-configuration make-swapfile-configuration
