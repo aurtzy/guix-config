@@ -27,6 +27,7 @@
   #:use-module (my-guix mods)
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
+  #:use-module ((rnrs base) #:select (assert))
   #:use-module (srfi srfi-1)
   #:export (replace-mesa
 
@@ -36,8 +37,9 @@
             swapfile-configuration-file
             swapfile-configuration-device
             swapfile-configuration-offset
+            swapfile
 
-            build-swapfile-mod
+            swapfile-mod
             gnome-mod
             battery-mod
             virtualization-mod))
@@ -82,28 +84,41 @@
   ;; Offset of swapfile.
   (offset swapfile-configuration-offset))
 
-(define (build-swapfile-mod config)
-  "Builds swapfile mod, given a swapfile configuration CONFIG. See Guix
-documentation on swapfiles for more information. If the setup script in this
-repository is used to set up the swapfile, it should output this information
-automatically."
-  (let ((file (swapfile-configuration-file config))
-        (device (swapfile-configuration-device config))
-        (offset (swapfile-configuration-offset config)))
-    (mod
-      (name 'swapfile-mod)
-      (apply
-       (mod-operating-system
-         os =>
-         (swap-devices
-          (list (swap-space (target file)
-                            (dependencies
-                             (filter
-                              (file-system-mount-point-predicate "/")
-                              (operating-system-file-systems os))))))
-         (kernel-arguments
-          (list (string-append "resume=" device)
-                (string-append "resume_offset=" offset))))))))
+;; swapfile: Parameter representing swapfile configuration of the system.  By
+;; default it is false; otherwise, this parameter must be of type
+;; <swapfile-configuration>.
+(define swapfile
+  (make-parameter #f
+                  (lambda (val)
+                    (assert (or (not val) (swapfile-configuration? val)))
+                    val)))
+
+(define swapfile-mod
+  (mod
+    (name 'swapfile-mod)
+    (description
+     "Configures swapfile for system defined by the SWAPFILE parameter.  See
+Guix documentation on swapfiles for more information.  If the setup script in
+this repository is used to set up the swapfile, it should output all the
+swapfile configuration information needed.")
+    (apply
+     (compose-lambda (os)
+       (define config (swapfile))
+
+       (assert (swapfile-configuration? config))
+       (let ((file (swapfile-configuration-file config))
+             (device (swapfile-configuration-device config))
+             (offset (swapfile-configuration-offset config)))
+         (list
+          (mod-os-swap-devices
+           (list (swap-space (target file)
+                             (dependencies
+                              (filter
+                               (file-system-mount-point-predicate "/")
+                               (operating-system-file-systems os))))))
+          (mod-os-kernel-arguments
+           (list (string-append "resume=" device)
+                 (string-append "resume_offset=" offset)))))))))
 
 (define gnome-mod
   (mod
