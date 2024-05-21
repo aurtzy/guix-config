@@ -32,7 +32,8 @@
             search-my-patches
             build-path-augmentation
             sanitizer
-            crate-package-source))
+            crate-package-source
+            compose-lambda))
 
 (define (path-append . paths)
   (string-join paths "/"))
@@ -95,3 +96,12 @@ code location designated by cargo-build-system.  By default, the file is
 assumed to be a package, where the crate source directory name is constructed
 from the package's VERSION and upstream NAME."
   (file-append file "/share/cargo/src/" name "-" version))
+
+(define-syntax-rule (compose-lambda formals body ...)
+  "A lazy version of compose, where the evaluation of BODY is delayed until
+the composed procedure is called with FORMALS as arguments.
+
+The last expression of BODY should evaluate to a list, which will be applied
+to compose for the composed procedure."
+  (lambda formals
+    ((apply compose ((lambda () body ...))) . formals)))
