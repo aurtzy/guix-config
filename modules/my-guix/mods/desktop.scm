@@ -141,13 +141,12 @@ automatically."
   (mod
     (name 'battery-mod)
     (apply
-     (mod-operating-system
-       (packages
-        (list tlp))
-       (services
-        (list (service tlp-service-type
-                       (tlp-configuration
-                        (cpu-boost-on-ac? #t)))))))))
+     (compose (mod-os-packages
+               (list tlp))
+              (mod-os-services
+               (list (service tlp-service-type
+                              (tlp-configuration
+                               (cpu-boost-on-ac? #t)))))))))
 
 (define virtualization-mod
   (mod
