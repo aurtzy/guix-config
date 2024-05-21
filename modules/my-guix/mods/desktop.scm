@@ -155,12 +155,11 @@ configurations.")
   (mod
     (name 'virtualization-mod)
     (apply
-     (mod-operating-system
-       (packages
-        (list virt-manager
-              gnome-boxes))
-       (services
-        (list (service libvirt-service-type
-                       (libvirt-configuration
-                        (unix-sock-group "libvirt")))
-              (service virtlog-service-type)))))))
+     (compose (mod-os-packages
+               (list virt-manager
+                     gnome-boxes))
+              (mod-os-services
+               (list (service libvirt-service-type
+                              (libvirt-configuration
+                               (unix-sock-group "libvirt")))
+                     (service virtlog-service-type)))))))
