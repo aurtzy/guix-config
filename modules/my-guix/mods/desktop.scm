@@ -108,6 +108,8 @@ automatically."
 (define gnome-mod
   (mod
     (name 'gnome-mod)
+    (description
+     "Provides configurations for the GNOME desktop environment.")
     (apply
      (compose-lambda (os)
        (let ((replace-mesa (replace-mesa)))
