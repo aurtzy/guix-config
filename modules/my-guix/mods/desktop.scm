@@ -140,6 +140,9 @@ automatically."
 (define battery-mod
   (mod
     (name 'battery-mod)
+    (description
+     "Configures system for use on a battery.  Ideal for laptop
+configurations.")
     (apply
      (compose (mod-os-packages
                (list tlp))
