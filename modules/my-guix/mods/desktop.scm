@@ -26,6 +26,7 @@
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix mods)
   #:use-module (my-guix packages mesa)
+  #:use-module (my-guix utils)
   #:use-module (srfi srfi-1)
   #:export (replace-mesa
 
@@ -108,20 +109,31 @@ automatically."
   (mod
     (name 'gnome-mod)
     (apply
-     (mod-operating-system
-       os =>
-       (packages
-        (list gvfs
-              gnome-tweaks
-              gnome-shell-extensions
-              gnome-shell-extension-gsconnect
-              xdg-desktop-portal-kde))
-       (services
-        (list (set-xorg-configuration
-               (xorg-configuration
-                (keyboard-layout (operating-system-keyboard-layout os))))
-              (service gnome-desktop-service-type)
-              (service gdm-service-type)))))))
+     (compose-lambda (os)
+       (let ((replace-mesa (replace-mesa)))
+         (list
+          (mod-os-packages
+           (map replace-mesa
+                (list gvfs
+                      gnome-tweaks
+                      gnome-shell-extensions
+                      gnome-shell-extension-gsconnect
+                      xdg-desktop-portal-kde)))
+          (mod-os-services
+           (list (set-xorg-configuration
+                  (xorg-configuration
+                   (keyboard-layout (operating-system-keyboard-layout os))))
+                 (service gnome-desktop-service-type
+                          (gnome-desktop-configuration
+                           (core-services
+                            (list (replace-mesa gnome-meta-core-services)))
+                           (shell
+                            (list (replace-mesa gnome-meta-core-shell)))
+                           (utilities
+                            (list (replace-mesa gnome-meta-core-utilities)))
+                           (extra-packages
+                            (list (replace-mesa gnome-essential-extras)))))
+                 (service gdm-service-type)))))))))
 
 (define battery-mod
   (mod
