@@ -156,6 +156,10 @@ The returned procedure consumes"
   (name mod-name
         (sanitize (sanitizer <symbol>
                              #:label "Mod name")))
+  (description mod-description
+               (default "")
+               (sanitize (sanitizer <string>
+                                    #:label "Mod description")))
   (dependencies mod-dependencies
                 (default '())
                 (sanitize (sanitizer <list>
