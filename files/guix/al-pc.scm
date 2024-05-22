@@ -142,6 +142,5 @@
        (services
         (cons* (service keyboard-center-service-type)
                (operating-system-user-services base-os)))))
-   (list swapfile-mod
-         gnome-mod
-         virtualization-mod)))
+   (append desktop-mods
+           (list gnome-mod))))

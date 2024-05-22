@@ -24,18 +24,12 @@
   #:use-module (gnu services base)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system nss)
-  #:use-module (gnu system pam)
   #:use-module (my-guix config)
+  #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
   #:export (base-desktop-operating-system))
 
-(use-package-modules avahi certs cryptsetup disk linux tor version-control)
-
-(use-service-modules cups desktop networking virtualization xorg)
-
 (define base-desktop-operating-system
-  ;; Base desktop operating system. This configuration is missing
-  ;; filesystem configurations that must be configured per-system.
   (operating-system
     (host-name "a-guix-system")
     (timezone "America/New_York")
@@ -43,39 +37,8 @@
     (keyboard-layout (keyboard-layout "us"))
     ;; Support '.local' host name lookups (mainly for printing)
     (name-service-switch %mdns-host-lookup-nss)
-    (packages
-     (cons* btrfs-progs
-            cryptsetup
-            git
-            gparted
-            gptfdisk
-            lvm2
-            nss-mdns ;for printing
-            ntfs-3g
-            torsocks
-            %base-packages))
-    (services
-     (cons* (simple-service 'addon-channel-substitutes
-                            guix-service-type
-                            (guix-extension
-                             (authorized-keys
-                              (list (local-file (path-append-my-files
-                                                 "guix/nonguix.pub"))))
-                             (substitute-urls
-                              '("https://substitutes.nonguix.org"))))
-            (service tor-service-type)
-            (service cups-service-type)
-            (service qemu-binfmt-service-type
-                     (qemu-binfmt-configuration
-                      (platforms (lookup-qemu-platforms
-                                  "arm"
-                                  "aarch64"))))
-            (service pam-limits-service-type
-                     (list
-                      ;; Make system Esync compatible
-                      (pam-limits-entry "*" 'hard 'nofile 524288)))
-            (modify-services %desktop-services
-              (delete gdm-service-type))))
+    (packages (list))
+    (services (list))
     (sudoers-file
      (plain-file "sudoers"
                  (string-join

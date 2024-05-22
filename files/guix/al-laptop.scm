@@ -78,7 +78,6 @@
             config => (network-manager-configuration
                        (inherit config)
                        (vpn-plugins (list network-manager-openconnect)))))))))
-   (list swapfile-mod
-         gnome-mod
-         battery-mod
-         virtualization-mod)))
+   (append desktop-mods
+           (list gnome-mod
+                 battery-mod))))
