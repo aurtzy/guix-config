@@ -48,12 +48,11 @@
             tor-mod
             virtualization-mod))
 
-(use-package-modules avahi cryptsetup disk linux freedesktop
-                     tor gl gnome gnome-xyz
-                     qt kde-plasma kde-frameworks
-                     virtualization)
+(use-package-modules avahi cryptsetup disk freedesktop gl gnome
+                     gnome-xyz kde-frameworks kde-plasma linux qt
+                     tor virtualization)
 
-(use-service-modules cups xorg desktop networking pm virtualization)
+(use-service-modules cups desktop networking pm virtualization xorg)
 
 ;; replace-mesa: Parameter storing a procedure that consumes a package and
 ;; replaces its mesa inputs with another input.  By default, it is the
