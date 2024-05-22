@@ -114,7 +114,8 @@ configurations.")
   (mod
     (name 'desktop-services)
     (description
-     "Configures desktop services defined by Guix.")
+     "Configures desktop services defined by Guix.  Does not include the
+display manager.")
     (apply
      (compose-lambda (os)
        (let ((replace-mesa (replace-mesa)))
