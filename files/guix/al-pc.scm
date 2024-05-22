@@ -11,6 +11,7 @@
              (my-guix config)
              (my-guix mods)
              (my-guix mods desktop)
+             (my-guix mods desktop-environment)
              (my-guix services hardware)
              (nongnu packages linux)
              (nongnu packages nvidia)

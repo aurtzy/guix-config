@@ -8,6 +8,7 @@
              (my-guix config)
              (my-guix mods)
              (my-guix mods desktop)
+             (my-guix mods desktop-environment)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 
