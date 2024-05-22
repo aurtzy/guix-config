@@ -45,11 +45,11 @@
             virtualization-mod))
 
 (use-package-modules avahi cryptsetup disk linux freedesktop
-                     gl gnome gnome-xyz
+                     tor gl gnome gnome-xyz
                      qt kde-plasma kde-frameworks
                      virtualization)
 
-(use-service-modules cups xorg desktop pm virtualization)
+(use-service-modules cups xorg desktop networking pm virtualization)
 
 ;; replace-mesa: Parameter storing a procedure that consumes a package and
 ;; replaces its mesa inputs with another input.  By default, it is the
@@ -209,6 +209,17 @@ swapfile configuration information needed.")
           (mod-os-kernel-arguments
            (list (string-append "resume=" device)
                  (string-append "resume_offset=" offset)))))))))
+
+(define tor-mod
+  (mod
+    (name 'tor)
+    (description
+     "Configures tor.")
+    (apply
+     (compose (mod-os-packages
+               (list torsocks))
+              (mod-os-services
+               (list (service tor-service-type)))))))
 
 (define virtualization-mod
   (mod
