@@ -39,9 +39,13 @@
             swapfile-configuration-offset
             swapfile
 
-            swapfile-mod
-            gnome-mod
             battery-mod
+            desktop-services-mod
+            file-systems-mod
+            gnome-mod
+            printers-mod
+            swapfile-mod
+            tor-mod
             virtualization-mod))
 
 (use-package-modules avahi cryptsetup disk linux freedesktop
