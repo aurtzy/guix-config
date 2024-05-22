@@ -106,7 +106,7 @@ The last expression of BODY should evaluate to a list, which will be applied
 to compose for the composed procedure."
     ((_ (formals ...) body ...)
      (lambda (formals ...)
-       ((apply compose ((lambda () body ...))) formals ...)))
+       ((apply compose (let () body ...)) formals ...)))
     ((_ formals body ...)
      (lambda formals
-       (apply (apply compose ((lambda () body ...))) formals)))))
+       (apply (apply compose (let () body ...)) formals)))))
