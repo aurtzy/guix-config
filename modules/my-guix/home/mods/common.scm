@@ -37,8 +37,6 @@
   #:use-module (my-guix packages git-annex-configure)
   #:use-module (my-guix utils)
   #:export (build-data-mod
-            emacs-base-mod
-            emacs-org-mod
             emacs-mod
             common-fonts-mod
             flatpak-mod
@@ -129,87 +127,76 @@ the shell alias."
                                    (build-assist-data-script
                                     (map car data-specs))))))))))))
 
-(define emacs-base-mod
-  (mod
-    (name 'emacs-base)
-    (apply
-     (mod-home-environment
-       (packages
-        (list emacs-pgtk
-              font-hack
-              ;; tree-sitter
-              tree-sitter-bash
-              tree-sitter-c
-              tree-sitter-go
-              tree-sitter-gomod
-              tree-sitter-javascript
-              tree-sitter-python
-              tree-sitter-rust
-              ;; project-specific files
-              emacs-envrc
-              emacs-editorconfig
-              ;; completion bundle
-              emacs-vertico
-              emacs-consult
-              emacs-marginalia
-              emacs-orderless
-              emacs-embark
-              ;; editing tweaks
-              emacs-unfill
-              emacs-adaptive-wrap
-              emacs-vundo
-              ;; git
-              emacs-magit
-              emacs-magit-annex
-              emacs-git-annex
-              emacs-forge
-              ;; guix/guile/scheme hacking
-              guile-3.0
-              emacs-guix
-              emacs-geiser
-              emacs-geiser-guile
-              emacs-paredit
-              ;; dashboard on init
-              emacs-dashboard
-              ;; data science stuff
-              emacs-jupyter
-              emacs-code-cells
-              emacs-csv-mode
-              ;; misc
-              emacs-eat
-              emacs-markdown-mode
-              emacs-protobuf-mode
-              ;; packages being tried out go below here
-              ;; emacs-dape                ;TODO package this?
-              emacs-org-noter
-              emacs-pdf-tools))
-       (services
-        (list (simple-service name
-                              home-impure-symlinks-service-type
-                              `((".config/emacs"
-                                 ,(path-append-my-files "emacs/impure")
-                                 "init.el")))
-              (simple-service name
-                              home-environment-variables-service-type
-                              '( ;; Set editor for e.g. sudoedit
-                                ("VISUAL"
-                                 . "/usr/bin/env emacs")
-                                ("EDITOR"
-                                 . "/usr/bin/env emacs -nw")))))))))
-
-(define emacs-org-mod
-  (mod
-    (name 'emacs-org)
-    (dependencies
-     (list emacs-base-mod
-           tex-mod))))
-
 (define emacs-mod
   (mod
     (name 'emacs)
+    (description
+     "Configures Emacs.")
     (dependencies
-     (list emacs-base-mod
-           emacs-org-mod))))
+     (list tex-mod))
+    (apply
+     (compose (mod-he-packages
+               (list emacs-pgtk
+                     font-hack
+                     ;; tree-sitter
+                     tree-sitter-bash
+                     tree-sitter-c
+                     tree-sitter-go
+                     tree-sitter-gomod
+                     tree-sitter-javascript
+                     tree-sitter-python
+                     tree-sitter-rust
+                     ;; project-specific files
+                     emacs-envrc
+                     emacs-editorconfig
+                     ;; completion bundle
+                     emacs-vertico
+                     emacs-consult
+                     emacs-marginalia
+                     emacs-orderless
+                     emacs-embark
+                     ;; editing tweaks
+                     emacs-unfill
+                     emacs-adaptive-wrap
+                     emacs-vundo
+                     ;; git
+                     emacs-magit
+                     emacs-magit-annex
+                     emacs-git-annex
+                     emacs-forge
+                     ;; guix/guile/scheme hacking
+                     guile-3.0
+                     emacs-guix
+                     emacs-geiser
+                     emacs-geiser-guile
+                     emacs-paredit
+                     ;; dashboard on init
+                     emacs-dashboard
+                     ;; data science stuff
+                     emacs-jupyter
+                     emacs-code-cells
+                     emacs-csv-mode
+                     ;; misc
+                     emacs-eat
+                     emacs-markdown-mode
+                     emacs-protobuf-mode
+                     ;; packages being tried out go below here
+                     ;; emacs-dape                ;TODO package this?
+                     emacs-org-noter
+                     emacs-pdf-tools))
+              (mod-he-services
+               (list (simple-service name
+                                     home-impure-symlinks-service-type
+                                     `((".config/emacs"
+                                        ,(path-append-my-files "emacs/impure")
+                                        "init.el")))
+                     (simple-service name
+                                     home-environment-variables-service-type
+                                     '( ;; Set editor for e.g. sudoedit
+                                       ("VISUAL"
+                                        . "/usr/bin/env emacs")
+                                       ("EDITOR"
+                                        . "/usr/bin/env emacs -nw")))))))))
 
 (define common-fonts-mod
   (mod
