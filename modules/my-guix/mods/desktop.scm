@@ -107,6 +107,24 @@ configurations.")
                               (tlp-configuration
                                (cpu-boost-on-ac? #t)))))))))
 
+(define desktop-services-mod
+  (mod
+    (name 'desktop-services)
+    (description
+     "Configures desktop services defined by Guix.")
+    (apply
+     (compose-lambda (os)
+       (let ((replace-mesa (replace-mesa)))
+         (list
+          (mod-os-packages
+           (list (replace-mesa network-manager-applet)))
+          (mod-os-services
+           (delete 'network-manager-applet
+                   (modify-services %desktop-services
+                     (delete gdm-service-type))
+                   (lambda (name serv)
+                     (eq? name (service-type-name (service-kind serv))))))))))))
+
 (define gnome-mod
   (mod
     (name 'gnome)
