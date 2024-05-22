@@ -32,8 +32,6 @@
             mod-os-services
             mod-os-kernel-arguments
             mod-os-swap-devices
-            %base-operating-system-extendables
-            mod-operating-system
 
             mod-he-packages
             mod-he-services
@@ -119,31 +117,6 @@ The returned procedure consumes"
     (inherit os)
     (swap-devices
      (append devices (operating-system-swap-devices os)))))
-
-(define %base-operating-system-extendables
-  `((packages
-     .
-     ,(lambda (os value)
-        ((mod-os-packages value) os)))
-    (services
-     .
-     ,(lambda (os value)
-        ((mod-os-services value) os)))
-    (kernel-arguments
-     .
-     ,(lambda (os value)
-        ((mod-os-kernel-arguments value) os)))
-    (swap-devices
-     .
-     ,(lambda (os value)
-        ((mod-os-swap-devices value) os)))
-    (apply
-     .
-     ,(lambda (os value)
-        (value os)))))
-
-(define-syntax-rule (mod-operating-system field* ...)
-  (mod-record field* ... () %base-operating-system-extendables))
 
 (define ((mod-he-packages packages) he)
   (home-environment
