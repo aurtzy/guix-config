@@ -201,18 +201,19 @@ the shell alias."
 (define common-fonts-mod
   (mod
     (name 'common-fonts)
+    (description
+     "Adds common fonts that provide support for other languages.")
     (apply
-     (mod-home-environment
-       (packages
-        (list font-google-noto
-              font-wqy-zenhei))
-       (services
-        (list (simple-service name
-                              home-impure-symlinks-service-type
-                              `((".local/share"
-                                 ,(path-append-my-home
-                                   ".guix-home/profile/share")
-                                 "fonts")))))))))
+     (compose (mod-he-packages
+               (list font-google-noto
+                     font-wqy-zenhei))
+              (mod-he-services
+               (list (simple-service name
+                                     home-impure-symlinks-service-type
+                                     `((".local/share"
+                                        ,(path-append-my-home
+                                          ".guix-home/profile/share")
+                                        "fonts")))))))))
 
 (define flatpak-mod
   (mod
