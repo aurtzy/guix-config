@@ -24,6 +24,7 @@
   #:use-module (my-guix mods)
   #:use-module (my-guix utils)
   #:export (base-packages-mod
+            nonguix-channel-mod
 
             base-mods))
 
@@ -39,4 +40,23 @@ packages deemed essential.")
      (mod-os-packages (cons* git
                              %base-packages)))))
 
-(define base-mods (list base-packages-mod))
+(define nonguix-channel-mod
+  (mod
+    (name 'nonguix-channel)
+    (description
+     "Sets up the Nonguix channel on this system.  The channel must still be
+enabled in the home environment.")
+    (apply (compose
+            (mod-os-services
+             (list
+              (simple-service name
+                              guix-service-type
+                              (guix-extension
+                               (authorized-keys
+                                (list (local-file (path-append-my-files
+                                                   "guix/nonguix.pub"))))
+                               (substitute-urls
+                                '("https://substitutes.nonguix.org"))))))))))
+
+(define base-mods (list base-packages-mod
+                        nonguix-channel-mod))
