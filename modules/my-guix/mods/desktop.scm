@@ -44,7 +44,7 @@
             battery-mod
             virtualization-mod))
 
-(use-package-modules linux freedesktop
+(use-package-modules cryptsetup disk linux freedesktop
                      gl gnome gnome-xyz
                      qt kde-plasma kde-frameworks
                      virtualization)
@@ -124,6 +124,21 @@ configurations.")
                      (delete gdm-service-type))
                    (lambda (name serv)
                      (eq? name (service-type-name (service-kind serv))))))))))))
+
+(define file-systems-mod
+  (mod
+    (name 'file-systems)
+    (description
+     "Provides software to support various file system operations and disk
+management/maintenance.")
+    (apply
+     (compose (mod-os-packages
+               (list btrfs-progs
+                     cryptsetup
+                     gparted
+                     gptfdisk
+                     lvm2
+                     ntfs-3g))))))
 
 (define gnome-mod
   (mod
