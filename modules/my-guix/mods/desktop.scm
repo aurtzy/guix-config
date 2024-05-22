@@ -41,6 +41,7 @@
 
             battery-mod
             desktop-services-mod
+            esync-mod
             file-systems-mod
             gnome-mod
             printers-mod
@@ -128,6 +129,18 @@ display manager.")
                      (delete gdm-service-type))
                    (lambda (name serv)
                      (eq? name (service-type-name (service-kind serv))))))))))))
+
+(define esync-mod
+  (mod
+    (name 'esync)
+    (description
+     "Makes the system Esync-compatible.")
+    (apply
+     (compose (mod-os-services
+               (list
+                (service pam-limits-service-type
+                         (list
+                          (pam-limits-entry "*" 'hard 'nofile 524288)))))))))
 
 (define file-systems-mod
   (mod
