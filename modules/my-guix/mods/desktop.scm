@@ -44,12 +44,12 @@
             battery-mod
             virtualization-mod))
 
-(use-package-modules cryptsetup disk linux freedesktop
+(use-package-modules avahi cryptsetup disk linux freedesktop
                      gl gnome gnome-xyz
                      qt kde-plasma kde-frameworks
                      virtualization)
 
-(use-service-modules xorg desktop pm virtualization)
+(use-service-modules cups xorg desktop pm virtualization)
 
 ;; replace-mesa: Parameter storing a procedure that consumes a package and
 ;; replaces its mesa inputs with another input.  By default, it is the
@@ -171,6 +171,17 @@ management/maintenance.")
                            (extra-packages
                             (list (replace-mesa gnome-essential-extras)))))
                  (service gdm-service-type)))))))))
+
+(define printers-mod
+  (mod
+    (name 'printers)
+    (description
+     "Provides printing support via CUPS.")
+    (apply
+     (compose (mod-os-packages
+               (list nss-mdns))
+              (mod-os-services
+               (list (service cups-service-type)))))))
 
 (define swapfile-mod
   (mod
