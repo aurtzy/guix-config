@@ -93,32 +93,19 @@
                     (assert (or (not val) (swapfile-configuration? val)))
                     val)))
 
-(define swapfile-mod
+(define battery-mod
   (mod
-    (name 'swapfile)
+    (name 'battery)
     (description
-     "Configures swapfile for system defined by the SWAPFILE parameter.  See
-Guix documentation on swapfiles for more information.  If the setup script in
-this repository is used to set up the swapfile, it should output all the
-swapfile configuration information needed.")
+     "Configures system for use on a battery.  Ideal for laptop
+configurations.")
     (apply
-     (compose-lambda (os)
-       (define config (swapfile))
-
-       (assert (swapfile-configuration? config))
-       (let ((file (swapfile-configuration-file config))
-             (device (swapfile-configuration-device config))
-             (offset (swapfile-configuration-offset config)))
-         (list
-          (mod-os-swap-devices
-           (list (swap-space (target file)
-                             (dependencies
-                              (filter
-                               (file-system-mount-point-predicate "/")
-                               (operating-system-file-systems os))))))
-          (mod-os-kernel-arguments
-           (list (string-append "resume=" device)
-                 (string-append "resume_offset=" offset)))))))))
+     (compose (mod-os-packages
+               (list tlp))
+              (mod-os-services
+               (list (service tlp-service-type
+                              (tlp-configuration
+                               (cpu-boost-on-ac? #t)))))))))
 
 (define gnome-mod
   (mod
@@ -152,19 +139,32 @@ swapfile configuration information needed.")
                             (list (replace-mesa gnome-essential-extras)))))
                  (service gdm-service-type)))))))))
 
-(define battery-mod
+(define swapfile-mod
   (mod
-    (name 'battery)
+    (name 'swapfile)
     (description
-     "Configures system for use on a battery.  Ideal for laptop
-configurations.")
+     "Configures swapfile for system defined by the SWAPFILE parameter.  See
+Guix documentation on swapfiles for more information.  If the setup script in
+this repository is used to set up the swapfile, it should output all the
+swapfile configuration information needed.")
     (apply
-     (compose (mod-os-packages
-               (list tlp))
-              (mod-os-services
-               (list (service tlp-service-type
-                              (tlp-configuration
-                               (cpu-boost-on-ac? #t)))))))))
+     (compose-lambda (os)
+       (define config (swapfile))
+
+       (assert (swapfile-configuration? config))
+       (let ((file (swapfile-configuration-file config))
+             (device (swapfile-configuration-device config))
+             (offset (swapfile-configuration-offset config)))
+         (list
+          (mod-os-swap-devices
+           (list (swap-space (target file)
+                             (dependencies
+                              (filter
+                               (file-system-mount-point-predicate "/")
+                               (operating-system-file-systems os))))))
+          (mod-os-kernel-arguments
+           (list (string-append "resume=" device)
+                 (string-append "resume_offset=" offset)))))))))
 
 (define virtualization-mod
   (mod
