@@ -39,7 +39,6 @@
             swapfile-configuration-offset
             swapfile
 
-            battery-mod
             desktop-services-mod
             esync-mod
             file-system-management-mod
@@ -95,20 +94,6 @@
                   (lambda (val)
                     (assert (or (not val) (swapfile-configuration? val)))
                     val)))
-
-(define battery-mod
-  (mod
-    (name 'battery)
-    (description
-     "Configures system for use on a battery.  Ideal for laptop
-configurations.")
-    (apply
-     (compose (mod-os-packages
-               (list tlp))
-              (mod-os-services
-               (list (service tlp-service-type
-                              (tlp-configuration
-                               (cpu-boost-on-ac? #t)))))))))
 
 (define desktop-services-mod
   (mod
