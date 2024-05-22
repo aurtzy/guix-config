@@ -25,6 +25,7 @@
   #:use-module (guix records)
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix mods)
+  #:use-module (my-guix mods base)
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
   #:use-module ((rnrs base) #:select (assert))
@@ -45,7 +46,9 @@
             printers-mod
             swapfile-mod
             tor-mod
-            virtualization-mod))
+            virtualization-mod
+
+            desktop-mods))
 
 (use-package-modules avahi cryptsetup disk freedesktop gl gnome
                      gnome-xyz kde-frameworks kde-plasma linux qt
@@ -209,3 +212,13 @@ swapfile configuration information needed.")
                                (platforms (lookup-qemu-platforms
                                            "arm"
                                            "aarch64"))))))))))
+
+(define desktop-mods
+  (append base-mods
+          (list desktop-services-mod
+                esync-mod
+                file-system-management-mod
+                printers-mod
+                swapfile-mod
+                tor-mod
+                virtualization-mod)))
