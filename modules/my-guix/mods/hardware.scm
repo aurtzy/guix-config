@@ -17,7 +17,7 @@
 
 ;;; Commentary:
 ;;;
-;;; This module defines mods that set up desktop environments.
+;;; This module defines mods for hardware-related configurations.
 
 (define-module (my-guix mods hardware)
   #:use-module (gnu)
