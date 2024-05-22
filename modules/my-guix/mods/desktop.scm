@@ -95,7 +95,7 @@
 
 (define swapfile-mod
   (mod
-    (name 'swapfile-mod)
+    (name 'swapfile)
     (description
      "Configures swapfile for system defined by the SWAPFILE parameter.  See
 Guix documentation on swapfiles for more information.  If the setup script in
@@ -122,7 +122,7 @@ swapfile configuration information needed.")
 
 (define gnome-mod
   (mod
-    (name 'gnome-mod)
+    (name 'gnome)
     (description
      "Provides configurations for the GNOME desktop environment.")
     (apply
@@ -154,7 +154,7 @@ swapfile configuration information needed.")
 
 (define battery-mod
   (mod
-    (name 'battery-mod)
+    (name 'battery)
     (description
      "Configures system for use on a battery.  Ideal for laptop
 configurations.")
@@ -168,7 +168,7 @@ configurations.")
 
 (define virtualization-mod
   (mod
-    (name 'virtualization-mod)
+    (name 'virtualization)
     (description
      "Adds virtualization packages and services to the system environment.")
     (apply

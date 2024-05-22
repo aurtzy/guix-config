@@ -103,7 +103,7 @@ symlink from $HOME.
 Note that paths should not have whitespaces to prevent issues with building
 the shell alias."
   (mod
-    (name 'data-mod)
+    (name 'data)
     (apply
      (mod-home-environment
        (packages
@@ -131,7 +131,7 @@ the shell alias."
 
 (define emacs-base-mod
   (mod
-    (name 'emacs-base-mod)
+    (name 'emacs-base)
     (apply
      (mod-home-environment
        (packages
@@ -199,21 +199,21 @@ the shell alias."
 
 (define emacs-org-mod
   (mod
-    (name 'emacs-org-mod)
+    (name 'emacs-org)
     (dependencies
      (list emacs-base-mod
            tex-mod))))
 
 (define emacs-mod
   (mod
-    (name 'emacs-mod)
+    (name 'emacs)
     (dependencies
      (list emacs-base-mod
            emacs-org-mod))))
 
 (define common-fonts-mod
   (mod
-    (name 'common-fonts-mod)
+    (name 'common-fonts)
     (apply
      (mod-home-environment
        (packages
@@ -229,7 +229,7 @@ the shell alias."
 
 (define flatpak-mod
   (mod
-    (name 'flatpak-mod)
+    (name 'flatpak)
     (apply
      (mod-home-environment
        (packages
@@ -278,7 +278,7 @@ the shell alias."
 
 (define audio-mod
   (mod
-    (name 'audio-mod)
+    (name 'audio)
     (dependencies
      (list flatpak-mod))
     (apply
@@ -321,7 +321,7 @@ the shell alias."
 
 (define browsers-mod
   (mod
-    (name 'browsers-mod)
+    (name 'browsers)
     (dependencies
      (list flatpak-mod))
     (apply
@@ -361,7 +361,7 @@ the shell alias."
 
 (define password-management-mod
   (mod
-    (name 'password-management-mod)
+    (name 'password-management)
     (dependencies
      (list flatpak-mod))
     (apply
@@ -374,7 +374,7 @@ the shell alias."
 ;; TODO do I actually need this?
 (define breeze-theme-mod
   (mod
-    (name 'breeze-theme-mod)
+    (name 'breeze-theme)
     (apply
      (mod-home-environment
        (packages
@@ -383,7 +383,7 @@ the shell alias."
 
 (define media-mod
   (mod
-    (name 'media-mod)
+    (name 'media)
     (apply
      (mod-home-environment
        (packages

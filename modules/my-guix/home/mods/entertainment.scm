@@ -47,7 +47,7 @@
 ;; tool than specifically for entertainment
 (define bottles-mod
   (mod
-    (name 'bottles-mod)
+    (name 'bottles)
     (dependencies
      (list flatpak-mod))
     (apply
@@ -68,7 +68,7 @@
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
          (steam-dest ".local/share/guix-sandbox-home"))
     (mod
-      (name 'game-managers-mod)
+      (name 'game-managers)
       (dependencies
        (list flatpak-mod
              bottles-mod))
@@ -113,7 +113,7 @@
 
 (define minecraft-mod
   (mod
-    (name 'minecraft-mod)
+    (name 'minecraft)
     (dependencies
      (list flatpak-mod))
     (apply
@@ -127,7 +127,7 @@
 
 (define minetest-mod
   (mod
-    (name 'minetest-mod)
+    (name 'minetest)
     (apply
      (mod-home-environment
        (packages
@@ -135,7 +135,7 @@
 
 (define syncplay-mod
   (mod
-    (name 'syncplay-mod)
+    (name 'syncplay)
     (apply
      (mod-home-environment
        (packages

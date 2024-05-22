@@ -30,7 +30,7 @@
 
 (define web-server-mod
   (mod
-    (name 'web-server-mod)
+    (name 'web-server)
     (apply
      (mod-home-environment
        (packages

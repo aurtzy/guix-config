@@ -42,7 +42,7 @@
 
 (define newsreaders-mod
   (mod
-    (name 'newsreaders-mod)
+    (name 'newsreaders)
     (dependencies
      (list flatpak-mod))
     (apply
@@ -65,7 +65,7 @@
 
 (define creative-mod
   (mod
-    (name 'creative-mod)
+    (name 'creative)
     (dependencies
      (list flatpak-mod))
     (apply
@@ -79,7 +79,7 @@
 
 (define office-mod
   (mod
-    (name 'office-mod)
+    (name 'office)
     (apply
      (mod-home-environment
        (packages
@@ -87,7 +87,7 @@
 
 (define personal-comms-mod
   (mod
-    (name 'personal-comms-mod)
+    (name 'personal-comms)
     (dependencies
      (list flatpak-mod))
     (apply
@@ -106,7 +106,7 @@
 ;; TODO experimental; see how this fares
 (define programming-mod
   (mod
-    (name 'programming-mod)
+    (name 'programming)
     (dependencies
      (list emacs-mod))
     (apply

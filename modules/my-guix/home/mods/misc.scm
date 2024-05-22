@@ -29,7 +29,7 @@
 
 (define tex-mod
   (mod
-    (name 'tex-mod)
+    (name 'tex)
     (apply
      (mod-home-environment
        (packages

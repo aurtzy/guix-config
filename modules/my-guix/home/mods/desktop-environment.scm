@@ -36,7 +36,7 @@
 
 (define wayland-mod
   (mod
-    (name 'wayland-mod)
+    (name 'wayland)
     (apply
      (mod-home-environment
        (services
@@ -48,7 +48,7 @@
 
 (define gnome-mod
   (mod
-    (name 'gnome-mod)
+    (name 'gnome)
     (dependencies
      (list wayland-mod))))
 
@@ -78,7 +78,7 @@
 
 (define plasma-mod
   (mod
-    (name 'plasma-mod)
+    (name 'plasma)
     (dependencies
      (list wayland-mod))
     (apply
