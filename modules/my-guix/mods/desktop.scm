@@ -42,7 +42,7 @@
             battery-mod
             desktop-services-mod
             esync-mod
-            file-systems-mod
+            file-system-management-mod
             gnome-mod
             printers-mod
             swapfile-mod
@@ -142,9 +142,9 @@ display manager.")
                          (list
                           (pam-limits-entry "*" 'hard 'nofile 524288)))))))))
 
-(define file-systems-mod
+(define file-system-management-mod
   (mod
-    (name 'file-systems)
+    (name 'file-system-management)
     (description
      "Provides software to support various file system operations and disk
 management/maintenance.")
