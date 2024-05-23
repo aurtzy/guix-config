@@ -30,7 +30,6 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (guix transformations)
-  #:use-module (my-guix home mods misc)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix mods)
@@ -50,7 +49,7 @@
 
 (use-package-modules haskell-apps backup
                      emacs emacs-xyz tree-sitter guile
-                     protobuf
+                     tex protobuf
                      package-management
                      pulseaudio
                      fonts freedesktop
@@ -132,8 +131,6 @@ the shell alias."
     (name 'emacs)
     (description
      "Configures Emacs.")
-    (dependencies
-     (list tex-mod))
     (apply
      (compose (mod-he-packages
                (list emacs-pgtk
@@ -146,6 +143,13 @@ the shell alias."
                      tree-sitter-javascript
                      tree-sitter-python
                      tree-sitter-rust
+                     ;; latex with org-mode
+                     texlive-beamer
+                     texlive-capt-of
+                     texlive-libertine
+                     texlive-scheme-basic
+                     texlive-ulem
+                     texlive-wrapfig
                      ;; project-specific files
                      emacs-envrc
                      emacs-editorconfig
