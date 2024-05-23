@@ -1,4 +1,4 @@
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -37,14 +37,16 @@
 (define wayland-mod
   (mod
     (name 'wayland)
+    (description
+     "Configures environment for usage on Wayland compositors.")
     (apply
-     (mod-home-environment
-       (services
-        (list (simple-service name
-                              home-bash-service-type
-                              (home-bash-extension
-                               (environment-variables
-                                '(("MOZ_ENABLE_WAYLAND" . "1")))))))))))
+     (compose
+      (mod-he-services
+       (list (simple-service name
+                             home-bash-service-type
+                             (home-bash-extension
+                              (environment-variables
+                               '(("MOZ_ENABLE_WAYLAND" . "1")))))))))))
 
 (define gnome-mod
   (mod
