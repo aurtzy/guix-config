@@ -1,4 +1,4 @@
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -46,22 +46,22 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (mod-home-environment
-       (services
-        (list (simple-service name
-                              home-flatpak-profile-service-type
-                              '((flathub "org.mozilla.Thunderbird")
-                                (flathub "org.kde.akregator")))
-              ;; Disable GPU access to fix NVIDIA Wayland issues
-              ;; See: https://bugs.kde.org/show_bug.cgi?id=466124
-              (simple-service name
-                              home-impure-symlinks-service-type
-                              `((".local/share/flatpak/overrides"
-                                 ,(path-append-my-files "impure/akregator")
-                                 "org.kde.akregator")
-                                (".var/app/org.kde.akregator/data/akregator/data"
-                                 ,(path-append-my-home "areas/feeds")
-                                 "feeds.opml")))))))))
+     (compose
+      (mod-he-services
+       (list (simple-service name
+                             home-flatpak-profile-service-type
+                             '((flathub "org.mozilla.Thunderbird")
+                               (flathub "org.kde.akregator")))
+             ;; Disable GPU access to fix NVIDIA Wayland issues
+             ;; See: https://bugs.kde.org/show_bug.cgi?id=466124
+             (simple-service name
+                             home-impure-symlinks-service-type
+                             `((".local/share/flatpak/overrides"
+                                ,(path-append-my-files "impure/akregator")
+                                "org.kde.akregator")
+                               (".var/app/org.kde.akregator/data/akregator/data"
+                                ,(path-append-my-home "areas/feeds")
+                                "feeds.opml")))))))))
 
 (define creative-mod
   (mod
