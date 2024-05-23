@@ -68,12 +68,12 @@
                                            (rnrs:assert (list? val))
                                            val)))
 
-(define (build-assist-data-script data-dirs)
+(define (build-assist-data-script annexed-repos)
   (with-imported-modules
       '((guix build utils))
     #~(begin
         (use-modules (guix build utils))
-        (let* ((data-dirs '#$data-dirs)
+        (let* ((annexed-repos '#$annexed-repos)
                (orig-dir (getcwd))
                (with-chdir
                 (lambda (dir proc)
@@ -99,7 +99,7 @@
                   (lambda ()
                     (invoke #$(file-append git-annex "/bin/git-annex")
                             "assist"))))
-               data-dirs)
+               annexed-repos)
               (sync)))))))
 
 (define (build-data-mod data-specs)
