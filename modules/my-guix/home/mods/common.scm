@@ -362,14 +362,16 @@ Internet.")
 (define password-management-mod
   (mod
     (name 'password-management)
+    (description
+     "Configures password management applications.")
     (dependencies
      (list flatpak-mod))
     (apply
-     (mod-home-environment
-       (services
-        (list (simple-service name
-                              home-flatpak-profile-service-type
-                              '((flathub "org.keepassxc.KeePassXC")))))))))
+     (compose
+      (mod-he-services
+       (list (simple-service name
+                             home-flatpak-profile-service-type
+                             '((flathub "org.keepassxc.KeePassXC")))))))))
 
 ;; TODO do I actually need this?
 (define breeze-theme-mod
