@@ -73,43 +73,43 @@
        (list flatpak-mod
              bottles-mod))
       (apply
-       (mod-home-environment
-         (packages
-          (list steam-custom-wrapped
-                sdl2))
-         (services
-          (list (simple-service name
-                                home-impure-symlinks-service-type
-                                `( ;; Flatpak overrides
-                                  (".local/share/flatpak/overrides"
-                                   ,(path-append-my-files "impure/lutris")
-                                   "net.lutris.Lutris")
-                                  (".local/share/flatpak/overrides"
-                                   ,(path-append-my-files "impure/steam")
-                                   "com.valvesoftware.Steam")
-                                  ;; Mindustry
-                                  (,(path-append lutris-dest "Mindustry")
-                                   ,(path-append games-src "mindustry/files")
-                                   "saves"
-                                   "settings.bin")
-                                  ;; Factorio
-                                  (,steam-dest
-                                   ,(path-append games-src
-                                                 "factorio/files")
-                                   ".factorio")
-                                  ;; tModLoader
-                                  (,(path-append steam-dest
-                                                 ".local/share/Terraria"
-                                                 "tModLoader")
-                                   ,(path-append games-src "tmodloader/files")
-                                   "Players/Backups"
-                                   "Worlds/Backups"
-                                   "Captures")))
-                (simple-service name
-                                home-flatpak-profile-service-type
-                                '((flathub "net.lutris.Lutris")
-                                  (flathub "net.davidotek.pupgui2")
-                                  (flathub "com.github.Matoking.protontricks"))))))))))
+       (compose
+        (mod-he-packages
+         (list steam-custom-wrapped
+               sdl2))
+        (mod-he-services
+         (list (simple-service name
+                               home-impure-symlinks-service-type
+                               `( ;; Flatpak overrides
+                                 (".local/share/flatpak/overrides"
+                                  ,(path-append-my-files "impure/lutris")
+                                  "net.lutris.Lutris")
+                                 (".local/share/flatpak/overrides"
+                                  ,(path-append-my-files "impure/steam")
+                                  "com.valvesoftware.Steam")
+                                 ;; Mindustry
+                                 (,(path-append lutris-dest "Mindustry")
+                                  ,(path-append games-src "mindustry/files")
+                                  "saves"
+                                  "settings.bin")
+                                 ;; Factorio
+                                 (,steam-dest
+                                  ,(path-append games-src
+                                                "factorio/files")
+                                  ".factorio")
+                                 ;; tModLoader
+                                 (,(path-append steam-dest
+                                                ".local/share/Terraria"
+                                                "tModLoader")
+                                  ,(path-append games-src "tmodloader/files")
+                                  "Players/Backups"
+                                  "Worlds/Backups"
+                                  "Captures")))
+               (simple-service name
+                               home-flatpak-profile-service-type
+                               '((flathub "net.lutris.Lutris")
+                                 (flathub "net.davidotek.pupgui2")
+                                 (flathub "com.github.Matoking.protontricks"))))))))))
 
 (define minecraft-mod
   (mod
