@@ -1,4 +1,4 @@
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -51,16 +51,16 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (mod-home-environment
-       (services
-        (list (simple-service name
-                              home-flatpak-profile-service-type
-                              '((flathub "com.usebottles.bottles")))
-              (simple-service name
-                              home-impure-symlinks-service-type
-                              `((".local/share/flatpak/overrides"
-                                 ,(path-append-my-files "impure/bottles")
-                                 "com.usebottles.bottles")))))))))
+     (compose
+      (mod-he-services
+       (list (simple-service name
+                             home-flatpak-profile-service-type
+                             '((flathub "com.usebottles.bottles")))
+             (simple-service name
+                             home-impure-symlinks-service-type
+                             `((".local/share/flatpak/overrides"
+                                ,(path-append-my-files "impure/bottles")
+                                "com.usebottles.bottles")))))))))
 
 ;; TODO Set sysctl config option to optimize for gaming
 ;; https://www.phoronix.com/news/Arch-Linux-vm.max_map_count
