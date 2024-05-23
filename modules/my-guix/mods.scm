@@ -35,8 +35,6 @@
 
             mod-he-packages
             mod-he-services
-            %base-home-environment-extendables
-            mod-home-environment
 
             <mod>
             mod mod?
@@ -129,23 +127,6 @@ The returned procedure consumes"
    (inherit he)
    (services
     (append services (home-environment-user-services he)))))
-
-(define %base-home-environment-extendables
-  `((packages
-     .
-     ,(lambda (he value)
-        ((mod-he-packages value) he)))
-    (services
-     .
-     ,(lambda (he value)
-        ((mod-he-services value) he)))
-    (apply
-     .
-     ,(lambda (he value)
-        (value he)))))
-
-(define-syntax-rule (mod-home-environment field* ...)
-  (mod-record field* ... () %base-home-environment-extendables))
 
 (define-record-type* <mod>
   mod make-mod
