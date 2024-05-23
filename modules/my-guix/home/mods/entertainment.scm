@@ -136,9 +136,8 @@
   (mod
     (name 'syncplay)
     (apply
-     (mod-home-environment
-       (packages
-        (list syncplay))))))
+     (compose (mod-he-packages
+               (list syncplay))))))
 
 (define entertainment-mods
   (list game-managers-mod
