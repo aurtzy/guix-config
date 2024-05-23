@@ -109,13 +109,13 @@
     (dependencies
      (list emacs-mod))
     (apply
-     (mod-home-environment
-       (services
-        (list (simple-service name
-                              home-impure-symlinks-service-type
-                              `((""
-                                 ,(path-append-my-files)
-                                 "manifests")))))))))
+     (compose
+      (mod-he-services
+       (list (simple-service name
+                             home-impure-symlinks-service-type
+                             `((""
+                                ,(path-append-my-files)
+                                "manifests")))))))))
 
 (define extra-mods
   (list newsreaders-mod
