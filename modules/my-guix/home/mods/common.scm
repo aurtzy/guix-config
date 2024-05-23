@@ -218,51 +218,57 @@ the shell alias."
 (define flatpak-mod
   (mod
     (name 'flatpak)
+    (description
+     "Configures flatpak for the home environment.  This mod adds Flathub as a
+remote.")
     (apply
-     (mod-home-environment
-       (packages
-        (list flatpak-xdg-utils
-              xdg-utils))
-       (services
-        (list (simple-service name
-                              home-impure-symlinks-service-type
-                              (append
-                               ;; Flatpak doesn't like dangling symlinks, so
-                               ;; only make symlink when icons directory
-                               ;; exists (i.e. when on Guix System)
-                               (if (file-exists?
-                                    "/run/current-system/profile/share")
-                                   '((".local/share"
-                                      "/run/current-system/profile/share"
-                                      "icons"))
-                                   '())
-                               `( ;; GDK_PIXBUF_MODULE_FILE causes CSD issues
-                                 ;; on foreign distros, so we unset it for
-                                 ;; all flatpaks; allow access to system
-                                 ;; icons
-                                 (".local/share/flatpak/overrides"
-                                  ,(path-append-my-files "impure/flatpak")
-                                  "global")
-                                 (".local/share/flatpak/overrides"
-                                  ,(path-append-my-files "impure/flatpak")
-                                  "com.github.tchx84.Flatseal"))))))
-       (apply
-        (lambda (he)
-          (home-environment
-           (inherit he)
-           (services
-            (modify-services (home-environment-user-services he)
-              (home-flatpak-service-type
-               config =>
-               (home-flatpak-configuration
-                (remotes
-                 (acons 'flathub
-                        "https://flathub.org/repo/flathub.flatpakrepo"
-                        (home-flatpak-configuration-remotes config)))
-                (profile
-                 (cons '(flathub "com.github.tchx84.Flatseal")
-                       (home-flatpak-configuration-profile
-                        config))))))))))))))
+     (compose-lambda (he)
+       (list (mod-he-packages
+              (list flatpak-xdg-utils
+                    xdg-utils))
+             (mod-he-services
+              (list
+               (simple-service name
+                               home-impure-symlinks-service-type
+                               (append
+                                ;; Flatpak doesn't like dangling symlinks, so
+                                ;; only make symlink when icons directory
+                                ;; exists (i.e. when on Guix System)
+                                (if (file-exists?
+                                     "/run/current-system/profile/share")
+                                    '((".local/share"
+                                       "/run/current-system/profile/share"
+                                       "icons"))
+                                    '())
+                                `( ;; GDK_PIXBUF_MODULE_FILE causes CSD issues
+                                  ;; on foreign distros, so we unset it for
+                                  ;; all flatpaks; allow access to system
+                                  ;; icons
+                                  (".local/share/flatpak/overrides"
+                                   ,(path-append-my-files "impure/flatpak")
+                                   "global")
+                                  (".local/share/flatpak/overrides"
+                                   ,(path-append-my-files "impure/flatpak")
+                                   "com.github.tchx84.Flatseal"))))))
+             ;; TODO Use a simple-service for home-flatpak-service-type (or
+             ;; some descendant supporting remote extensions) when it is
+             ;; available
+             (lambda (he)
+               (home-environment
+                (inherit he)
+                (services
+                 (modify-services (home-environment-user-services he)
+                   (home-flatpak-service-type
+                    config =>
+                    (home-flatpak-configuration
+                     (remotes
+                      (acons 'flathub
+                             "https://flathub.org/repo/flathub.flatpakrepo"
+                             (home-flatpak-configuration-remotes config)))
+                     (profile
+                      (cons '(flathub "com.github.tchx84.Flatseal")
+                            (home-flatpak-configuration-profile
+                             config))))))))))))))
 
 (define audio-mod
   (mod
