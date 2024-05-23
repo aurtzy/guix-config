@@ -129,9 +129,8 @@
   (mod
     (name 'minetest)
     (apply
-     (mod-home-environment
-       (packages
-        (list minetest))))))
+     (compose (mod-he-packages
+               (list minetest))))))
 
 (define syncplay-mod
   (mod
