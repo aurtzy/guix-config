@@ -47,14 +47,10 @@
 
             common-mods))
 
-(use-package-modules haskell-apps backup
-                     emacs emacs-xyz tree-sitter guile
-                     tex protobuf
-                     package-management
-                     pulseaudio
-                     fonts freedesktop
-                     kde-plasma kde-frameworks
-                     video music)
+(use-package-modules backup emacs emacs-xyz fonts freedesktop guile
+                     haskell-apps kde-frameworks kde-plasma music
+                     package-management protobuf pulseaudio tex tree-sitter
+                     video)
 
 (define (build-assist-data-script data-dirs)
   (with-imported-modules
