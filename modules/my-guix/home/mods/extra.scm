@@ -90,17 +90,17 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (mod-home-environment
-       (services
-        (list (simple-service name
-                              home-impure-symlinks-service-type
-                              `((".local/share/flatpak/overrides"
-                                 ,(path-append-my-files "impure/soundux")
-                                 "io.github.Soundux")))
-              (simple-service name
-                              home-flatpak-profile-service-type
-                              '((flathub "in.cinny.Cinny")
-                                (flathub "io.github.Soundux")))))))))
+     (compose
+      (mod-he-services
+       (list (simple-service name
+                             home-impure-symlinks-service-type
+                             `((".local/share/flatpak/overrides"
+                                ,(path-append-my-files "impure/soundux")
+                                "io.github.Soundux")))
+             (simple-service name
+                             home-flatpak-profile-service-type
+                             '((flathub "in.cinny.Cinny")
+                               (flathub "io.github.Soundux")))))))))
 
 ;; TODO experimental; see how this fares
 (define programming-mod
