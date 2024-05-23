@@ -87,40 +87,41 @@
               (sync)))))))
 
 (define (build-data-mod data-specs)
-  "Build a mod that includes packages and services for my data setup.
+  (mod
+    (name 'data)
+    (description
+     "Provides packages and services for my data setup.
 
 DATA-SPECS is a list of symlink specifications.  A specification must have the
 path to the data repository, followed by the names of its store items to
 symlink from $HOME.
 
 Note that paths should not have whitespaces to prevent issues with building
-the shell alias."
-  (mod
-    (name 'data)
+the shell alias.")
     (apply
-     (mod-home-environment
-       (packages
-        (list git-annex
-              borg
-              git-annex-configure))
-       (services
-        (list (simple-service name
-                              home-impure-symlinks-service-type
-                              (map
-                               (lambda (symlinks-spec)
-                                 (let* ((data-dir (car symlinks-spec))
-                                        (item-names (cdr symlinks-spec))
-                                        (store-dir (string-append data-dir
-                                                                  "/store")))
-                                   (cons* "" store-dir item-names)))
-                               data-specs))
-              (simple-service name
-                              home-files-service-type
-                              `((".local/bin/,annex-assist-all"
-                                 ,(program-file
-                                   "assist-data"
-                                   (build-assist-data-script
-                                    (map car data-specs))))))))))))
+     (compose
+      (mod-he-packages
+       (list git-annex
+             borg
+             git-annex-configure))
+      (mod-he-services
+       (list (simple-service name
+                             home-impure-symlinks-service-type
+                             (map
+                              (lambda (symlinks-spec)
+                                (let* ((data-dir (car symlinks-spec))
+                                       (item-names (cdr symlinks-spec))
+                                       (store-dir (string-append data-dir
+                                                                 "/store")))
+                                  (cons* "" store-dir item-names)))
+                              data-specs))
+             (simple-service name
+                             home-files-service-type
+                             `((".local/bin/,annex-assist-all"
+                                ,(program-file
+                                  "assist-data"
+                                  (build-assist-data-script
+                                   (map car data-specs))))))))))))
 
 (define emacs-mod
   (mod
