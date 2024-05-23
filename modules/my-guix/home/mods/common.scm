@@ -378,10 +378,9 @@ Internet.")
   (mod
     (name 'breeze-theme)
     (apply
-     (mod-home-environment
-       (packages
-        (list breeze
-              breeze-icons))))))
+     (compose (mod-he-packages
+               (list breeze
+                     breeze-icons))))))
 
 (define media-mod
   (mod
