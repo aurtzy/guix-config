@@ -47,51 +47,6 @@
             mod-dependencies-all
             apply-mods))
 
-;;; TODO Add assertions in extendables procedures for better error-checking.
-
-(define-syntax-rule (extend-extendable record
-                                       extendable-name
-                                       value
-                                       extendables)
-  "Extend RECORD with VALUE using the procedure defined in EXTENDABLES
-corresponding to EXTENDABLE-NAME.
-
-EXTENDABLES is an alist that maps a symbol (representing what to extend) to a
-procedure.  This procedure should consume a record and a value, and return a
-new record that has been extended with the value."
-  (let ((extend (assq-ref extendables extendable-name)))
-    (unless (procedure? extend)
-      (raise-exception
-       (make-exception-with-message
-        (format #f
-                "Invalid extendable (not a procedure or doesn't exist): ~a"
-                extendable-name))))
-    (extend record value)))
-
-(define-syntax mod-record
-  (syntax-rules (=>)
-    "Build a procedure that consumes a record and extends the extendable
-values using EXTENDABLES for the specified FIELD arguments.
-
-The returned procedure consumes"
-    ((_ record => extenders extendables)
-     (lambda (record)
-       ((compose . extenders) record)))
-    ((_ record => (field-name value) field* ... extenders extendables)
-     (mod-record
-       record =>
-       field* ...
-       ((lambda (record)
-          (extend-extendable record
-                             'field-name
-                             value
-                             extendables))
-        .
-        extenders)
-       extendables))
-    ((_ field* ... extenders extendables)
-     (mod-record record => field* ... extenders extendables))))
-
 (define ((mod-os-packages packages) os)
   (operating-system
     (inherit os)
