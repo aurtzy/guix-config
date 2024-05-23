@@ -69,13 +69,13 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (mod-home-environment
-       (services
-        (list (simple-service name
-                              home-flatpak-profile-service-type
-                              '((flathub "org.kde.kdenlive")
-                                (flathub "fr.handbrake.ghb")
-                                (flathub "org.kde.krita")))))))))
+     (compose
+      (mod-he-services
+       (list (simple-service name
+                             home-flatpak-profile-service-type
+                             '((flathub "org.kde.kdenlive")
+                               (flathub "fr.handbrake.ghb")
+                               (flathub "org.kde.krita")))))))))
 
 (define office-mod
   (mod
