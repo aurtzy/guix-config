@@ -8,15 +8,12 @@
              (my-guix home services)
              (my-guix home services package-management))
 
-(define data-mod
-  (build-data-mod '(("data" "workshop" "areas" "library" "attic"))))
-
-(apply-mods
- base-desktop-home-environment
- (append common-mods
-         extra-mods
-         (list data-mod
-               gnome-mod))
- #:exclude (list creative-mod
-                 personal-comms-mod))
+(parameterize ((annexed-data '(("data" "workshop" "areas" "library" "attic"))))
+  (apply-mods
+   base-desktop-home-environment
+   (append common-mods
+           extra-mods
+           (list gnome-mod))
+   #:exclude (list creative-mod
+                   personal-comms-mod)))
 

@@ -102,42 +102,37 @@
                annexed-repos)
               (sync)))))))
 
-(define (build-data-mod data-specs)
+(define data-mod
   (mod
     (name 'data)
     (description
-     "Provides packages and services for my data setup.
-
-DATA-SPECS is a list of symlink specifications.  A specification must have the
-path to the data repository, followed by the names of its store items to
-symlink from $HOME.
-
-Note that paths should not have whitespaces to prevent issues with building
-the shell alias.")
+     "Provides packages and services for my data setup.")
     (apply
-     (compose
-      (mod-he-packages
-       (list git-annex
-             borg
-             git-annex-configure))
-      (mod-he-services
-       (list (simple-service name
-                             home-impure-symlinks-service-type
-                             (map
-                              (lambda (symlinks-spec)
-                                (let* ((data-dir (car symlinks-spec))
-                                       (item-names (cdr symlinks-spec))
-                                       (store-dir (string-append data-dir
-                                                                 "/store")))
-                                  (cons* "" store-dir item-names)))
-                              data-specs))
-             (simple-service name
-                             home-files-service-type
-                             `((".local/bin/,annex-assist-all"
-                                ,(program-file
-                                  "assist-data"
-                                  (build-assist-data-script
-                                   (map car data-specs))))))))))))
+     (compose-lambda _
+       (let ((annexed-data (annexed-data)))
+         (list
+          (mod-he-packages
+           (list git-annex
+                 borg
+                 git-annex-configure))
+          (mod-he-services
+           (list (simple-service name
+                                 home-impure-symlinks-service-type
+                                 (map
+                                  (lambda (symlinks-spec)
+                                    (let* ((data-dir (car symlinks-spec))
+                                           (item-names (cdr symlinks-spec))
+                                           (store-dir (string-append data-dir
+                                                                     "/store")))
+                                      (cons* "" store-dir item-names)))
+                                  annexed-data))
+                 (simple-service name
+                                 home-files-service-type
+                                 `((".local/bin/,annex-assist-all"
+                                    ,(program-file
+                                      "assist-data"
+                                      (build-assist-data-script
+                                       (map car annexed-data))))))))))))))
 
 (define emacs-mod
   (mod
@@ -419,7 +414,8 @@ Internet.")
                                   . "mpv --cache-secs=5")))))))))))
 
 (define common-mods
-  (list emacs-mod
+  (list data-mod
+        emacs-mod
         common-fonts-mod
         flatpak-mod
         audio-mod

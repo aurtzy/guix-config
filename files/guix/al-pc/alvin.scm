@@ -16,18 +16,15 @@
              (my-guix packages keyboard-center)
              (my-guix utils))
 
-(define data-mod
-  (build-data-mod '(("data" "workshop" "areas")
-                    ("storage/data" "library" "attic"))))
-
-(apply-mods
- (let ((base-env base-desktop-home-environment))
-   (home-environment
-    (inherit base-env)
-    ))
- (append common-mods
-         extra-mods
-         entertainment-mods
-         (list data-mod
-               gnome-mod
-               web-server-mod)))
+(parameterize ((annexed-data '(("data" "workshop" "areas")
+                               ("storage/data" "library" "attic"))))
+  (apply-mods
+   (let ((base-env base-desktop-home-environment))
+     (home-environment
+      (inherit base-env)
+      ))
+   (append common-mods
+           extra-mods
+           entertainment-mods
+           (list gnome-mod
+                 web-server-mod))))
