@@ -386,19 +386,21 @@ Internet.")
 (define media-mod
   (mod
     (name 'media)
+    (description
+     "Configures applications for the consumption of media.")
     (apply
-     (mod-home-environment
-       (packages
-        (list yt-dlp
-              mpv
-              quodlibet))
-       (services
-        (list (simple-service name
-                              home-bash-service-type
-                              (home-bash-extension
-                               (aliases
-                                '(("mpv-without-cache"
-                                   . "mpv --cache-secs=5")))))))))))
+     (compose
+      (mod-he-packages
+       (list yt-dlp
+             mpv
+             quodlibet))
+      (mod-he-services
+       (list (simple-service name
+                             home-bash-service-type
+                             (home-bash-extension
+                              (aliases
+                               '(("mpv-without-cache"
+                                  . "mpv --cache-secs=5")))))))))))
 
 (define common-mods
   (list emacs-mod
