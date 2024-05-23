@@ -32,6 +32,5 @@
   (mod
     (name 'web-server)
     (apply
-     (mod-home-environment
-       (packages
-        (list darkhttpd))))))
+     (compose (mod-he-packages
+               (list darkhttpd))))))
