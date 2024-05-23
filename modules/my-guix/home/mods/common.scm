@@ -273,45 +273,48 @@ remote.")
 (define audio-mod
   (mod
     (name 'audio)
+    (description
+     "Configures audio packages and services for this environment.  This mod
+enables the use of Pipewire.")
     (dependencies
      (list flatpak-mod))
     (apply
-     (mod-home-environment
-       (packages
-        (list pavucontrol))
-       (services
-        (list (service home-pipewire-service-type)
-              (simple-service name
-                              home-impure-symlinks-service-type
-                              `((".local/share/flatpak/overrides"
-                                  ,(path-append-my-files "easyeffects/impure")
-                                  "com.github.wwmm.easyeffects")
-                                (".var/app/com.github.wwmm.easyeffects/config/easyeffects"
-                                 ,(path-append-my-files
-                                   "easyeffects/impure/config"))))
-              (simple-service name
-                              home-flatpak-profile-service-type
-                              '((flathub "com.github.wwmm.easyeffects")))
-              (simple-service name
-                              home-shepherd-service-type
-                              (list
-                               (shepherd-service
-                                (documentation
-                                 "Run Easy Effects (easyeffects).")
-                                (provision
-                                 '(easyeffects))
-                                (requirement
-                                 '(pipewire))
-                                (start
-                                 #~(make-forkexec-constructor
-                                    (list #$(file-append flatpak
-                                                         "/bin/flatpak")
-                                          "run"
-                                          "--user"
-                                          "com.github.wwmm.easyeffects"
-                                          "--gapplication-service")))
-                                (stop
-                                 #~(make-kill-destructor)))))))))))
+     (compose
+      (mod-he-packages
+       (list pavucontrol))
+      (mod-he-services
+       (list (service home-pipewire-service-type)
+             (simple-service name
+                             home-impure-symlinks-service-type
+                             `((".local/share/flatpak/overrides"
+                                ,(path-append-my-files "easyeffects/impure")
+                                "com.github.wwmm.easyeffects")
+                               (".var/app/com.github.wwmm.easyeffects/config/easyeffects"
+                                ,(path-append-my-files
+                                  "easyeffects/impure/config"))))
+             (simple-service name
+                             home-flatpak-profile-service-type
+                             '((flathub "com.github.wwmm.easyeffects")))
+             (simple-service name
+                             home-shepherd-service-type
+                             (list
+                              (shepherd-service
+                               (documentation
+                                "Run Easy Effects (easyeffects).")
+                               (provision
+                                '(easyeffects))
+                               (requirement
+                                '(pipewire))
+                               (start
+                                #~(make-forkexec-constructor
+                                   (list #$(file-append flatpak
+                                                        "/bin/flatpak")
+                                         "run"
+                                         "--user"
+                                         "com.github.wwmm.easyeffects"
+                                         "--gapplication-service")))
+                               (stop
+                                #~(make-kill-destructor)))))))))))
 
 (define browsers-mod
   (mod
