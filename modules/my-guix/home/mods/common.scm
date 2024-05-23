@@ -35,7 +35,10 @@
   #:use-module (my-guix mods)
   #:use-module (my-guix packages git-annex-configure)
   #:use-module (my-guix utils)
-  #:export (build-data-mod
+  #:use-module ((rnrs base) #:prefix rnrs:)
+  #:export (annexed-data
+
+            build-data-mod
             emacs-mod
             common-fonts-mod
             flatpak-mod
@@ -51,6 +54,19 @@
                      haskell-apps kde-frameworks kde-plasma music
                      package-management protobuf pulseaudio tex tree-sitter
                      video)
+
+;; annexed-data: An alist of data repositories and items from respective
+;; stores to be symlinked from $HOME.
+;;
+;; Each element should be the path to an annex repository (relative to $HOME),
+;; followed by the list of store items to symlink from $HOME.  For example,
+;; the following specifies two repositories at ~/data-repo and ~/data-repo-2,
+;; with ~/data-repo/store/item and ~/data-repo-2/store/item{2,2.5} symlinked:
+;;
+;; '(("data-repo" "item") ("data-repo-2" "item2" "item2.5"))
+(define annexed-data (make-parameter '() (lambda (val)
+                                           (rnrs:assert (list? val))
+                                           val)))
 
 (define (build-assist-data-script data-dirs)
   (with-imported-modules
