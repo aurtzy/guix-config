@@ -28,7 +28,7 @@
   #:use-module (my-guix mods base)
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
-  #:use-module ((rnrs base) #:select (assert))
+  #:use-module ((rnrs base) #:prefix rnrs:)
   #:use-module (srfi srfi-1)
   #:export (replace-mesa
 
@@ -95,7 +95,7 @@
 (define swapfile
   (make-parameter #f
                   (lambda (val)
-                    (assert (or (not val) (swapfile-configuration? val)))
+                    (rnrs:assert (or (not val) (swapfile-configuration? val)))
                     val)))
 
 (define desktop-services-mod
