@@ -117,13 +117,13 @@
     (dependencies
      (list flatpak-mod))
     (apply
-     (mod-home-environment
-       (packages
-        (list glfw-wayland-minecraft))
-       (services
-        (list (simple-service name
-                              home-flatpak-profile-service-type
-                              '((flathub "org.prismlauncher.PrismLauncher")))))))))
+     (compose
+      (mod-he-packages
+       (list glfw-wayland-minecraft))
+      (mod-he-services
+       (list (simple-service name
+                             home-flatpak-profile-service-type
+                             '((flathub "org.prismlauncher.PrismLauncher")))))))))
 
 (define minetest-mod
   (mod
