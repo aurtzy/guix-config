@@ -84,8 +84,8 @@
     (dependencies
      (list wayland-mod))
     (apply
-     (mod-home-environment
-       (services
-        (list (simple-service name
-                              home-activation-service-type
-                              plasma-mod-shortcuts)))))))
+     (compose
+      (mod-he-services
+       (list (simple-service name
+                             home-activation-service-type
+                             plasma-mod-shortcuts)))))))
