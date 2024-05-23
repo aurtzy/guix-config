@@ -319,42 +319,45 @@ enables the use of Pipewire.")
 (define browsers-mod
   (mod
     (name 'browsers)
+    (description
+     "This mod adds web browsers to the environment for browsing the
+Internet.")
     (dependencies
      (list flatpak-mod))
     (apply
-     (mod-home-environment
-       (services
-        (let ((firefox-profile
-               ".var/app/org.mozilla.firefox/.mozilla/firefox/profile.default"))
-          (list (simple-service name
-                                home-impure-symlinks-service-type
-                                `((,firefox-profile
-                                   ,(path-append-my-home
-                                     "/areas/firefox/profile")
-                                   "bookmarkbackups")
-                                  (".local/share/flatpak/overrides"
-                                   ,(path-append-my-files "impure/brave")
-                                   "com.brave.Browser")
-                                  (".local/share/flatpak/overrides"
-                                   ,(path-append-my-files "impure/firefox")
-                                   "org.mozilla.firefox")))
-                (simple-service name
-                                home-activation-service-type
-                                ;; This file isn't /that/ important, and
-                                ;; Firefox keeps overwriting it, so we just
-                                ;; copy it without a backup instead
-                                #~(copy-file #$(path-append-my-home
-                                                "areas/firefox/profile"
-                                                "search.json.mozlz4")
-                                             #$(path-append-my-home
-                                                firefox-profile
-                                                "search.json.mozlz4")))
-                (simple-service name
-                                home-flatpak-profile-service-type
-                                '((flathub "org.mozilla.firefox")
-                                  (flathub
-                                   "org.torproject.torbrowser-launcher")
-                                  (flathub "com.brave.Browser"))))))))))
+     (compose
+      (mod-he-services
+       (let ((firefox-profile
+              ".var/app/org.mozilla.firefox/.mozilla/firefox/profile.default"))
+         (list
+          (simple-service name
+                          home-impure-symlinks-service-type
+                          `((,firefox-profile
+                             ,(path-append-my-home
+                               "/areas/firefox/profile")
+                             "bookmarkbackups")
+                            (".local/share/flatpak/overrides"
+                             ,(path-append-my-files "impure/brave")
+                             "com.brave.Browser")
+                            (".local/share/flatpak/overrides"
+                             ,(path-append-my-files "impure/firefox")
+                             "org.mozilla.firefox")))
+          (simple-service name
+                          home-activation-service-type
+                          ;; This file isn't /that/ important, and
+                          ;; Firefox keeps overwriting it, so we just
+                          ;; copy it without a backup instead
+                          #~(copy-file #$(path-append-my-home
+                                          "areas/firefox/profile"
+                                          "search.json.mozlz4")
+                                       #$(path-append-my-home
+                                          firefox-profile
+                                          "search.json.mozlz4")))
+          (simple-service name
+                          home-flatpak-profile-service-type
+                          '((flathub "org.mozilla.firefox")
+                            (flathub "org.torproject.torbrowser-launcher")
+                            (flathub "com.brave.Browser"))))))))))
 
 (define password-management-mod
   (mod
