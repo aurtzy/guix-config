@@ -81,9 +81,8 @@
   (mod
     (name 'office)
     (apply
-     (mod-home-environment
-       (packages
-        (list libreoffice))))))
+     (compose (mod-he-packages
+               (list libreoffice))))))
 
 (define personal-comms-mod
   (mod
