@@ -27,6 +27,7 @@
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix utils)
   #:use-module (oop goops)
+  #:use-module ((rnrs base) #:prefix rnrs:)
   #:use-module (srfi srfi-1)
   #:export (<mod>
             mod mod?
@@ -34,6 +35,13 @@
             mod-name
             mod-dependencies
             mod-apply
+
+            <modded-system>
+            modded-system modded-system?
+            this-modded-system
+            modded-system-mods
+            modded-system-base-os
+            modded-system-base-he
 
             mod-os-packages
             mod-os-services
@@ -66,6 +74,25 @@
          (default identity)
          (sanitize (sanitizer <procedure>
                               #:label "Mod apply field"))))
+
+(define-record-type* <modded-system>
+  modded-system make-modded-system
+  modded-system?
+  this-modded-system
+  (mods modded-system-mods
+        (default '())
+        (sanitize (sanitizer <list>
+                             #:label "Modded system mods")))
+  (base-os modded-system-base-os
+           (default #f)
+           (sanitize (lambda (val)
+                       (rnrs:assert (or (not val) (operating-system? val)))
+                       val)))
+  (base-he modded-system-base-he
+           (default #f)
+           (sanitize (lambda (val)
+                       (rnrs:assert (or (not val) (home-environment? val)))
+                       val))))
 
 (define ((mod-os-packages packages) os)
   (operating-system
