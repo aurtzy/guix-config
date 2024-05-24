@@ -10,12 +10,14 @@
              (my-guix base desktop)
              (my-guix config)
              (my-guix mods)
+             (my-guix mods base)
              (my-guix mods desktop)
              (my-guix mods desktop-environment)
+             (my-guix packages mesa)
              (my-guix services hardware)
              (nongnu packages linux)
-             (nongnu packages nvidia)
-             (nongnu services nvidia)
+             ((nongnu packages nvidia) #:prefix nvidia:)
+             ((nongnu services nvidia) #:prefix nvidia:)
              (nongnu system linux-initrd))
 
 (define linux-6.9-rc
@@ -55,7 +57,8 @@
 (parameterize ((swapfile (swapfile-configuration
                           (file "/swapfile")
                           (device "/dev/mapper/cryptroot")
-                          (offset "5250304"))))
+                          (offset "5250304")))
+               (replace-mesa replace-mesa->mesa-nvk-git))
   (apply-mods
    (let ((base-os base-desktop-operating-system))
      (operating-system
