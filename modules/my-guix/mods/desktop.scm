@@ -31,7 +31,6 @@
   #:use-module ((rnrs base) #:prefix rnrs:)
   #:use-module (srfi srfi-1)
   #:export (replace-mesa
-
             <swapfile-configuration>
             swapfile-configuration
             swapfile-configuration?
