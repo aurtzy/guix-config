@@ -23,6 +23,7 @@
   #:use-module (gnu)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods desktop)
+  #:use-module (my-guix mods hardware)
   #:use-module (my-guix utils)
   #:export (gnome-mod))
 
@@ -37,7 +38,8 @@
      "Provides configurations for the GNOME desktop environment.")
     (apply
      (compose-lambda (os)
-       (let ((replace-mesa (replace-mesa)))
+       (let ((replace-mesa (replace-mesa))
+             (nvidia-proprietary? (nvidia-proprietary?)))
          (list
           (mod-os-packages
            (map replace-mesa
@@ -47,9 +49,18 @@
                       gnome-shell-extension-gsconnect
                       xdg-desktop-portal-kde)))
           (mod-os-services
-           (list (set-xorg-configuration
-                  (xorg-configuration
-                   (keyboard-layout (operating-system-keyboard-layout os))))
+           (list (if nvidia-proprietary?
+                     (set-xorg-configuration
+                      (xorg-configuration
+                       (keyboard-layout (operating-system-keyboard-layout os))
+                       (modules (cons (module-ref (resolve-interface
+                                                   '(nongnu packages nvidia))
+                                                  'nvda)
+                                      %default-xorg-modules))
+                       (drivers '("nvidia"))))
+                     (set-xorg-configuration
+                      (xorg-configuration
+                       (keyboard-layout (operating-system-keyboard-layout os)))))
                  (service gnome-desktop-service-type
                           (gnome-desktop-configuration
                            (core-services
