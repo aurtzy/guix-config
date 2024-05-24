@@ -13,6 +13,7 @@
              (my-guix mods base)
              (my-guix mods desktop)
              (my-guix mods desktop-environment)
+             (my-guix mods hardware)
              (my-guix packages mesa)
              (my-guix services hardware)
              (nongnu packages linux)
@@ -68,11 +69,11 @@
        (initrd microcode-initrd)
        (firmware (list linux-firmware))
        (kernel-arguments
-        (cons* "nouveau.config=NvGspRm=1"
-               ;; vfio
-               ;; "intel_iommu=on"
-               ;; "iommu=pt"
-               (operating-system-user-kernel-arguments base-os)))
+        (cons*
+         ;; vfio
+         ;; "intel_iommu=on"
+         ;; "iommu=pt"
+         (operating-system-user-kernel-arguments base-os)))
        (users
         (cons* (user-account
                 (name "alvin")
@@ -146,4 +147,5 @@
         (cons* (service keyboard-center-service-type)
                (operating-system-user-services base-os)))))
    (append desktop-mods
-           (list gnome-mod))))
+           (list gnome-mod
+                 nvidia-mod))))
