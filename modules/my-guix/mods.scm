@@ -28,7 +28,14 @@
   #:use-module (my-guix utils)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
-  #:export (mod-os-packages
+  #:export (<mod>
+            mod mod?
+            this-mod
+            mod-name
+            mod-dependencies
+            mod-apply
+
+            mod-os-packages
             mod-os-services
             mod-os-kernel-arguments
             mod-os-swap-devices
@@ -36,16 +43,29 @@
             mod-he-packages
             mod-he-services
 
-            <mod>
-            mod mod?
-            this-mod
-            mod-name
-            mod-dependencies
-            mod-apply
             mods-eq?
-
             mod-dependencies-all
             apply-mods))
+
+(define-record-type* <mod>
+  mod make-mod
+  mod?
+  this-mod
+  (name mod-name
+        (sanitize (sanitizer <symbol>
+                             #:label "Mod name")))
+  (description mod-description
+               (default "")
+               (sanitize (sanitizer <string>
+                                    #:label "Mod description")))
+  (dependencies mod-dependencies
+                (default '())
+                (sanitize (sanitizer <list>
+                                     #:label "Mod dependencies")))
+  (apply mod-apply
+         (default identity)
+         (sanitize (sanitizer <procedure>
+                              #:label "Mod apply field"))))
 
 (define ((mod-os-packages packages) os)
   (operating-system
@@ -82,26 +102,6 @@
    (inherit he)
    (services
     (append services (home-environment-user-services he)))))
-
-(define-record-type* <mod>
-  mod make-mod
-  mod?
-  this-mod
-  (name mod-name
-        (sanitize (sanitizer <symbol>
-                             #:label "Mod name")))
-  (description mod-description
-               (default "")
-               (sanitize (sanitizer <string>
-                                    #:label "Mod description")))
-  (dependencies mod-dependencies
-                (default '())
-                (sanitize (sanitizer <list>
-                                     #:label "Mod dependencies")))
-  (apply mod-apply
-         (default identity)
-         (sanitize (sanitizer <procedure>
-                              #:label "Mod apply field"))))
 
 (define (mods-eq? ext1 ext2)
   (eq? (mod-name ext1)
