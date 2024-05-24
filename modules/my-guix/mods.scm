@@ -159,7 +159,3 @@ the EXCLUDE keyword."
                  (parameterize ((exclude-mods exclude))
                    (apply mod-dependencies-all
                           mods))))))
-
-;; Local Variables:
-;; eval: (put 'mod-record 'scheme-indent-function 0)
-;; End:
