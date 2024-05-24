@@ -22,11 +22,24 @@
 (define-module (my-guix mods hardware)
   #:use-module (gnu)
   #:use-module (my-guix mods)
-  #:export (battery-mod))
+  #:use-module (my-guix mods desktop)
+  #:use-module (my-guix utils)
+  #:use-module ((rnrs base) #:prefix rnrs:)
+  #:export (nvidia-proprietary?
+
+            battery-mod
+            nvidia-mod))
 
 (use-package-modules linux)
 
 (use-service-modules pm)
+
+;; nvidia-proprietary?: Parameter that dictates whether the NVIDIA proprietary
+;; driver will be used.
+(define nvidia-proprietary?
+  (make-parameter #f (lambda (val)
+                       (rnrs:assert (boolean? val))
+                       val)))
 
 (define battery-mod
   (mod
@@ -41,3 +54,23 @@ configurations.")
                (list (service tlp-service-type
                               (tlp-configuration
                                (cpu-boost-on-ac? #t)))))))))
+
+(define nvidia-mod
+  (mod
+    (name 'nvidia)
+    (description
+     "Configures the system for an NVIDIA GPU.")
+    (apply
+     (compose-lambda _
+       (let ((nvidia-proprietary? (nvidia-proprietary?)))
+         (list (mod-os-services
+                (if nvidia-proprietary?
+                    (list (service (module-ref (resolve-interface
+                                                '(nongnu services nvidia))
+                                               'nvidia-service-type)))
+                    '()))
+               (mod-os-kernel-arguments
+                (if nvidia-proprietary?
+                    (list "modprobe.blacklist=nouveau"
+                          "nvidia_drm.modeset=1")
+                    (list "nouveau.config=NvGspRm=1")))))))))
