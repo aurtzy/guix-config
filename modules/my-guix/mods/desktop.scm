@@ -167,7 +167,7 @@ swapfile configuration information needed.")
      (compose-lambda (os)
        (define config (swapfile))
 
-       (assert (swapfile-configuration? config))
+       (rnrs:assert (swapfile-configuration? config))
        (let ((file (swapfile-configuration-file config))
              (device (swapfile-configuration-device config))
              (offset (swapfile-configuration-offset config)))
