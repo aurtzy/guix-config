@@ -38,7 +38,7 @@
   #:use-module ((rnrs base) #:prefix rnrs:)
   #:export (annexed-data
 
-            build-data-mod
+            data-mod
             emacs-mod
             common-fonts-mod
             flatpak-mod
