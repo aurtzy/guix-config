@@ -40,8 +40,8 @@
             modded-system modded-system?
             this-modded-system
             modded-system-mods
-            modded-system-base-os
-            modded-system-base-he
+            modded-system-initial-os
+            modded-system-initial-he
 
             mod-os-packages
             mod-os-services
@@ -86,16 +86,16 @@
         (default '())
         (sanitize (sanitizer <list>
                              #:label "Modded system mods")))
-  (base-os modded-system-base-os
-           (default #f)
-           (sanitize (lambda (val)
-                       (rnrs:assert (or (not val) (operating-system? val)))
-                       val)))
-  (base-he modded-system-base-he
-           (default #f)
-           (sanitize (lambda (val)
-                       (rnrs:assert (or (not val) (home-environment? val)))
-                       val))))
+  (initial-os modded-system-initial-os
+              (default #f)
+              (sanitize (lambda (val)
+                          (rnrs:assert (or (not val) (operating-system? val)))
+                          val)))
+  (initial-he modded-system-initial-he
+              (default #f)
+              (sanitize (lambda (val)
+                          (rnrs:assert (or (not val) (home-environment? val)))
+                          val))))
 
 (define ((mod-os-packages packages) os)
   (operating-system
@@ -189,25 +189,25 @@ the EXCLUDE keyword."
                           mods))))))
 
 (define (modded-system->operating-system system)
-  (unless (modded-system-base-os system)
+  (unless (modded-system-initial-os system)
     (raise-exception
      (make-exception-with-message
-      "System base-os field is #f; an operating-system must be specified")))
+      "System initial-os field is #f; an operating-system must be specified")))
   (fold
    (lambda (mod record)
      ;; TODO use os-extension when it exists
      ((mod-apply mod) record))
-   (modded-system-base-os system)
+   (modded-system-initial-os system)
    (all-unique-mods (modded-system-mods system))))
 
 (define (modded-system->home-environment system)
-  (unless (modded-system-base-he system)
+  (unless (modded-system-initial-he system)
     (raise-exception
      (make-exception-with-message
-      "System base-he field is #f; a home-environment must be specified")))
+      "System initial-he field is #f; a home-environment must be specified")))
   (fold
    (lambda (mod record)
      ;; TODO use he-extension when it exists
      ((mod-apply mod) record))
-   (modded-system-base-he system)
+   (modded-system-initial-he system)
    (all-unique-mods (modded-system-mods system))))
