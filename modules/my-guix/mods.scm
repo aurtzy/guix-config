@@ -52,7 +52,8 @@
             mod-he-services
 
             mods-eq?
-            mod-dependencies-all
+            excluded-mods
+            mod-dependencies/deep
             apply-mods))
 
 (define-record-type* <mod>
@@ -134,30 +135,28 @@
   (eq? (mod-name ext1)
        (mod-name ext2)))
 
-(define exclude-mods (make-parameter '()))
+(define excluded-mods (make-parameter '()))
 
-(define (%mod-dependencies-all mod visited-deps)
-  (fold
-   (lambda (dep visited-deps)
-     (if (or (member dep visited-deps mods-eq?)
-             (member dep (exclude-mods) mods-eq?))
-         visited-deps
-         (%mod-dependencies-all dep
-                                (cons dep visited-deps))))
-   visited-deps
-   (mod-dependencies mod)))
+(define (mod-dependencies/deep mod)
+  "Get all the dependencies of a mod, recursively.  Mods specified by the
+EXCLUDED-MODS parameter will not be included in the returned list."
+  (define (dependencies/deep mod visited)
+    (fold
+     (lambda (dep visited)
+       (if (member dep (append visited (excluded-mods)) mods-eq?)
+           visited
+           (dependencies/deep dep (cons dep visited))))
+     visited
+     (mod-dependencies mod)))
+  (dependencies/deep mod '()))
 
-(define (mod-dependencies-all . mods)
-  "Returns a deduplicated list of all the mods required by MOD,
-recursively. Mod names specified by EXCLUDE will not be traversed.
-
-This procedure can accept multiple mods as arguments for convenience of use
-with optimizations for traversing the dependency tree."
-  (fold
-   (lambda (mod visited-deps)
-     (%mod-dependencies-all mod visited-deps))
-   '()
-   mods))
+(define (all-unique-mods mods)
+  "Return all unique mods from the list of mods MODS provided, including
+dependencies (recursive).  This procedure uses MOD-DEPENDENCIES/DEEP, which
+respects the EXCLUDED-MODS parameter.  The parameter is further respected by
+removing mods in MODS if any are members of EXCLUDED-MODS."
+  (let ((mods (lset-difference mods-eq? mods (excluded-mods))))
+    (lset-union mods-eq? mods (concatenate (map mod-dependencies/deep mods)))))
 
 (define* (apply-mods record mods #:key (exclude '()))
   "Extends RECORD with a list MODS of mod records, including dependencies of
@@ -183,6 +182,30 @@ the EXCLUDE keyword."
      ;; Add the top-level mods to dependencies list that is returned
      (lset-union mods-eq?
                  mods
-                 (parameterize ((exclude-mods exclude))
-                   (apply mod-dependencies-all
+                 (parameterize ((excluded-mods exclude))
+                   (apply mod-dependencies/deep
                           mods))))))
+
+(define (modded-system->operating-system system)
+  (unless (modded-system-base-os system)
+    (raise-exception
+     (make-exception-with-message
+      "System base-os field is #f; an operating-system must be specified")))
+  (fold
+   (lambda (mod record)
+     ;; TODO use os-extension when it exists
+     ((mod-apply mod) record))
+   (modded-system-base-os system)
+   (all-unique-mods (modded-system-mods system))))
+
+(define (modded-system->home-environment system)
+  (unless (modded-system-base-he system)
+    (raise-exception
+     (make-exception-with-message
+      "System base-he field is #f; a home-environment must be specified")))
+  (fold
+   (lambda (mod record)
+     ;; TODO use he-extension when it exists
+     ((mod-apply mod) record))
+   (modded-system-base-he system)
+   (all-unique-mods (modded-system-mods system))))
