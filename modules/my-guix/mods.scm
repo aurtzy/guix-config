@@ -54,7 +54,9 @@
             mods-eq?
             excluded-mods
             mod-dependencies/deep
-            apply-mods))
+            apply-mods
+            modded-system->operating-system
+            modded-system->home-environment))
 
 (define-record-type* <mod>
   mod make-mod
