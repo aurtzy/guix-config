@@ -29,6 +29,8 @@
   #:use-module (oop goops)
   #:use-module ((rnrs base) #:prefix rnrs:)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-39)
+  #:use-module (srfi srfi-71)
   #:export (<mod>
             mod mod?
             this-mod
@@ -81,6 +83,10 @@
   modded-system make-modded-system
   modded-system?
   this-modded-system
+  (parameters modded-system-parameters
+              (default '())
+              (sanitize (sanitizer <list>
+                                   #:label "Modded system parameters")))
   (mods modded-system-mods
         (default '())
         (sanitize (sanitizer <list>
@@ -166,12 +172,17 @@ modded-system SYSTEM."
     (raise-exception
      (make-exception-with-message
       "System initial-os field is #f; an operating-system must be specified")))
-  (fold
-   (lambda (mod record)
-     ;; TODO use os-extension when it exists
-     ((mod-apply mod) record))
-   (modded-system-initial-os system)
-   (all-unique-mods (modded-system-mods system))))
+  (let ((params values (unzip2 (modded-system-parameters system))))
+    (with-parameters*
+     params
+     values
+     (lambda ()
+       (fold
+        (lambda (mod record)
+          ;; TODO use os-extension when it exists
+          ((mod-apply mod) record))
+        (modded-system-initial-os system)
+        (all-unique-mods (modded-system-mods system)))))))
 
 (define (modded-system-home-environment system)
   "Construct and return the home-environment record from the specifications of
@@ -180,9 +191,14 @@ modded-system SYSTEM."
     (raise-exception
      (make-exception-with-message
       "System initial-he field is #f; a home-environment must be specified")))
-  (fold
-   (lambda (mod record)
-     ;; TODO use he-extension when it exists
-     ((mod-apply mod) record))
-   (modded-system-initial-he system)
-   (all-unique-mods (modded-system-mods system))))
+  (let ((params values (unzip2 (modded-system-parameters system))))
+    (with-parameters*
+     params
+     values
+     (lambda ()
+       (fold
+        (lambda (mod record)
+          ;; TODO use he-extension when it exists
+          ((mod-apply mod) record))
+        (modded-system-initial-he system)
+        (all-unique-mods (modded-system-mods system)))))))
