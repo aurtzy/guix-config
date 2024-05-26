@@ -54,7 +54,6 @@
             mods-eq?
             excluded-mods
             mod-dependencies/deep
-            apply-mods
             modded-system->operating-system
             modded-system->home-environment))
 
@@ -159,34 +158,6 @@ respects the EXCLUDED-MODS parameter.  The parameter is further respected by
 removing mods in MODS if any are members of EXCLUDED-MODS."
   (let ((mods (lset-difference mods-eq? mods (excluded-mods))))
     (lset-union mods-eq? mods (concatenate (map mod-dependencies/deep mods)))))
-
-(define* (apply-mods record mods #:key (exclude '()))
-  "Extends RECORD with a list MODS of mod records, including dependencies of
-mods (recursively).
-
-Each mod's configuration procedure will be folded onto record; that is, RECORD
-will be the input for the first mod's configuration procedure, and then the
-output record of that will be passed to the second mod's configuration
-procedure, and so on.
-
-The resulting record from applying all mod configurations will be returned.
-
-Optionally, a list of mods to exclude from the operation can be provided with
-the EXCLUDE keyword."
-  ;; Remove excluded mods
-  (let ((mods (lset-difference mods-eq?
-                               mods
-                               exclude)))
-    (fold
-     (lambda (mod record)
-       ((mod-apply mod) record))
-     record
-     ;; Add the top-level mods to dependencies list that is returned
-     (lset-union mods-eq?
-                 mods
-                 (parameterize ((excluded-mods exclude))
-                   (apply mod-dependencies/deep
-                          mods))))))
 
 (define (modded-system->operating-system system)
   (unless (modded-system-initial-os system)
