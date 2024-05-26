@@ -24,6 +24,8 @@
 
 (define system-home
   (modded-system
+    (parameters `((,annexed-data (("data" "workshop" "areas")
+                                  ("storage/data" "library" "attic")))))
     (mods (append common-mods
                   extra-mods
                   entertainment-mods
@@ -31,6 +33,4 @@
                         web-server-mod)))
     (initial-he initial-home-environment)))
 
-(parameterize ((annexed-data '(("data" "workshop" "areas")
-                               ("storage/data" "library" "attic"))))
-  (modded-system-home-environment system-home))
+(modded-system-home-environment system-home)

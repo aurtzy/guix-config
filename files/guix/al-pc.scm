@@ -144,14 +144,14 @@
 
 (define system
   (modded-system
+    (parameters `((,swapfile ,(swapfile-configuration
+                               (file "/swapfile")
+                               (device "/dev/mapper/cryptroot")
+                               (offset "5250304")))
+                  (,replace-mesa ,replace-mesa->mesa-nvk-git)))
     (mods (append desktop-mods
                   (list gnome-mod
                         nvidia-mod)))
     (initial-os initial-operating-system)))
 
-(parameterize ((swapfile (swapfile-configuration
-                          (file "/swapfile")
-                          (device "/dev/mapper/cryptroot")
-                          (offset "5250304")))
-               (replace-mesa replace-mesa->mesa-nvk-git))
-  (modded-system-operating-system system))
+(modded-system-operating-system system)

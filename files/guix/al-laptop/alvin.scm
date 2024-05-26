@@ -16,13 +16,13 @@
 
 (define system-home
   (modded-system
+    (parameters `((,annexed-data (("data" "workshop" "areas" "library" "attic")))
+                  (,excluded-mods ,(list creative-mod
+                                         personal-comms-mod))))
     (mods (append common-mods
                   extra-mods
                   (list gnome-mod)))
     (initial-he initial-home-environment)))
 
-(parameterize ((annexed-data '(("data" "workshop" "areas" "library" "attic")))
-               (excluded-mods (list creative-mod
-                                    personal-comms-mod)))
-  (modded-system-home-environment system-home))
+(modded-system-home-environment system-home)
 

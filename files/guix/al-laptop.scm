@@ -73,21 +73,21 @@
 
 (define system
   (modded-system
+    (parameters `((,swapfile ,(swapfile-configuration
+                               (file "/swapfile")
+                               (device "/dev/mapper/cryptroot")
+                               (offset "269568")))))
     (mods (append desktop-mods
                   (list gnome-mod
                         battery-mod)))
     (initial-os initial-operating-system)))
 
-(parameterize ((swapfile (swapfile-configuration
-                          (file "/swapfile")
-                          (device "/dev/mapper/cryptroot")
-                          (offset "269568"))))
-  (let ((os (modded-system-operating-system system)))
-    (operating-system
-      (inherit os)
-      (services
-       (modify-services (operating-system-user-services os)
-         (network-manager-service-type
-          config => (network-manager-configuration
-                     (inherit config)
-                     (vpn-plugins (list network-manager-openconnect)))))))))
+(let ((os (modded-system-operating-system system)))
+  (operating-system
+    (inherit os)
+    (services
+     (modify-services (operating-system-user-services os)
+       (network-manager-service-type
+        config => (network-manager-configuration
+                   (inherit config)
+                   (vpn-plugins (list network-manager-openconnect))))))))
