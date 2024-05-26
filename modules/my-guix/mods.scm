@@ -37,6 +37,8 @@
             mod-name
             mod-dependencies
             mod-apply
+            mod-os-extension
+            mod-he-extension
 
             <modded-system>
             modded-system modded-system?
@@ -76,8 +78,21 @@
                                      #:label "Mod dependencies")))
   (apply mod-apply
          (default identity)
-         (sanitize (sanitizer <procedure>
-                              #:label "Mod apply field"))))
+         (sanitize
+          (lambda (val)
+            (unless (eq? val identity)
+              (display
+               "my-guix: warning: <mod> apply field is deprecated.\n"))
+            ((sanitizer <procedure>
+                        #:label "Mod apply field (DEPRECATED)") val))))
+  (os-extension mod-os-extension
+                (default identity)
+                (sanitize (sanitizer <procedure>
+                                     #:label "Mod operating system extension")))
+  (he-extension mod-he-extension
+                (default identity)
+                (sanitize (sanitizer <procedure>
+                                     #:label "Mod home environment extension"))))
 
 (define-record-type* <modded-system>
   modded-system make-modded-system
@@ -179,8 +194,10 @@ modded-system SYSTEM."
      (lambda ()
        (fold
         (lambda (mod record)
-          ;; TODO use os-extension when it exists
-          ((mod-apply mod) record))
+          (let ((map-extension (if (eq? identity (mod-apply mod))
+                                   (mod-os-extension mod)
+                                   (mod-apply mod))))
+            (map-extension record)))
         (modded-system-initial-os system)
         (all-unique-mods (modded-system-mods system)))))))
 
@@ -198,7 +215,9 @@ modded-system SYSTEM."
      (lambda ()
        (fold
         (lambda (mod record)
-          ;; TODO use he-extension when it exists
-          ((mod-apply mod) record))
+          (let ((map-extension (if (eq? identity (mod-apply mod))
+                                   (mod-he-extension mod)
+                                   (mod-apply mod))))
+            (map-extension record)))
         (modded-system-initial-he system)
         (all-unique-mods (modded-system-mods system)))))))
