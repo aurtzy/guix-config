@@ -33,4 +33,4 @@
 
 (parameterize ((annexed-data '(("data" "workshop" "areas")
                                ("storage/data" "library" "attic"))))
-  (modded-system->home-environment system-home))
+  (modded-system-home-environment system-home))

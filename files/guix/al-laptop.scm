@@ -82,7 +82,7 @@
                           (file "/swapfile")
                           (device "/dev/mapper/cryptroot")
                           (offset "269568"))))
-  (let ((os (modded-system->operating-system system)))
+  (let ((os (modded-system-operating-system system)))
     (operating-system
       (inherit os)
       (services

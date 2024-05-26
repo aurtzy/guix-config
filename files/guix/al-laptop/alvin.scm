@@ -24,5 +24,5 @@
 (parameterize ((annexed-data '(("data" "workshop" "areas" "library" "attic")))
                (excluded-mods (list creative-mod
                                     personal-comms-mod)))
-  (modded-system->home-environment system-home))
+  (modded-system-home-environment system-home))
 

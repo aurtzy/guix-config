@@ -154,4 +154,4 @@
                           (device "/dev/mapper/cryptroot")
                           (offset "5250304")))
                (replace-mesa replace-mesa->mesa-nvk-git))
-  (modded-system->operating-system system))
+  (modded-system-operating-system system))

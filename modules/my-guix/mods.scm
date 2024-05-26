@@ -54,8 +54,8 @@
             mods-eq?
             excluded-mods
             mod-dependencies/deep
-            modded-system->operating-system
-            modded-system->home-environment))
+            modded-system-operating-system
+            modded-system-home-environment))
 
 (define-record-type* <mod>
   mod make-mod
@@ -159,7 +159,7 @@ removing mods in MODS if any are members of EXCLUDED-MODS."
   (let ((mods (lset-difference mods-eq? mods (excluded-mods))))
     (lset-union mods-eq? mods (concatenate (map mod-dependencies/deep mods)))))
 
-(define (modded-system->operating-system system)
+(define (modded-system-operating-system system)
   "Construct and return the operating-system record from the specifications of
 modded-system SYSTEM."
   (unless (modded-system-initial-os system)
@@ -173,7 +173,7 @@ modded-system SYSTEM."
    (modded-system-initial-os system)
    (all-unique-mods (modded-system-mods system))))
 
-(define (modded-system->home-environment system)
+(define (modded-system-home-environment system)
   "Construct and return the home-environment record from the specifications of
 modded-system SYSTEM."
   (unless (modded-system-initial-he system)
