@@ -160,6 +160,8 @@ removing mods in MODS if any are members of EXCLUDED-MODS."
     (lset-union mods-eq? mods (concatenate (map mod-dependencies/deep mods)))))
 
 (define (modded-system->operating-system system)
+  "Construct and return the operating-system record from the specifications of
+modded-system SYSTEM."
   (unless (modded-system-initial-os system)
     (raise-exception
      (make-exception-with-message
@@ -172,6 +174,8 @@ removing mods in MODS if any are members of EXCLUDED-MODS."
    (all-unique-mods (modded-system-mods system))))
 
 (define (modded-system->home-environment system)
+  "Construct and return the home-environment record from the specifications of
+modded-system SYSTEM."
   (unless (modded-system-initial-he system)
     (raise-exception
      (make-exception-with-message
