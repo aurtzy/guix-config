@@ -16,15 +16,21 @@
              (my-guix packages keyboard-center)
              (my-guix utils))
 
+(define initial-home-environment
+  (let ((base-env base-desktop-home-environment))
+    (home-environment
+     (inherit base-env)
+     )))
+
+(define system-home
+  (modded-system
+    (mods (append common-mods
+                  extra-mods
+                  entertainment-mods
+                  (list gnome-mod
+                        web-server-mod)))
+    (initial-he initial-home-environment)))
+
 (parameterize ((annexed-data '(("data" "workshop" "areas")
                                ("storage/data" "library" "attic"))))
-  (apply-mods
-   (let ((base-env base-desktop-home-environment))
-     (home-environment
-      (inherit base-env)
-      ))
-   (append common-mods
-           extra-mods
-           entertainment-mods
-           (list gnome-mod
-                 web-server-mod))))
+  (modded-system->home-environment system-home))
