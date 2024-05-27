@@ -45,7 +45,7 @@
     (name 'newsreaders)
     (dependencies
      (list flatpak-mod))
-    (apply
+    (he-extension
      (compose
       (mod-he-services
        (list (simple-service name
@@ -68,7 +68,7 @@
     (name 'creative)
     (dependencies
      (list flatpak-mod))
-    (apply
+    (he-extension
      (compose
       (mod-he-services
        (list (simple-service name
@@ -80,7 +80,7 @@
 (define office-mod
   (mod
     (name 'office)
-    (apply
+    (he-extension
      (compose (mod-he-packages
                (list libreoffice))))))
 
@@ -89,7 +89,7 @@
     (name 'personal-comms)
     (dependencies
      (list flatpak-mod))
-    (apply
+    (he-extension
      (compose
       (mod-he-services
        (list (simple-service name
@@ -108,7 +108,7 @@
     (name 'programming)
     (dependencies
      (list emacs-mod))
-    (apply
+    (he-extension
      (compose
       (mod-he-services
        (list (simple-service name

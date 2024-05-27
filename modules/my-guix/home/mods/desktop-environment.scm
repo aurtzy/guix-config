@@ -39,7 +39,7 @@
     (name 'wayland)
     (description
      "Configures environment for usage on Wayland compositors.")
-    (apply
+    (he-extension
      (compose
       (mod-he-services
        (list (simple-service name
@@ -83,7 +83,7 @@
     (name 'plasma)
     (dependencies
      (list wayland-mod))
-    (apply
+    (he-extension
      (compose
       (mod-he-services
        (list (simple-service name

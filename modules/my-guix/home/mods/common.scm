@@ -107,7 +107,7 @@
     (name 'data)
     (description
      "Provides packages and services for my data setup.")
-    (apply
+    (he-extension
      (compose-lambda _
        (let ((annexed-data (annexed-data)))
          (list
@@ -139,7 +139,7 @@
     (name 'emacs)
     (description
      "Configures Emacs.")
-    (apply
+    (he-extension
      (compose (mod-he-packages
                (list emacs-pgtk
                      font-hack
@@ -215,7 +215,7 @@
     (name 'common-fonts)
     (description
      "Adds common fonts that provide support for other languages.")
-    (apply
+    (he-extension
      (compose (mod-he-packages
                (list font-google-noto
                      font-wqy-zenhei))
@@ -233,7 +233,7 @@
     (description
      "Configures flatpak for the home environment.  This mod adds Flathub as a
 remote.")
-    (apply
+    (he-extension
      (compose-lambda (he)
        (list (mod-he-packages
               (list flatpak-xdg-utils
@@ -290,7 +290,7 @@ remote.")
 enables the use of Pipewire.")
     (dependencies
      (list flatpak-mod))
-    (apply
+    (he-extension
      (compose
       (mod-he-packages
        (list pavucontrol))
@@ -336,7 +336,7 @@ enables the use of Pipewire.")
 Internet.")
     (dependencies
      (list flatpak-mod))
-    (apply
+    (he-extension
      (compose
       (mod-he-services
        (let ((firefox-profile
@@ -378,7 +378,7 @@ Internet.")
      "Configures password management applications.")
     (dependencies
      (list flatpak-mod))
-    (apply
+    (he-extension
      (compose
       (mod-he-services
        (list (simple-service name
@@ -389,7 +389,7 @@ Internet.")
 (define breeze-theme-mod
   (mod
     (name 'breeze-theme)
-    (apply
+    (he-extension
      (compose (mod-he-packages
                (list breeze
                      breeze-icons))))))
@@ -399,7 +399,7 @@ Internet.")
     (name 'media)
     (description
      "Configures applications for the consumption of media.")
-    (apply
+    (he-extension
      (compose
       (mod-he-packages
        (list yt-dlp

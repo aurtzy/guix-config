@@ -31,6 +31,6 @@
 (define web-server-mod
   (mod
     (name 'web-server)
-    (apply
+    (he-extension
      (compose (mod-he-packages
                (list darkhttpd))))))

@@ -50,7 +50,7 @@
     (name 'bottles)
     (dependencies
      (list flatpak-mod))
-    (apply
+    (he-extension
      (compose
       (mod-he-services
        (list (simple-service name
@@ -72,7 +72,7 @@
       (dependencies
        (list flatpak-mod
              bottles-mod))
-      (apply
+      (he-extension
        (compose
         (mod-he-packages
          (list steam-custom-wrapped
@@ -116,7 +116,7 @@
     (name 'minecraft)
     (dependencies
      (list flatpak-mod))
-    (apply
+    (he-extension
      (compose
       (mod-he-packages
        (list glfw-wayland-minecraft))
@@ -128,14 +128,14 @@
 (define minetest-mod
   (mod
     (name 'minetest)
-    (apply
+    (he-extension
      (compose (mod-he-packages
                (list minetest))))))
 
 (define syncplay-mod
   (mod
     (name 'syncplay)
-    (apply
+    (he-extension
      (compose (mod-he-packages
                (list syncplay))))))
 
