@@ -192,6 +192,7 @@
                      emacs-eat
                      emacs-markdown-mode
                      emacs-protobuf-mode
+                     emacs-wgrep
                      ;; packages being tried out go below here
                      ;; emacs-dape                ;TODO package this?
                      emacs-org-noter
