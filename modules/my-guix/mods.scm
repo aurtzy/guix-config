@@ -36,7 +36,6 @@
             this-mod
             mod-name
             mod-dependencies
-            mod-apply
             mod-os-extension
             mod-he-extension
 
@@ -76,15 +75,6 @@
                 (default '())
                 (sanitize (sanitizer <list>
                                      #:label "Mod dependencies")))
-  (apply mod-apply
-         (default identity)
-         (sanitize
-          (lambda (val)
-            (unless (eq? val identity)
-              (display
-               "my-guix: warning: <mod> apply field is deprecated.\n"))
-            ((sanitizer <procedure>
-                        #:label "Mod apply field (DEPRECATED)") val))))
   (os-extension mod-os-extension
                 (default identity)
                 (sanitize (sanitizer <procedure>
@@ -194,9 +184,7 @@ modded-system SYSTEM."
      (lambda ()
        (fold
         (lambda (mod record)
-          (let ((map-extension (if (eq? identity (mod-apply mod))
-                                   (mod-os-extension mod)
-                                   (mod-apply mod))))
+          (let ((map-extension (mod-os-extension mod)))
             (map-extension record)))
         (modded-system-initial-os system)
         (all-unique-mods (modded-system-mods system)))))))
@@ -215,9 +203,7 @@ modded-system SYSTEM."
      (lambda ()
        (fold
         (lambda (mod record)
-          (let ((map-extension (if (eq? identity (mod-apply mod))
-                                   (mod-he-extension mod)
-                                   (mod-apply mod))))
+          (let ((map-extension (mod-he-extension mod)))
             (map-extension record)))
         (modded-system-initial-he system)
         (all-unique-mods (modded-system-mods system)))))))
