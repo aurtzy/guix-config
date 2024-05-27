@@ -44,7 +44,9 @@
             this-modded-system
             modded-system-mods
             modded-system-initial-os
+            modded-system-final-os-extension
             modded-system-initial-he
+            modded-system-final-he-extension
 
             mod-os-packages
             mod-os-services
@@ -101,11 +103,23 @@
               (sanitize (lambda (val)
                           (rnrs:assert (or (not val) (operating-system? val)))
                           val)))
+  (final-os-extension modded-system-final-os-extension
+                      (default identity)
+                      (sanitize
+                       (sanitizer
+                        <procedure>
+                        #:label "Modded system operating-system extension")))
   (initial-he modded-system-initial-he
               (default #f)
               (sanitize (lambda (val)
                           (rnrs:assert (or (not val) (home-environment? val)))
-                          val))))
+                          val)))
+  (final-he-extension modded-system-final-he-extension
+                      (default identity)
+                      (sanitize
+                       (sanitizer
+                        <procedure>
+                        #:label "Modded system home-environment extension"))))
 
 (define ((mod-os-packages packages) os)
   (operating-system
@@ -177,17 +191,19 @@ modded-system SYSTEM."
     (raise-exception
      (make-exception-with-message
       "System initial-os field is #f; an operating-system must be specified")))
-  (let ((params values (unzip2 (modded-system-parameters system))))
+  (let ((params values (unzip2 (modded-system-parameters system)))
+        (map-final-extension (modded-system-final-os-extension system)))
     (with-parameters*
      params
      values
      (lambda ()
-       (fold
-        (lambda (mod record)
-          (let ((map-extension (mod-os-extension mod)))
-            (map-extension record)))
-        (modded-system-initial-os system)
-        (all-unique-mods (modded-system-mods system)))))))
+       (map-final-extension
+        (fold
+         (lambda (mod record)
+           (let ((map-extension (mod-os-extension mod)))
+             (map-extension record)))
+         (modded-system-initial-os system)
+         (all-unique-mods (modded-system-mods system))))))))
 
 (define (modded-system-home-environment system)
   "Construct and return the home-environment record from the specifications of
@@ -196,14 +212,16 @@ modded-system SYSTEM."
     (raise-exception
      (make-exception-with-message
       "System initial-he field is #f; a home-environment must be specified")))
-  (let ((params values (unzip2 (modded-system-parameters system))))
+  (let ((params values (unzip2 (modded-system-parameters system)))
+        (map-final-extension (modded-system-final-he-extension system)))
     (with-parameters*
      params
      values
      (lambda ()
-       (fold
-        (lambda (mod record)
-          (let ((map-extension (mod-he-extension mod)))
-            (map-extension record)))
-        (modded-system-initial-he system)
-        (all-unique-mods (modded-system-mods system)))))))
+       (map-final-extension
+        (fold
+         (lambda (mod record)
+           (let ((map-extension (mod-he-extension mod)))
+             (map-extension record)))
+         (modded-system-initial-he system)
+         (all-unique-mods (modded-system-mods system))))))))
