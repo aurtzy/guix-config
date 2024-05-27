@@ -103,7 +103,7 @@
     (description
      "Configures desktop services defined by Guix.  Does not include the
 display manager.")
-    (apply
+    (os-extension
      (compose-lambda (os)
        (let ((replace-mesa (replace-mesa)))
          (list
@@ -121,7 +121,7 @@ display manager.")
     (name 'esync)
     (description
      "Makes the system Esync-compatible.")
-    (apply
+    (os-extension
      (compose (mod-os-services
                (list
                 (service pam-limits-service-type
@@ -134,7 +134,7 @@ display manager.")
     (description
      "Provides software to support various file system operations and disk
 management/maintenance.")
-    (apply
+    (os-extension
      (compose (mod-os-packages
                (list btrfs-progs
                      cryptsetup
@@ -148,7 +148,7 @@ management/maintenance.")
     (name 'printers)
     (description
      "Provides printing support via CUPS.")
-    (apply
+    (os-extension
      (compose (mod-os-packages
                (list nss-mdns))
               (mod-os-services
@@ -162,7 +162,7 @@ management/maintenance.")
 Guix documentation on swapfiles for more information.  If the setup script in
 this repository is used to set up the swapfile, it should output all the
 swapfile configuration information needed.")
-    (apply
+    (os-extension
      (compose-lambda (os)
        (define config (swapfile))
 
@@ -186,7 +186,7 @@ swapfile configuration information needed.")
     (name 'tor)
     (description
      "Configures tor.")
-    (apply
+    (os-extension
      (compose (mod-os-packages
                (list torsocks))
               (mod-os-services
@@ -197,7 +197,7 @@ swapfile configuration information needed.")
     (name 'virtualization)
     (description
      "Adds virtualization packages and services to the system environment.")
-    (apply
+    (os-extension
      (compose (mod-os-packages
                (list virt-manager
                      gnome-boxes))

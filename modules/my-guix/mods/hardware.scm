@@ -47,7 +47,7 @@
     (description
      "Configures system for use on a battery.  Ideal for laptop
 configurations.")
-    (apply
+    (os-extension
      (compose (mod-os-packages
                (list tlp))
               (mod-os-services
@@ -60,7 +60,7 @@ configurations.")
     (name 'nvidia)
     (description
      "Configures the system for an NVIDIA GPU.")
-    (apply
+    (os-extension
      (compose-lambda _
        (let ((nvidia-proprietary? (nvidia-proprietary?)))
          (list (mod-os-services

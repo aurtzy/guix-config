@@ -36,7 +36,7 @@
     (name 'gnome)
     (description
      "Provides configurations for the GNOME desktop environment.")
-    (apply
+    (os-extension
      (compose-lambda (os)
        (let ((replace-mesa (replace-mesa))
              (nvidia-proprietary? (nvidia-proprietary?)))

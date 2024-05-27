@@ -36,7 +36,7 @@
     (description
      "Provides the base set of packages defined by Guix as well as additional
 packages deemed essential.")
-    (apply
+    (os-extension
      (mod-os-packages (cons* git
                              %base-packages)))))
 
@@ -46,17 +46,18 @@ packages deemed essential.")
     (description
      "Sets up the Nonguix channel on this system.  The channel must still be
 enabled in the home environment.")
-    (apply (compose
-            (mod-os-services
-             (list
-              (simple-service name
-                              guix-service-type
-                              (guix-extension
-                               (authorized-keys
-                                (list (local-file (path-append-my-files
-                                                   "guix/nonguix.pub"))))
-                               (substitute-urls
-                                '("https://substitutes.nonguix.org"))))))))))
+    (os-extension
+     (compose
+      (mod-os-services
+       (list
+        (simple-service name
+                        guix-service-type
+                        (guix-extension
+                         (authorized-keys
+                          (list (local-file (path-append-my-files
+                                             "guix/nonguix.pub"))))
+                         (substitute-urls
+                          '("https://substitutes.nonguix.org"))))))))))
 
 (define base-mods (list base-packages-mod
                         nonguix-channel-mod))
