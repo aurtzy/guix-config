@@ -80,14 +80,16 @@
     (mods (append desktop-mods
                   (list gnome-mod
                         battery-mod)))
-    (initial-os initial-operating-system)))
+    (initial-os initial-operating-system)
+    (final-os-extension
+     (lambda (os)
+       (operating-system
+         (inherit os)
+         (services
+          (modify-services (operating-system-user-services os)
+            (network-manager-service-type
+             config => (network-manager-configuration
+                        (inherit config)
+                        (vpn-plugins (list network-manager-openconnect)))))))))))
 
-(let ((os (modded-system-operating-system system)))
-  (operating-system
-    (inherit os)
-    (services
-     (modify-services (operating-system-user-services os)
-       (network-manager-service-type
-        config => (network-manager-configuration
-                   (inherit config)
-                   (vpn-plugins (list network-manager-openconnect))))))))
+(modded-system-operating-system system)
