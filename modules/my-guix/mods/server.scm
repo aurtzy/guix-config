@@ -19,7 +19,7 @@
 ;;;
 ;;; This module provides mods geared towards server use.
 
-(define-module (my-guix home mods server)
+(define-module (my-guix mods server)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
