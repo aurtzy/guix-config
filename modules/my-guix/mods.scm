@@ -25,10 +25,12 @@
   #:use-module (guix records)
   #:use-module (ice-9 curried-definitions)
   #:use-module (ice-9 exceptions)
+  #:use-module (ice-9 match)
   #:use-module (my-guix utils)
   #:use-module (oop goops)
   #:use-module ((rnrs base) #:prefix rnrs:)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-39)
   #:use-module (srfi srfi-71)
   #:export (<mod>
@@ -60,7 +62,8 @@
             excluded-mods
             mod-dependencies/deep
             modded-system-operating-system
-            modded-system-home-environment))
+            modded-system-home-environment
+            modded-system-guess-environment))
 
 (define-record-type* <mod>
   mod make-mod
@@ -225,3 +228,31 @@ modded-system SYSTEM."
              (map-extension record)))
          (modded-system-initial-he system)
          (all-unique-mods (modded-system-mods system))))))))
+
+(define (modded-system-guess-environment system)
+  "Return the operating-system or home-environment record from a modded-system
+record depending on the current environment.  If the environment cannot be
+determined, return #f.
+
+If the command-line indicates 'guix home' or 'guix system' was invoked, these
+are used to determine the result.  Otherwise, the GUIX_CONFIG_FALLBACK
+environment variable is used.
+
+If set, GUIX_CONFIG_FALLBACK must be one of the following
+values (case-insensitive): 'system', 'home'"
+  (define arguments (cons (basename (car (command-line)))
+                          (cdr (command-line))))
+  (define guix-config-fallback (getenv "GUIX_CONFIG_FALLBACK"))
+  (match arguments
+    (("guix" "system" _ ...)
+     (modded-system-operating-system system))
+    (("guix" "home" _ ...)
+     (modded-system-home-environment system))
+    (else
+     (if guix-config-fallback
+         (match (string-downcase guix-config-fallback)
+           ("system"
+            (modded-system-operating-system system))
+           ("home"
+            (modded-system-home-environment system)))
+         #f))))
