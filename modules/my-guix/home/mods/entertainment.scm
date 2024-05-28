@@ -24,7 +24,7 @@
   #:use-module (gnu home)
   #:use-module (gnu services)
   #:use-module (my-guix mods)
-  #:use-module (my-guix home mods common)
+  #:use-module (my-guix mods desktop)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages game-client)

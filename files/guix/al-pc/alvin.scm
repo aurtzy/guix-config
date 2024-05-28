@@ -5,9 +5,9 @@
              (gnu services)
              (guix utils)
              (my-guix mods)
+             (my-guix mods desktop)
              (my-guix mods desktop-environment)
              (my-guix home base desktop)
-             (my-guix home mods common)
              (my-guix home mods entertainment)
              (my-guix home mods extra)
              (my-guix home mods server)
@@ -26,7 +26,7 @@
   (modded-system
     (parameters `((,annexed-data (("data" "workshop" "areas")
                                   ("storage/data" "library" "attic")))))
-    (mods (append common-mods
+    (mods (append desktop-mods
                   extra-mods
                   entertainment-mods
                   (list gnome-mod
