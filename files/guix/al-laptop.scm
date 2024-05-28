@@ -1,4 +1,5 @@
 (use-modules (gnu)
+             (gnu home)
              (gnu packages gnome)
              (gnu packages radio)
              (gnu services networking)
@@ -6,9 +7,13 @@
              (guix packages)
              (my-guix base desktop)
              (my-guix config)
+             (my-guix home base desktop)
+             (my-guix home services)
+             (my-guix home services package-management)
              (my-guix mods)
              (my-guix mods desktop)
              (my-guix mods desktop-environment)
+             (my-guix mods desktop-extra)
              (my-guix mods hardware)
              (nongnu packages linux)
              (nongnu system linux-initrd))
@@ -71,15 +76,25 @@
         (udev-rules-service 'rtl-sdr rtl-sdr)
         (operating-system-user-services base-os))))))
 
+(define initial-home-environment
+  (let ((base-env base-desktop-home-environment))
+    (home-environment
+     (inherit base-env)
+     )))
+
 (define system
   (modded-system
     (parameters `((,swapfile ,(swapfile-configuration
                                (file "/swapfile")
                                (device "/dev/mapper/cryptroot")
-                               (offset "269568")))))
+                               (offset "269568")))
+                  (,annexed-data (("data" "workshop" "areas" "library" "attic")))
+                  (,excluded-mods ,(list creative-mod
+                                         personal-comms-mod))))
     (mods (append desktop-mods
-                  (list gnome-mod
-                        battery-mod)))
+                  extra-mods
+                  (list battery-mod
+                        gnome-mod)))
     (initial-os initial-operating-system)
     (final-os-extension
      (lambda (os)
@@ -90,6 +105,7 @@
             (network-manager-service-type
              config => (network-manager-configuration
                         (inherit config)
-                        (vpn-plugins (list network-manager-openconnect)))))))))))
+                        (vpn-plugins (list network-manager-openconnect)))))))))
+    (initial-he initial-home-environment)))
 
-(modded-system-operating-system system)
+(modded-system-guess-environment system)
