@@ -34,18 +34,19 @@
 
 (use-package-modules ncurses package-management xdisorg ssh)
 
-(define guix-path
-  (let ((local-guix (path-append (getenv "HOME")
-                                 ".config/guix/current/bin/guix"))
-        (global-guix "/run/current-system/profile/bin/guix"))
-    (if (file-exists? local-guix)
-        local-guix
-        global-guix)))
-
 (define wrapped-guix-script
   #~(begin
-      (setenv "GUIX_PACKAGE_PATH" #$GUIX_CONFIG_MODULES_DIR)
-      (apply execl #$guix-path (command-line))))
+      ;; Only set GUIX_PACKAGE_PATH when it is unset to allow for overrides
+      (unless (getenv "GUIX_PACKAGE_PATH")
+        (setenv "GUIX_PACKAGE_PATH" #$GUIX_CONFIG_MODULES_DIR))
+      (let ((local-guix (string-append (getenv "HOME")
+                                       "/.config/guix/current/bin/guix"))
+            (global-guix "/run/current-system/profile/bin/guix"))
+        (apply execl
+               (if (file-exists? local-guix)
+                   local-guix
+                   global-guix)
+               (command-line)))))
 
 (define-public base-desktop-home-environment
   (home-environment
