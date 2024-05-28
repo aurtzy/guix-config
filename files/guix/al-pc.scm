@@ -1,4 +1,7 @@
 (use-modules (gnu)
+             (gnu home)
+             (gnu home services desktop)
+             (gnu home services sound)
              (gnu packages linux)
              (gnu services sddm)
              (gnu services xorg)
@@ -9,32 +12,25 @@
              (guix packages)
              (my-guix base desktop)
              (my-guix config)
+             (my-guix home base desktop)
+             (my-guix home services)
+             (my-guix home services package-management)
              (my-guix mods)
              (my-guix mods base)
              (my-guix mods desktop)
              (my-guix mods desktop-environment)
+             (my-guix mods desktop-extra)
+             (my-guix mods entertainment)
              (my-guix mods hardware)
+             (my-guix mods server)
              (my-guix packages mesa)
+             (my-guix packages keyboard-center)
              (my-guix services hardware)
+             (my-guix utils)
              (nongnu packages linux)
              ((nongnu packages nvidia) #:prefix nvidia:)
              ((nongnu services nvidia) #:prefix nvidia:)
              (nongnu system linux-initrd))
-
-(define linux-6.9-rc
-  (package
-    (inherit
-     (customize-linux
-      #:name "linux"
-      #:linux linux-libre-6.8
-      #:source (origin
-                 (method url-fetch)
-                 (uri
-                  "https://git.kernel.org/torvalds/t/linux-6.9-rc6.tar.gz")
-                 (sha256
-                  (base32
-                   "0hwxpqd7rgidkphkpj923si47nafi75lpjwz64zwvh7svxyp8ans")))))
-    (version "6.9-rc6")))
 
 (define linux-gfxstrand-nvk
   (let ((revision "0")
@@ -142,16 +138,28 @@
        (cons* (service keyboard-center-service-type)
               (operating-system-user-services base-os))))))
 
+(define initial-home-environment
+  (let ((base-env base-desktop-home-environment))
+    (home-environment
+     (inherit base-env)
+     )))
+
 (define system
   (modded-system
     (parameters `((,swapfile ,(swapfile-configuration
                                (file "/swapfile")
                                (device "/dev/mapper/cryptroot")
                                (offset "5250304")))
-                  (,replace-mesa ,replace-mesa->mesa-nvk-git)))
+                  (,replace-mesa ,replace-mesa->mesa-nvk-git)
+                  (,annexed-data (("data" "workshop" "areas")
+                                  ("storage/data" "library" "attic")))))
     (mods (append desktop-mods
+                  extra-mods
+                  entertainment-mods
                   (list gnome-mod
-                        nvidia-mod)))
-    (initial-os initial-operating-system)))
+                        nvidia-mod
+                        web-server-mod)))
+    (initial-os initial-operating-system)
+    (initial-he initial-home-environment)))
 
-(modded-system-operating-system system)
+(modded-system-guess-environment system)
