@@ -19,7 +19,7 @@
 ;;;
 ;;; This module provides entertainment-related mods.
 
-(define-module (my-guix home mods entertainment)
+(define-module (my-guix mods entertainment)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu services)
