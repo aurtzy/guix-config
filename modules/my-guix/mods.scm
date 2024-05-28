@@ -77,7 +77,7 @@
                (sanitize (sanitizer <string>
                                     #:label "Mod description")))
   (dependencies mod-dependencies
-                (default '())
+                (default '()) (thunked)
                 (sanitize (sanitizer <list>
                                      #:label "Mod dependencies")))
   (os-extension mod-os-extension
