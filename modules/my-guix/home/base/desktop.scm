@@ -59,12 +59,7 @@
           (service home-bash-service-type
                    (home-bash-configuration
                     (environment-variables
-                     `(("GUIX_PACKAGE_PATH"
-                        . ,(build-path-augmentation
-                            "GUIX_PACKAGE_PATH"
-                            GUIX_CONFIG_MODULES_DIR))
-
-                       ;; Exclude certain commands from history
+                     `( ;; Exclude certain commands from history
                        ("HISTCONTROL" . "ignoreboth")
                        ("HISTIGNORE" . "history:history *:exit:exit *")
 
