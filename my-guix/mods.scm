@@ -84,6 +84,8 @@
                 (default identity)
                 (sanitize (sanitizer <procedure>
                                      #:label "Mod operating system extension")))
+  ;; TODO Consider multi-user configurations.  An alist (e.g.
+  ;; (user . extension)) might do...
   (he-extension mod-he-extension
                 (default identity)
                 (sanitize (sanitizer <procedure>
