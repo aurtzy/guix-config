@@ -37,8 +37,9 @@
 (define wrapped-guix-script
   #~(begin
       ;; Only set GUIX_PACKAGE_PATH when it is unset to allow for overrides
-      (unless (getenv "GUIX_PACKAGE_PATH")
-        (setenv "GUIX_PACKAGE_PATH" #$GUIX_CONFIG_MODULES_DIR))
+      (if (getenv "GUIX_PACKAGE_PATH")
+          (display "override detected: GUIX_PACKAGE_PATH is already set\n")
+          (setenv "GUIX_PACKAGE_PATH" #$GUIX_CONFIG_MODULES_DIR))
       (let ((local-guix (string-append (getenv "HOME")
                                        "/.config/guix/current/bin/guix"))
             (global-guix "/run/current-system/profile/bin/guix"))
