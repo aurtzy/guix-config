@@ -17,10 +17,10 @@
 
 ;;; Commentary:
 ;;;
-;;; This module provides extra mods that are also commonly used on machines,
-;;; but more likely to be individually picked on a case-by-case basis.
+;;; This module provides extra mods that are commonly used on desktop machines,
+;;; but more likely to be individually included on a case-by-case basis.
 
-(define-module (my-guix home mods extra)
+(define-module (my-guix mods desktop-extra)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu services)

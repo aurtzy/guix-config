@@ -3,8 +3,8 @@
              (my-guix mods)
              (my-guix mods desktop)
              (my-guix mods desktop-environment)
+             (my-guix mods desktop-extra)
              (my-guix home base desktop)
-             (my-guix home mods extra)
              (my-guix home services)
              (my-guix home services package-management))
 
