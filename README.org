@@ -17,8 +17,11 @@ Here is a general overview of notable files in this repository:
 - [[file:files]] contains configuration files that are not declared as Guile
   modules. This includes the top-level Guix Home/System configuration files
   for my systems ([[file:files/guix]]).
-- [[file:modules]] contains Guile modules, where packages, services, and other
+- [[file:my-guix]] contains Guile modules, where packages, services, and other
   utilities are defined.
+- [[file:modules]] is useful for setting additional load paths for Guix without
+  accidentally including other files (e.g. from =files=).  This directory is
+  what =GUIX_PACKAGE_PATH= is set to.
 - [[file:scripts/setup]] is used for setting up additional things that the installer
   does not offer to do.
 - [[file:scripts/guix]] is used for bootstrapping the configuration when
