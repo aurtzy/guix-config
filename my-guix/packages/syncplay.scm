@@ -1,4 +1,4 @@
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -54,8 +54,7 @@
                         (replace 'install
                           (lambda _
                             (invoke "make" "install" "DESTDIR="
-                                    (string-append "PREFIX="
-                                                   (assoc-ref %outputs "out")))))
+                                    (string-append "PREFIX=" #$output))))
                         (add-after 'install 'wrap-qt
                           (lambda* (#:key inputs #:allow-other-keys)
                             (wrap-qt-program "syncplay"
