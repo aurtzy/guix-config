@@ -396,18 +396,21 @@ display manager.")
                      emacs-org-noter
                      emacs-pdf-tools))
               (mod-he-services
-               (list (simple-service name
-                                     home-impure-symlinks-service-type
-                                     `((".config/emacs"
-                                        ,(path-append-my-files "emacs/impure")
-                                        "init.el")))
-                     (simple-service name
-                                     home-environment-variables-service-type
-                                     '( ;; Set editor for e.g. sudoedit
-                                       ("VISUAL"
-                                        . "/usr/bin/env emacs")
-                                       ("EDITOR"
-                                        . "/usr/bin/env emacs -nw")))))))))
+               (list
+                (simple-service name
+                                home-impure-symlinks-service-type
+                                `((".config/emacs"
+                                   ,(path-append-my-files "emacs/impure")
+                                   "init.el")))
+                (simple-service name
+                                home-environment-variables-service-type
+                                '( ;; Set editor for e.g. sudoedit
+                                  ("VISUAL"
+                                   .
+                                   "/usr/bin/env emacsclient -a emacs --no-wait")
+                                  ("EDITOR"
+                                   .
+                                   "/usr/bin/env emacs -nw")))))))))
 
 (define esync-mod
   (mod
