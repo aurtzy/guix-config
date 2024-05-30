@@ -31,7 +31,7 @@
 (define-public syncplay
   (package
     (name "syncplay")
-    (version "1.7.1")
+    (version "1.7.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -40,7 +40,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xw9rl4bpmcskxs9f8zlvhhi1xlqfzzrfgmb0r6n50y2fbg7ycmc"))))
+                "08bgndszja4n2kql2qmzl6qrzawxvcwmywsc69lq0dzjnpdk96la"))))
     (build-system python-build-system)
     (arguments
      (list #:imported-modules `(,@%python-build-system-modules
