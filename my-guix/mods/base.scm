@@ -21,6 +21,7 @@
 
 (define-module (my-guix mods base)
   #:use-module (gnu)
+  #:use-module (guix channels)
   #:use-module (my-guix mods)
   #:use-module (my-guix utils)
   #:export (base-packages-mod
@@ -47,17 +48,36 @@ packages deemed essential.")
      "Sets up the Nonguix channel on this system.  The channel must still be
 enabled in the home environment.")
     (os-extension
-     (compose
-      (mod-os-services
-       (list
-        (simple-service name
-                        guix-service-type
-                        (guix-extension
-                         (authorized-keys
-                          (list (local-file (path-append-my-files
-                                             "guix/nonguix.pub"))))
-                         (substitute-urls
-                          '("https://substitutes.nonguix.org"))))))))))
+     (lambda (os)
+       (operating-system
+        (inherit os)
+        (services
+         (cons*
+          (simple-service name
+                          guix-service-type
+                          (guix-extension
+                           (authorized-keys
+                            (list (local-file (path-append-my-files
+                                               "guix/nonguix.pub"))))
+                           (substitute-urls
+                            '("https://substitutes.nonguix.org"))))
+          (modify-services (operating-system-user-services os)
+            (guix-service-type
+             config
+             => (guix-configuration
+                 (inherit config)
+                 (channels
+                  (cons*
+                   (channel
+                    (name 'nonguix)
+                    (url "https://gitlab.com/nonguix/nonguix")
+                    (branch "master")
+                    (introduction
+                     (make-channel-introduction
+                      "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+                      (openpgp-fingerprint
+                       "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+                   %default-channels))))))))))))
 
 (define base-mods (list base-packages-mod
                         nonguix-channel-mod))
