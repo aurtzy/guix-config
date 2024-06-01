@@ -38,7 +38,7 @@
     ;; Support '.local' host name lookups (mainly for printing)
     (name-service-switch %mdns-host-lookup-nss)
     (packages (list))
-    (services (list))
+    (services (list (service guix-service-type)))
     (sudoers-file
      (plain-file "sudoers"
                  (string-join

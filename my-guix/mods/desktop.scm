@@ -317,8 +317,10 @@ Internet.")
   (mod
     (name 'desktop-services)
     (description
-     "Configures desktop services defined by Guix.  Does not include the
-display manager.")
+     "Configures desktop services defined by Guix.
+
+Some services are explicitly removed for modularity purposes (i.e. to be added
+elsewhere in possibly different forms).")
     (os-extension
      (compose-lambda (os)
        (let ((replace-mesa (replace-mesa)))
@@ -328,7 +330,8 @@ display manager.")
           (mod-os-services
            (delete 'network-manager-applet
                    (modify-services %desktop-services
-                     (delete gdm-service-type))
+                     (delete gdm-service-type)
+                     (delete guix-service-type))
                    (lambda (name serv)
                      (eq? name (service-type-name (service-kind serv))))))))))))
 
