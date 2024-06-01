@@ -17,17 +17,16 @@
 
 ;;; Commentary:
 ;;;
-;;; This module provides a base desktop home environment for foreign
-;;; distributions.
+;;; This module provides a base desktop environments for foreign systems.
 
-(define-module (my-guix home base foreign-desktop)
+(define-module (my-guix base foreign-desktop)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
   #:use-module (gnu services)
   #:use-module (guix channels)
-  #:use-module (my-guix home base desktop)
+  #:use-module (my-guix base desktop)
   #:export (base-foreign-desktop-home-environment))
 
 (use-package-modules base certs ssh)
