@@ -52,8 +52,6 @@
                              home-flatpak-profile-service-type
                              '((flathub "org.mozilla.Thunderbird")
                                (flathub "org.kde.akregator")))
-             ;; Disable GPU access to fix NVIDIA Wayland issues
-             ;; See: https://bugs.kde.org/show_bug.cgi?id=466124
              (simple-service name
                              home-impure-symlinks-service-type
                              `((".local/share/flatpak/overrides"
