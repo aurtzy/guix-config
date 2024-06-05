@@ -139,7 +139,15 @@ translation between LLVM IR and SPIR-V.")
              (commit "588c725f270966292f965f9e13305cf07689c7eb")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "1kcz7aqbnjsbqfspjfjq9hj3lbx2r18ivx6x7rg7czydbdz57cg2"))))
+                "1kcz7aqbnjsbqfspjfjq9hj3lbx2r18ivx6x7rg7czydbdz57cg2"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri
+            "https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25576.patch")
+           (sha256 (base32
+                    "0vcifnca44b27plb33r8kslna6qxj3ss9iwz70pq18ar1g7br1wv")))))))
     (arguments
      (cons*
       #:meson meson-1.3
