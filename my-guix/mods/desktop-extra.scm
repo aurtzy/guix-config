@@ -55,7 +55,7 @@
              (simple-service name
                              home-impure-symlinks-service-type
                              `((".local/share/flatpak/overrides"
-                                ,(path-append-my-files "impure/akregator")
+                                ,(path-append-my-files "akregator")
                                 "org.kde.akregator")
                                (".var/app/org.kde.akregator/data/akregator/data"
                                 ,(path-append-my-home "areas/feeds")
