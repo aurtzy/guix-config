@@ -34,9 +34,9 @@
             plasma-mod
             wayland-mod))
 
-(use-package-modules freedesktop gnome gnome-xyz qt)
+(use-package-modules freedesktop gnome gnome-xyz kde-plasma qt)
 
-(use-service-modules desktop xorg)
+(use-service-modules desktop sddm xorg)
 
 (define gnome-mod
   (mod
@@ -109,6 +109,33 @@
      "Configures the KDE Plasma desktop environment for this system.")
     (dependencies
      (list wayland-mod))
+    (os-extension
+     (compose-lambda (os)
+       (let ((replace-mesa (replace-mesa))
+             (nvidia-proprietary? (nvidia-proprietary?)))
+         (list
+          (mod-os-packages
+           (list xdg-desktop-portal-gtk))
+          (mod-os-services
+           (list (service plasma-desktop-service-type
+                          (plasma-desktop-configuration
+                           (plasma-package (replace-mesa plasma))))
+                 (service sddm-service-type
+                          (sddm-configuration
+                           (xorg-configuration
+                            (if nvidia-proprietary?
+                                (xorg-configuration
+                                 (keyboard-layout
+                                  (operating-system-keyboard-layout os))
+                                 (modules
+                                  (cons (module-ref (resolve-interface
+                                                     '(nongnu packages nvidia))
+                                                    'nvda)
+                                        %default-xorg-modules))
+                                 (drivers '("nvidia")))
+                                (xorg-configuration
+                                 (keyboard-layout
+                                  (operating-system-keyboard-layout os)))))))))))))
     (he-extension
      (compose
       (mod-he-services
