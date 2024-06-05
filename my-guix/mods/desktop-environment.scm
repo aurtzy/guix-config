@@ -100,11 +100,7 @@
                      "org.kde.kglobalaccel.Component"
                      "invokeShortcut"
                      "Overview")
-               ","))
-      (invoke "qdbus"
-              "org.kde.KWin"
-              "/KWin"
-              "reconfigure")))
+               ","))))
 
 (define plasma-mod
   (mod
