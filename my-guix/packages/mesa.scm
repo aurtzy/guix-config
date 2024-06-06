@@ -136,10 +136,10 @@ translation between LLVM IR and SPIR-V.")
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "588c725f270966292f965f9e13305cf07689c7eb")))
+             (commit "e1e566352505b27b1283e2d8662767cc1455c311")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "1kcz7aqbnjsbqfspjfjq9hj3lbx2r18ivx6x7rg7czydbdz57cg2"))
+                "0m7kji58b8cirv4517pm3b698x00ahp7bpy157kd6qpw1zd62a69"))
        (patches
         (list
          (origin
