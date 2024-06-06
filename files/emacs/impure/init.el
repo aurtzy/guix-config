@@ -182,7 +182,9 @@
 
 (use-package emacs
   :bind (("M-u" . upcase-dwim)
-         ("M-l" . downcase-dwim)))
+         ("M-l" . downcase-dwim))
+  :config
+  (put 'downcase-region 'disabled nil))
 
 (use-package autorevert
   :custom
@@ -483,11 +485,6 @@
   :config
   (editorconfig-mode 1))
 
-;;;; Un-disabled commands
-
-(put 'downcase-region 'disabled nil)
-(put 'magit-clean 'disabled nil)
-
 ;;;; Miscellaneous
 
 (use-package emacs
@@ -551,7 +548,9 @@
 
 ;; TODO: explore magit configurations
 (use-package magit
-  :commands magit)
+  :commands magit
+  :config
+  (put 'magit-clean 'disabled nil))
 
 (use-package forge
   :after magit)
