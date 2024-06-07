@@ -141,11 +141,7 @@
   (let ((base-env base-desktop-home-environment))
     (home-environment
      (inherit base-env)
-     (services
-      (cons* (simple-service 'test-zink
-                             (@ (gnu home services) home-environment-variables-service-type)
-                             '(("NOUVEAU_USE_ZINK" . "1")))
-             (home-environment-user-services base-env))))))
+     )))
 
 
 (define system
