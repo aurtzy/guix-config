@@ -368,6 +368,7 @@ elsewhere in possibly different forms).")
                      emacs-marginalia
                      emacs-orderless
                      emacs-embark
+                     emacs-corfu
                      ;; editing tweaks
                      emacs-unfill
                      emacs-adaptive-wrap

@@ -421,6 +421,21 @@
 (use-package embark-consult
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
+(use-package corfu
+  :bind (:map
+         corfu-map
+         ([return] . nil)
+         ([tab] . corfu-next)
+         ([backtab] . corfu-previous))
+  :custom
+  (corfu-cycle t)
+  (corfu-separator ?\s)
+  (corfu-quit-at-boundary nil)
+  (corfu-quit-no-match nil)
+  (corfu-preselect 'prompt)
+  :init
+  (global-corfu-mode))
+
 ;;;; Guix
 
 (use-package guix-popup
