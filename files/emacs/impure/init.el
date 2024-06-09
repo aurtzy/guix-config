@@ -226,26 +226,44 @@
       (adaptive-wrap-prefix-mode 1)))
   (declare-function adaptive-wrap-prefix-mode "adaptive-wrap"))
 
-;; TODO this is cool
-;; See: https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
+;; Resource:
+;; https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
 (use-package whitespace
+  :hook prog-mode
   :custom
   (whitespace-style '(face
                       spaces
                       empty
                       tabs
+                      newline
                       trailing
                       space-mark
-                      tab-mark))
+                      tab-mark
+                      newline-mark))
   (whitespace-global-modes '(not shell-mode
                                  help-mode
                                  magit-mode
                                  magit-diff-mode
+                                 org-mode
                                  ibuffer-mode
                                  dired-mode))
+  (whitespace-display-mappings '((newline-mark ?\n [172 ?\n] [36 ?\n])
+                                 (space-mark ?\s [183] [46])
+                                 (tab-mark ?\t [187 ?\t] [62 ?\t])))
   :config
-  ;; (global-whitespace-mode 1)
-  )
+  (use-package color
+    :config
+    (let* ((ws-color (color-lighten-name "#555555" 30)))
+      (custom-set-faces
+       `(whitespace-newline                ((t (:foreground ,ws-color))))
+       `(whitespace-missing-newline-at-eof ((t (:foreground ,ws-color))))
+       `(whitespace-space                  ((t (:foreground ,ws-color))))
+       `(whitespace-space-after-tab        ((t (:foreground ,ws-color))))
+       `(whitespace-space-before-tab       ((t (:foreground ,ws-color))))
+       `(whitespace-tab                    ((t (:foreground ,ws-color))))
+       `(whitespace-trailing               ((t (:foreground ,ws-color))))))
+    :preface
+    (declare-function color-lighten-name "color")))
 
 ;;;; Completion suite
 
