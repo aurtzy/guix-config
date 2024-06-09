@@ -149,6 +149,7 @@
   :custom
   (scroll-preserve-screen-position t)
   :config
+  (put 'scroll-left 'disabled nil)
   (pixel-scroll-precision-mode t)
   ;; EXPERIMENTAL (comment out precision mode when testing)
   ;;
