@@ -197,7 +197,8 @@
   :custom
   (fill-column 80)
   :config
-  (global-display-fill-column-indicator-mode 1))
+  (global-display-fill-column-indicator-mode 1)
+  (toggle-text-mode-auto-fill))
 
 (use-package unfill
   :after embark
