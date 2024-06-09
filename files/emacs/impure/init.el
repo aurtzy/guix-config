@@ -456,6 +456,10 @@
   :config
   (auto-insert-mode 1))
 
+(use-package repeat
+  :config
+  (repeat-mode t))
+
 (use-package elec-pair
   :config
   (electric-pair-mode 1))
