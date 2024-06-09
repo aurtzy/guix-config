@@ -216,13 +216,14 @@
          ("M-f" . unfill-paragraph)))
 
 (use-package adaptive-wrap
+  :config
+  (global-adaptive-wrap-prefix-mode 1)
   :preface
   (define-globalized-minor-mode global-adaptive-wrap-prefix-mode
     adaptive-wrap-prefix-mode
     (lambda ()
       (adaptive-wrap-prefix-mode 1)))
-  :config
-  (global-adaptive-wrap-prefix-mode 1))
+  (declare-function adaptive-wrap-prefix-mode "adaptive-wrap"))
 
 ;; TODO this is cool
 ;; See: https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
@@ -435,7 +436,9 @@
   (corfu-quit-no-match nil)
   (corfu-preselect 'prompt)
   :init
-  (global-corfu-mode))
+  (global-corfu-mode t)
+  :preface
+  (declare-function global-corfu-mode "corfu"))
 
 ;;;; Guix
 
@@ -465,8 +468,6 @@
   (electric-pair-mode 1))
 
 (use-package envrc
-  :preface
-  (declare-function envrc-global-mode "envrc")
   :config
   ;; Override envrc-global-mode to fix issue with it not working.  See:
   ;; https://github.com/purcell/envrc/pull/80
@@ -474,7 +475,14 @@
     (lambda () (when (and (not (minibufferp)) (not (file-remote-p default-directory))
                           (executable-find envrc-direnv-executable))
                  (envrc-mode 1))))
-  (envrc-global-mode t))
+  (envrc-global-mode t)
+  :preface
+  (declare-function envrc-global-mode "envrc")
+  (declare-function envrc-mode "envrc")
+  (declare-function envrc-global-mode-cmhh "envrc")
+  (declare-function envrc-global-mode-check-buffers "envrc")
+  (declare-function envrc-global-mode-enable-in-buffers "envrc")
+  (declare-function envrc-mode-set-explicitly "envrc"))
 
 (use-package eglot
   :commands eglot
@@ -503,7 +511,9 @@
 
 (use-package editorconfig
   :config
-  (editorconfig-mode 1))
+  (editorconfig-mode 1)
+  :preface
+  (declare-function editorconfig-mode "editorconfig"))
 
 ;;;; Miscellaneous
 
