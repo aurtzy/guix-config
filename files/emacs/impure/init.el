@@ -229,7 +229,6 @@
 ;; Resource:
 ;; https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
 (use-package whitespace
-  :hook prog-mode
   :custom
   (whitespace-style '(face
                       tabs
@@ -255,7 +254,8 @@
        `(whitespace-space                  ((t (:foreground ,ws-color))))
        `(whitespace-tab                    ((t (:foreground ,ws-color))))))
     :preface
-    (declare-function color-lighten-name "color")))
+    (declare-function color-lighten-name "color"))
+  (global-whitespace-mode t))
 
 ;;;; Completion suite
 
