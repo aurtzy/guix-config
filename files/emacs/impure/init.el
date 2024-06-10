@@ -593,11 +593,19 @@
   :custom
   (dired-listing-switches "-alh"))
 
-;; TODO: explore magit configurations
 (use-package magit
+  :bind ("C-c m" . magit-custom-dispatch)
   :commands magit
   :config
-  (put 'magit-clean 'disabled nil))
+  (put 'magit-clean 'disabled nil)
+  :preface
+  (require 'transient)
+  (transient-define-prefix magit-custom-dispatch ()
+    "Invoke Magit commands."
+    ["Magit commands"
+     [("m" "View Status" magit-status-here)
+      ("d" "Dispatch from buffer" magit-dispatch)
+      ("f" "File dispatch from buffer" magit-file-dispatch)]]))
 
 (use-package magit-todos
   :init
