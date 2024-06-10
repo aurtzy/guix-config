@@ -252,12 +252,8 @@
     (let* ((ws-color (color-lighten-name "#444444" 50)))
       (custom-set-faces
        `(whitespace-newline                ((t (:foreground ,ws-color))))
-       `(whitespace-missing-newline-at-eof ((t (:foreground ,ws-color))))
        `(whitespace-space                  ((t (:foreground ,ws-color))))
-       `(whitespace-space-after-tab        ((t (:foreground ,ws-color))))
-       `(whitespace-space-before-tab       ((t (:foreground ,ws-color))))
-       `(whitespace-tab                    ((t (:foreground ,ws-color))))
-       `(whitespace-trailing               ((t (:foreground ,ws-color))))))
+       `(whitespace-tab                    ((t (:foreground ,ws-color))))))
     :preface
     (declare-function color-lighten-name "color")))
 
