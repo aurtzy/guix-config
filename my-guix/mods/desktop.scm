@@ -375,6 +375,7 @@ elsewhere in possibly different forms).")
                      emacs-vundo
                      ;; git
                      emacs-magit
+                     emacs-magit-todos ; XXX: Strangely only works with ripgrep?
                      emacs-magit-annex
                      emacs-git-annex
                      emacs-forge
