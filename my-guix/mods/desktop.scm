@@ -392,6 +392,7 @@ elsewhere in possibly different forms).")
                      emacs-csv-mode
                      ;; misc
                      emacs-eat
+                     emacs-hl-todo
                      emacs-markdown-mode
                      emacs-protobuf-mode
                      emacs-wgrep
