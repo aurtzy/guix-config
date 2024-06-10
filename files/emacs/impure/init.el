@@ -526,6 +526,12 @@
   :preface
   (declare-function editorconfig-mode "editorconfig"))
 
+(use-package hl-todo
+  :config
+  (global-hl-todo-mode t)
+  :preface
+  (declare-function global-hl-todo-mode "hl-todo"))
+
 ;;;; Miscellaneous
 
 (use-package emacs
