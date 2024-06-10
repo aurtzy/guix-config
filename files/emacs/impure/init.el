@@ -253,7 +253,7 @@
   :config
   (use-package color
     :config
-    (let* ((ws-color (color-lighten-name "#555555" 30)))
+    (let* ((ws-color (color-lighten-name "#444444" 50)))
       (custom-set-faces
        `(whitespace-newline                ((t (:foreground ,ws-color))))
        `(whitespace-missing-newline-at-eof ((t (:foreground ,ws-color))))
