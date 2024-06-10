@@ -232,14 +232,10 @@
   :hook prog-mode
   :custom
   (whitespace-style '(face
-                      spaces
-                      empty
                       tabs
-                      newline
-                      trailing
-                      space-mark
                       tab-mark
-                      newline-mark))
+                      empty
+                      trailing))
   (whitespace-global-modes '(not shell-mode
                                  help-mode
                                  magit-mode
