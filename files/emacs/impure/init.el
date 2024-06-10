@@ -730,6 +730,9 @@ to report upstream.  TODO."
 (use-package lisp-mode
   :hook ((lisp-mode . enable-paredit-mode)))
 
+(use-package lisp-data-mode
+  :hook ((lisp-data-mode . enable-paredit-mode)))
+
 (use-package scheme
   :hook ((scheme-mode . enable-paredit-mode))
   :init
