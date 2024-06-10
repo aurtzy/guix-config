@@ -599,6 +599,16 @@
   :config
   (put 'magit-clean 'disabled nil))
 
+(use-package magit-todos
+  :init
+  (magit-todos-mode t)
+  :config
+  ;; TEMP: Partially fix "xxx" keyword parse
+  ;; (https://github.com/alphapapa/magit-todos/issues/101)
+  (add-to-list 'magit-todos-keywords-list "XXX" t)
+  :preface
+  (declare-function magit-todos-mode "magit-todos"))
+
 (use-package forge
   :after magit)
 
