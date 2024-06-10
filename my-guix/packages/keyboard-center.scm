@@ -57,7 +57,7 @@
     (description "Pythonic API to Linux uinput kernel module.")
     (license gpl3+)))
 
-;; TODO Conflicts with breeze in environment when using KDE Plasma...  Will
+;; TODO: Conflicts with breeze in environment when using KDE Plasma...  Will
 ;; probably need to fix by un-propagating inputs.
 (define-public keyboard-center
   (let ((version "1.0.6")

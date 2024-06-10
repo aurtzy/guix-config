@@ -49,7 +49,7 @@
                           . "$HOME/.guix-home/profile/etc/ssl/certs")
                          ("SSL_CERT_FILE"
                           . "$HOME/.guix-home/profile/etc/ssl/certs/ca-certificates.crt")
-                         ;; TODO figure out how this hack with XCURSOR_PATH
+                         ;; TODO: figure out how this hack with XCURSOR_PATH
                          ;; works; apps can find adwaita cursors but not
                          ;; others (e.g. breeze_cursors)
                          ("XCURSOR_PATH"

@@ -82,7 +82,7 @@
               (source
                (uuid "7ccff0a3-b181-4788-9892-e68306566325"))
               (target "cryptroot")
-              ;; TODO Get key file working with root drive
+              ;; TODO: Get key file working with root drive
               (type luks-device-mapping))
              (mapped-device
               (source

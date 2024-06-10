@@ -43,7 +43,7 @@
 (define games-src
   (path-append-my-home "areas/games"))
 
-;; TODO probably better to put this mod elsewhere since it's more of a general
+;; TODO: probably better to put this mod elsewhere since it's more of a general
 ;; tool than specifically for entertainment
 (define bottles-mod
   (mod
@@ -62,7 +62,7 @@
                                 ,(path-append-my-files "impure/bottles")
                                 "com.usebottles.bottles")))))))))
 
-;; TODO Set sysctl config option to optimize for gaming
+;; TODO: Set sysctl config option to optimize for gaming
 ;; https://www.phoronix.com/news/Arch-Linux-vm.max_map_count
 (define game-managers-mod
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")

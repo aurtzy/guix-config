@@ -178,7 +178,7 @@ enables the use of Pipewire.")
                                (stop
                                 #~(make-kill-destructor)))))))))))
 
-;; TODO do I actually need this?
+;; TODO: do I actually need this?
 (define breeze-theme-mod
   (mod
     (name 'breeze-theme)
@@ -399,7 +399,7 @@ elsewhere in possibly different forms).")
                      emacs-ripgrep
                      emacs-wgrep
                      ;; packages being tried out go below here
-                     ;; emacs-dape                ;TODO package this?
+                     ;; emacs-dape                ;TODO: package this?
                      emacs-org-noter
                      emacs-pdf-tools))
               (mod-he-services
@@ -466,7 +466,7 @@ remote.")
                                   (".local/share/flatpak/overrides"
                                    ,(path-append-my-files "impure/flatpak")
                                    "com.github.tchx84.Flatseal"))))))
-             ;; TODO Use a simple-service for home-flatpak-service-type (or
+             ;; TODO: Use a simple-service for home-flatpak-service-type (or
              ;; some descendant supporting remote extensions) when it is
              ;; available
              (lambda (he)

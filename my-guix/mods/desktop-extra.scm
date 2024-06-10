@@ -100,7 +100,7 @@
                              '((flathub "in.cinny.Cinny")
                                (flathub "io.github.Soundux")))))))))
 
-;; TODO experimental; see how this fares
+;; TODO: experimental; see how this fares
 (define programming-mod
   (mod
     (name 'programming)

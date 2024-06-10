@@ -223,7 +223,7 @@
    "Commands:"
    "  swapfile"
    "  install"
-   ;; TODO remove experimental tag once it's field-tested
+   ;; TODO: remove experimental tag once it's field-tested
    "  luks-keyfile  (experimental)"))
 
 (define (main args)

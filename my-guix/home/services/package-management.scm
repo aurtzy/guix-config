@@ -38,7 +38,7 @@
             home-flatpak-service-type
             home-flatpak-profile-service-type))
 
-;; TODO learn and use define-configuration here which should improve
+;; TODO: learn and use define-configuration here which should improve
 ;; extensibility, but this will suffice for now albeit without the ability to
 ;; extend flatpak remotes
 
@@ -53,7 +53,7 @@
            (default '()))
   ;; List of flatpaks, each of which should be a list consisting of the remote
   ;; as the first element and the application ID as the second.
-  ;; TODO this could eventually be a list of flatpak definitions, potentially
+  ;; TODO: this could eventually be a list of flatpak definitions, potentially
   ;; records with information about remote name, overrides and such - similar
   ;; to package definitions
   (profile home-flatpak-configuration-profile
@@ -66,10 +66,10 @@
 
 (define (home-flatpak-profile-installer config)
   "Gexp to add flatpak remotes and install packages."
-  ;; TODO check if all packages use valid remote names before proceeding and
+  ;; TODO: check if all packages use valid remote names before proceeding and
   ;; deduplicate
   ;; 
-  ;; TODO This service depends on SSL_CERT_FILE pointing to the CA
+  ;; TODO: This service depends on SSL_CERT_FILE pointing to the CA
   ;; certificates file, which is not possible on foreign systems without an
   ;; initial reconfigure.  This file is special in that it is dynamically
   ;; generated rather than built as part of a package (see
@@ -120,7 +120,7 @@
                 "update"
                 "--noninteractive"))))
 
-;; TODO see todo comment at top; this should be able to extend remotes too,
+;; TODO: see todo comment at top; this should be able to extend remotes too,
 ;; likely by changing profile-extensions to be a general extensions argument,
 ;; which makes the home-flatpak-profile-service-type have an actual purpose
 (define (home-flatpak-extend config profile-extensions)
@@ -149,7 +149,7 @@
                 (extensions
                  (list (service-extension
                         home-flatpak-service-type
-                        ;; TODO this will need to be changed to provide the
+                        ;; TODO: this will need to be changed to provide the
                         ;; profile wrapped by a home-flatpak-extension when
                         ;; flatpak refactor takes place
                         identity)))

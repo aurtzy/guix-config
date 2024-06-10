@@ -97,7 +97,7 @@
   (echo-keystrokes 0.25)
   :config
   (add-to-list 'default-frame-alist '(font . "Hack-11"))
-  ;; TODO menu-bar was funky with frame transparency at the time of
+  ;; TODO: menu-bar was funky with frame transparency at the time of
   ;; writing so menu-bar has been disabled; try re-enabling in future
   (menu-bar-mode -1)
   (tool-bar-mode -1)
@@ -144,7 +144,7 @@
             'remove-scroll-margin)
   ;; Configure scrollbar/mouse scrolling
   ;;
-  ;; TODO check out mwheel.el and experiment with
+  ;; TODO: check out mwheel.el and experiment with
   ;; the nano/vim-like vscrolling that I like
   :custom
   (scroll-preserve-screen-position t)
@@ -418,7 +418,7 @@
   :custom
   (prefix-help-command #'embark-prefix-help-command)
   ;;:init
-  ;; TODO new feature that is part of default config not out yet
+  ;; TODO: new feature that is part of default config not out yet
   ;;
   ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
   ;; strategy, if you want to see the documentation from multiple providers.
@@ -510,7 +510,7 @@
                                    (:detailedLabel t)))
     :config
     (setq ccls-sem-highlight-method 'font-lock)
-    ;; TODO remove this comment when the above works; this does not work yet due
+    ;; TODO: remove this comment when the above works; this does not work yet due
     ;; to unavailable feature; see: https://github.com/joaotavora/eglot/issues/615
     ;; depending on its implementation the above may need to be tweaked
     ))
@@ -631,7 +631,7 @@ to report upstream.  TODO."
    '((sequence "TODO(t)" "PROG(p!)" "|" "DONE(d!)" "SKIP(s@/!)")))
   (org-cycle-inline-images-display t)
   (org-export-in-background t)
-  ;; TODO add a cleaner function that deletes files after some time limit
+  ;; TODO: add a cleaner function that deletes files after some time limit
   (org-preview-latex-image-directory "~/.cache/emacs/ltximg")
   (org-log-redeadline 'note)
   (org-log-reschedule 'note)
@@ -738,7 +738,7 @@ to report upstream.  TODO."
                              (1 font-lock-keyword-face))))
   (put 'lambda* 'scheme-indent-function 1))
 
-;; TODO I have embark override "C-." and "M-.", which are both useful; "C-."
+;; TODO: I have embark override "C-." and "M-.", which are both useful; "C-."
 ;; has another keybind so it can be ignored, but "M-."
 ;; (geiser-edit-symbol-at-point) does not.  It might be a good idea to add it
 ;; to embark-dwim.

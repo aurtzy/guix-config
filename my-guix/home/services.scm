@@ -62,7 +62,7 @@ INIT-SYMLINKS)."
          (define home-directory
            (getenv "HOME"))
 
-         ;; TODO these XDG variables aren't used for now...
+         ;; TODO: these XDG variables aren't used for now...
 
          (define xdg-config-home
            (or (getenv "XDG_CONFIG_HOME")

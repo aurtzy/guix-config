@@ -99,7 +99,7 @@
               (lambda _
                 ;; glm
                 ;;
-                ;; TODO Look for a better way to do this.  Kind of a hacky way
+                ;; TODO: Look for a better way to do this.  Kind of a hacky way
                 ;; to handle zip files, and it doesn't seem like I can
                 ;; auto-extract the zip without making it a package (also not
                 ;; preferable).
@@ -227,7 +227,7 @@ sandboxed Xwayland sessions.")
       (inherit steam-pkg)
       (version (string-append (package-version steam-pkg) "-custom")))))
 
-;;; TODO This probably belongs in mods.
+;;; TODO: This probably belongs in mods.
 (define-public steam-custom-wrapped
   (package
     (name "steam-custom")
