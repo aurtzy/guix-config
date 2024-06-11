@@ -55,7 +55,7 @@
     (operating-system
       (inherit base-os)
       (host-name "al-pc")
-      (kernel linux-gfxstrand-nvk)
+      (kernel linux-6.9)
       (initrd microcode-initrd)
       (firmware (list linux-firmware))
       (kernel-arguments
@@ -157,7 +157,8 @@
                                (file "/swapfile")
                                (device "/dev/mapper/cryptroot")
                                (offset "5250304")))
-                  (,replace-mesa ,replace-mesa->mesa-nvk-git)
+                  (,replace-mesa ,nvidia:replace-mesa)
+                  (,nvidia-proprietary? #t)
                   (,annexed-data (("data" "workshop" "areas")
                                   ("storage/data" "library" "attic")))))
     (mods (append desktop-mods
