@@ -417,13 +417,6 @@
          ("C-h B" . embark-bindings))
   :custom
   (prefix-help-command #'embark-prefix-help-command)
-  ;;:init
-  ;; TODO: new feature that is part of default config not out yet
-  ;;
-  ;; Show the Embark target at point via Eldoc.  You may adjust the Eldoc
-  ;; strategy, if you want to see the documentation from multiple providers.
-  ;;(add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
   :config
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
@@ -463,6 +456,10 @@
          (dired-mode . guix-prettify-mode)))
 
 ;;;; Minor modes
+
+(use-package eldoc
+  :custom
+  (eldoc-documentation-strategy #'eldoc-documentation-compose))
 
 (use-package emacs
   :custom
