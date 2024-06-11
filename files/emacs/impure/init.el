@@ -620,11 +620,9 @@
 (use-package org
   :preface
   (defun org-export-to-pdf-cd (&optional _ _ _ _ _)
-    "Change default directory to the canonicalized dirname of this buffer.
-
-Fixes issue with export to pdf failing when it's not
-canonicalized.  Needs more investigation and might be a good idea
-to report upstream.  TODO."
+    "Change default directory to the canonicalized dirname of this buffer."
+    ;; TODO: Fixes issue with export to pdf failing when it's not canonicalized.
+    ;; Needs more investigation and might be a good idea to report upstream.
     (cd (file-name-directory (file-truename (buffer-file-name)))))
   :commands org-mode
   :bind (("C-c C-x <backtab>" . org-clock-out)
