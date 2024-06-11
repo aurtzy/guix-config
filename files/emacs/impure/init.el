@@ -635,7 +635,7 @@
   (org-cycle-inline-images-display t)
   (org-export-in-background t)
   ;; TODO: add a cleaner function that deletes files after some time limit
-  (org-preview-latex-image-directory "~/.cache/emacs/ltximg")
+  (org-preview-latex-image-directory "~/.cache/emacs/ltximg/")
   (org-log-redeadline 'note)
   (org-log-reschedule 'note)
   (org-log-into-drawer t)
