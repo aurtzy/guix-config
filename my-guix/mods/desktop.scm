@@ -518,7 +518,11 @@ management/maintenance.")
                              (home-bash-extension
                               (aliases
                                '(("mpv-without-cache"
-                                  . "mpv --cache-secs=5")))))))))))
+                                  . "mpv --cache-secs=5")))))
+             (simple-service name
+                             home-impure-symlinks-service-type
+                             `((".config/mpv"
+                                ,(path-append-my-files "mpv/impure/config"))))))))))
 
 (define password-management-mod
   (mod
