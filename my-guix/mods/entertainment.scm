@@ -59,7 +59,7 @@
              (simple-service name
                              home-impure-symlinks-service-type
                              `((".local/share/flatpak/overrides"
-                                ,(path-append-my-files "impure/bottles")
+                                ,(path-append-my-files "bottles/impure")
                                 "com.usebottles.bottles")))))))))
 
 ;; TODO: Set sysctl config option to optimize for gaming
@@ -82,10 +82,10 @@
                                home-impure-symlinks-service-type
                                `( ;; Flatpak overrides
                                  (".local/share/flatpak/overrides"
-                                  ,(path-append-my-files "impure/lutris")
+                                  ,(path-append-my-files "lutris/impure")
                                   "net.lutris.Lutris")
                                  (".local/share/flatpak/overrides"
-                                  ,(path-append-my-files "impure/steam")
+                                  ,(path-append-my-files "steam/impure")
                                   "com.valvesoftware.Steam")
                                  ;; Mindustry
                                  (,(path-append lutris-dest "Mindustry")

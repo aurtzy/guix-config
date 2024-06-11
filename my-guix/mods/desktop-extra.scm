@@ -93,7 +93,7 @@
        (list (simple-service name
                              home-impure-symlinks-service-type
                              `((".local/share/flatpak/overrides"
-                                ,(path-append-my-files "impure/soundux")
+                                ,(path-append-my-files "soundux/impure")
                                 "io.github.Soundux")))
              (simple-service name
                              home-flatpak-profile-service-type

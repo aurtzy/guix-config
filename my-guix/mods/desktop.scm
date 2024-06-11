@@ -208,10 +208,10 @@ Internet.")
                                "/areas/firefox/profile")
                              "bookmarkbackups")
                             (".local/share/flatpak/overrides"
-                             ,(path-append-my-files "impure/brave")
+                             ,(path-append-my-files "brave/impure")
                              "com.brave.Browser")
                             (".local/share/flatpak/overrides"
-                             ,(path-append-my-files "impure/firefox")
+                             ,(path-append-my-files "firefox/impure")
                              "org.mozilla.firefox")))
           (simple-service name
                           home-activation-service-type
@@ -461,10 +461,10 @@ remote.")
                                   ;; all flatpaks; allow access to system
                                   ;; icons
                                   (".local/share/flatpak/overrides"
-                                   ,(path-append-my-files "impure/flatpak")
+                                   ,(path-append-my-files "flatpak/impure")
                                    "global")
                                   (".local/share/flatpak/overrides"
-                                   ,(path-append-my-files "impure/flatpak")
+                                   ,(path-append-my-files "flatpak/impure")
                                    "com.github.tchx84.Flatseal"))))))
              ;; TODO: Use a simple-service for home-flatpak-service-type (or
              ;; some descendant supporting remote extensions) when it is
