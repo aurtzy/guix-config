@@ -548,6 +548,14 @@
          :map
          project-other-window-map
          ("S" . eat-project-other-window))
+  :custom
+  ;; TODO: Consider expanding to a transient command that replaces "C-x p"
+  (project-switch-commands '((project-find-file "Find file" "f")
+                             (project-find-dir "Find directory" "d")
+                             (project-dired "Root directory" "D")
+                             (consult-ripgrep "Find regexp" "r")
+                             (eat-project "Shell (Eat)" "S")
+                             (magit-project-status "Magit status" "g")))
   :preface
   (defcustom project-root-markers
     '(".dir-locals.el"
