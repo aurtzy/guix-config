@@ -27,6 +27,27 @@ Here is a general overview of notable files in this repository:
 - [[file:scripts/guix]] is used for bootstrapping the configuration when
   =GUIX_PACKAGE_PATH= is not set yet.
 
+
+The following sections include documentation for various services and interfaces
+provided by the Guile modules.
+
+* Mods
+
+The ~(my-guix mods)~ module implements "mods", an extension to Guix that can be
+used to modularize system (and home) configurations.  Mods are built on top of
+the composing of procedures that enable extending various fields of a record.
+Some procedures for extending various fields are provided as part of this
+module.  Note that "fields" refers to any extendable value within record fields
+as well, not just record fields themselves.
+
+These composable procedures can then be used in conjunction with record types
+and other procedures also provided by the module to build mod objects that can
+be combined to construct ~operating-system~ or ~home-environment~ records.
+
+# TODO: Add documentation for record types
+
+# TODO: Add documentation for creating new extension procedures
+
 * Services
 
 ** Hardware Services
