@@ -28,8 +28,6 @@
 ;; tree-sitter libraries in Emacs mod or lazily load them based on existence
 ;; using manifests.
 
-;; TODO: would like comment highlighting functionality; e.g. TODO, FIXME,
-;; etc. being highlighted assigned colors.
 
 ;;; Code:
 
