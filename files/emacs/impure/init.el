@@ -505,7 +505,7 @@
                                    (:detailedLabel t)))
     :config
     (setq ccls-sem-highlight-method 'font-lock)
-    ;; TODO: remove this comment when the above works; this does not work yet due
+    ;; TEMP: remove this comment when the above works; this does not work yet due
     ;; to unavailable feature; see: https://github.com/joaotavora/eglot/issues/615
     ;; depending on its implementation the above may need to be tweaked
     ))
