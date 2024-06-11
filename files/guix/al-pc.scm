@@ -106,6 +106,13 @@
                                  (member "cryptroot"
                                          (mapped-device-targets dev)))
                                mapped-devices)))
+              ;; XXX: This file-system requires cryptstorage map to exist,
+              ;; otherwise reconfiguration fails.  Can be a problem in cases
+              ;; where storage may not be available (e.g. from configuration
+              ;; messups/testing that exclude cryptstorage mapping).  Current
+              ;; process is to comment out this file-system, reconfigure, then
+              ;; uncomment and reconfigure again once cryptstorage mapping
+              ;; exists.
               (file-system
                 (mount-point "/home/alvin/storage")
                 (device "/dev/mapper/cryptstorage")
