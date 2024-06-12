@@ -610,6 +610,17 @@
       ("d" "Dispatch from buffer" magit-dispatch)
       ("f" "File dispatch from buffer" magit-file-dispatch)]]))
 
+(use-package magit-section
+  :config
+  (use-package magit-status
+    ;; XXX: Reserve "C-<tab>" for other things (like `tab-bar-mode')
+    :bind (:map
+           magit-status-mode-map
+           ("C-<tab>" . nil)
+           ("C-c C-<tab>" . magit-section-cycle)
+           :repeat-map magit-section-repeat-map
+           ("C-<tab>" . magit-section-cycle))))
+
 (use-package magit-todos
   :init
   (magit-todos-mode t)
