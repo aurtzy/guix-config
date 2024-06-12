@@ -599,8 +599,29 @@
 (use-package magit
   :bind ("C-c m" . magit-custom-dispatch)
   :commands magit
+  :init
+  (use-package magit-todos
+    :init
+    (magit-todos-mode t)
+    :config
+    ;; TEMP: Partially fix "xxx" keyword parse
+    ;; (https://github.com/alphapapa/magit-todos/issues/101)
+    (add-to-list 'magit-todos-keywords-list "XXX" t)
+    :preface
+    (declare-function magit-todos-mode "magit-todos"))
   :config
   (put 'magit-clean 'disabled nil)
+  (use-package magit-section
+    :config
+    (use-package magit-status
+      ;; XXX: Reserve "C-<tab>" for other things (like `tab-bar-mode')
+      :bind (:map
+             magit-status-mode-map
+             ("C-<tab>" . nil)
+             ("C-c C-<tab>" . magit-section-cycle)
+             :repeat-map magit-section-repeat-map
+             ("C-<tab>" . magit-section-cycle))))
+  (use-package forge)
   :preface
   (require 'transient)
   (transient-define-prefix magit-custom-dispatch ()
@@ -609,30 +630,6 @@
      [("m" "View Status" magit-status-here)
       ("d" "Dispatch from buffer" magit-dispatch)
       ("f" "File dispatch from buffer" magit-file-dispatch)]]))
-
-(use-package magit-section
-  :config
-  (use-package magit-status
-    ;; XXX: Reserve "C-<tab>" for other things (like `tab-bar-mode')
-    :bind (:map
-           magit-status-mode-map
-           ("C-<tab>" . nil)
-           ("C-c C-<tab>" . magit-section-cycle)
-           :repeat-map magit-section-repeat-map
-           ("C-<tab>" . magit-section-cycle))))
-
-(use-package magit-todos
-  :init
-  (magit-todos-mode t)
-  :config
-  ;; TEMP: Partially fix "xxx" keyword parse
-  ;; (https://github.com/alphapapa/magit-todos/issues/101)
-  (add-to-list 'magit-todos-keywords-list "XXX" t)
-  :preface
-  (declare-function magit-todos-mode "magit-todos"))
-
-(use-package forge
-  :after magit)
 
 (use-package org
   :preface
