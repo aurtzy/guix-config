@@ -330,8 +330,7 @@ elsewhere in possibly different forms).")
           (mod-os-services
            (delete 'network-manager-applet
                    (modify-services %desktop-services
-                     (delete gdm-service-type)
-                     (delete guix-service-type))
+                     (delete gdm-service-type))
                    (lambda (name serv)
                      (eq? name (service-type-name (service-kind serv))))))))))))
 
