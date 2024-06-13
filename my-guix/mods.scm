@@ -59,6 +59,7 @@
 
             mod-he-packages
             mod-he-services
+            mod-he-service
 
             mods-eq?
             excluded-mods
@@ -175,6 +176,16 @@ the current service configuration and using the return value as the new one."
    (inherit he)
    (services
     (append services (home-environment-user-services he)))))
+
+(define ((mod-he-service service-type config-map) he)
+  "Modify a home-environment service type SERVICE-TYPE, calling CONFIG-MAP with
+the current service configuration and using the return value as the new one."
+  (home-environment
+    (inherit he)
+    (services
+     (modify-services (home-environment-user-services he)
+       (service-type
+        config => (config-map config))))))
 
 (define (mods-eq? ext1 ext2)
   (eq? (mod-name ext1)
