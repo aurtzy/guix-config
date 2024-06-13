@@ -53,6 +53,7 @@
 
             mod-os-packages
             mod-os-services
+            mod-os-service
             mod-os-kernel-arguments
             mod-os-swap-devices
 
@@ -140,6 +141,16 @@
     (inherit os)
     (services
      (append services (operating-system-user-services os)))))
+
+(define ((mod-os-service service-type config-map) os)
+  "Modify an operating-system service type SERVICE-TYPE, calling CONFIG-MAP with
+the current service configuration and using the return value as the new one."
+  (operating-system
+    (inherit os)
+    (services
+     (modify-services (operating-system-user-services os)
+       (service-type
+        config => (config-map config))))))
 
 (define ((mod-os-kernel-arguments arguments) os)
   (operating-system
