@@ -211,6 +211,9 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (global-display-fill-column-indicator-mode 1)
   (toggle-text-mode-auto-fill))
 
+(use-package newcomment
+  :bind (("S-<return>" . comment-indent-new-line)))
+
 (use-package unfill
   :after embark
   :defines (embark-region-map
