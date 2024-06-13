@@ -26,6 +26,7 @@
   #:use-module (ice-9 curried-definitions)
   #:use-module (ice-9 exceptions)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 q)
   #:use-module (my-guix utils)
   #:use-module (oop goops)
   #:use-module ((rnrs base) #:prefix rnrs:)
@@ -61,6 +62,7 @@
             mods-eq?
             excluded-mods
             mod-dependencies/deep
+            fold-extensions
             modded-system-operating-system
             modded-system-home-environment
             modded-system-guess-environment))
@@ -188,6 +190,50 @@ respects the EXCLUDED-MODS parameter.  The parameter is further respected by
 removing mods in MODS if any are members of EXCLUDED-MODS."
   (let ((mods (lset-difference mods-eq? mods (excluded-mods))))
     (lset-union mods-eq? mods (concatenate (map mod-dependencies/deep mods)))))
+
+(define (fold-extensions initial-record extension-maps)
+  "Fold a list of procedures EXTENSION-MAPS onto INITIAL-RECORD.
+
+To handle extension dependencies, this procedure uses an EAFP (\"easier to ask
+for forgiveness than permission\") approach with a queue, throwing extension
+maps to the back of the queue if they fail, and retrying after round-trips of
+applying extensions.  This allows dependencies to be eventually applied before
+reaching the dependent extension again."
+  (define extension-maps-q (make-q))
+  (for-each (cut enq! extension-maps-q <>) extension-maps)
+
+  (let fold-extensions-pass ((record initial-record))
+    "Do a single pass of the queue to fold extensions."
+    (if (q-empty? extension-maps-q)
+        record
+        (let %fold-extensions-pass ((record record)
+                                    (last-extension-map (q-rear
+                                                         extension-maps-q))
+                                    (no-progress? #t))
+          "Continuously pop the EXTENSION-MAPS queue and fold the mapping onto
+RECORD until LAST-EXTENSION-MAP is reached."
+          ;; If an exception occurs (i.e. exn is #t), ignore it and re-queue
+          ;; extension-map so we can try it again on the next pass...
+          (let* ((extension-map (deq! extension-maps-q))
+                 (folded-record
+                  exn
+                  (with-exception-handler (cut values record <>)
+                    (lambda ()
+                      (values (extension-map record) #f))
+                    #:unwind? #t))
+                 (no-progress? (if folded-record #t no-progress?)))
+            (when exn
+              (enq! extension-maps-q extension-map))
+            (if (eq? extension-map last-extension-map)
+                ;; ...however, if no progress is made, i.e. no-progress? is #t,
+                ;; and last-extension-map raised an exception, re-raise it since
+                ;; it indicates a circular dependency (or other unrelated issue)
+                (if (and exn no-progress?)
+                    (raise-exception exn)
+                    (fold-extensions-pass folded-record))
+                (%fold-extensions-pass folded-record
+                                       last-extension-map
+                                       no-progress?)))))))
 
 (define (modded-system-operating-system system)
   "Construct and return the operating-system record from the specifications of
