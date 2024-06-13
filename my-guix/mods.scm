@@ -250,12 +250,9 @@ modded-system SYSTEM."
      values
      (lambda ()
        (map-final-extension
-        (fold
-         (lambda (mod record)
-           (let ((map-extension (mod-os-extension mod)))
-             (map-extension record)))
-         (modded-system-initial-os system)
-         (all-unique-mods (modded-system-mods system))))))))
+        (fold-extensions (modded-system-initial-os system)
+                         (map mod-os-extension
+                              (all-unique-mods (modded-system-mods system)))))))))
 
 (define (modded-system-home-environment system)
   "Construct and return the home-environment record from the specifications of
@@ -271,12 +268,9 @@ modded-system SYSTEM."
      values
      (lambda ()
        (map-final-extension
-        (fold
-         (lambda (mod record)
-           (let ((map-extension (mod-he-extension mod)))
-             (map-extension record)))
-         (modded-system-initial-he system)
-         (all-unique-mods (modded-system-mods system))))))))
+        (fold-extensions (modded-system-initial-he system)
+                         (map mod-he-extension
+                              (all-unique-mods (modded-system-mods system)))))))))
 
 (define (modded-system-guess-environment system)
   "Return the operating-system or home-environment record from a modded-system
