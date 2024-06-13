@@ -78,6 +78,7 @@
                (default "")
                (sanitize (sanitizer <string>
                                     #:label "Mod description")))
+  ;; DEPRECATED: mod-dependencies is superceded by fold-extensions
   (dependencies mod-dependencies
                 (default '()) (thunked)
                 (sanitize (sanitizer <list>
