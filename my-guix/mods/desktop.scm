@@ -468,22 +468,19 @@ remote.")
              ;; TODO: Use a simple-service for home-flatpak-service-type (or
              ;; some descendant supporting remote extensions) when it is
              ;; available
-             (lambda (he)
-               (home-environment
-                (inherit he)
-                (services
-                 (modify-services (home-environment-user-services he)
-                   (home-flatpak-service-type
-                    config =>
-                    (home-flatpak-configuration
-                     (remotes
-                      (acons 'flathub
-                             "https://flathub.org/repo/flathub.flatpakrepo"
-                             (home-flatpak-configuration-remotes config)))
-                     (profile
-                      (cons '(flathub "com.github.tchx84.Flatseal")
-                            (home-flatpak-configuration-profile
-                             config))))))))))))))
+             (mod-he-service
+              home-flatpak-service-type
+              (lambda (config)
+                (home-flatpak-configuration
+                 (inherit config)
+                 (remotes
+                  (acons 'flathub
+                         "https://flathub.org/repo/flathub.flatpakrepo"
+                         (home-flatpak-configuration-remotes config)))
+                 (profile
+                  (cons '(flathub "com.github.tchx84.Flatseal")
+                        (home-flatpak-configuration-profile
+                         config)))))))))))
 
 (define file-system-management-mod
   (mod
