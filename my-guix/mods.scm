@@ -230,13 +230,14 @@ reaching the dependent extension again."
     (if (q-empty? extension-maps-q)
         record
         (let %fold-extensions-pass ((record record)
-                                    (last-extension-map (q-rear
-                                                         extension-maps-q))
+                                    (round-trip-index (1- (q-length
+                                                           extension-maps-q)))
                                     (no-progress? #t))
           "Continuously pop the EXTENSION-MAPS queue and fold the mapping onto
-RECORD until LAST-EXTENSION-MAP is reached."
-          ;; If an exception occurs (i.e. exn is #t), ignore it and re-queue
-          ;; extension-map so we can try it again on the next pass...
+RECORD until ROUND-TRIP-INDEX reaches 0, i.e. the last extension mapping of the
+pass is popped.  If no progress has been made and the last mapping resulted in
+an exception, the exception is re-raised since it indicates a circular
+dependency or other unrelated problem."
           (let* ((extension-map (deq! extension-maps-q))
                  (folded-record
                   exn
@@ -247,15 +248,12 @@ RECORD until LAST-EXTENSION-MAP is reached."
                  (no-progress? (if folded-record #t no-progress?)))
             (when exn
               (enq! extension-maps-q extension-map))
-            (if (eq? extension-map last-extension-map)
-                ;; ...however, if no progress is made, i.e. no-progress? is #t,
-                ;; and last-extension-map raised an exception, re-raise it since
-                ;; it indicates a circular dependency (or other unrelated issue)
+            (if (zero? round-trip-index)
                 (if (and exn no-progress?)
                     (raise-exception exn)
                     (fold-extensions-pass folded-record))
                 (%fold-extensions-pass folded-record
-                                       last-extension-map
+                                       (1- round-trip-index)
                                        no-progress?)))))))
 
 (define (modded-system-operating-system system)
