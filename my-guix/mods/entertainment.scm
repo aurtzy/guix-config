@@ -40,6 +40,8 @@
 
 (use-package-modules freedesktop minetest sdl)
 
+(use-service-modules sysctl)
+
 (define games-src
   (path-append-my-home "areas/games"))
 
@@ -62,8 +64,6 @@
                                 ,(path-append-my-files "bottles/impure")
                                 "com.usebottles.bottles")))))))))
 
-;; TODO: Set sysctl config option to optimize for gaming
-;; https://www.phoronix.com/news/Arch-Linux-vm.max_map_count
 (define game-managers-mod
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
          (steam-dest ".local/share/guix-sandbox-home"))
@@ -72,6 +72,16 @@
       (dependencies
        (list flatpak-mod
              bottles-mod))
+      (os-extension
+       (mod-os-service
+        sysctl-service-type
+        (lambda (config)
+          (sysctl-configuration
+           (inherit config)
+           ;; Copied value from Arch Linux (and context given in link):
+           ;; https://archlinux.org/news/increasing-the-default-vmmax_map_count-value/
+           (settings (cons* '("vm.max_map_count" . "1048576")
+                            (sysctl-configuration-settings config)))))))
       (he-extension
        (compose
         (mod-he-packages
