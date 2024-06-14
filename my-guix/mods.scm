@@ -245,7 +245,7 @@ dependency or other unrelated problem."
                     (lambda ()
                       (values (extension-map record) #f))
                     #:unwind? #t))
-                 (no-progress? (if folded-record #t no-progress?)))
+                 (no-progress? (if exn no-progress? #f)))
             (when exn
               (enq! extension-maps-q extension-map))
             (if (zero? round-trip-index)
