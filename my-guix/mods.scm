@@ -131,6 +131,11 @@
                         <procedure>
                         #:label "Modded system home-environment extension"))))
 
+;;; NOTE: Thunked fields such as services should be treated specially: value
+;;; computations should be forced to catch errors; however, it is a good idea to
+;;; still use the thunked values (instead of the computed values) so that
+;;; parameters like %current-system are maintained.
+
 (define ((mod-os-packages packages) os)
   (operating-system
     (inherit os)
@@ -138,20 +143,25 @@
      (append packages (operating-system-packages os)))))
 
 (define ((mod-os-services services) os)
-  (operating-system
-    (inherit os)
-    (services
-     (append services (operating-system-user-services os)))))
+  (let ((new-os
+         (operating-system
+           (inherit os)
+           (services (append services (operating-system-user-services os))))))
+    (operating-system-user-services new-os)
+    new-os))
 
 (define ((mod-os-service service-type config-map) os)
   "Modify an operating-system service type SERVICE-TYPE, calling CONFIG-MAP with
 the current service configuration and using the return value as the new one."
-  (operating-system
-    (inherit os)
-    (services
-     (modify-services (operating-system-user-services os)
-       (service-type
-        config => (config-map config))))))
+  (let ((new-os
+         (operating-system
+           (inherit os)
+           (services
+            (modify-services (operating-system-user-services os)
+              (service-type
+               config => (config-map config)))))))
+    (operating-system-user-services new-os)
+    new-os))
 
 (define ((mod-os-kernel-arguments arguments) os)
   (operating-system
@@ -180,12 +190,15 @@ the current service configuration and using the return value as the new one."
 (define ((mod-he-service service-type config-map) he)
   "Modify a home-environment service type SERVICE-TYPE, calling CONFIG-MAP with
 the current service configuration and using the return value as the new one."
-  (home-environment
-    (inherit he)
-    (services
-     (modify-services (home-environment-user-services he)
-       (service-type
-        config => (config-map config))))))
+  (let ((new-he
+         (home-environment
+          (inherit he)
+          (services
+           (modify-services (home-environment-user-services he)
+             (service-type
+              config => (config-map config)))))))
+    (home-environment-user-services new-he)
+    new-he))
 
 (define (mods-eq? ext1 ext2)
   (eq? (mod-name ext1)
