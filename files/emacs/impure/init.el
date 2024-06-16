@@ -451,7 +451,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (corfu-separator ?\s)
   (corfu-quit-at-boundary nil)
   (corfu-quit-no-match nil)
-  (corfu-preselect 'prompt)
+  (corfu-preselect 'first)
   :init
   (global-corfu-mode t)
   :preface
