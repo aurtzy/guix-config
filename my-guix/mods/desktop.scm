@@ -407,7 +407,8 @@ elsewhere in possibly different forms).")
                                 home-impure-symlinks-service-type
                                 `((".config/emacs"
                                    ,(path-append-my-files "emacs/impure")
-                                   "init.el")))
+                                   "init.el"
+                                   "lisp")))
                 (simple-service name
                                 home-environment-variables-service-type
                                 '( ;; Set editor for e.g. sudoedit

@@ -31,6 +31,8 @@
 
 ;;; Code:
 
+(add-to-list 'load-path (concat user-emacs-directory "lisp"))
+
 (require 'dash)
 
 ;;; Global configurations
