@@ -34,9 +34,8 @@
   "Dispatch some command for a project."
   ["Options"
    (project-dispatch:--root-directory)]
-  ["Commands"
+  ["In root directory"
    ("D" "Dired" project-dispatch-project-dired)
-   ("m" "Magit status" project-dispatch-magit-status)
    ("s" "Shell (Eat)" project-dispatch-shell-eat)
    ("!" "Run" project-dispatch-project-shell-command)
    ("M-x" "Extended command" project-dispatch-project-execute-extended-command)]
@@ -48,7 +47,11 @@
     ("fd" "Directory" project-dispatch-project-find-dir)
     ("ff" "File" project-dispatch-project-find-file)
     ("fF" "File (incl. external)"
-     project-dispatch-project-or-external-find-file)]])
+     project-dispatch-project-or-external-find-file)]
+   ["Magit"
+    ("md" "Dispatch" magit-dispatch)
+    ("mf" "File dispatch" magit-file-dispatch)
+    ("mm" "Status" project-dispatch-magit-status)]])
 
 (defun project-dispatch--read-root-directory (&rest _ignore)
   "Reader function for project root directory."
