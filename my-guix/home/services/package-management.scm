@@ -27,6 +27,8 @@
   #:use-module (gnu packages package-management)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (ice-9 exceptions)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:export (<home-flatpak-configuration>
             home-flatpak-configuration
@@ -75,12 +77,23 @@
   ;; rather than built as part of a package (see `ca-certificates-bundle' in
   ;; (guix profiles)), so there does not seem to be a way to insert it into this
   ;; g-exp.
+  (define flatpak (home-flatpak-configuration-flatpak config))
+  (define remotes (home-flatpak-configuration-remotes config))
+  (define profile (home-flatpak-configuration-profile config))
+
+  (for-each
+   (lambda (app)
+     (match app
+       ((remote-name app-id)
+        (unless (assq remote-name remotes)
+          (raise-exception
+           (make-exception-with-message
+            (format #f "Flatpak remote does not exist for entry: ~s" app)))))))
+   profile)
   #~(unless #$(getenv "GUIX_FLATPAK_DISABLE")
-      (let ((flatpak (string-append
-                      #$(home-flatpak-configuration-flatpak config)
-                      "/bin/flatpak"))
-            (remotes '#$(home-flatpak-configuration-remotes config))
-            (profile '#$(home-flatpak-configuration-profile config)))
+      (let ((flatpak #$(file-append flatpak "/bin/flatpak"))
+            (remotes '#$remotes)
+            (profile '#$profile))
         ;; Configure remotes first
         (for-each
          (lambda (remote)
