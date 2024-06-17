@@ -618,7 +618,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (dired-listing-switches "-alh"))
 
 (use-package magit
-  :bind ("C-c m" . magit-custom-dispatch)
   :commands magit
   :init
   (use-package magit-todos
@@ -644,15 +643,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
              ("C-c C-<tab>" . magit-section-cycle)
              :repeat-map magit-section-repeat-map
              ("C-<tab>" . magit-section-cycle))))
-  (use-package forge)
-  :preface
-  (require 'transient)
-  (transient-define-prefix magit-custom-dispatch ()
-    "Invoke Magit commands."
-    ["Magit commands"
-     [("m" "View Status" magit-status-here)
-      ("d" "Dispatch from buffer" magit-dispatch)
-      ("f" "File dispatch from buffer" magit-file-dispatch)]]))
+  (use-package forge))
 
 (use-package org
   :preface
