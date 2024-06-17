@@ -138,7 +138,7 @@
   (interactive)
   (let ((project-current-directory-override
          (project-dispatch--root-directory-arg)))
-    (call-interactively #'async-shell-command)))
+    (call-interactively #'project-async-shell-command)))
 
 (transient-define-suffix project-dispatch-project-execute-extended-command ()
   "Execute an extended command in project root."
