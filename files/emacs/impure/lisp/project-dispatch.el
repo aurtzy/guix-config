@@ -35,18 +35,23 @@
   ["Options"
    (project-dispatch:--root-directory)]
   ["Commands"
-   ("b" "Consult buffer" project-dispatch-consult-project-buffer)
-   ("B" "List buffers" project-dispatch-project-list-buffers)
    ("d" "Find directory" project-dispatch-project-find-dir)
+   ("b" "Buffer" project-dispatch-buffer)
    ("D" "Dired" project-dispatch-project-dired)
    ("f" "Find file" project-dispatch-project-find-file)
    ("F" "Find file (incl. external)"
     project-dispatch-project-or-external-find-file)
-   ("K" "Kill buffers" project-dispatch-project-kill-buffers)
    ("m" "Magit status" project-dispatch-magit-status)
    ("s" "Shell (Eat)" project-dispatch-shell-eat)
    ("!" "Run" project-dispatch-project-shell-command)
    ("M-x" "Extended command" project-dispatch-project-execute-extended-command)])
+
+(transient-define-prefix project-dispatch-buffer ()
+  "Dispatch commands for buffer management in a project."
+  ["Buffer"
+   ("b" "Switch" project-dispatch-consult-project-buffer)
+   ("B" "List all" project-dispatch-project-list-buffers)
+   ("K" "Kill all" project-dispatch-project-kill-buffers)])
 
 (defun project-dispatch--read-root-directory (&rest _ignore)
   "Reader function for project root directory."
