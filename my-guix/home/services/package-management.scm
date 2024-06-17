@@ -69,12 +69,12 @@
   ;; TODO: check if all packages use valid remote names before proceeding and
   ;; deduplicate
   ;; 
-  ;; TODO: This service depends on SSL_CERT_FILE pointing to the CA
-  ;; certificates file, which is not possible on foreign systems without an
-  ;; initial reconfigure.  This file is special in that it is dynamically
-  ;; generated rather than built as part of a package (see
-  ;; `ca-certificates-bundle' in (guix profiles)), so there does not seem to
-  ;; be a way to insert it into this g-exp.
+  ;; XXX: This service depends on SSL_CERT_FILE pointing to the CA certificates
+  ;; file, which is not possible on foreign systems without an initial
+  ;; reconfigure.  This file is special in that it is dynamically generated
+  ;; rather than built as part of a package (see `ca-certificates-bundle' in
+  ;; (guix profiles)), so there does not seem to be a way to insert it into this
+  ;; g-exp.
   #~(unless #$(getenv "GUIX_FLATPAK_DISABLE")
       (let ((flatpak (string-append
                       #$(home-flatpak-configuration-flatpak config)
