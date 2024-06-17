@@ -326,7 +326,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
          ;; orig. bookmark-jump
          ("C-x r b" . consult-bookmark)
          ;; orig. project-switch-to-buffer
-         ("C-x p b" . consult-project-buffer)
+         ;; ("C-x p b" . consult-project-buffer) ;use project-dispatch instead
          ;; Custom M-# bindings for fast register access
          ("M-#" . consult-register-load)
          ;; orig. abbrev-prefix-mark (unrelated)
