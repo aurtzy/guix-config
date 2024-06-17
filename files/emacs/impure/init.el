@@ -560,7 +560,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41955#26
 (use-package project
   :custom
-  ;; TODO: Consider expanding to a transient command that replaces "C-x p"
   (project-switch-commands '((project-find-file "Find file" "f")
                              (project-find-dir "Find directory" "d")
                              (project-dired "Root directory" "D")
@@ -576,6 +575,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
            :map
            project-other-window-map
            ("S" . eat-project-other-window)))
+  (use-package project-dispatch
+    :bind (:map
+           ctl-x-map
+           ("p" . project-dispatch)))
   :preface
   (defcustom project-root-markers
     '(".dir-locals.el"
