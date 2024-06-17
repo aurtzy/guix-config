@@ -68,9 +68,6 @@
 
 (define (home-flatpak-profile-installer config)
   "Gexp to add flatpak remotes and install packages."
-  ;; TODO: check if all packages use valid remote names before proceeding and
-  ;; deduplicate
-  ;; 
   ;; XXX: This service depends on SSL_CERT_FILE pointing to the CA certificates
   ;; file, which is not possible on foreign systems without an initial
   ;; reconfigure.  This file is special in that it is dynamically generated
@@ -79,7 +76,8 @@
   ;; g-exp.
   (define flatpak (home-flatpak-configuration-flatpak config))
   (define remotes (home-flatpak-configuration-remotes config))
-  (define profile (home-flatpak-configuration-profile config))
+  (define profile (delete-duplicates
+                   (home-flatpak-configuration-profile config)))
 
   (for-each
    (lambda (app)
