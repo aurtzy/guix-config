@@ -66,7 +66,9 @@
 (defun project-dispatch--root-directory-arg ()
   "Return the project root directory defined in transient arguments."
   (let* ((args (transient-args transient-current-command)))
-    (transient-arg-value "--root-directory=" args)))
+    (if args
+        (transient-arg-value "--root-directory=" args)
+      (project-root (project-current t)))))
 
 ;; TODO Some of these suffixes are stubs and not used (yet?)
 
