@@ -557,12 +557,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
 ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41955#26
 (use-package project
-  :bind (:map
-         project-prefix-map
-         ("S" . eat-project)
-         :map
-         project-other-window-map
-         ("S" . eat-project-other-window))
   :custom
   ;; TODO: Consider expanding to a transient command that replaces "C-x p"
   (project-switch-commands '((project-find-file "Find file" "f")
@@ -571,6 +565,15 @@ quits:  if a previous call to this function is still active, auto-return `t'."
                              (consult-ripgrep "Find regexp" "r")
                              (eat-project "Shell (Eat)" "S")
                              (magit-project-status "Magit status" "g")))
+  :config
+  (add-to-list 'project-find-functions #'project-find-root)
+  (use-package eat
+    :bind (:map
+           project-prefix-map
+           ("S" . eat-project)
+           :map
+           project-other-window-map
+           ("S" . eat-project-other-window)))
   :preface
   (defcustom project-root-markers
     '(".dir-locals.el"
@@ -590,9 +593,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (defun project-find-root (path)
     "Search up the PATH for `project-root-markers'."
     (when-let ((root (locate-dominating-file path #'project-root-p)))
-      (cons 'transient (expand-file-name root))))
-  :config
-  (add-to-list 'project-find-functions #'project-find-root))
+      (cons 'transient (expand-file-name root)))))
 
 ;;; Major modes
 
