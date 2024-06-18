@@ -66,7 +66,7 @@
   :reader (lambda (&rest _ignore)
             (expand-file-name (project-prompt-project-dir))))
 
-(defun project-dispatch--root-directory-arg ()
+(defun project-dispatch--root-directory ()
   "Return the project root directory defined in transient arguments."
   (let* ((args (transient-args transient-current-command)))
     (if args
@@ -79,119 +79,119 @@
   "Consult buffers in project."
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     (consult-project-buffer)))
 
 (transient-define-suffix project-dispatch-project-list-buffers ()
   "Display a list of open buffers for project."
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     (project-list-buffers)))
 
 (transient-define-suffix project-dispatch-project-find-dir ()
   "Find directory in project."
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     (project-find-dir)))
 
 (transient-define-suffix project-dispatch-project-dired ()
   "Open Dired in project root."
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     (project-dired)))
 
 (transient-define-suffix project-dispatch-project-find-file ()
   "Find file in project."
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     (project-find-file)))
 
 (transient-define-suffix project-dispatch-project-or-external-find-file ()
   "Find file in project or related external roots."
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     (project-or-external-find-file)))
 
 (transient-define-suffix project-dispatch-project-kill-buffers ()
   "Kill all buffers related to project."
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     (call-interactively #'project-kill-buffers)))
 
 (transient-define-suffix project-dispatch-magit-status ()
   "Show status of Git repository of project with Magit."
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     (magit-project-status)))
 
 (transient-define-suffix project-dispatch-shell-eat ()
   "Start an Eat terminal emulator in project."
   (interactive)
   (let* ((project-current-directory-override
-          (project-dispatch--root-directory-arg)))
+          (project-dispatch--root-directory)))
     (eat-project t)))
 
 (transient-define-suffix project-dispatch-project-shell-command ()
   "Run a shell command asynchronously in a project."
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     (call-interactively #'project-async-shell-command)))
 
 (transient-define-suffix project-dispatch-project-execute-extended-command ()
   "Execute an extended command in project root."
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     (call-interactively #'project-execute-extended-command)))
 
 (transient-define-suffix project-dispatch-project-query-replace-regexp ()
   ""
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     nil))
 
 (transient-define-suffix project-dispatch-project-find-regexp ()
   ""
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     nil))
 
 (transient-define-suffix project-dispatch-project-shell ()
   ""
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     nil))
 
 (transient-define-suffix project-dispatch-project-eshell ()
   ""
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     nil))
 
 (transient-define-suffix project-dispatch-project-compile ()
   ""
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     nil))
 
 (transient-define-suffix project-dispatch-project-vc-dir ()
   ""
   (interactive)
   (let ((project-current-directory-override
-         (project-dispatch--root-directory-arg)))
+         (project-dispatch--root-directory)))
     nil))
 
 (provide 'project-dispatch)
