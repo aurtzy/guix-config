@@ -32,7 +32,7 @@
 
 (transient-define-prefix project-dispatch ()
   "Dispatch some command for a project."
-  ["Options"
+  ["Project settings"
    (project-dispatch:--root-directory)]
   [["Buffer"
     ("bb" "Switch" project-dispatch-consult-project-buffer)
