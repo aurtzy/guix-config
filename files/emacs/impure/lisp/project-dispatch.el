@@ -143,13 +143,6 @@ ROOT-DIRECTORY is used to determine the project."
          (project-dispatch--root-directory)))
     (project-list-buffers)))
 
-(transient-define-suffix project-dispatch-project-find-dir ()
-  "Find directory in project."
-  (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    (project-find-dir)))
-
 (transient-define-suffix project-dispatch-project-dired ()
   "Open Dired in project root."
   (interactive)
