@@ -53,10 +53,6 @@
    ("!" "Run" project-dispatch-project-shell-command)
    ("M-x" "Extended command" project-dispatch-project-execute-extended-command)])
 
-(defun project-dispatch--read-root-directory (&rest _ignore)
-  "Reader function for project root directory."
-  (expand-file-name (project-prompt-project-dir)))
-
 (transient-define-infix project-dispatch:--root-directory ()
   :description "Root directory"
   :class 'transient-option
@@ -66,7 +62,8 @@
                 (oset obj value (project-root (project-current t))))
   :always-read t
   :allow-empty nil
-  :reader #'project-dispatch--read-root-directory)
+  :reader (lambda (&rest _ignore)
+            (expand-file-name (project-prompt-project-dir))))
 
 (defun project-dispatch--root-directory-arg ()
   "Return the project root directory defined in transient arguments."
