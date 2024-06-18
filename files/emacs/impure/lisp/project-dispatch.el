@@ -144,9 +144,7 @@ ROOT-DIRECTORY is used to determine the project."
 (transient-define-suffix project-dispatch-dired ()
   "Open Dired in project root."
   (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    (project-dired)))
+  (dired (project-dispatch--from-directory)))
 
 (transient-define-suffix project-dispatch-find-file ()
   "Find file in project."
@@ -172,23 +170,20 @@ ROOT-DIRECTORY is used to determine the project."
 (transient-define-suffix project-dispatch-shell-eat ()
   "Start an Eat terminal emulator in project."
   (interactive)
-  (let* ((project-current-directory-override
-          (project-dispatch--root-directory)))
-    (eat-project t)))
+  (let ((default-directory (project-dispatch--from-directory)))
+    (eat nil t)))
 
 (transient-define-suffix project-dispatch-shell-command ()
   "Run a shell command asynchronously in a project."
   (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    (call-interactively #'project-async-shell-command)))
+  (let ((default-directory (project-dispatch--from-directory)))
+    (call-interactively #'async-shell-command)))
 
 (transient-define-suffix project-dispatch-execute-extended-command ()
   "Execute an extended command in project root."
   (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    (call-interactively #'project-execute-extended-command)))
+  (let ((default-directory (project-dispatch--from-directory)))
+    (call-interactively #'execute-extended-command)))
 
 (transient-define-suffix project-dispatch-project-query-replace-regexp ()
   ""
