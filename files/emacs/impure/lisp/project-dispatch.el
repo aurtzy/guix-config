@@ -57,7 +57,7 @@
 (transient-define-infix project-dispatch:--root-directory ()
   :description "Root directory"
   :class 'transient-option
-  :key "-d"
+  :key "p"
   :argument "--root-directory="
   :init-value (lambda (obj)
                 (oset obj value (project-root (project-current t))))
