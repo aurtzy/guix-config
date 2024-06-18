@@ -35,6 +35,7 @@
   "Dispatch some command for a project."
   ["Project settings"
    ("p" "Project root" project-dispatch:--root-directory)
+   ("-d" "From directory" project-dispatch:--from-directory)]
   ["Commands"
    ("D" "Dired" project-dispatch-project-dired)
    ("f" "Find file" project-dispatch-project-find-file)
@@ -68,6 +69,31 @@
     (if args
         (transient-arg-value "--root-directory=" args)
       (project-root (project-current t)))))
+
+(defun project-dispatch--in-project? ()
+  "Check if the current buffer is in the selected project.
+
+Returns t if in the same project; nil otherwise."
+  (if-let ((project (project-current nil))
+           (root-directory (project-root project)))
+      (equal (expand-file-name (file-name-as-directory root-directory))
+             (expand-file-name (file-name-as-directory
+                                (project-dispatch--root-directory))))))
+
+(transient-define-infix project-dispatch:--from-directory ()
+  :class transient-option
+  :argument "--from-directory="
+  :init-value (lambda (obj)
+                (oset obj value "root"))
+  :always-read t
+  :allow-empty nil
+  :reader (lambda (&rest _ignore)
+            (completing-read
+             "--from-directory="
+             (append '("root" "prompt")
+                     (if (project-dispatch--in-project?)
+                         '("current")
+                       '())))))
 
 ;; TODO Some of these suffixes are stubs and not used (yet?)
 
