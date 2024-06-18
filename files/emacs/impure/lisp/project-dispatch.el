@@ -39,18 +39,17 @@
    ("-d" "From directory" project-dispatch:--from-directory)]
   ["Commands"
    [("b" "Switch buffer" project-dispatch-switch-to-buffer)
-    ("D" "Dired" project-dispatch-project-dired)
-    ("f" "Find file" project-dispatch-project-find-file)
+    ("D" "Dired" project-dispatch-dired)
+    ("f" "Find file" project-dispatch-find-file)
     ("F" "Find file (ext. roots)"
      project-dispatch-project-or-external-find-file)
-    ("k" "Kill buffers" project-dispatch-project-kill-buffers)]
+    ("k" "Kill buffers" project-dispatch-kill-buffers)]
    [("m" "Magit" magit-dispatch)
     ("M" "Magit (file)" magit-file-dispatch)
     ("s" "Shell" project-dispatch-shell-eat)
-    ("!" "Run" project-dispatch-project-shell-command)
-    ("C-b" "Buffer list" project-dispatch-project-list-buffers)
-    ("M-x" "Extended command"
-     project-dispatch-project-execute-extended-command)]])
+    ("!" "Run" project-dispatch-shell-command)
+    ("C-b" "Buffer list" project-dispatch-list-buffers)
+    ("M-x" "Extended command" project-dispatch-execute-extended-command)]])
 
 (transient-define-infix project-dispatch:--root-directory ()
   :class transient-option
@@ -135,21 +134,21 @@ ROOT-DIRECTORY is used to determine the project."
     ;; TODO: Generalize this so there isn't a hard dependency on consult
     (consult-project-buffer)))
 
-(transient-define-suffix project-dispatch-project-list-buffers ()
+(transient-define-suffix project-dispatch-list-buffers ()
   "Display a list of open buffers for project."
   (interactive)
   (let ((project-current-directory-override
          (project-dispatch--root-directory)))
     (project-list-buffers)))
 
-(transient-define-suffix project-dispatch-project-dired ()
+(transient-define-suffix project-dispatch-dired ()
   "Open Dired in project root."
   (interactive)
   (let ((project-current-directory-override
          (project-dispatch--root-directory)))
     (project-dired)))
 
-(transient-define-suffix project-dispatch-project-find-file ()
+(transient-define-suffix project-dispatch-find-file ()
   "Find file in project."
   (interactive)
   (let ((project-current-directory-override
@@ -163,7 +162,7 @@ ROOT-DIRECTORY is used to determine the project."
          (project-dispatch--root-directory)))
     (project-or-external-find-file)))
 
-(transient-define-suffix project-dispatch-project-kill-buffers ()
+(transient-define-suffix project-dispatch-kill-buffers ()
   "Kill all buffers related to project."
   (interactive)
   (let ((project-current-directory-override
@@ -184,14 +183,14 @@ ROOT-DIRECTORY is used to determine the project."
           (project-dispatch--root-directory)))
     (eat-project t)))
 
-(transient-define-suffix project-dispatch-project-shell-command ()
+(transient-define-suffix project-dispatch-shell-command ()
   "Run a shell command asynchronously in a project."
   (interactive)
   (let ((project-current-directory-override
          (project-dispatch--root-directory)))
     (call-interactively #'project-async-shell-command)))
 
-(transient-define-suffix project-dispatch-project-execute-extended-command ()
+(transient-define-suffix project-dispatch-execute-extended-command ()
   "Execute an extended command in project root."
   (interactive)
   (let ((project-current-directory-override
