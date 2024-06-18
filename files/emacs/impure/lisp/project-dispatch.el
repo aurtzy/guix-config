@@ -35,24 +35,22 @@
   "Dispatch some command for a project."
   ["Project settings"
    ("p" "Project root" project-dispatch:--root-directory)
+  ["Commands"
+   ("D" "Dired" project-dispatch-project-dired)
+   ("f" "Find file" project-dispatch-project-find-file)
+   ("F" "Find file (include external)"
+    project-dispatch-project-or-external-find-file)
+   ("s" "Shell (Eat)" project-dispatch-shell-eat)
+   ("!" "Run" project-dispatch-project-shell-command)
+   ("M-x" "Extended command" project-dispatch-project-execute-extended-command)]
   [["Buffer"
     ("bb" "Switch" project-dispatch-consult-project-buffer)
     ("bB" "List all" project-dispatch-project-list-buffers)
     ("bK" "Kill all" project-dispatch-project-kill-buffers)]
-   ["Find"
-    ("fd" "Directory" project-dispatch-project-find-dir)
-    ("ff" "File" project-dispatch-project-find-file)
-    ("fF" "File (incl. external)"
-     project-dispatch-project-or-external-find-file)]
    ["Magit"
     ("md" "Dispatch" magit-dispatch)
     ("mf" "File dispatch" magit-file-dispatch)
-    ("mm" "Status" project-dispatch-magit-status)]]
-  ["From root directory"
-   ("D" "Dired" project-dispatch-project-dired)
-   ("s" "Shell (Eat)" project-dispatch-shell-eat)
-   ("!" "Run" project-dispatch-project-shell-command)
-   ("M-x" "Extended command" project-dispatch-project-execute-extended-command)])
+    ("mm" "Status" project-dispatch-magit-status)]])
 
 (transient-define-infix project-dispatch:--root-directory ()
   :class 'transient-option
