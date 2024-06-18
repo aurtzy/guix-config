@@ -169,13 +169,6 @@ ROOT-DIRECTORY is used to determine the project."
          (project-dispatch--root-directory)))
     (call-interactively #'project-kill-buffers)))
 
-(transient-define-suffix project-dispatch-magit-status ()
-  "Show status of Git repository of project with Magit."
-  (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    (magit-project-status)))
-
 (transient-define-suffix project-dispatch-shell-eat ()
   "Start an Eat terminal emulator in project."
   (interactive)
