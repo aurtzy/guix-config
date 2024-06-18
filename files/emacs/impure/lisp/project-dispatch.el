@@ -38,7 +38,7 @@
    ("p" "Project root" project-dispatch:--root-directory)
    ("-d" "From directory" project-dispatch:--from-directory)]
   ["Commands"
-   [("b" "Switch buffer" project-dispatch-consult-project-buffer)
+   [("b" "Switch buffer" project-dispatch-switch-to-buffer)
     ("D" "Dired" project-dispatch-project-dired)
     ("f" "Find file" project-dispatch-project-find-file)
     ("F" "Find file (ext. roots)"
@@ -127,11 +127,12 @@ ROOT-DIRECTORY is used to determine the project."
 
 ;; TODO Some of these suffixes are stubs and not used (yet?)
 
-(transient-define-suffix project-dispatch-consult-project-buffer ()
-  "Consult buffers in project."
+(transient-define-suffix project-dispatch-switch-to-buffer ()
+  "Switch to buffer in project."
   (interactive)
   (let ((project-current-directory-override
          (project-dispatch--root-directory)))
+    ;; TODO: Generalize this so there isn't a hard dependency on consult
     (consult-project-buffer)))
 
 (transient-define-suffix project-dispatch-project-list-buffers ()
