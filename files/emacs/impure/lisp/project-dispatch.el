@@ -46,7 +46,7 @@
     ("k" "Kill buffers" project-dispatch-kill-buffers)]
    [("m" "Magit" magit-dispatch)
     ("M" "Magit (file)" magit-file-dispatch)
-    ("s" "Shell" project-dispatch-shell-eat)
+    ("s" "Shell" project-dispatch-shell)
     ("!" "Run" project-dispatch-shell-command)
     ("C-b" "Buffer list" project-dispatch-list-buffers)
     ("M-x" "Extended command" project-dispatch-execute-extended-command)]])
@@ -167,9 +167,10 @@ ROOT-DIRECTORY is used to determine the project."
          (project-dispatch--root-directory)))
     (call-interactively #'project-kill-buffers)))
 
-(transient-define-suffix project-dispatch-shell-eat ()
+(transient-define-suffix project-dispatch-shell ()
   "Start an Eat terminal emulator in project."
   (interactive)
+  ;; TODO: We should be able to swap out what shell is used here
   (let ((default-directory (project-dispatch--from-directory)))
     (eat nil t)))
 
@@ -193,20 +194,6 @@ ROOT-DIRECTORY is used to determine the project."
     nil))
 
 (transient-define-suffix project-dispatch-project-find-regexp ()
-  ""
-  (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    nil))
-
-(transient-define-suffix project-dispatch-project-shell ()
-  ""
-  (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    nil))
-
-(transient-define-suffix project-dispatch-project-eshell ()
   ""
   (interactive)
   (let ((project-current-directory-override
