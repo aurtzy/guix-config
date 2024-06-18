@@ -2,6 +2,7 @@
 
 ;; Copyright (C) 2024  aurtzy
 ;; Copyright (C) 2008-2023 The Magit Project Contributors
+;; Copyright (C) 2015-2024 Free Software Foundation, Inc.
 
 ;; Author: aurtzy <aurtzy@gmail.com>
 ;; Keywords: convenience
@@ -94,6 +95,37 @@ Returns t if in the same project; nil otherwise."
                      (if (project-dispatch--in-project?)
                          '("current")
                        '())))))
+
+(defun project-dispatch--from-directory-option ()
+  "Return value of --from-directory from transient arguments."
+  (let* ((args (transient-args transient-current-command)))
+    (if args
+        (transient-arg-value "--from-directory=" args)
+      (project-root (project-current nil)))))
+
+(defun project-dispatch--prompt-directory (root-directory)
+  "Prompt for a subdirectory in project and return the selected path.
+
+ROOT-DIRECTORY is used to determine the project."
+  ;; XXX: This is based on `project-find-dir' in project.el, which has an issue
+  ;; of not displaying empty directories.
+  (let* ((project (project-current nil root-directory))
+         (all-files (project-files project))
+         (completion-ignore-case read-file-name-completion-ignore-case)
+         (all-dirs (mapcar #'file-name-directory all-files)))
+    (funcall project-read-file-name-function
+             "Select directory"
+             ;; Some completion UIs show duplicates.
+             (delete-dups all-dirs)
+             nil 'file-name-history)))
+
+(defun project-dispatch--from-directory ()
+  "Return the working directory to be used for `project-dispatch' commands."
+  (let ((root-directory (project-dispatch--root-directory)))
+    (pcase (project-dispatch--from-directory-option)
+      ("root" root-directory)
+      ("prompt" (project-dispatch--prompt-directory root-directory))
+      ("current" default-directory))))
 
 ;; TODO Some of these suffixes are stubs and not used (yet?)
 
