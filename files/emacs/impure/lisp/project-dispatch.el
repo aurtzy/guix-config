@@ -1,6 +1,7 @@
 ;;; project-dispatch.el --- Dispatch project commands with transient  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  aurtzy
+;; Copyright (C) 2008-2023 The Magit Project Contributors
 
 ;; Author: aurtzy <aurtzy@gmail.com>
 ;; Keywords: convenience
