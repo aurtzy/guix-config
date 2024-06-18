@@ -54,7 +54,7 @@
     ("mm" "Status" project-dispatch-magit-status)]])
 
 (transient-define-infix project-dispatch:--root-directory ()
-  :class 'transient-option
+  :class transient-option
   :argument "--root-directory="
   :init-value (lambda (obj)
                 (oset obj value (project-root (project-current t))))
