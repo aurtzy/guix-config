@@ -38,21 +38,19 @@
    ("p" "Project root" project-dispatch:--root-directory)
    ("-d" "From directory" project-dispatch:--from-directory)]
   ["Commands"
-   ("D" "Dired" project-dispatch-project-dired)
-   ("f" "Find file" project-dispatch-project-find-file)
-   ("F" "Find file (include external)"
-    project-dispatch-project-or-external-find-file)
-   ("s" "Shell (Eat)" project-dispatch-shell-eat)
-   ("!" "Run" project-dispatch-project-shell-command)
-   ("M-x" "Extended command" project-dispatch-project-execute-extended-command)]
-  [["Buffer"
-    ("bb" "Switch" project-dispatch-consult-project-buffer)
-    ("bB" "List all" project-dispatch-project-list-buffers)
-    ("bK" "Kill all" project-dispatch-project-kill-buffers)]
-   ["Magit"
-    ("md" "Dispatch" magit-dispatch)
-    ("mf" "File dispatch" magit-file-dispatch)
-    ("mm" "Status" project-dispatch-magit-status)]])
+   [("b" "Switch buffer" project-dispatch-consult-project-buffer)
+    ("D" "Dired" project-dispatch-project-dired)
+    ("f" "Find file" project-dispatch-project-find-file)
+    ("F" "Find file (ext. roots)"
+     project-dispatch-project-or-external-find-file)
+    ("k" "Kill buffers" project-dispatch-project-kill-buffers)]
+   [("m" "Magit" magit-dispatch)
+    ("M" "Magit (file)" magit-file-dispatch)
+    ("s" "Shell" project-dispatch-shell-eat)
+    ("!" "Run" project-dispatch-project-shell-command)
+    ("C-b" "Buffer list" project-dispatch-project-list-buffers)
+    ("M-x" "Extended command"
+     project-dispatch-project-execute-extended-command)]])
 
 (transient-define-infix project-dispatch:--root-directory ()
   :class transient-option
