@@ -34,7 +34,7 @@
 (transient-define-prefix project-dispatch ()
   "Dispatch some command for a project."
   ["Project settings"
-   (project-dispatch:--root-directory)]
+   ("p" "Project root" project-dispatch:--root-directory)
   [["Buffer"
     ("bb" "Switch" project-dispatch-consult-project-buffer)
     ("bB" "List all" project-dispatch-project-list-buffers)
@@ -55,9 +55,7 @@
    ("M-x" "Extended command" project-dispatch-project-execute-extended-command)])
 
 (transient-define-infix project-dispatch:--root-directory ()
-  :description "Project root"
   :class 'transient-option
-  :key "p"
   :argument "--root-directory="
   :init-value (lambda (obj)
                 (oset obj value (project-root (project-current t))))
