@@ -55,7 +55,7 @@
    ("M-x" "Extended command" project-dispatch-project-execute-extended-command)])
 
 (transient-define-infix project-dispatch:--root-directory ()
-  :description "Root directory"
+  :description "Project root"
   :class 'transient-option
   :key "p"
   :argument "--root-directory="
