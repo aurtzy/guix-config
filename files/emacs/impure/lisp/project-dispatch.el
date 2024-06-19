@@ -22,7 +22,8 @@
 
 ;;; Commentary:
 
-;; 
+;; TODO this commentary
+;; TODO Remove hard dependencies on e.g. consult and eat
 
 ;;; Code:
 
