@@ -50,7 +50,8 @@
    [("v" "VC dir" project-dispatch-vc-dir)
     ("!" "Run" project-dispatch-shell-command)
     ("M-x" "Extended command" project-dispatch-execute-extended-command)]]
-  ["Find"]
+  ["Find"
+   ("e" "Include external roots" "--include-external-roots")]
   [[("f" "file" project-dispatch-find-file)]
    [("g" "regexp" project-dispatch-find-regexp)]])
 
@@ -121,6 +122,13 @@ ROOT-DIRECTORY is used to determine the project."
      ((transient-arg-value "--from-sub-directory" args)
       (project-dispatch--prompt-directory root-directory)))))
 
+(defun project-dispatch--include-external-roots ()
+  "Return whether or not external roots should be included in find commands."
+  (let* ((args (transient-args transient-current-command)))
+    (if args
+        (transient-arg-value "--include-external-roots" args)
+      nil)))
+
 (transient-define-suffix project-dispatch-switch-to-buffer ()
   "Switch to buffer in project."
   (interactive)
@@ -146,14 +154,9 @@ ROOT-DIRECTORY is used to determine the project."
   (interactive)
   (let ((project-current-directory-override
          (project-dispatch--root-directory)))
-    (project-find-file)))
-
-(transient-define-suffix project-dispatch-project-or-external-find-file ()
-  "Find file in project or related external roots."
-  (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    (project-or-external-find-file)))
+    (if (project-dispatch--include-external-roots)
+        (project-or-external-find-file)
+      (project-find-file))))
 
 (transient-define-suffix project-dispatch-kill-buffers ()
   "Kill all buffers related to project."
@@ -184,7 +187,11 @@ ROOT-DIRECTORY is used to determine the project."
 (transient-define-suffix project-dispatch-find-regexp ()
   "Search project for regexp."
   (interactive)
-  (consult-ripgrep (project-dispatch--from-directory)))
+  (let* ((project (project-current (project-dispatch--root-directory)))
+         (external-roots (project-external-roots project))
+         (dirs (cons (project-dispatch--from-directory)
+                     external-roots)))
+    (consult-ripgrep dirs)))
 
 (transient-define-suffix project-dispatch-magit-status ()
   "Open the Magit dispatch transient for project."
