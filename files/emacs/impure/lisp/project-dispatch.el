@@ -198,12 +198,11 @@ ROOT-DIRECTORY is used to determine the project."
   (interactive)
   (consult-ripgrep (project-dispatch--from-directory)))
 
-(transient-define-suffix project-dispatch-project-compile ()
-  ""
+(transient-define-suffix project-dispatch-compile ()
+  "Compile the project."
   (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    nil))
+  (let ((default-directory (project-dispatch--from-directory)))
+    (call-interactively #'compile)))
 
 (transient-define-suffix project-dispatch-project-vc-dir ()
   ""
