@@ -24,6 +24,7 @@
 
 ;; TODO this commentary
 ;; TODO Remove hard dependencies on e.g. consult and eat
+;; TODO "Find" commands should all be able to work off of subdirectories as well
 
 ;;; Code:
 
@@ -35,24 +36,27 @@
 
 (transient-define-prefix project-dispatch ()
   "Dispatch some command for a project."
+  ;; TODO: Add option values to relevant group descriptions (e.g. "From
+  ;; [root|sub] directory")
   ["Project settings"
    ("p" "Project root" project-dispatch:--root-directory)
-   ("-d" "From directory" project-dispatch:--from-directory)]
-  ["Commands"
+   ("d" "From directory" project-dispatch:--from-directory)]
+  ["Project commands"
    [("b" "Switch buffer" project-dispatch-switch-to-buffer)
-    ("c" "Compile" project-dispatch-compile)
-    ("D" "Dired" project-dispatch-dired)
-    ("f" "Find file" project-dispatch-find-file)
-    ("F" "Find file (ext. roots)"
-     project-dispatch-project-or-external-find-file)
-    ("g" "Find regexp" project-dispatch-find-regexp)
     ("k" "Kill buffers" project-dispatch-kill-buffers)]
    [("m" "Magit status" project-dispatch-magit-status)
-    ("s" "Shell" project-dispatch-shell)
-    ("v" "VC dir" project-dispatch-vc-dir)
+    ("C-b" "Buffer list" project-dispatch-list-buffers)]]
+  ["From directory"
+   [("c" "Compile" project-dispatch-compile)
+    ("D" "Dired" project-dispatch-dired)
+    ("s" "Shell" project-dispatch-shell)]
+   [("v" "VC dir" project-dispatch-vc-dir)
     ("!" "Run" project-dispatch-shell-command)
-    ("C-b" "Buffer list" project-dispatch-list-buffers)
-    ("M-x" "Extended command" project-dispatch-execute-extended-command)]])
+    ("M-x" "Extended command" project-dispatch-execute-extended-command)]]
+  ["Find"
+   ("f" "file" project-dispatch-find-file)
+   ("F" "file (ext. roots)" project-dispatch-project-or-external-find-file)
+   ("g" "regexp" project-dispatch-find-regexp)])
 
 (transient-define-infix project-dispatch:--root-directory ()
   :class transient-option
