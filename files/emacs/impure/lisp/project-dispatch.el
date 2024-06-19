@@ -193,12 +193,10 @@ ROOT-DIRECTORY is used to determine the project."
          (project-dispatch--root-directory)))
     nil))
 
-(transient-define-suffix project-dispatch-project-find-regexp ()
-  ""
+(transient-define-suffix project-dispatch-find-regexp ()
+  "Search project for regexp."
   (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    nil))
+  (consult-ripgrep (project-dispatch--from-directory)))
 
 (transient-define-suffix project-dispatch-project-compile ()
   ""
