@@ -185,13 +185,6 @@ ROOT-DIRECTORY is used to determine the project."
   (let ((default-directory (project-dispatch--from-directory)))
     (call-interactively #'execute-extended-command)))
 
-(transient-define-suffix project-dispatch-project-query-replace-regexp ()
-  ""
-  (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    nil))
-
 (transient-define-suffix project-dispatch-find-regexp ()
   "Search project for regexp."
   (interactive)
