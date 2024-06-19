@@ -121,8 +121,6 @@ ROOT-DIRECTORY is used to determine the project."
      ((transient-arg-value "--from-sub-directory" args)
       (project-dispatch--prompt-directory root-directory)))))
 
-;; TODO Some of these suffixes are stubs and not used (yet?)
-
 (transient-define-suffix project-dispatch-switch-to-buffer ()
   "Switch to buffer in project."
   (interactive)
