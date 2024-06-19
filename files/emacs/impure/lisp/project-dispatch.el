@@ -36,27 +36,23 @@
 
 (transient-define-prefix project-dispatch ()
   "Dispatch some command for a project."
-  ;; TODO: Add option values to relevant group descriptions (e.g. "From
-  ;; [root|sub] directory")
-  ["Project settings"
-   ("p" "Project root" project-dispatch:--root-directory)
-   ("d" "From directory" project-dispatch:--from-directory)]
   ["Project commands"
-   [("b" "Switch buffer" project-dispatch-switch-to-buffer)
+   ("p" "Project root" project-dispatch:--root-directory)]
+  [[("b" "Switch buffer" project-dispatch-switch-to-buffer)
     ("k" "Kill buffers" project-dispatch-kill-buffers)]
    [("m" "Magit status" project-dispatch-magit-status)
     ("C-b" "Buffer list" project-dispatch-list-buffers)]]
   ["From directory"
-   [("c" "Compile" project-dispatch-compile)
+   ("d" "From directory" project-dispatch:--from-directory)]
+  [[("c" "Compile" project-dispatch-compile)
     ("D" "Dired" project-dispatch-dired)
     ("s" "Shell" project-dispatch-shell)]
    [("v" "VC dir" project-dispatch-vc-dir)
     ("!" "Run" project-dispatch-shell-command)
     ("M-x" "Extended command" project-dispatch-execute-extended-command)]]
-  ["Find"
-   ("f" "file" project-dispatch-find-file)
-   ("F" "file (ext. roots)" project-dispatch-project-or-external-find-file)
-   ("g" "regexp" project-dispatch-find-regexp)])
+  ["Find"]
+  [[("f" "file" project-dispatch-find-file)]
+   [("g" "regexp" project-dispatch-find-regexp)]])
 
 (transient-define-infix project-dispatch:--root-directory ()
   :class transient-option
