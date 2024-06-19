@@ -204,12 +204,10 @@ ROOT-DIRECTORY is used to determine the project."
   (let ((default-directory (project-dispatch--from-directory)))
     (call-interactively #'compile)))
 
-(transient-define-suffix project-dispatch-project-vc-dir ()
-  ""
+(transient-define-suffix project-dispatch-vc-dir ()
+  "Run VC-Dir in project."
   (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    nil))
+  (vc-dir (project-dispatch--from-directory)))
 
 (provide 'project-dispatch)
 ;;; project-dispatch.el ends here
