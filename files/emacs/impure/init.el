@@ -446,18 +446,23 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :bind (:map
          corfu-map
          ([return] . nil)
-         ([tab] . corfu-next)
-         ([backtab] . corfu-previous))
+         ([tab] . corfu-insert-candidate))
   :custom
   (corfu-cycle t)
   (corfu-separator ?\s)
   (corfu-quit-at-boundary nil)
   (corfu-quit-no-match nil)
-  (corfu-preselect 'first)
+  (corfu-preselect 'prompt)
   :init
   (global-corfu-mode t)
   :preface
-  (declare-function global-corfu-mode "corfu"))
+  (declare-function global-corfu-mode "corfu")
+  (defun corfu-insert-candidate ()
+    "Insert the current candidate, picking the first if none is selected."
+    (interactive)
+    (unless (> corfu--index 0)
+      (corfu--goto 0))
+    (corfu-insert)))
 
 ;;;; Guix
 
