@@ -44,8 +44,7 @@
     ("F" "Find file (ext. roots)"
      project-dispatch-project-or-external-find-file)
     ("k" "Kill buffers" project-dispatch-kill-buffers)]
-   [("m" "Magit" magit-dispatch)
-    ("M" "Magit (file)" magit-file-dispatch)
+   [("m" "Magit status" project-dispatch-magit-status)
     ("s" "Shell" project-dispatch-shell)
     ("!" "Run" project-dispatch-shell-command)
     ("C-b" "Buffer list" project-dispatch-list-buffers)
@@ -197,6 +196,11 @@ ROOT-DIRECTORY is used to determine the project."
   "Search project for regexp."
   (interactive)
   (consult-ripgrep (project-dispatch--from-directory)))
+
+(transient-define-suffix project-dispatch-magit-status ()
+  "Open the Magit dispatch transient for project."
+  (interactive)
+  (magit-status-setup-buffer (project-dispatch--root-directory)))
 
 (transient-define-suffix project-dispatch-compile ()
   "Compile the project."
