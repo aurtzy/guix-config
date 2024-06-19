@@ -39,13 +39,16 @@
    ("-d" "From directory" project-dispatch:--from-directory)]
   ["Commands"
    [("b" "Switch buffer" project-dispatch-switch-to-buffer)
+    ("c" "Compile" project-dispatch-compile)
     ("D" "Dired" project-dispatch-dired)
     ("f" "Find file" project-dispatch-find-file)
     ("F" "Find file (ext. roots)"
      project-dispatch-project-or-external-find-file)
+    ("g" "Find regexp" project-dispatch-find-regexp)
     ("k" "Kill buffers" project-dispatch-kill-buffers)]
    [("m" "Magit status" project-dispatch-magit-status)
     ("s" "Shell" project-dispatch-shell)
+    ("v" "VC dir" project-dispatch-vc-dir)
     ("!" "Run" project-dispatch-shell-command)
     ("C-b" "Buffer list" project-dispatch-list-buffers)
     ("M-x" "Extended command" project-dispatch-execute-extended-command)]])
