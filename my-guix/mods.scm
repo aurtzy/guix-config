@@ -106,8 +106,9 @@
                                    #:label "Modded system parameters")))
   (mods modded-system-mods
         (default '())
-        (sanitize (sanitizer <list>
-                             #:label "Modded system mods")))
+        (sanitize (compose (sanitizer <list>
+                                      #:label "Modded system mods")
+                           (cut delete-duplicates <> mods-eq?))))
   (initial-os modded-system-initial-os
               (default #f)
               (sanitize (lambda (val)
