@@ -79,13 +79,13 @@
                (sanitize (sanitizer <string>
                                     #:label "Mod description")))
   (os-extension mod-os-extension
-                (default identity)
+                (default identity) (thunked)
                 (sanitize (sanitizer <procedure>
                                      #:label "Mod operating system extension")))
   ;; TODO: Consider multi-user configurations.  An alist (e.g.
   ;; (user . extension)) might do...
   (he-extension mod-he-extension
-                (default identity)
+                (default identity) (thunked)
                 (sanitize (sanitizer <procedure>
                                      #:label "Mod home environment extension"))))
 
