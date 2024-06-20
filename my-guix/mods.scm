@@ -104,7 +104,7 @@
               (default '())
               (sanitize (sanitizer <list>
                                    #:label "Modded system parameters")))
-  (mods modded-system-mods
+  (mods modded-system-user-mods
         (default '())
         (sanitize (compose (sanitizer <list>
                                       #:label "Modded system mods")
@@ -131,6 +131,14 @@
                        (sanitizer
                         <procedure>
                         #:label "Modded system home-environment extension"))))
+
+(define (modded-system-mods system)
+  "Return the relevant mods of a modded-system configuration.
+
+This procedure respects the excluded-mods parameter."
+  (lset-difference mods-eq?
+                   (modded-system-user-mods system)
+                   (excluded-mods)))
 
 ;;; NOTE: Thunked fields such as services should be treated specially: value
 ;;; computations should be forced to catch errors; however, it is a good idea to
