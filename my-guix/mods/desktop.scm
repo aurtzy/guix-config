@@ -138,8 +138,6 @@
     (description
      "Configures audio packages and services for this environment.  This mod
 enables the use of Pipewire.")
-    (dependencies
-     (list flatpak-mod))
     (he-extension
      (compose
       (mod-he-packages
@@ -193,8 +191,6 @@ enables the use of Pipewire.")
     (description
      "This mod adds web browsers to the environment for browsing the
 Internet.")
-    (dependencies
-     (list flatpak-mod))
     (he-extension
      (compose
       (mod-he-services
@@ -526,8 +522,6 @@ management/maintenance.")
     (name 'password-management)
     (description
      "Configures password management applications.")
-    (dependencies
-     (list flatpak-mod))
     (he-extension
      (compose
       (mod-he-services

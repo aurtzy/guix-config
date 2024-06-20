@@ -43,8 +43,6 @@
 (define newsreaders-mod
   (mod
     (name 'newsreaders)
-    (dependencies
-     (list flatpak-mod))
     (he-extension
      (compose
       (mod-he-services
@@ -64,8 +62,6 @@
 (define creative-mod
   (mod
     (name 'creative)
-    (dependencies
-     (list flatpak-mod))
     (he-extension
      (compose
       (mod-he-services
@@ -85,8 +81,6 @@
 (define personal-comms-mod
   (mod
     (name 'personal-comms)
-    (dependencies
-     (list flatpak-mod))
     (he-extension
      (compose
       (mod-he-services
@@ -103,8 +97,6 @@
 (define programming-mod
   (mod
     (name 'programming)
-    (dependencies
-     (list emacs-mod))
     (he-extension
      (compose
       (mod-he-services

@@ -50,8 +50,6 @@
 (define bottles-mod
   (mod
     (name 'bottles)
-    (dependencies
-     (list flatpak-mod))
     (he-extension
      (compose
       (mod-he-services
@@ -69,9 +67,6 @@
          (steam-dest ".local/share/guix-sandbox-home"))
     (mod
       (name 'game-managers)
-      (dependencies
-       (list flatpak-mod
-             bottles-mod))
       (os-extension
        (mod-os-service
         sysctl-service-type
@@ -124,8 +119,6 @@
 (define minecraft-mod
   (mod
     (name 'minecraft)
-    (dependencies
-     (list flatpak-mod))
     (he-extension
      (compose
       (mod-he-packages
