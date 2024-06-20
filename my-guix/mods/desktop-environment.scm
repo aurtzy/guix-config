@@ -38,18 +38,32 @@
 
 (use-service-modules desktop sddm xorg)
 
+(define wayland-mod
+  (mod
+    (name 'wayland)
+    (description
+     "Configures environment for usage on Wayland compositors.")
+    (he-extension
+     (compose
+      (mod-he-services
+       (list (simple-service name
+                             home-bash-service-type
+                             (home-bash-extension
+                              (environment-variables
+                               '(("MOZ_ENABLE_WAYLAND" . "1")))))))))))
+
 (define gnome-mod
   (mod
+    (inherit wayland-mod)
     (name 'gnome)
     (description
      "Provides configurations for the GNOME desktop environment.")
-    (dependencies
-     (list wayland-mod))
     (os-extension
      (compose-lambda (os)
        (let ((replace-mesa (replace-mesa))
              (nvidia-proprietary? (nvidia-proprietary?)))
          (list
+          (mod-os-extension wayland-mod)
           (mod-os-packages
            (map replace-mesa
                 (list gvfs
@@ -104,16 +118,16 @@
 
 (define plasma-mod
   (mod
+    (inherit wayland-mod)
     (name 'plasma)
     (description
      "Configures the KDE Plasma desktop environment for this system.")
-    (dependencies
-     (list wayland-mod))
     (os-extension
      (compose-lambda (os)
        (let ((replace-mesa (replace-mesa))
              (nvidia-proprietary? (nvidia-proprietary?)))
          (list
+          (mod-os-extension wayland-mod)
           (mod-os-packages
            (list xdg-desktop-portal-gtk))
           (mod-os-services
@@ -142,17 +156,3 @@
        (list (simple-service name
                              home-activation-service-type
                              plasma-mod-shortcuts)))))))
-
-(define wayland-mod
-  (mod
-    (name 'wayland)
-    (description
-     "Configures environment for usage on Wayland compositors.")
-    (he-extension
-     (compose
-      (mod-he-services
-       (list (simple-service name
-                             home-bash-service-type
-                             (home-bash-extension
-                              (environment-variables
-                               '(("MOZ_ENABLE_WAYLAND" . "1")))))))))))
