@@ -61,16 +61,16 @@ configurations.")
     (description
      "Configures the system for an NVIDIA GPU.")
     (os-extension
-     (compose-lambda _
-       (let ((nvidia-proprietary? (nvidia-proprietary?)))
-         (list (mod-os-services
-                (if nvidia-proprietary?
-                    (list (service (module-ref (resolve-interface
-                                                '(nongnu services nvidia))
-                                               'nvidia-service-type)))
-                    '()))
-               (mod-os-kernel-arguments
-                (if nvidia-proprietary?
-                    (list "modprobe.blacklist=nouveau"
-                          "nvidia_drm.modeset=1")
-                    (list "nouveau.config=NvGspRm=1")))))))))
+     (let ((nvidia-proprietary? (nvidia-proprietary?)))
+       (compose
+        (mod-os-services
+         (if nvidia-proprietary?
+             (list (service (module-ref (resolve-interface
+                                         '(nongnu services nvidia))
+                                        'nvidia-service-type)))
+             '()))
+        (mod-os-kernel-arguments
+         (if nvidia-proprietary?
+             (list "modprobe.blacklist=nouveau"
+                   "nvidia_drm.modeset=1")
+             (list "nouveau.config=NvGspRm=1"))))))))

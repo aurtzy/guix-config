@@ -283,31 +283,30 @@ Internet.")
     (description
      "Provides packages and services for my data setup.")
     (he-extension
-     (compose-lambda _
-       (let ((annexed-data (annexed-data)))
-         (list
-          (mod-he-packages
-           (list git-annex
-                 borg
-                 git-annex-configure))
-          (mod-he-services
-           (list (simple-service name
-                                 home-impure-symlinks-service-type
-                                 (map
-                                  (lambda (symlinks-spec)
-                                    (let* ((data-dir (car symlinks-spec))
-                                           (item-names (cdr symlinks-spec))
-                                           (store-dir (string-append data-dir
-                                                                     "/store")))
-                                      (cons* "" store-dir item-names)))
-                                  annexed-data))
-                 (simple-service name
-                                 home-files-service-type
-                                 `((".local/bin/,annex-assist-all"
-                                    ,(program-file
-                                      "assist-data"
-                                      (build-assist-data-script
-                                       (map car annexed-data))))))))))))))
+     (let ((annexed-data (annexed-data)))
+       (compose
+        (mod-he-packages
+         (list git-annex
+               borg
+               git-annex-configure))
+        (mod-he-services
+         (list (simple-service name
+                               home-impure-symlinks-service-type
+                               (map
+                                (lambda (symlinks-spec)
+                                  (let* ((data-dir (car symlinks-spec))
+                                         (item-names (cdr symlinks-spec))
+                                         (store-dir (string-append data-dir
+                                                                   "/store")))
+                                    (cons* "" store-dir item-names)))
+                                annexed-data))
+               (simple-service name
+                               home-files-service-type
+                               `((".local/bin/,annex-assist-all"
+                                  ,(program-file
+                                    "assist-data"
+                                    (build-assist-data-script
+                                     (map car annexed-data)))))))))))))
 
 (define desktop-services-mod
   (mod
@@ -318,17 +317,16 @@ Internet.")
 Some services are explicitly removed for modularity purposes (i.e. to be added
 elsewhere in possibly different forms).")
     (os-extension
-     (compose-lambda (os)
-       (let ((replace-mesa (replace-mesa)))
-         (list
-          (mod-os-packages
-           (list (replace-mesa network-manager-applet)))
-          (mod-os-services
-           (delete 'network-manager-applet
-                   (modify-services %desktop-services
-                     (delete gdm-service-type))
-                   (lambda (name serv)
-                     (eq? name (service-type-name (service-kind serv))))))))))))
+     (let ((replace-mesa (replace-mesa)))
+       (compose
+        (mod-os-packages
+         (list (replace-mesa network-manager-applet)))
+        (mod-os-services
+         (delete 'network-manager-applet
+                 (modify-services %desktop-services
+                   (delete gdm-service-type))
+                 (lambda (name serv)
+                   (eq? name (service-type-name (service-kind serv)))))))))))
 
 (define emacs-mod
   (mod
@@ -434,50 +432,50 @@ elsewhere in possibly different forms).")
      "Configures flatpak for the home environment.  This mod adds Flathub as a
 remote.")
     (he-extension
-     (compose-lambda (he)
-       (list (mod-he-packages
-              (list flatpak-xdg-utils
-                    xdg-utils))
-             (mod-he-services
-              (list
-               (simple-service name
-                               home-impure-symlinks-service-type
-                               (append
-                                ;; Flatpak doesn't like dangling symlinks, so
-                                ;; only make symlink when icons directory
-                                ;; exists (i.e. when on Guix System)
-                                (if (file-exists?
-                                     "/run/current-system/profile/share")
-                                    '((".local/share"
-                                       "/run/current-system/profile/share"
-                                       "icons"))
-                                    '())
-                                `( ;; GDK_PIXBUF_MODULE_FILE causes CSD issues
-                                  ;; on foreign distros, so we unset it for
-                                  ;; all flatpaks; allow access to system
-                                  ;; icons
-                                  (".local/share/flatpak/overrides"
-                                   ,(path-append-my-files "flatpak/impure")
-                                   "global")
-                                  (".local/share/flatpak/overrides"
-                                   ,(path-append-my-files "flatpak/impure")
-                                   "com.github.tchx84.Flatseal"))))))
-             ;; TODO: Use a simple-service for home-flatpak-service-type (or
-             ;; some descendant supporting remote extensions) when it is
-             ;; available
-             (mod-he-service
-              home-flatpak-service-type
-              (lambda (config)
-                (home-flatpak-configuration
-                 (inherit config)
-                 (remotes
-                  (acons 'flathub
-                         "https://flathub.org/repo/flathub.flatpakrepo"
-                         (home-flatpak-configuration-remotes config)))
-                 (profile
-                  (cons '(flathub "com.github.tchx84.Flatseal")
-                        (home-flatpak-configuration-profile
-                         config)))))))))))
+     (compose
+      (mod-he-packages
+       (list flatpak-xdg-utils
+             xdg-utils))
+      (mod-he-services
+       (list
+        (simple-service name
+                        home-impure-symlinks-service-type
+                        (append
+                         ;; Flatpak doesn't like dangling symlinks, so
+                         ;; only make symlink when icons directory
+                         ;; exists (i.e. when on Guix System)
+                         (if (file-exists?
+                              "/run/current-system/profile/share")
+                             '((".local/share"
+                                "/run/current-system/profile/share"
+                                "icons"))
+                             '())
+                         `( ;; GDK_PIXBUF_MODULE_FILE causes CSD issues
+                           ;; on foreign distros, so we unset it for
+                           ;; all flatpaks; allow access to system
+                           ;; icons
+                           (".local/share/flatpak/overrides"
+                            ,(path-append-my-files "flatpak/impure")
+                            "global")
+                           (".local/share/flatpak/overrides"
+                            ,(path-append-my-files "flatpak/impure")
+                            "com.github.tchx84.Flatseal"))))))
+      ;; TODO: Use a simple-service for home-flatpak-service-type (or
+      ;; some descendant supporting remote extensions) when it is
+      ;; available
+      (mod-he-service
+       home-flatpak-service-type
+       (lambda (config)
+         (home-flatpak-configuration
+          (inherit config)
+          (remotes
+           (acons 'flathub
+                  "https://flathub.org/repo/flathub.flatpakrepo"
+                  (home-flatpak-configuration-remotes config)))
+          (profile
+           (cons '(flathub "com.github.tchx84.Flatseal")
+                 (home-flatpak-configuration-profile
+                  config))))))))))
 
 (define file-system-management-mod
   (mod
