@@ -38,7 +38,6 @@
             mod mod?
             this-mod
             mod-name
-            mod-dependencies
             mod-os-extension
             mod-he-extension
 
@@ -63,7 +62,6 @@
 
             mods-eq?
             excluded-mods
-            mod-dependencies/deep
             fold-extensions
             modded-system-operating-system
             modded-system-home-environment
@@ -80,11 +78,6 @@
                (default "")
                (sanitize (sanitizer <string>
                                     #:label "Mod description")))
-  ;; DEPRECATED: mod-dependencies is superceded by fold-extensions
-  (dependencies mod-dependencies
-                (default '()) (thunked)
-                (sanitize (sanitizer <list>
-                                     #:label "Mod dependencies")))
   (os-extension mod-os-extension
                 (default identity)
                 (sanitize (sanitizer <procedure>
@@ -215,27 +208,6 @@ the current service configuration and using the return value as the new one."
 
 (define excluded-mods (make-parameter '()))
 
-(define (mod-dependencies/deep mod)
-  "Get all the dependencies of a mod, recursively.  Mods specified by the
-EXCLUDED-MODS parameter will not be included in the returned list."
-  (define (dependencies/deep mod visited)
-    (fold
-     (lambda (dep visited)
-       (if (member dep (append visited (excluded-mods)) mods-eq?)
-           visited
-           (dependencies/deep dep (cons dep visited))))
-     visited
-     (mod-dependencies mod)))
-  (dependencies/deep mod '()))
-
-(define (all-unique-mods mods)
-  "Return all unique mods from the list of mods MODS provided, including
-dependencies (recursive).  This procedure uses MOD-DEPENDENCIES/DEEP, which
-respects the EXCLUDED-MODS parameter.  The parameter is further respected by
-removing mods in MODS if any are members of EXCLUDED-MODS."
-  (let ((mods (lset-difference mods-eq? mods (excluded-mods))))
-    (lset-union mods-eq? mods (concatenate (map mod-dependencies/deep mods)))))
-
 (define (fold-extensions initial-record extension-maps)
   "Fold a list of procedures EXTENSION-MAPS onto INITIAL-RECORD.
 
@@ -292,9 +264,9 @@ modded-system SYSTEM."
      values
      (lambda ()
        (map-final-extension
-        (fold-extensions (modded-system-initial-os system)
-                         (map mod-os-extension
-                              (all-unique-mods (modded-system-mods system)))))))))
+        (fold-extensions
+         (modded-system-initial-os system)
+         (map mod-os-extension (modded-system-mods system))))))))
 
 (define (modded-system-home-environment system)
   "Construct and return the home-environment record from the specifications of
@@ -310,9 +282,9 @@ modded-system SYSTEM."
      values
      (lambda ()
        (map-final-extension
-        (fold-extensions (modded-system-initial-he system)
-                         (map mod-he-extension
-                              (all-unique-mods (modded-system-mods system)))))))))
+        (fold-extensions
+         (modded-system-initial-he system)
+         (map mod-he-extension (modded-system-mods system))))))))
 
 (define (modded-system-guess-environment system)
   "Return the operating-system or home-environment record from a modded-system
