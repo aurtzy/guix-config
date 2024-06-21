@@ -176,7 +176,7 @@
 formerly known as steamcompmgr.  It is designed for use in embedded sessions
 and as a nested compositor on top of a regular desktop environment through
 sandboxed Xwayland sessions.")
-      (license license:gpl3+))))
+      (license license:bsd-2))))
 
 (define-public steam-container-custom
   (let ((steam-client-libs (@@ (nongnu packages game-client)
