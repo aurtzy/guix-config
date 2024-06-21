@@ -78,8 +78,6 @@
 
 ;; From: https://gitlab.com/nonguix/nonguix/-/merge_requests/200
 ;;
-;; Doesn't work for NVK yet :c
-;; (https://gitlab.freedesktop.org/mesa/mesa/-/issues/9480)
 (define-public gamescope
   ;; Use older than 3.14.3 due to a bug:
   ;; https://github.com/ValveSoftware/gamescope/issues/1218
