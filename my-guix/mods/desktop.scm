@@ -69,8 +69,8 @@
 
             desktop-mods))
 
-(use-package-modules avahi backup cryptsetup disk emacs emacs-xyz fonts
-                     freedesktop gl gnome gnome-xyz guile haskell-apps
+(use-package-modules avahi backup compression cryptsetup disk emacs emacs-xyz
+                     fonts freedesktop gl gnome gnome-xyz guile haskell-apps
                      kde-frameworks kde-plasma linux music package-management
                      protobuf pulseaudio qt tex tor tree-sitter video
                      virtualization)
@@ -394,7 +394,9 @@ elsewhere in possibly different forms).")
                      ;; packages being tried out go below here
                      ;; emacs-dape                ;TODO: package this?
                      emacs-org-noter
-                     emacs-pdf-tools))
+                     emacs-pdf-tools
+                     ;; Enable viewing .zip files
+                     unzip))
               (mod-he-services
                (list
                 (simple-service name
