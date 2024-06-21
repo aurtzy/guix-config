@@ -255,7 +255,8 @@ sandboxed Xwayland sessions.")
                 '("GUIX_SANDBOX_EXTRA_SHARES"
                   prefix ("$HOME/storage/steam-alt-library"
                           "$HOME/areas/games"
-                          "$HOME/.config/r2modmanPlus-local"))))))))
+                          "$HOME/.config/r2modmanPlus-local"
+                          "$HOME/Games"))))))))
     (inputs
      (list steam-custom))
     (home-page (package-home-page steam-custom))
