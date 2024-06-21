@@ -78,6 +78,10 @@
 
 ;; From: https://gitlab.com/nonguix/nonguix/-/merge_requests/200
 ;;
+;; XXX: When run inside steam container, sometimes complains about
+;; /tmp/.X11-unix not belonging to root or user.
+;; `sudo chown $USER /tmp/.X11-unix' fixes this as a workaround.
+;; Similar related issue: https://github.com/NixOS/nixpkgs/issues/162562
 (define-public gamescope
   ;; Use older than 3.14.3 due to a bug:
   ;; https://github.com/ValveSoftware/gamescope/issues/1218
