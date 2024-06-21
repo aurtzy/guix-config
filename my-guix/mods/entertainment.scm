@@ -45,23 +45,6 @@
 (define games-src
   (path-append-my-home "areas/games"))
 
-;; TODO: probably better to put this mod elsewhere since it's more of a general
-;; tool than specifically for entertainment
-(define bottles-mod
-  (mod
-    (name 'bottles)
-    (he-extension
-     (compose
-      (mod-he-services
-       (list (simple-service name
-                             home-flatpak-profile-service-type
-                             '((flathub "com.usebottles.bottles")))
-             (simple-service name
-                             home-impure-symlinks-service-type
-                             `((".local/share/flatpak/overrides"
-                                ,(path-append-my-files "bottles/impure")
-                                "com.usebottles.bottles")))))))))
-
 (define game-managers-mod
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
          (steam-dest ".local/share/guix-sandbox-home"))

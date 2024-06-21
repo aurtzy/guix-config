@@ -51,6 +51,7 @@
             swapfile
 
             audio-mod
+            bottles-mod
             breeze-theme-mod
             browsers-mod
             common-fonts-mod
@@ -175,6 +176,21 @@ enables the use of Pipewire.")
                                          "--gapplication-service")))
                                (stop
                                 #~(make-kill-destructor)))))))))))
+
+(define bottles-mod
+  (mod
+    (name 'bottles)
+    (he-extension
+     (compose
+      (mod-he-services
+       (list (simple-service name
+                             home-flatpak-profile-service-type
+                             '((flathub "com.usebottles.bottles")))
+             (simple-service name
+                             home-impure-symlinks-service-type
+                             `((".local/share/flatpak/overrides"
+                                ,(path-append-my-files "bottles/impure")
+                                "com.usebottles.bottles")))))))))
 
 ;; TODO: do I actually need this?
 (define breeze-theme-mod
@@ -601,6 +617,7 @@ swapfile configuration information needed.")
 (define desktop-mods
   (append base-mods
           (list audio-mod
+                bottles-mod
                 breeze-theme-mod
                 browsers-mod
                 common-fonts-mod
