@@ -117,6 +117,10 @@
                              (my-guix build utils))
         #:phases
         #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-usr-dir
+              (lambda _
+                (substitute* "src/reshade_effect_manager.cpp"
+                  (("/usr") #$output))))
             (add-after 'unpack 'patch-subprojects
               (lambda _
                 ;; stb
