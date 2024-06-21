@@ -36,6 +36,7 @@
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
@@ -61,6 +62,19 @@
   #:use-module (nongnu packages game-client)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
+
+(define-public libavif-1.0
+  (package
+    (inherit libavif)
+    (version "1.0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/AOMediaCodec/libavif")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name (package-name libavif) version))
+              (sha256
+               (base32 "0k72q7yvfdn92wkslyifw14319nm981a8r3kd84i4ylxmrkgi0zm"))))))
 
 ;; From: https://gitlab.com/nonguix/nonguix/-/merge_requests/200
 ;;
@@ -128,6 +142,7 @@
              gcc-toolchain-12
              glm
              glslang
+             libavif-1.0
              libdecor
              libdisplay-info
              libdrm
