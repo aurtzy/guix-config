@@ -9,6 +9,7 @@
 ;;; Copyright © 2023 Timo Wilken <guix@twilken.net>
 ;;; Copyright © 2022 Demis Balbach <db@minikn.xyz>
 ;;; Copyright © 2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2024 dan <i@dan.games>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -87,6 +88,11 @@
       (build-system meson-build-system)
       (arguments
        (list
+        #:configure-flags #~(list "-Dpipewire=enabled"
+                                  "-Denable_openvr_support=false"
+                                  (string-append "-Dc_args=-DHWDATA_PNP_IDS=\""
+                                                 #+hwdata:pnp
+                                                 "/share/hwdata/pnp.ids\""))
         #:modules '((guix build meson-build-system)
                     (guix build utils)
                     (my-guix build utils))
@@ -111,15 +117,7 @@
                   ;; Allow newer versions
                   (("(version: \\['>= 0\\.0\\.0'), '< 0\\.2\\.0'(\\])"
                     _ left-part right-part)
-                   (string-append left-part right-part)))
-                ;; hwdata:pnp
-                (substitute* "meson.build"
-                  (("warning\\('Building without hwdata pnp id support\\.'\\)")
-                   (string-append
-                    "add_project_arguments("
-                    "'-DHWDATA_PNP_IDS=\"" #$hwdata:pnp "/share/hwdata\"',"
-                    "language: 'cpp'"
-                    ")"))))))))
+                   (string-append left-part right-part))))))))
       (native-inputs
        (list cmake
              pkg-config
