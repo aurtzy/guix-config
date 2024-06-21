@@ -37,7 +37,7 @@
 (transient-define-prefix project-dispatch ()
   "Dispatch some command for a project."
   ["Project commands"
-   ("p" "Project root" project-dispatch:--root-directory)]
+   ("p" "Switch project" project-dispatch:--root-directory)]
   [[("b" "Switch buffer" project-dispatch-switch-to-buffer)
     ("k" "Kill buffers" project-dispatch-kill-buffers)]
    [("m" "Magit status" project-dispatch-magit-status)
