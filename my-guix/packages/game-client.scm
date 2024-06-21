@@ -189,10 +189,10 @@ sandboxed Xwayland sessions.")
      (union64
       (fhs-union (map
                   (match-lambda
-                    ((_ pkg)
-                     (replace-mesa->mesa-nvk-git pkg))
-                    ((_ pkg _)
-                     (replace-mesa->mesa-nvk-git pkg)))
+                    ((name pkg)
+                     (list name (replace-mesa->mesa-nvk-git pkg)))
+                    ((name pkg output)
+                     (list name (replace-mesa->mesa-nvk-git pkg) output)))
                   `(,@(delete "gcc:lib"
                               steam-client-libs
                               (lambda (x elem)
