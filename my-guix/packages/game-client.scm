@@ -97,25 +97,6 @@
         #~(modify-phases %standard-phases
             (add-after 'unpack 'patch-subprojects
               (lambda _
-                ;; glm
-                ;;
-                ;; TODO: Look for a better way to do this.  Kind of a hacky way
-                ;; to handle zip files, and it doesn't seem like I can
-                ;; auto-extract the zip without making it a package (also not
-                ;; preferable).
-                (invoke
-                 #+(file-append unzip "/bin/unzip")
-                 #+(origin
-                     (method url-fetch)
-                     (uri
-                      "https://wrapdb.mesonbuild.com/v2/glm_0.9.9.8-2/get_patch")
-                     (sha256
-                      (base32
-                       "0gfqg3j1kfhycg7bygdxxfhp1qarzxqlrk4j9sz893d2sgya2c6r")))
-                 "-d"
-                 "subprojects/packagefiles/")
-                (copy-recursively "subprojects/packagefiles/glm-0.9.9.8"
-                                  "subprojects/packagefiles/glm")
                 ;; stb
                 (patch-wrap-file
                  "stb"
