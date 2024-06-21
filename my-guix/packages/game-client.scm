@@ -83,11 +83,9 @@
 ;; `sudo chown $USER /tmp/.X11-unix' fixes this as a workaround.
 ;; Similar related issue: https://github.com/NixOS/nixpkgs/issues/162562
 (define-public gamescope
-  ;; Use older than 3.14.3 due to a bug:
-  ;; https://github.com/ValveSoftware/gamescope/issues/1218
-  (let ((version "3.14.2")
+  (let ((version "3.14.20")
         (revision "0")
-        (commit "d0d23c4c3010c81add1bd90cbe478ce4a386e28d"))
+        (commit "650b0959a7677c89ea1395025ae9ebc84d982f0a"))
     (package
       (name "gamescope")
       (version (git-version version revision commit))
@@ -99,7 +97,7 @@
                (commit commit)
                (recursive? #t)))
          (sha256
-          (base32 "1sw2br3g16mird7jc7idbcxf5xxjmiyr6hjw3966s0nsv6bn8vb2"))
+          (base32 "10c4bk3ahphp4cg9fkpbd6wazx4q5r7b587l87wpyc477da0q6v8"))
          (file-name (git-file-name name version))))
       (build-system meson-build-system)
       (arguments
@@ -171,7 +169,7 @@
              vulkan-headers
              vulkan-loader
              wayland
-             wayland-protocols
+             wayland-protocols/newer
              xcb-util-wm
              xorg-server-xwayland))
       (home-page "https://github.com/ValveSoftware/gamescope")
