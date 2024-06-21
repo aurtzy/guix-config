@@ -122,12 +122,11 @@
                 ;; stb
                 (patch-wrap-file
                  "stb"
-                 #+(directory-union "stb" (list stb-image
-                                                stb-image-write
-                                                stb-image-resize)))
-                (substitute* "subprojects/stb/meson.build"
-                  (("include_directories\\('\\.'\\)")
-                   (string-append "include_directories('./include')")))
+                 #+(file-append
+                    (directory-union "stb" (list stb-image
+                                                 stb-image-write
+                                                 stb-image-resize))
+                    "/include"))
                 ;; libdisplay-info
                 (substitute* "src/meson.build"
                   ;; Allow newer versions
