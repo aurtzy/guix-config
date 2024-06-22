@@ -29,6 +29,7 @@
 (define-module (my-guix packages game-client)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages benchmark)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages compression)
@@ -136,15 +137,15 @@
                     _ left-part right-part)
                    (string-append left-part right-part))))))))
       (native-inputs
-       (list cmake
-             pkg-config
-             python-3))
-      (inputs
-       (list clang
-             eudev
-             gcc-toolchain-12
-             glm
+       (list benchmark
              glslang
+             pkg-config
+             vulkan-headers
+             wayland-protocols/newer))
+      (inputs
+       (list (module-ref (resolve-interface '(gnu packages commencement))
+                         'gcc-toolchain-12)
+             glm
              libavif-1.0
              libdecor
              libdisplay-info
@@ -161,17 +162,15 @@
              libxres
              libxt
              libxtst
-             libxxf86vm
-             ;; openvr ;does not build when included
              pipewire
              pixman
+             python-3
              sdl2
-             vulkan-headers
              vulkan-loader
-             wayland
-             wayland-protocols/newer
              xcb-util-wm
-             xorg-server-xwayland))
+             xcb-util-errors
+             xorg-server-xwayland
+             wayland))
       (home-page "https://github.com/ValveSoftware/gamescope")
       (synopsis "Session compositing window manager")
       (description "Gamescope is a Wayland compositor for running games,
