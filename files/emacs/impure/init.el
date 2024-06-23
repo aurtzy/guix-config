@@ -576,7 +576,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
       ".git"
       ".project-root"
       "manifest.scm"
-      ".envrc")
+      ".envrc"
+      "agenda.org")
     "Files or directories that indicate the root of a project."
     :type '(repeat string)
     :group 'project)
