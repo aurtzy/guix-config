@@ -564,22 +564,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
 ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41955#26
 (use-package project
-  :custom
-  (project-switch-commands '((project-find-file "Find file" "f")
-                             (project-find-dir "Find directory" "d")
-                             (project-dired "Root directory" "D")
-                             (consult-ripgrep "Find regexp" "r")
-                             (eat-project "Shell (Eat)" "S")
-                             (magit-project-status "Magit status" "g")))
   :config
   (add-to-list 'project-find-functions #'project-find-root)
-  (use-package eat
-    :bind (:map
-           project-prefix-map
-           ("S" . eat-project)
-           :map
-           project-other-window-map
-           ("S" . eat-project-other-window)))
   (use-package project-dispatch
     :bind (:map
            ctl-x-map
