@@ -59,18 +59,19 @@
   :class transient-option
   :argument "--root-directory="
   :init-value (lambda (obj)
-                (oset obj value (project-root (project-current t))))
+                (oset obj value (if-let ((project (project-current nil)))
+                                    (project-root project)
+                                  nil)))
   :always-read t
-  :allow-empty nil
   :reader (lambda (&rest _ignore)
             (expand-file-name (project-prompt-project-dir))))
 
 (defun project-dispatch--root-directory ()
   "Return the project root directory defined in transient arguments."
-  (let* ((args (transient-args transient-current-command)))
-    (if args
-        (transient-arg-value "--root-directory=" args)
-      (project-root (project-current t)))))
+  (if-let ((args (transient-args transient-current-command))
+           (root-dir (transient-arg-value "--root-directory=" args)))
+      root-dir
+    (project-root (project-current t))))
 
 (defclass project-dispatch-option-switches (transient-switches)
   ()
