@@ -59,12 +59,28 @@
   :class transient-option
   :argument "--root-directory="
   :init-value (lambda (obj)
-                (oset obj value (if-let ((project (project-current nil)))
-                                    (project-root project)
-                                  nil)))
+                (oset obj value (project-dispatch--find-root-directory
+                                 default-directory)))
   :always-read t
   :reader (lambda (&rest _ignore)
-            (expand-file-name (project-prompt-project-dir))))
+            (project-dispatch--find-root-directory
+             (expand-file-name (project-prompt-project-dir)))))
+
+(defun project-dispatch--find-root-directory (directory &optional silent)
+  "Attempt to find project root directory from DIRECTORY.  May return nil.
+
+A message is printed if no root directory can be found.  SILENT
+may be set to a non-nil value to suppress it."
+  (if-let ((directory (expand-file-name directory))
+           (project (project-current nil directory))
+           (root-directory (project-root project)))
+      (progn
+        (project-remember-project project)
+        root-directory)
+    (unless silent
+      (message "No parent project found for %s"
+               directory))
+    nil))
 
 (defun project-dispatch--root-directory ()
   "Return the project root directory defined in transient arguments."
