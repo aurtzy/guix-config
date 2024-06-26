@@ -22,6 +22,8 @@
 (define-module (my-guix mods entertainment)
   #:use-module (gnu)
   #:use-module (gnu home)
+  #:use-module (gnu home services)
+  #:use-module (gnu home services shells)
   #:use-module (gnu services)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods desktop)
@@ -45,6 +47,11 @@
 (define games-src
   (path-append-my-home "areas/games"))
 
+(define steam-extra-shares '("$HOME/areas/games"
+                             "$HOME/Games"
+                             "$HOME/storage/steam-alt-library"
+                             "$HOME/.config/r2modmanPlus-local"))
+
 (define game-managers-mod
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
          (steam-dest ".local/share/guix-sandbox-home"))
@@ -63,8 +70,7 @@
       (he-extension
        (compose
         (mod-he-packages
-         (list steam-custom-wrapped
-               sdl2))
+         (list steam-custom sdl2))
         (mod-he-services
          (list (simple-service name
                                home-impure-symlinks-service-type
@@ -97,7 +103,12 @@
                                home-flatpak-profile-service-type
                                '((flathub "net.lutris.Lutris")
                                  (flathub "net.davidotek.pupgui2")
-                                 (flathub "com.github.Matoking.protontricks"))))))))))
+                                 (flathub "com.github.Matoking.protontricks")))
+               (simple-service name
+                               home-environment-variables-service-type
+                               `(("GUIX_SANDBOX_EXTRA_SHARES"
+                                  .
+                                  ,(string-join steam-extra-shares ":")))))))))))
 
 (define minecraft-mod
   (mod

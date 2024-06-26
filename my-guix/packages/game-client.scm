@@ -57,6 +57,7 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
   #:use-module (nonguix multiarch-container)
@@ -179,6 +180,21 @@ and as a nested compositor on top of a regular desktop environment through
 sandboxed Xwayland sessions.")
       (license license:bsd-2))))
 
+(define steam-client-custom
+  (let ((steam-client (@@ (nongnu packages game-client) steam-client)))
+    (package
+      (inherit steam-client)
+      (name "steam-client-custom")
+      (arguments
+       (substitute-keyword-arguments (package-arguments steam-client)
+         ((#:phases original-phases)
+          #~(modify-phases #$original-phases
+              (add-after 'install 'wrap-steam
+                (lambda _
+                  (wrap-program (string-append #$output "/bin/steam")
+                    #:sh #$(file-append bash-minimal "/bin/bash")
+                    '("QT_X11_NO_MITSHM" = ("1"))))))))))))
+
 (define-public steam-container-custom
   (let ((steam-client-libs (@@ (nongnu packages game-client)
                                steam-client-libs))
@@ -186,6 +202,8 @@ sandboxed Xwayland sessions.")
                                     steam-gameruntime-libs)))
     (nonguix-container
      (inherit steam-container)
+     (name "steam-custom")
+     (wrap-package steam-client-custom)
      (union64
       (fhs-union (map
                   (match-lambda
@@ -217,45 +235,5 @@ sandboxed Xwayland sessions.")
      ;;             #:system "i686-linux"))
      )))
 
-(define steam-custom
-  (let ((steam-pkg (nonguix-container->package steam-container-custom)))
-    (package
-      (inherit steam-pkg)
-      (version (string-append (package-version steam-pkg) "-custom")))))
-
-;;; TODO: This probably belongs in mods.
-(define-public steam-custom-wrapped
-  (package
-    (name "steam-custom")
-    (version (package-version steam-custom))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     (list
-      #:builder
-      (with-imported-modules '((guix build utils))
-        #~(begin
-            (use-modules (guix build utils))
-            (let* ((out (assoc-ref %outputs "out"))
-                   (out-steam (string-append out "/bin/steam"))
-                   (steam (assoc-ref %build-inputs "steam")))
-              (mkdir-p (string-append out "/bin"))
-              (symlink (string-append steam "/bin/steam")
-                       out-steam)
-              (mkdir-p (string-append out "/share"))
-              (symlink (string-append steam "/share/applications")
-                       (string-append out "/share/applications"))
-              (wrap-program out-steam
-                #:sh #$(file-append bash-minimal "/bin/bash")
-                '("QT_X11_NO_MITSHM" = ("1"))
-                '("GUIX_SANDBOX_EXTRA_SHARES"
-                  prefix ("$HOME/storage/steam-alt-library"
-                          "$HOME/areas/games"
-                          "$HOME/.config/r2modmanPlus-local"
-                          "$HOME/Games"))))))))
-    (inputs
-     (list steam-custom))
-    (home-page (package-home-page steam-custom))
-    (synopsis (package-synopsis steam-custom))
-    (description (package-description steam-custom))
-    (license (package-license steam-custom))))
+(define-public steam-custom
+  (nonguix-container->package steam-container-custom))
