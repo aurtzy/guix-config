@@ -453,16 +453,16 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (corfu-quit-at-boundary nil)
   (corfu-quit-no-match nil)
   (corfu-preselect 'prompt)
-  :init
-  (global-corfu-mode t)
-  :preface
-  (declare-function global-corfu-mode "corfu")
   (defun corfu-insert-candidate ()
     "Insert the current candidate, picking the first if none is selected."
     (interactive)
     (unless (> corfu--index 0)
       (corfu--goto 0))
-    (corfu-insert)))
+    (corfu-insert))
+  :init
+  (global-corfu-mode t)
+  :preface
+  (declare-function global-corfu-mode "corfu"))
 
 ;;;; Guix
 
