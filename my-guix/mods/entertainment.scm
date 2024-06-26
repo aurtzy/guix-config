@@ -108,7 +108,20 @@
                                home-environment-variables-service-type
                                `(("GUIX_SANDBOX_EXTRA_SHARES"
                                   .
-                                  ,(string-join steam-extra-shares ":")))))))))))
+                                  ,(string-join steam-extra-shares ":"))))
+               (simple-service name
+                               home-bash-service-type
+                               (home-bash-extension
+                                (aliases
+                                 ;; It's fairly common for me to launch from
+                                 ;; command-line for latest mesa or because of
+                                 ;; differences in system/home configuration, so
+                                 ;; set aliases for steam with NVK/proprietary
+                                 ;; driver
+                                 '(("steam-custom"
+                                    . "guix shell steam-custom -- steam-custom")
+                                   ("steam-nvidia"
+                                    . "guix shell steam-nvidia -- steam"))))))))))))
 
 (define minecraft-mod
   (mod
