@@ -600,7 +600,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :custom
   (dashboard-projects-backend 'project-el)
   (dashboard-items '((recents . 5)
-                     (projects . 10)
                      (bookmarks . 10)))
   :config
   (dashboard-setup-startup-hook))
