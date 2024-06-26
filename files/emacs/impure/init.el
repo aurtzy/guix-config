@@ -777,4 +777,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :init
   (add-to-list 'auto-mode-alist '("\\.\\(rs\\|rlib\\)\\'" . rust-ts-mode)))
 
+(use-package server
+  :config
+  (server-start))
+
 ;;; init.el ends here
