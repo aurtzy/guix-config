@@ -466,6 +466,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (global-corfu-mode t)
   :preface
   (declare-function global-corfu-mode "corfu")
+  (declare-function corfu--goto "corfu")
+  (declare-function corfu-insert "corfu")
   (defun corfu-insert-candidate ()
     "Insert the current candidate, picking the first if none is selected."
     (interactive)
