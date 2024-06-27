@@ -379,8 +379,9 @@ elsewhere in possibly different forms).")
                      emacs-embark
                      emacs-corfu
                      ;; editing tweaks
-                     emacs-unfill
                      emacs-adaptive-wrap
+                     emacs-avy
+                     emacs-unfill
                      emacs-vundo
                      ;; git
                      emacs-magit
