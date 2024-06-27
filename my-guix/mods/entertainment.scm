@@ -119,7 +119,7 @@
                                  ;; set aliases for steam with NVK/proprietary
                                  ;; driver
                                  '(("steam-custom"
-                                    . "guix shell steam-custom -- steam-custom")
+                                    . "guix shell steam-custom -- steam")
                                    ("steam-nvidia"
                                     . "guix shell steam-nvidia -- steam"))))))))))))
 

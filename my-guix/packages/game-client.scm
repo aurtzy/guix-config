@@ -202,6 +202,7 @@ sandboxed Xwayland sessions.")
     (nonguix-container
      (inherit steam-container)
      (name "steam-custom")
+     (binary-name "steam")
      (wrap-package steam-client-custom)
      (union64
       (fhs-union (map
