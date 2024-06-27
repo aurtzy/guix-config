@@ -779,7 +779,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;; to embark-dwim.
 (use-package geiser-guile
   :config
-  (add-to-list 'geiser-guile-load-path "~/git/guix")
+  (add-to-list 'geiser-guile-load-path "~/src/guix")
   (add-to-list 'geiser-guile-load-path "~/guix-config/modules"))
 
 (use-package rust-ts-mode
