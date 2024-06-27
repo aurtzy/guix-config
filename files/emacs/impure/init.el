@@ -182,6 +182,15 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Editing
 
+;; TODO: Transient-ify avy?
+;; https://karthinks.com/software/avy-can-do-anything/
+;; Requires figuring out how to separate the action+selection step avy has, so
+;; that instead a transient shows up first for actions, then a candidate is
+;; selected to act on.
+;; We could start with "j" as the (usually default) "jump" action.
+(use-package avy
+  :bind ("M-j" . avy-goto-char))
+
 (use-package emacs
   :custom
   (indent-tabs-mode nil)
