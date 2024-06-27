@@ -473,7 +473,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package guix-prettify
   :hook ((shell-mode . guix-prettify-mode)
-         (dired-mode . guix-prettify-mode)))
+         (dired-mode . guix-prettify-mode)
+         (eat-mode . guix-prettify-mode)))
 
 ;;;; Minor modes
 
