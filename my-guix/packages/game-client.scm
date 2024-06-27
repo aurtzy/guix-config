@@ -184,7 +184,6 @@ sandboxed Xwayland sessions.")
   (let ((steam-client (@@ (nongnu packages game-client) steam-client)))
     (package
       (inherit steam-client)
-      (name "steam-client-custom")
       (arguments
        (substitute-keyword-arguments (package-arguments steam-client)
          ((#:phases original-phases)
