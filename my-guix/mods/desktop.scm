@@ -429,7 +429,10 @@ elsewhere in possibly different forms).")
                                    "/usr/bin/env emacsclient -a emacs --no-wait")
                                   ("EDITOR"
                                    .
-                                   "/usr/bin/env emacs -nw")))))))))
+                                   "/usr/bin/env emacs -nw")
+                                  ("SUDO_EDITOR"
+                                   .
+                                   "/usr/bin/env emacs")))))))))
 
 (define esync-mod
   (mod
