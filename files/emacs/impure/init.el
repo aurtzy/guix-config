@@ -197,12 +197,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (require-final-newline t))
 
 (use-package emacs
-  :bind (("C-s" . isearch-forward-regexp)
-         ("C-r" . isearch-backward-regexp)
-         ("C-M-s" . isearch-forward)
-         ("C-M-r" . isearch-backward)))
-
-(use-package emacs
   :bind (("M-u" . upcase-dwim)
          ("M-l" . downcase-dwim))
   :config
