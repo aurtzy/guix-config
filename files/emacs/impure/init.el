@@ -189,7 +189,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;; selected to act on.
 ;; We could start with "j" as the (usually default) "jump" action.
 (use-package avy
-  :bind ("M-j" . avy-goto-char))
+  :bind (("M-j" . avy-goto-char)
+         :map
+         isearch-mode-map
+         ("M-j" . avy-isearch)))
 
 (use-package emacs
   :custom
