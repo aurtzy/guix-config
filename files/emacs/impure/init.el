@@ -566,43 +566,17 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 (use-package emacs
   :bind (("C-z" . nil)))
 
-;; TEMP: properly set project root based on files found
-;;
-;; project.el does not have such a feature for manually selecting at
-;; the moment; this will suffice for now. Comes from:
-;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
-;;
-;; Extra links for more info:
-;; https://andreyorst.gitlab.io/posts/2022-07-16-project-el-enhancements/
-;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41955#26
 (use-package project
+  :custom
+  (project-vc-extra-root-markers '(".dir-locals.el"
+                                   "manifest.scm"
+                                   ".envrc"
+                                   "agenda.org"))
   :config
-  (add-to-list 'project-find-functions #'project-find-root)
   (use-package project-dispatch
     :bind (:map
            ctl-x-map
-           ("p" . project-dispatch)))
-  :preface
-  (defcustom project-root-markers
-    '(".dir-locals.el"
-      ".git"
-      ".project-root"
-      "manifest.scm"
-      ".envrc"
-      "agenda.org")
-    "Files or directories that indicate the root of a project."
-    :type '(repeat string)
-    :group 'project)
-  (defun project-root-p (path)
-    "Check if the current PATH has any of the project root markers."
-    (catch 'found
-      (dolist (marker project-root-markers)
-        (when (file-exists-p (concat path marker))
-          (throw 'found marker)))))
-  (defun project-find-root (path)
-    "Search up the PATH for `project-root-markers'."
-    (when-let ((root (locate-dominating-file path #'project-root-p)))
-      (cons 'transient (expand-file-name root)))))
+           ("p" . project-dispatch))))
 
 ;;; Major modes
 
