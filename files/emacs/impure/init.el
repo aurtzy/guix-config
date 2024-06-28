@@ -602,6 +602,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
     (magit-todos-mode t)
     :custom
     (magit-todos-keyword-suffix "[[:space:]]\\|:\\|$")
+    (magit-todos-update 300)
     :config
     ;; TEMP: Partially fix "xxx" keyword parse
     ;; (https://github.com/alphapapa/magit-todos/issues/101)
