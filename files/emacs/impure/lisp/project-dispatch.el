@@ -64,14 +64,14 @@
   :always-read t
   :reader (lambda (&rest _ignore)
             (project-dispatch--find-root-directory
-             (expand-file-name (project-prompt-project-dir)))))
+             (project-prompt-project-dir))))
 
 (defun project-dispatch--find-root-directory (directory &optional silent)
   "Attempt to find project root directory from DIRECTORY.  May return nil.
 
 A message is printed if no root directory can be found.  SILENT
 may be set to a non-nil value to suppress it."
-  (if-let ((directory (expand-file-name directory))
+  (if-let ((directory (directory-file-name (file-truename directory)))
            (project (project-current nil directory))
            (root-directory (project-root project)))
       (progn
