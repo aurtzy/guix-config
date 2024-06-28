@@ -35,7 +35,7 @@
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/Syncplay/syncplay.git")
+                    (url "https://github.com/Syncplay/syncplay")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
