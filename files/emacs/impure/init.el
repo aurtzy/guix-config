@@ -219,6 +219,12 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (global-display-fill-column-indicator-mode 1)
   (toggle-text-mode-auto-fill))
 
+(use-package isearch
+  :custom
+  (isearch-lazy-count t)
+  (lazy-count-prefix-format nil)
+  (lazy-count-suffix-format "  (%s/%s)"))
+
 (use-package newcomment
   :bind (("S-<return>" . comment-indent-new-line)))
 
