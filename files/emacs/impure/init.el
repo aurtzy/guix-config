@@ -613,7 +613,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
     :preface
     (declare-function magit-todos-mode "magit-todos"))
   :config
-  (put 'magit-clean 'disabled nil)
   (use-package magit-section
     :config
     (use-package magit-status
@@ -624,7 +623,9 @@ quits:  if a previous call to this function is still active, auto-return `t'."
              ("C-c C-<tab>" . magit-section-cycle)
              :repeat-map magit-section-repeat-map
              ("C-<tab>" . magit-section-cycle))))
-  (use-package forge))
+  (use-package forge)
+  :preface
+  (put 'magit-clean 'disabled nil))
 
 (use-package org
   :preface
