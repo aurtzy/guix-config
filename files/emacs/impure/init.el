@@ -581,6 +581,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
            ctl-x-map
            ("p" . project-dispatch))))
 
+(use-package server
+  :config
+  (server-start))
+
 ;;; Major modes
 
 (use-package dashboard
@@ -766,9 +770,5 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 (use-package sh-script
   :init
   (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
-
-(use-package server
-  :config
-  (server-start))
 
 ;;; init.el ends here
