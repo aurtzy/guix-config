@@ -182,6 +182,23 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Editing
 
+(use-package adaptive-wrap
+  :config
+  (global-adaptive-wrap-prefix-mode 1)
+  :preface
+  (define-globalized-minor-mode global-adaptive-wrap-prefix-mode
+    adaptive-wrap-prefix-mode
+    (lambda ()
+      (adaptive-wrap-prefix-mode 1)))
+  (declare-function adaptive-wrap-prefix-mode "adaptive-wrap"))
+
+(use-package autorevert
+  :custom
+  (global-auto-revert-non-file-buffers t)
+  :config
+  (global-auto-revert-mode 1)
+  (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode))
+
 ;; TODO: Transient-ify avy?
 ;; https://karthinks.com/software/avy-can-do-anything/
 ;; Requires figuring out how to separate the action+selection step avy has, so
@@ -204,13 +221,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
          ("M-l" . downcase-dwim))
   :config
   (put 'downcase-region 'disabled nil))
-
-(use-package autorevert
-  :custom
-  (global-auto-revert-non-file-buffers t)
-  :config
-  (global-auto-revert-mode 1)
-  (add-to-list 'global-auto-revert-ignore-modes 'Buffer-menu-mode))
 
 (use-package emacs
   :custom
@@ -242,16 +252,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
          :map
          embark-paragraph-map
          ("M-f" . unfill-paragraph)))
-
-(use-package adaptive-wrap
-  :config
-  (global-adaptive-wrap-prefix-mode 1)
-  :preface
-  (define-globalized-minor-mode global-adaptive-wrap-prefix-mode
-    adaptive-wrap-prefix-mode
-    (lambda ()
-      (adaptive-wrap-prefix-mode 1)))
-  (declare-function adaptive-wrap-prefix-mode "adaptive-wrap"))
 
 ;; Resource:
 ;; https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
@@ -285,28 +285,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (global-whitespace-mode t))
 
 ;;;; Completion suite
-
-(use-package vertico
-  :defines (crm-separator)
-  :preface
-  (declare-function vertico-mode "vertico")
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
-  (defun crm-indicator (args)
-    (cons (format "[CRM%s] %s"
-                  (replace-regexp-in-string
-                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                   crm-separator)
-                  (car args))
-          (cdr args)))
-  :bind (:map vertico-map ("<return>" . vertico-directory-enter))
-  :init
-  (vertico-mode 1)
-  :custom
-  (vertico-cycle t)
-  (enable-recursive-minibuffers t)
-  :config
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator))
 
 (use-package consult
   ;; Enable automatic preview at point in the *Completions* buffer. This is
@@ -424,36 +402,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
   (setq consult-narrow-key "<"))
 
-(use-package marginalia
-  :preface
-  (declare-function marginalia-mode "marginalia")
-  :bind (:map minibuffer-local-map ("M-A" . marginalia-cycle))
-  :init
-  (marginalia-mode 1))
-
-(use-package orderless
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion)))))
-
-(use-package embark
-  :bind (:map
-         override-global-map
-         ("C-." . embark-act)
-         ("M-." . embark-dwim)
-         ("C-h B" . embark-bindings))
-  :custom
-  (prefix-help-command #'embark-prefix-help-command)
-  :config
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
-
-(use-package embark-consult
-  :hook (embark-collect-mode . consult-preview-at-point-mode))
-
 (use-package corfu
   :bind (:map
          corfu-map
@@ -478,6 +426,58 @@ quits:  if a previous call to this function is still active, auto-return `t'."
       (corfu--goto 0))
     (corfu-insert)))
 
+(use-package embark
+  :bind (:map
+         override-global-map
+         ("C-." . embark-act)
+         ("M-." . embark-dwim)
+         ("C-h B" . embark-bindings))
+  :custom
+  (prefix-help-command #'embark-prefix-help-command)
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+(use-package embark-consult
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package marginalia
+  :preface
+  (declare-function marginalia-mode "marginalia")
+  :bind (:map minibuffer-local-map ("M-A" . marginalia-cycle))
+  :init
+  (marginalia-mode 1))
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package vertico
+  :defines (crm-separator)
+  :preface
+  (declare-function vertico-mode "vertico")
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  :bind (:map vertico-map ("<return>" . vertico-directory-enter))
+  :init
+  (vertico-mode 1)
+  :custom
+  (vertico-cycle t)
+  (enable-recursive-minibuffers t)
+  :config
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator))
+
 ;;;; Guix
 
 (use-package guix-popup
@@ -492,6 +492,16 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Minor modes
 
+(use-package editorconfig
+  :config
+  (editorconfig-mode 1)
+  :preface
+  (declare-function editorconfig-mode "editorconfig"))
+
+(use-package elec-pair
+  :config
+  (electric-pair-mode 1))
+
 (use-package eldoc
   :custom
   (eldoc-documentation-strategy #'eldoc-documentation-compose))
@@ -501,14 +511,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (auto-insert-directory (concat user-emacs-directory "inserts"))
   :config
   (auto-insert-mode 1))
-
-(use-package repeat
-  :config
-  (repeat-mode t))
-
-(use-package elec-pair
-  :config
-  (electric-pair-mode 1))
 
 (use-package envrc
   :config
@@ -552,17 +554,15 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :custom
   (flymake-number-of-errors-to-display 4))
 
-(use-package editorconfig
-  :config
-  (editorconfig-mode 1)
-  :preface
-  (declare-function editorconfig-mode "editorconfig"))
-
 (use-package hl-todo
   :config
   (global-hl-todo-mode t)
   :preface
   (declare-function global-hl-todo-mode "hl-todo"))
+
+(use-package repeat
+  :config
+  (repeat-mode t))
 
 ;;;; Miscellaneous
 
@@ -711,6 +711,18 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :init
   (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode)))
 
+(use-package elisp-mode
+  :hook ((emacs-lisp-mode . enable-paredit-mode)))
+
+;; TODO: I have embark override "C-." and "M-.", which are both useful; "C-."
+;; has another keybind so it can be ignored, but "M-."
+;; (geiser-edit-symbol-at-point) does not.  It might be a good idea to add it
+;; to embark-dwim.
+(use-package geiser-guile
+  :config
+  (add-to-list 'geiser-guile-load-path "~/src/guix")
+  (add-to-list 'geiser-guile-load-path "~/guix-config/modules"))
+
 (use-package go-ts-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
@@ -733,13 +745,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (python-interpreter "python3")
   (python-shell-dedicated 'project))
 
-(use-package sh-script
-  :init
-  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
-
-(use-package elisp-mode
-  :hook ((emacs-lisp-mode . enable-paredit-mode)))
-
 (use-package lisp-mode
   :hook ((lisp-mode . enable-paredit-mode)))
 
@@ -754,18 +759,13 @@ quits:  if a previous call to this function is still active, auto-return `t'."
                              (1 font-lock-keyword-face))))
   (put 'lambda* 'scheme-indent-function 1))
 
-;; TODO: I have embark override "C-." and "M-.", which are both useful; "C-."
-;; has another keybind so it can be ignored, but "M-."
-;; (geiser-edit-symbol-at-point) does not.  It might be a good idea to add it
-;; to embark-dwim.
-(use-package geiser-guile
-  :config
-  (add-to-list 'geiser-guile-load-path "~/src/guix")
-  (add-to-list 'geiser-guile-load-path "~/guix-config/modules"))
-
 (use-package rust-ts-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.\\(rs\\|rlib\\)\\'" . rust-ts-mode)))
+
+(use-package sh-script
+  :init
+  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
 
 (use-package server
   :config
