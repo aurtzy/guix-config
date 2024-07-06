@@ -599,7 +599,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package dired
   :custom
-  (dired-listing-switches "-alh"))
+  (dired-listing-switches "-alh")
+  (dired-vc-rename-file t))
 
 (use-package magit
   :commands magit
