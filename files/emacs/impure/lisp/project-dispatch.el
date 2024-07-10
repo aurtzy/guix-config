@@ -204,7 +204,7 @@ ROOT-DIRECTORY is used to determine the project."
 (transient-define-suffix project-dispatch-find-regexp ()
   "Search project for regexp."
   (interactive)
-  (let* ((project (project-current (project-dispatch--root-directory)))
+  (let* ((project (project-current nil (project-dispatch--root-directory)))
          (external-roots (project-external-roots project))
          (dirs (cons (project-dispatch--from-directory)
                      external-roots)))
