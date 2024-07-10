@@ -10,6 +10,7 @@
              (my-guix home services)
              (my-guix home services package-management)
              (my-guix mods)
+             (my-guix mods data)
              (my-guix mods desktop)
              (my-guix mods desktop-environment)
              (my-guix mods desktop-extra)
@@ -93,6 +94,7 @@
     (mods (append desktop-mods
                   extra-mods
                   (list battery-mod
+                        data-mod
                         gnome-mod)))
     (initial-os initial-operating-system)
     (final-os-extension

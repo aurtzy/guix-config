@@ -40,8 +40,7 @@
   #:use-module (my-guix utils)
   #:use-module ((rnrs base) #:prefix rnrs:)
   #:use-module (srfi srfi-1)
-  #:export (annexed-data
-            replace-mesa
+  #:export (replace-mesa
             <swapfile-configuration>
             swapfile-configuration
             swapfile-configuration?
@@ -55,7 +54,6 @@
             breeze-theme-mod
             browsers-mod
             common-fonts-mod
-            data-mod
             desktop-services-mod
             emacs-mod
             esync-mod
@@ -77,19 +75,6 @@
                      virtualization)
 
 (use-service-modules cups desktop networking pm virtualization xorg)
-
-;; annexed-data: An alist of data repositories and items from respective
-;; stores to be symlinked from $HOME.
-;;
-;; Each element should be the path to an annex repository (relative to $HOME),
-;; followed by the list of store items to symlink from $HOME.  For example,
-;; the following specifies two repositories at ~/data-repo and ~/data-repo-2,
-;; with ~/data-repo/store/item and ~/data-repo-2/store/item{2,2.5} symlinked:
-;;
-;; '(("data-repo" "item") ("data-repo-2" "item2" "item2.5"))
-(define annexed-data (make-parameter '() (lambda (val)
-                                           (rnrs:assert (list? val))
-                                           val)))
 
 (define-record-type* <swapfile-configuration>
   swapfile-configuration make-swapfile-configuration
@@ -242,40 +227,6 @@ Internet.")
                             (flathub "org.torproject.torbrowser-launcher")
                             (flathub "com.brave.Browser"))))))))))
 
-(define (build-assist-data-script annexed-repos)
-  (with-imported-modules
-      '((guix build utils))
-    #~(begin
-        (use-modules (guix build utils))
-        (let* ((annexed-repos '#$annexed-repos)
-               (orig-dir (getcwd))
-               (with-chdir
-                (lambda (dir proc)
-                  (chdir
-                   (if (string-prefix? "/" dir)
-                       dir
-                       (format #f "~a/~a"
-                               (getenv "HOME")
-                               dir)))
-                  (proc)
-                  (chdir orig-dir))))
-          ;; Always flush buffers regardless of fails to minimize chance that
-          ;; changes leave device in invalid state (e.g. via power failure)
-          (with-exception-handler
-              (lambda (exn) (sync) (exit #f))
-            (lambda ()
-              (for-each
-               (lambda (data-dir)
-                 (format #t "SYNCING: ~s\n"
-                         data-dir)
-                 (with-chdir
-                  data-dir
-                  (lambda ()
-                    (invoke #$(file-append git-annex "/bin/git-annex")
-                            "assist"))))
-               annexed-repos)
-              (sync)))))))
-
 (define common-fonts-mod
   (mod
     (name 'common-fonts)
@@ -292,37 +243,6 @@ Internet.")
                                         ,(path-append-my-home
                                           ".guix-home/profile/share")
                                         "fonts")))))))))
-
-(define data-mod
-  (mod
-    (name 'data)
-    (description
-     "Provides packages and services for my data setup.")
-    (he-extension
-     (let ((annexed-data (annexed-data)))
-       (compose
-        (mod-he-packages
-         (list git-annex
-               borg
-               git-annex-configure))
-        (mod-he-services
-         (list (simple-service name
-                               home-impure-symlinks-service-type
-                               (map
-                                (lambda (symlinks-spec)
-                                  (let* ((data-dir (car symlinks-spec))
-                                         (item-names (cdr symlinks-spec))
-                                         (store-dir (string-append data-dir
-                                                                   "/store")))
-                                    (cons* "" store-dir item-names)))
-                                annexed-data))
-               (simple-service name
-                               home-files-service-type
-                               `((".local/bin/,annex-assist-all"
-                                  ,(program-file
-                                    "assist-data"
-                                    (build-assist-data-script
-                                     (map car annexed-data)))))))))))))
 
 (define desktop-services-mod
   (mod
@@ -625,7 +545,6 @@ swapfile configuration information needed.")
                 breeze-theme-mod
                 browsers-mod
                 common-fonts-mod
-                data-mod
                 desktop-services-mod
                 emacs-mod
                 esync-mod

@@ -16,6 +16,7 @@
              (my-guix home services package-management)
              (my-guix mods)
              (my-guix mods base)
+             (my-guix mods data)
              (my-guix mods desktop)
              (my-guix mods desktop-environment)
              (my-guix mods desktop-extra)
@@ -163,7 +164,8 @@
     (mods (append desktop-mods
                   extra-mods
                   entertainment-mods
-                  (list gnome-mod
+                  (list data-mod
+                        gnome-mod
                         nvidia-mod
                         web-server-mod)))
     (initial-os initial-operating-system)
