@@ -129,6 +129,73 @@
                annexed-repos)
               (sync)))))))
 
+(define (data-backup-create-script)
+  "Return a script that creates backups of data from the data-entries
+parameter."
+  (define borg-repos
+    ;; Construct alist with borg repository path as keys and list of entry
+    ;; sources as values so we can group together data entries that have the
+    ;; same repository when backing up.
+    (let get-backups
+        ((backups '())
+         (entries (map
+                   (match-record-lambda <data-entry> (source borg-repository)
+                     `(,source ,borg-repository))
+                   (data-entries))))
+      (match entries
+        (()
+         backups)
+        (((source borg-repo) rest-entries ...)
+         (if borg-repo
+             (get-backups
+              (assoc-set! backups
+                          borg-repo
+                          (cons source
+                                (or (assoc-ref backups borg-repo)
+                                    '())))
+              rest-entries)
+             (get-backups backups rest-entries))))))
+  (program-file
+   "data-backup-create"
+   (with-imported-modules '((guix build utils))
+     #~(begin
+         (use-modules (guix build utils)
+                      (ice-9 match)
+                      (ice-9 pretty-print))
+         (when #$(null? borg-repos)
+           (display "No data sources to back up.")
+           (exit #f))
+         (let back-up-repos ((borg-repos '#$borg-repos))
+           (match borg-repos
+             (() #t)
+             (((borg-repo sources ...) rest-repos ...)
+              (chdir (getenv "HOME"))
+              (format #t "Backing up the following data sources to ~s:\n"
+                      borg-repo)
+              (pretty-print sources)
+              (display "...\n")
+              (unless
+                  (eq?
+                   0
+                   (status:exit-val
+                    (apply system*
+                           `(#$(file-append borg "/bin/borg")
+                             "create"
+                             "--stats"
+                             ,@(let ((patterns-file
+                                      (string-append borg-repo "/patterns")))
+                                 (if (file-exists? patterns-file)
+                                     (list "--exclude-from" patterns-file)
+                                     '()))
+                             ;; Optimize for storage on an HDD
+                             "--compression" "zstd,6"
+                             ,(string-append borg-repo "::{utcnow}-auto")
+                             "--"
+                             ,@sources))))
+                (exit #f))
+              (sync)
+              (back-up-repos (cdr borg-repos)))))))))
+
 (define data-mod
   (mod
     (name 'data)
@@ -144,6 +211,10 @@ managing it.")
                git-annex-configure))
         (mod-he-services
          (list (simple-service name
+                               home-files-service-type
+                               `((".local/bin/data-backup-create"
+                                  ,(data-backup-create-script))))
+               (simple-service name
                                home-impure-symlinks-service-type
                                (map
                                 (lambda (symlinks-spec)
