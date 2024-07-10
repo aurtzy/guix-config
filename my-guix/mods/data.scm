@@ -22,15 +22,65 @@
 (define-module (my-guix mods data)
   #:use-module (gnu)
   #:use-module (gnu home services)
+  #:use-module (guix records)
   #:use-module (ice-9 match)
   #:use-module (my-guix home services)
   #:use-module (my-guix mods)
   #:use-module (my-guix packages git-annex-configure)
+  #:use-module (my-guix utils)
   #:use-module ((rnrs base) #:prefix rnrs:)
-  #:export (annexed-data
+  #:export (<data-entry>
+            data-entry data-entry?
+            this-data-entry
+            data-entry-source
+            data-entry-borg-repository
+
+            data-entries
+            annexed-data
             data-mod))
 
 (use-package-modules backup haskell-apps)
+
+(define-record-type* <data-entry>
+  data-entry make-data-entry
+  data-entry?
+  this-data-entry
+  ;; Path to main data source for this data entry that is written to and read
+  ;; from, relative to $HOME if not absolute.
+  (source data-entry-source
+          (sanitize (lambda (value)
+                      (rnrs:assert (string? value))
+                      (if (absolute-file-name? value)
+                          value
+                          (path-append-my-home value)))))
+  ;; Path to borg repository that data source is backed up to, if any.  Relative
+  ;; to $HOME if path is not absolute.
+  (borg-repository data-entry-borg-repository
+                   (default #f)
+                   (sanitize (lambda (value)
+                               (rnrs:assert (or (eq? #f value)
+                                                (string? value)))
+                               (cond
+                                ((eq? #f value) #f)
+                                ((absolute-file-name? value) value)
+                                (else (path-append-my-home value)))))))
+
+;; data-entries: Parameter specifying user data entries.
+;;
+;; This is a list of <data-entry> records.
+;;
+;; When setting this parameter, entries may also be specified as strings
+;; representing the data-entry source as a shorthand.
+(define data-entries
+  (make-parameter '()
+                  (lambda (entries)
+                    (map
+                     (match-lambda
+                       ((? data-entry? data-entry)
+                        data-entry)
+                       ((? string? string)
+                        (data-entry (source string))))
+                     entries))))
 
 ;; annexed-data: An alist of data repositories and items from respective
 ;; stores to be symlinked from $HOME.
