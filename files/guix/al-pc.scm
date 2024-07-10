@@ -160,11 +160,17 @@
                                (offset "5250304")))
                   (,replace-mesa ,replace-mesa->mesa-nvk-git)
                   (,data-entries ,(list (data-entry
-                                         (source "workshop"))
+                                         (source "workshop")
+                                         (borg-repository
+                                          "/media/backup/active-data.borg"))
                                         (data-entry
-                                         (source "areas"))
+                                         (source "areas")
+                                         (borg-repository
+                                          "/media/backup/active-data.borg"))
                                         (data-entry
-                                         (source "storage/library"))
+                                         (source "storage/library")
+                                         (borg-repository
+                                          "/media/backup/active-data.borg"))
                                         (data-entry
                                          (source "storage/data/store/attic"))))))
     (mods (append desktop-mods
