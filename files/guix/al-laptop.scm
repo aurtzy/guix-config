@@ -88,7 +88,7 @@
                                (file "/swapfile")
                                (device "/dev/mapper/cryptroot")
                                (offset "269568")))
-                  (,annexed-data (("data" "workshop" "areas" "library" "attic")))
+                  (,data-entries ("workshop" "areas" "library" "attic"))
                   (,excluded-mods ,(list creative-mod
                                          personal-comms-mod))))
     (mods (append desktop-mods

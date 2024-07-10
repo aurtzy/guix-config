@@ -29,6 +29,7 @@
   #:use-module (my-guix mods)
   #:use-module (my-guix packages git-annex-configure)
   #:use-module (my-guix utils)
+  #:use-module (srfi srfi-1)
   #:use-module ((rnrs base) #:prefix rnrs:)
   #:export (<data-entry>
             data-entry data-entry?
@@ -204,35 +205,29 @@ parameter."
      "Sets up my \"data infrastructure\" and provides additional utilities for
 managing it.")
     (he-extension
-     (let ((annexed-data (annexed-data)))
-       (compose
-        (mod-he-packages
-         (list borg
-               git-annex
-               git-annex-configure))
-        (mod-he-services
-         (list (service home-syncthing-service-type
-                        (for-home
-                         (syncthing-configuration
-                          (user (getenv "USER")))))
-               (simple-service name
-                               home-files-service-type
-                               `((".local/bin/data-backup-create"
-                                  ,(data-backup-create-script))))
-               (simple-service name
-                               home-impure-symlinks-service-type
-                               (map
-                                (lambda (symlinks-spec)
-                                  (let* ((data-dir (car symlinks-spec))
-                                         (item-names (cdr symlinks-spec))
-                                         (store-dir (string-append data-dir
-                                                                   "/store")))
-                                    (cons* "" store-dir item-names)))
-                                annexed-data))
-               (simple-service name
-                               home-files-service-type
-                               `((".local/bin/,annex-assist-all"
-                                  ,(program-file
-                                    "assist-data"
-                                    (build-assist-data-script
-                                     (map car annexed-data)))))))))))))
+     (compose
+      (mod-he-packages
+       (list borg
+             git-annex
+             git-annex-configure))
+      (mod-he-services
+       (list (service home-syncthing-service-type
+                      (for-home
+                       (syncthing-configuration
+                        (user (getenv "USER")))))
+             (simple-service name
+                             home-files-service-type
+                             `((".local/bin/data-backup-create"
+                                ,(data-backup-create-script))))
+             (simple-service name
+                             home-impure-symlinks-service-type
+                             (fold
+                              (lambda (entry symlinks)
+                                (match-record entry <data-entry> (source)
+                                  (if (equal? (getenv "HOME")
+                                              (dirname source))
+                                      symlinks
+                                      (cons (list (basename source) source)
+                                            symlinks))))
+                              '()
+                              (data-entries)))))))))

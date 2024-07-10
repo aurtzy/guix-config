@@ -159,8 +159,14 @@
                                (device "/dev/mapper/cryptroot")
                                (offset "5250304")))
                   (,replace-mesa ,replace-mesa->mesa-nvk-git)
-                  (,annexed-data (("data" "workshop" "areas")
-                                  ("storage/data" "library" "attic")))))
+                  (,data-entries ,(list (data-entry
+                                         (source "workshop"))
+                                        (data-entry
+                                         (source "areas"))
+                                        (data-entry
+                                         (source "storage/library"))
+                                        (data-entry
+                                         (source "storage/data/store/attic"))))))
     (mods (append desktop-mods
                   extra-mods
                   entertainment-mods

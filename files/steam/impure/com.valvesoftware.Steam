@@ -1,2 +1,2 @@
 [Context]
-filesystems=~/data/store/areas/games;~/storage/steam-alt-library;~/Games
+filesystems=~/areas/games;~/storage/steam-alt-library;~/Games
