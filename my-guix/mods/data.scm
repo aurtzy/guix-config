@@ -22,6 +22,7 @@
 (define-module (my-guix mods data)
   #:use-module (gnu)
   #:use-module (gnu home services)
+  #:use-module (gnu home services syncthing)
   #:use-module (guix records)
   #:use-module (ice-9 match)
   #:use-module (my-guix home services)
@@ -210,7 +211,11 @@ managing it.")
                git-annex
                git-annex-configure))
         (mod-he-services
-         (list (simple-service name
+         (list (service home-syncthing-service-type
+                        (for-home
+                         (syncthing-configuration
+                          (user (getenv "USER")))))
+               (simple-service name
                                home-files-service-type
                                `((".local/bin/data-backup-create"
                                   ,(data-backup-create-script))))
