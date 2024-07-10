@@ -38,7 +38,6 @@
             data-entry-borg-repository
 
             data-entries
-            annexed-data
             data-mod))
 
 (use-package-modules backup haskell-apps)
@@ -83,53 +82,6 @@
                        ((? string? string)
                         (data-entry (source string))))
                      entries))))
-
-;; annexed-data: An alist of data repositories and items from respective
-;; stores to be symlinked from $HOME.
-;;
-;; Each element should be the path to an annex repository (relative to $HOME),
-;; followed by the list of store items to symlink from $HOME.  For example,
-;; the following specifies two repositories at ~/data-repo and ~/data-repo-2,
-;; with ~/data-repo/store/item and ~/data-repo-2/store/item{2,2.5} symlinked:
-;;
-;; '(("data-repo" "item") ("data-repo-2" "item2" "item2.5"))
-(define annexed-data (make-parameter '() (lambda (val)
-                                           (rnrs:assert (list? val))
-                                           val)))
-
-(define (build-assist-data-script annexed-repos)
-  (with-imported-modules
-      '((guix build utils))
-    #~(begin
-        (use-modules (guix build utils))
-        (let* ((annexed-repos '#$annexed-repos)
-               (orig-dir (getcwd))
-               (with-chdir
-                (lambda (dir proc)
-                  (chdir
-                   (if (string-prefix? "/" dir)
-                       dir
-                       (format #f "~a/~a"
-                               (getenv "HOME")
-                               dir)))
-                  (proc)
-                  (chdir orig-dir))))
-          ;; Always flush buffers regardless of fails to minimize chance that
-          ;; changes leave device in invalid state (e.g. via power failure)
-          (with-exception-handler
-              (lambda (exn) (sync) (exit #f))
-            (lambda ()
-              (for-each
-               (lambda (data-dir)
-                 (format #t "SYNCING: ~s\n"
-                         data-dir)
-                 (with-chdir
-                  data-dir
-                  (lambda ()
-                    (invoke #$(file-append git-annex "/bin/git-annex")
-                            "assist"))))
-               annexed-repos)
-              (sync)))))))
 
 (define (data-backup-create-script)
   "Return a script that creates backups of data from the data-entries
