@@ -23,11 +23,12 @@
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
-  #:use-module (gnu packages web)
   #:use-module (gnu services)
   #:use-module (my-guix mods)
   #:export (ssh-server-mod
             web-server-mod))
+
+(use-package-modules web)
 
 (use-service-modules ssh)
 
