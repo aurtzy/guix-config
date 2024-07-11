@@ -212,15 +212,17 @@ Internet.")
                              "org.mozilla.firefox")))
           (simple-service name
                           home-activation-service-type
-                          ;; This file isn't /that/ important, and
-                          ;; Firefox keeps overwriting it, so we just
-                          ;; copy it without a backup instead
-                          #~(copy-file #$(path-append-my-home
+                          ;; This file isn't /that/ important, and Firefox keeps
+                          ;; overwriting it, so we just copy it without a backup
+                          ;; instead (if it exists)
+                          #~(let ((src #$(path-append-my-home
                                           "areas/firefox/profile"
-                                          "search.json.mozlz4")
-                                       #$(path-append-my-home
-                                          firefox-profile
-                                          "search.json.mozlz4")))
+                                          "search.json.mozlz4"))
+                                  (dest #$(path-append-my-home
+                                           firefox-profile
+                                           "search.json.mozlz4")))
+                              (when (file-exists? src)
+                                (copy-file src dest))))
           (simple-service name
                           home-flatpak-profile-service-type
                           '((flathub "org.mozilla.firefox")
