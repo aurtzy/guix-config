@@ -157,6 +157,10 @@ parameter."
     (description
      "Sets up my \"data infrastructure\" and provides additional utilities for
 managing it.")
+    (os-extension
+     ;; Make packages available to ssh.
+     (mod-os-packages
+      (list git-annex)))
     (he-extension
      (compose
       (mod-he-packages
