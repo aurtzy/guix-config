@@ -15,6 +15,7 @@
              (my-guix mods desktop-environment)
              (my-guix mods desktop-extra)
              (my-guix mods hardware)
+             (my-guix mods server)
              (nongnu packages linux)
              (nongnu system linux-initrd))
 
@@ -88,14 +89,15 @@
                                (file "/swapfile")
                                (device "/dev/mapper/cryptroot")
                                (offset "269568")))
-                  (,data-entries ("workshop" "areas" "library" "attic"))
+                  (,data-entries ("workshop" "areas" "library" "archives"))
                   (,excluded-mods ,(list creative-mod
                                          personal-comms-mod))))
     (mods (append desktop-mods
                   extra-mods
                   (list battery-mod
                         data-mod
-                        gnome-mod)))
+                        gnome-mod
+                        ssh-server-mod)))
     (initial-os initial-operating-system)
     (final-os-extension
      (lambda (os)
