@@ -179,6 +179,7 @@
                   (list data-mod
                         gnome-mod
                         nvidia-mod
+                        ssh-server-mod
                         web-server-mod)))
     (initial-os initial-operating-system)
     (initial-he initial-home-environment)))
