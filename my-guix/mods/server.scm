@@ -26,7 +26,22 @@
   #:use-module (gnu packages web)
   #:use-module (gnu services)
   #:use-module (my-guix mods)
-  #:export (web-server-mod))
+  #:export (ssh-server-mod
+            web-server-mod))
+
+(use-service-modules ssh)
+
+(define ssh-server-mod
+  (mod
+    (name 'ssh-server)
+    (description
+     "Provides an ssh service that runs in the background.")
+    (os-extension
+     (mod-os-services
+      (list (service openssh-service-type
+                     (openssh-configuration
+                      (port-number 12122)
+                      (password-authentication? #f))))))))
 
 (define web-server-mod
   (mod
