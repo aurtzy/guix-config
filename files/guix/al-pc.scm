@@ -172,7 +172,7 @@
                                          (borg-repository
                                           "/media/backup/active-data.borg"))
                                         (data-entry
-                                         (source "storage/archive"))))))
+                                         (source "storage/archives"))))))
     (mods (append desktop-mods
                   extra-mods
                   entertainment-mods
