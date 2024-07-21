@@ -23,12 +23,6 @@
 ;; Phil Hagelberg's better-defaults configuration
 ;; David Wilson's (davwil, System Crafters) videos
 
-;; TODO: It is possible to check if a tree-sitter library is present with
-;; `treesit-ready-p'; reconsider whether it is more preferable to bundle all
-;; tree-sitter libraries in Emacs mod or lazily load them based on existence
-;; using manifests.
-
-
 ;;; Code:
 
 (add-to-list 'load-path (concat user-emacs-directory "lisp"))
