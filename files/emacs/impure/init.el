@@ -83,7 +83,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (backup-by-copying t)
   (version-control t)
   (delete-old-versions t)
-  (kept-new-versions 4))
+  (kept-new-versions 4)
+  (delete-by-moving-to-trash t))
 
 (use-package emacs
   :config
