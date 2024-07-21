@@ -19,6 +19,9 @@
 ;;;
 ;;; This module defines general utility procedures.
 
+;;; TODO: Add some kind of path-append procedure/macro that uses files/mod-name
+;;; as the base path?
+
 (define-module (my-guix utils)
   #:use-module (guix gexp)
   #:use-module (guix packages)
