@@ -699,14 +699,19 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 (use-package org-agenda
   :after org
   :preface
-  (defvar original-org-agenda-files '())
   (defun refresh-org-agendas ()
     (interactive)
     (setq org-agenda-files
-          (let ((data-dirs '("~/workshop" "~/areas")))
+          (let* ((data-dirs '("~/workshop" "~/areas"))
+                 (agendas-file (concat user-emacs-directory "agendas.el"))
+                 ;; agendas.el (if exists) should evaluate to list of declared
+                 ;; additional agenda files
+                 (extra-agendas (if (file-exists-p agendas-file)
+                                    (load agendas-file)
+                                  '())))
             (flatten-tree
              (list
-              original-org-agenda-files
+              extra-agendas
               (-map (lambda (dir)
                       (file-expand-wildcards (concat dir "/*/agenda.org")))
                     data-dirs)
@@ -716,7 +721,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :custom
   (org-agenda-span 10)
   :config
-  (setq original-org-agenda-files org-agenda-files)
   (refresh-org-agendas))
 
 ;;;;; Programming languages
