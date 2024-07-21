@@ -480,6 +480,13 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Guix
 
+(use-package autoinsert
+  :config
+  (define-auto-insert
+    '("manifest\\.scm" . "Guix manifest file")
+    `(nil
+      "(specifications->manifest (list" _ "))")))
+
 (use-package guix-popup
   :bind ((:map
           mode-specific-map
