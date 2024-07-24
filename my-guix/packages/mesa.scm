@@ -150,18 +150,20 @@ translation between LLVM IR and SPIR-V.")
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "2a9f4618c52400115e05e8c30e3c32e5ab183078")))
+             (commit "1908d2c171abc12eb55e5438d6af1f72a787c91c")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "1ppk4jcsmy4w7kp28308yicq7pzx5mbz6g5wrkjysk0h7mx62q0h"))
-       (patches
-        (list
-         (origin
-           (method url-fetch)
-           (uri
-            "https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25576.patch")
-           (sha256 (base32
-                    "0vcifnca44b27plb33r8kslna6qxj3ss9iwz70pq18ar1g7br1wv")))))))
+                "0zsss6lslby06xncqc8nx2g1fxczq75lkhm1kfvg6yc8wpf931if"))
+       ;; Needs rebase, so comment out for now.
+       ;; (patches
+       ;;  (list
+       ;;   (origin
+       ;;     (method url-fetch)
+       ;;     (uri
+       ;;      "https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25576.patch")
+       ;;     (sha256 (base32
+       ;;              "0vcifnca44b27plb33r8kslna6qxj3ss9iwz70pq18ar1g7br1wv")))))
+       ))
     (arguments
      (cons*
       #:meson meson-1.3
@@ -194,12 +196,21 @@ translation between LLVM IR and SPIR-V.")
                                         rust-quote-1
                                         rust-proc-macro2-1
                                         rust-paste-1)))
-                       #~()))))))))
+                       #~())))
+             (add-before 'build 'patch-out-rustfmt
+               (lambda _
+                 ;; XXX: Patch out rustfmt call, which appears to require rust
+                 ;; nightly to build.  I don't know what consequences this may
+                 ;; have.
+                 (substitute* "../source/src/nouveau/headers/lib_rs_gen.py"
+                   (("subprocess\\.run\\(\\['rustfmt',.*$")
+                    "pass\n")))))))))
     (native-inputs
      (modify-inputs (package-native-inputs mesa)
        (prepend clang-15
                 llvm-15
                 python-ply
+                python-pyyaml
                 rust
                 rust-bindgen-cli
                 rust-cbindgen-0.26)))
@@ -211,7 +222,10 @@ translation between LLVM IR and SPIR-V.")
                    (modify-inputs (package-propagated-inputs libclc)
                      (replace "spirv-llvm-translator"
                        spirv-llvm-translator-15))))
-                wayland-protocols/newer)))))
+                wayland-protocols/newer)))
+    (propagated-inputs
+     (modify-inputs (package-propagated-inputs mesa)
+       (replace "libdrm" libdrm/newer)))))
 
 (define mesa/nvk
   (package
