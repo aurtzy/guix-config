@@ -34,7 +34,7 @@
             plasma-mod
             wayland-mod))
 
-(use-package-modules freedesktop gnome gnome-xyz kde-plasma qt)
+(use-package-modules freedesktop gnome gnome-xyz kde kde-plasma qt)
 
 (use-service-modules desktop sddm xorg)
 
@@ -96,26 +96,6 @@
                             (list (replace-mesa gnome-essential-extras)))))
                  (service gdm-service-type)))))))))
 
-(define plasma-mod-shortcuts
-  #~(begin
-      ;; Use Overview as default action for Meta
-      ;; See: https://zren.github.io/kde/#windowsmeta-key
-      (invoke "kwriteconfig5"
-              "--file"
-              (string-append (getenv "HOME")
-                             "/.config/kwinrc")
-              "--group"
-              "ModifierOnlyShortcuts"
-              "--key"
-              "Meta"
-              (string-join
-               (list "org.kde.kglobalaccel"
-                     "/component/kwin"
-                     "org.kde.kglobalaccel.Component"
-                     "invokeShortcut"
-                     "Overview")
-               ","))))
-
 (define plasma-mod
   (mod
     (inherit wayland-mod)
@@ -129,7 +109,9 @@
          (list
           (mod-os-extension wayland-mod)
           (mod-os-packages
-           (list xdg-desktop-portal-gtk))
+           (map replace-mesa
+                (list kdeconnect
+                      xdg-desktop-portal-gtk)))
           (mod-os-services
            (list (service plasma-desktop-service-type
                           (plasma-desktop-configuration
@@ -152,7 +134,6 @@
                                   (operating-system-keyboard-layout os)))))))))))))
     (he-extension
      (compose
-      (mod-he-services
-       (list (simple-service name
-                             home-activation-service-type
-                             plasma-mod-shortcuts)))))))
+      (mod-he-packages
+       (list gwenview
+             okular))))))
