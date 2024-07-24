@@ -135,5 +135,6 @@
     (he-extension
      (compose
       (mod-he-packages
-       (list gwenview
+       (list gnome-tweaks               ;Manage GTK application themes with this
+             gwenview
              okular))))))
