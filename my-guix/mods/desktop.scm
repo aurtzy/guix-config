@@ -25,6 +25,7 @@
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
   #:use-module (gnu home services shepherd)
+  #:use-module (gnu home services ssh)
   #:use-module (gnu home services sound)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
@@ -469,7 +470,8 @@ management/maintenance.")
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
-                             '((flathub "org.keepassxc.KeePassXC")))))))))
+                             '((flathub "org.keepassxc.KeePassXC")))
+             (service home-ssh-agent-service-type)))))))
 
 (define printers-mod
   (mod
