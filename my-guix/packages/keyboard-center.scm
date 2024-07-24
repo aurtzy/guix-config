@@ -57,8 +57,6 @@
     (description "Pythonic API to Linux uinput kernel module.")
     (license gpl3+)))
 
-;; TODO: Conflicts with breeze in environment when using KDE Plasma...  Will
-;; probably need to fix by un-propagating inputs.
 (define-public keyboard-center
   (let ((version "1.0.6")
         (hash "0mb7kap4cwljdi4z1j580xbs5cldlaa2m037gdzak2vi33mv85f4"))
@@ -130,7 +128,9 @@
       (propagated-inputs
        (list python
              python-pyqt
-             breeze
+             ;; FIXME: Issue with icons not showing up, but including breeze
+             ;; doesn't seem to work.
+             ;; breeze
              python-uinput
              python-ruamel.yaml
              python-pyusb
