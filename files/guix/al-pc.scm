@@ -177,8 +177,8 @@
                   extra-mods
                   entertainment-mods
                   (list data-mod
-                        gnome-mod
                         nvidia-mod
+                        plasma-mod
                         ssh-server-mod
                         web-server-mod)))
     (initial-os initial-operating-system)
