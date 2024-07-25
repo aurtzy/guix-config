@@ -34,7 +34,8 @@
             plasma-mod
             wayland-mod))
 
-(use-package-modules freedesktop gnome gnome-xyz kde kde-plasma kde-utils qt)
+(use-package-modules freedesktop gnome gnome-xyz image kde kde-frameworks
+                     kde-multimedia kde-plasma kde-utils qt)
 
 (use-service-modules desktop sddm xorg)
 
@@ -110,7 +111,18 @@
           (mod-os-extension wayland-mod)
           (mod-os-packages
            (map replace-mesa
-                (list kdeconnect
+                ;; Numerous packages are noted in the packaging recommendations
+                ;; wiki page:
+                ;; https://community.kde.org/Distributions/Packaging_Recommendations
+                (list ark
+                      ffmpegthumbs
+                      gnome-tweaks      ;Manage GTK application themes with this
+                      gwenview
+                      icoutils
+                      kdeconnect
+                      kimageformats
+                      okular
+                      qtimageformats
                       xdg-desktop-portal-gtk)))
           (mod-os-services
            (list (service plasma-desktop-service-type
@@ -131,11 +143,4 @@
                                  (drivers '("nvidia")))
                                 (xorg-configuration
                                  (keyboard-layout
-                                  (operating-system-keyboard-layout os)))))))))))))
-    (he-extension
-     (compose
-      (mod-he-packages
-       (list ark
-             gnome-tweaks               ;Manage GTK application themes with this
-             gwenview
-             okular))))))
+                                  (operating-system-keyboard-layout os)))))))))))))))
