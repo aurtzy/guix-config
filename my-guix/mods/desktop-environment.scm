@@ -34,7 +34,7 @@
             plasma-mod
             wayland-mod))
 
-(use-package-modules freedesktop gnome gnome-xyz kde kde-plasma qt)
+(use-package-modules freedesktop gnome gnome-xyz kde kde-plasma kde-utils qt)
 
 (use-service-modules desktop sddm xorg)
 
@@ -135,6 +135,7 @@
     (he-extension
      (compose
       (mod-he-packages
-       (list gnome-tweaks               ;Manage GTK application themes with this
+       (list ark
+             gnome-tweaks               ;Manage GTK application themes with this
              gwenview
              okular))))))
