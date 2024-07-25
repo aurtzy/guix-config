@@ -26,6 +26,8 @@
   #:use-module (gnu home services shells)
   #:use-module (gnu services)
   #:use-module (guix gexp)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods desktop)
   #:use-module (my-guix mods hardware)
@@ -97,6 +99,31 @@
                             (list (replace-mesa gnome-essential-extras)))))
                  (service gdm-service-type)))))))))
 
+;;; TEMP: This package definition doesn't really belong here, but it can be
+;;; moved to a dedicated module if it finds use elsewhere or meets with
+;;; complications upstreaming.
+
+;; This fixes an issue with "org.kde.desktop" Kirigami platform plugin not being
+;; found.
+(define-public qqc2-desktop-s-fix
+  ;; Adding kcolorscheme seems to cause tests to fail; disable for now.
+  (package/inherit qqc2-desktop-style
+    (name "qqc2-desktop-stfix")
+    (arguments
+     (cons*
+      #:tests? #f
+      (package-arguments qqc2-desktop-style)))
+    (inputs (modify-inputs (package-inputs system-settings)
+              (append kcolorscheme)))))
+
+(define-public qqc2-desktop-style/fixed
+  (package/inherit qqc2-desktop-style
+    (replacement qqc2-desktop-s-fix)))
+
+(define-public replace-qqc2-desktop-style
+  (package-input-rewriting/spec
+   `(("qqc2-desktop-style" . ,(const qqc2-desktop-style/fixed)))))
+
 (define plasma-mod
   (mod
     (inherit wayland-mod)
@@ -110,7 +137,8 @@
          (list
           (mod-os-extension wayland-mod)
           (mod-os-packages
-           (map replace-mesa
+           (map (compose replace-qqc2-desktop-style
+                         replace-mesa)
                 ;; Numerous packages are noted in the packaging recommendations
                 ;; wiki page:
                 ;; https://community.kde.org/Distributions/Packaging_Recommendations
@@ -127,7 +155,9 @@
           (mod-os-services
            (list (service plasma-desktop-service-type
                           (plasma-desktop-configuration
-                           (plasma-package (replace-mesa plasma))))
+                           (plasma-package (replace-qqc2-desktop-style
+                                            (replace-mesa
+                                             plasma)))))
                  (service sddm-service-type
                           (sddm-configuration
                            (xorg-configuration
