@@ -143,6 +143,7 @@
                 ;; wiki page:
                 ;; https://community.kde.org/Distributions/Packaging_Recommendations
                 (list ark
+                      bluedevil
                       ffmpegthumbs
                       gnome-tweaks      ;Manage GTK application themes with this
                       gwenview
@@ -150,7 +151,9 @@
                       kdeconnect
                       kimageformats
                       okular
+                      print-manager
                       qtimageformats
+                      system-config-printer
                       xdg-desktop-portal-gtk)))
           (mod-os-services
            (list (service plasma-desktop-service-type
