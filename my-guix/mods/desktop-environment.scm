@@ -145,12 +145,16 @@
                 ;; https://community.kde.org/Distributions/Packaging_Recommendations
                 (list ark
                       bluedevil
+                      bluez-qt    ;XXX: Propagate for bluedevil settings to work
                       ffmpegthumbs
                       gnome-tweaks      ;Manage GTK application themes with this
                       gwenview
                       icoutils
                       kdeconnect
+                      kded              ;XXX: Fix audio integration being funky
                       kimageformats
+                      kwayland-integration
+                      kwrited
                       okular
                       print-manager
                       qtimageformats
