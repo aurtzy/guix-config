@@ -151,7 +151,7 @@
                       gwenview
                       icoutils
                       kdeconnect
-                      kded              ;XXX: Fix audio integration being funky
+                      kded  ;XXX: Fix audio/tray(/more?) integration being funky
                       kimageformats
                       kwayland-integration
                       kwrited
