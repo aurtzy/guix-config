@@ -139,8 +139,9 @@
           (mod-os-packages
            (map (compose replace-qqc2-desktop-style
                          replace-mesa)
-                ;; Numerous packages are noted in the packaging recommendations
-                ;; wiki page:
+                ;; Numerous packages here are included by recommendation of the
+                ;; wiki page on packaging, although I'm not sure what some of
+                ;; them do:
                 ;; https://community.kde.org/Distributions/Packaging_Recommendations
                 (list ark
                       bluedevil
