@@ -103,9 +103,9 @@
 ;;; moved to a dedicated module if it finds use elsewhere or meets with
 ;;; complications upstreaming.
 
-;; This fixes an issue with "org.kde.desktop" Kirigami platform plugin not being
-;; found.
-(define-public qqc2-desktop-s-fix
+;; XXX: Include kcolorscheme as an input; this fixes "org.kde.desktop" Kirigami
+;; platform plugin not being found resulting in a theming issue.
+(define-public qqc2-desktop-stfix
   ;; Adding kcolorscheme seems to cause tests to fail; disable for now.
   (package/inherit qqc2-desktop-style
     (name "qqc2-desktop-stfix")
@@ -118,7 +118,7 @@
 
 (define-public qqc2-desktop-style/fixed
   (package/inherit qqc2-desktop-style
-    (replacement qqc2-desktop-s-fix)))
+    (replacement qqc2-desktop-stfix)))
 
 (define-public replace-qqc2-desktop-style
   (package-input-rewriting/spec
