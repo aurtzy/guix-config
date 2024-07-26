@@ -176,4 +176,5 @@
                                  (drivers '("nvidia")))
                                 (xorg-configuration
                                  (keyboard-layout
-                                  (operating-system-keyboard-layout os)))))))))))))))
+                                  (operating-system-keyboard-layout os)))))
+                           (auto-login-user "alvin")))))))))))
