@@ -132,6 +132,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :custom
   (uniquify-buffer-name-style 'post-forward))
 
+(use-package window
+  :custom
+  (switch-to-buffer-obey-display-actions t))
+
 ;;;; Point control
 
 (make-variable-buffer-local 'scroll-margin)
