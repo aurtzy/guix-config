@@ -19,9 +19,10 @@
 
 ;;; Commentary:
 ;;
-;; REFERENCES:
+;; These are useful references that helped shape this init.el:
 ;; Phil Hagelberg's better-defaults configuration
 ;; David Wilson's (davwil, System Crafters) videos
+;; Mickey Petersen's Mastering Emacs articles
 
 ;;; Code:
 
