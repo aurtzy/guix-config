@@ -1,6 +1,6 @@
 ;;; project-dispatch.el --- Dispatch project commands with transient  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024  aurtzy
+;; Copyright (C) 2024 aurtzy
 ;; Copyright (C) 2008-2023 The Magit Project Contributors
 ;; Copyright (C) 2015-2024 Free Software Foundation, Inc.
 
@@ -49,11 +49,16 @@
     ("s" "Shell" project-dispatch-shell)]
    [("v" "VC dir" project-dispatch-vc-dir)
     ("!" "Run" project-dispatch-shell-command)
-    ("M-x" "Extended command" project-dispatch-execute-extended-command)]]
+    ("M-x" "Extended command" project-dispatch-execute-extended-command)]
+   ["Other window"
+    ("o D" "Dired" project-dispatch-dired-other-window)
+    ("o s" "Shell" project-dispatch-shell-other-window)]]
   ["Find"
    ("e" "Include external roots" "--include-external-roots")]
-  [[("f" "file" project-dispatch-find-file)]
-   [("g" "regexp" project-dispatch-find-regexp)]])
+  [[("f" "file" project-dispatch-find-file)
+    ("g" "regexp" project-dispatch-find-regexp)]
+   ["Other window"
+    ("o f" "file" project-dispatch-find-file-other-window)]])
 
 (transient-define-infix project-dispatch:--root-directory ()
   :class transient-option
@@ -166,6 +171,13 @@ ROOT-DIRECTORY is used to determine the project."
   (interactive)
   (dired (project-dispatch--from-directory)))
 
+(transient-define-suffix project-dispatch-dired-other-window ()
+  "Open Dired in project root, in another window."
+  (interactive)
+  (let ((display-buffer-overriding-action '(display-buffer-use-some-window
+                                            (inhibit-same-window t))))
+    (project-dispatch-dired)))
+
 (transient-define-suffix project-dispatch-find-file ()
   "Find file in project."
   (interactive)
@@ -174,6 +186,13 @@ ROOT-DIRECTORY is used to determine the project."
     (if (project-dispatch--include-external-roots)
         (project-or-external-find-file)
       (project-find-file))))
+
+(transient-define-suffix project-dispatch-find-file-other-window ()
+  "Find file in project, in another window."
+  (interactive)
+  (let ((display-buffer-overriding-action '(display-buffer-use-some-window
+                                            (inhibit-same-window t))))
+    (project-dispatch-find-file)))
 
 (transient-define-suffix project-dispatch-kill-buffers ()
   "Kill all buffers related to project."
@@ -188,6 +207,13 @@ ROOT-DIRECTORY is used to determine the project."
   ;; TODO: We should be able to swap out what shell is used here
   (let ((default-directory (project-dispatch--from-directory)))
     (eat nil t)))
+
+(transient-define-suffix project-dispatch-shell-other-window ()
+  "Start a shell in project, in another window."
+  (interactive)
+  (let ((display-buffer-overriding-action '(display-buffer-use-some-window
+                                            (inhibit-same-window t))))
+    (project-dispatch-shell)))
 
 (transient-define-suffix project-dispatch-shell-command ()
   "Run a shell command asynchronously in a project."
