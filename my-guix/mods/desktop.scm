@@ -325,6 +325,7 @@ elsewhere in possibly different forms).")
                      emacs-code-cells
                      emacs-csv-mode
                      ;; misc
+                     emacs-dimmer
                      emacs-eat
                      emacs-hl-todo
                      emacs-markdown-mode
