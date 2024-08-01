@@ -147,7 +147,7 @@
                       bluedevil
                       bluez-qt    ;XXX: Propagate for bluedevil settings to work
                       ffmpegthumbs
-                      gnome-tweaks      ;Manage GTK application themes with this
+                      gnome-tweaks
                       gwenview
                       icoutils
                       kdeconnect
@@ -182,4 +182,13 @@
                                 (xorg-configuration
                                  (keyboard-layout
                                   (operating-system-keyboard-layout os)))))
-                           (auto-login-user "alvin")))))))))))
+                           (auto-login-user "alvin")))))))))
+    (he-extension
+     (compose
+      (mod-he-extension wayland-mod)
+      (mod-he-services
+       (list (simple-service name
+                             home-flatpak-profile-service-type
+                             ;; Set application theme for GTK apps to "Breeze"
+                             ;; in settings to use this
+                             '((flathub "org.gtk.Gtk3theme.Breeze")))))))))
