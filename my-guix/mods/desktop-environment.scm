@@ -28,6 +28,7 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (my-guix home services package-management)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods desktop)
   #:use-module (my-guix mods hardware)
