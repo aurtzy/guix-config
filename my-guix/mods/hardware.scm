@@ -72,5 +72,7 @@ configurations.")
         (mod-os-kernel-arguments
          (if nvidia-proprietary?
              (list "modprobe.blacklist=nouveau"
-                   "nvidia_drm.modeset=1")
+                   "nvidia_drm.modeset=1"
+                   ;; Disable GSP firmware which apparently causes issues
+                   "nvidia.NVreg_EnableGpuFirmware=0")
              (list "nouveau.config=NvGspRm=1"))))))))
