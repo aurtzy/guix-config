@@ -115,6 +115,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (frame-resize-pixelwise t)
   (use-dialog-box nil)
   (echo-keystrokes 0.25)
+  (modus-themes-hl-line '(accented))
   :config
   (add-to-list 'default-frame-alist '(font . "Hack-11"))
   ;; TODO: menu-bar was funky with frame transparency at the time of
