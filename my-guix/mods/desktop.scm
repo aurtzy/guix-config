@@ -289,6 +289,7 @@ elsewhere in possibly different forms).")
                      texlive-capt-of
                      texlive-libertine
                      texlive-scheme-basic
+                     texlive-setspace
                      texlive-ulem
                      texlive-wrapfig
                      ;; project-specific files

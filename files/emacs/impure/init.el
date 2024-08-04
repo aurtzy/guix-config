@@ -697,6 +697,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
         "#+latex_header: \\renewcommand*\\oldstylenums[1]{{\\fontfamily{fxlj}\\selectfont #1}}" \n
         "#+latex_header: \\usepackage{lmodern}" \n
         "#+latex_header: \\usepackage[margin=3cm]{geometry}" \n
+        "#+latex_header: \\usepackage{setspace}" \n
+        "# #+latex_header: \\doublespacing" \n
         "#+options: timestamp:nil" \n
         \n
         \n)))
