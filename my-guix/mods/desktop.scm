@@ -459,7 +459,13 @@ management/maintenance.")
              (simple-service name
                              home-impure-symlinks-service-type
                              `((".config/mpv"
-                                ,(path-append-my-files "mpv/impure/config"))))))))))
+                                ,(path-append-my-files "mpv/impure/config")
+                                "mpv.conf"
+                                "scripts/trigger-restart-playback-on-eof.lua")))
+             (simple-service name
+                             home-xdg-configuration-files-service-type
+                             `(("mpv/scripts/mpris.so"
+                                ,(file-append mpv-mpris "/lib/mpris.so"))))))))))
 
 (define password-management-mod
   (mod
