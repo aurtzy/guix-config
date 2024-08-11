@@ -221,7 +221,8 @@ sandboxed Xwayland sessions.")
                     ;; Use newer version for gamescope (and remove older one
                     ;; above)
                     ("gcc-toolchain" ,gcc-toolchain-12)
-                    ("gamescope" ,gamescope)))
+                    ("gamescope" ,gamescope)
+                    ("sdl2" ,sdl2)))
                  #:name "fhs-union-64"))
      ;; Requires i686-linux rust, which is not available in Guix at the moment
      ;; (although rust-binary from (my-guix packages rust) may be used as a
