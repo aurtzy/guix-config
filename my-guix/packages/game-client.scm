@@ -220,6 +220,7 @@ sandboxed Xwayland sessions.")
                     ,@fhs-min-libs
                     ;; Use newer version for gamescope (and remove older one
                     ;; above)
+                    ("gdb" ,(@ (gnu packages gdb) gdb))
                     ("gcc-toolchain" ,gcc-toolchain-12)
                     ("gamescope" ,gamescope)
                     ("sdl2" ,sdl2)))
