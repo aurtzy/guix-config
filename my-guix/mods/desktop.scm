@@ -75,7 +75,7 @@
                      protobuf pulseaudio qt tex tor tree-sitter video
                      virtualization)
 
-(use-service-modules cups desktop networking pm virtualization xorg)
+(use-service-modules cups desktop linux networking pm virtualization xorg)
 
 (define-record-type* <swapfile-configuration>
   swapfile-configuration make-swapfile-configuration
@@ -431,13 +431,16 @@ remote.")
      "Provides software to support various file system operations and disk
 management/maintenance.")
     (os-extension
-     (compose (mod-os-packages
-               (list btrfs-progs
-                     cryptsetup
-                     gparted
-                     gptfdisk
-                     lvm2
-                     ntfs-3g))))))
+     (compose
+      (mod-os-packages
+       (list btrfs-progs
+             cryptsetup
+             gparted
+             gptfdisk
+             lvm2
+             ntfs-3g))
+      (mod-os-services
+       (list (service fstrim-service-type)))))))
 
 (define media-mod
   (mod
