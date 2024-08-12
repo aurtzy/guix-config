@@ -150,19 +150,31 @@ translation between LLVM IR and SPIR-V.")
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "b6d3f666abc2a249f8ebc501d32a2eda2e5360da")))
+             (commit
+              ;; "Bad", newer commit
+              "367191ff632e00b1822c53ecead8c48e18b73535"
+              ;; "Good", older commit (for Factorio)
+              ;; See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/11666
+              ;; "67b778445afec51883e36618c8d5c535b3fd149f"
+              )
+             ))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "10iisnhq6wqvmwrprqabhl0bhihm9i70hf3mwkd3rbgm6y6zd249"))
-       ;; Needs rebase, so comment out for now.
-       ;; (patches
-       ;;  (list
-       ;;   (origin
-       ;;     (method url-fetch)
-       ;;     (uri
-       ;;      "https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25576.patch")
-       ;;     (sha256 (base32
-       ;;              "0vcifnca44b27plb33r8kslna6qxj3ss9iwz70pq18ar1g7br1wv")))))
+                ;; "Bad" commit
+                "1vcm4k45wkfagc4y22m095b1a775a7c1x2v0qiig1lsvm9dq9ywd"
+                ;; "Good" commit
+                ;; "1xpwikc3q9ann8mpasbki3mka85ypi6s2c2dzgxylyx7agap7lfw"
+                ))
+       (patches
+        (list
+         ;; Needs rebase, so comment out for now.
+         ;; (origin
+         ;;   (method url-fetch)
+         ;;   (uri
+         ;;    "https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25576.patch")
+         ;;   (sha256 (base32
+         ;;            "0vcifnca44b27plb33r8kslna6qxj3ss9iwz70pq18ar1g7br1wv")))
+         ))
        ))
     (arguments
      (cons*
