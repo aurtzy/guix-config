@@ -47,7 +47,11 @@
 (define games-src
   (path-append-my-home "areas/games"))
 
-(define steam-extra-shares '("$HOME/areas/games"
+(define steam-extra-shares '( ;; Work around steam needing access to files when
+                              ;; uploading screenshots/pictures to chat (portal
+                              ;; doesn't seem to apply here..?).
+                             "$HOME/Pictures/Screenshots"
+                             "$HOME/areas/games"
                              "$HOME/Games"
                              "$HOME/storage/steam-alt-library"
                              "$HOME/.config/r2modmanPlus-local"))
