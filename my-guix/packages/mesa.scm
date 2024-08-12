@@ -174,9 +174,66 @@ translation between LLVM IR and SPIR-V.")
         ((#:modules original-modules)
          (append original-modules
                  '((my-guix build utils))))
-        ((#:configure-flags original-flags)
-         #~(append #$original-flags
-                   '("-Dvulkan-drivers=nouveau")))
+        ((#:configure-flags _)
+         #~(list
+            #$@(cond
+                ((or (target-aarch64?) (target-arm32?))
+                 '("-Dgallium-drivers=etnaviv,freedreno,kmsro,lima,nouveau,\
+panfrost,r300,r600,svga,swrast,tegra,v3d,vc4,virgl,zink"))
+                ((or (target-ppc64le?) (target-ppc32?) (target-riscv64?))
+                 '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,svga,swrast,virgl,zink"))
+                (else
+                 '("-Dgallium-drivers=nouveau,swrast,zink")
+                 ;; TEMP: Reduce build time
+                 ;; '("-Dgallium-drivers=crocus,iris,nouveau,r300,r600,radeonsi,\
+                 ;; svga,swrast,virgl,zink")
+                 ))
+            ;; Enable various optional features.  TODO: opencl requires libclc,
+            ;; omx requires libomxil-bellagio
+            "-Dplatforms=x11,wayland"
+            "-Dglx=dri"              ;Thread Local Storage, improves performance
+            ;; "-Dopencl=true"
+            ;; "-Domx=true"
+            "-Dosmesa=true"
+            "-Dgallium-xa=enabled"
+
+            ;; features required by wayland
+            "-Dgles2=enabled"
+            "-Dgbm=enabled"
+            "-Dshared-glapi=enabled"
+
+            ;; Explicitly enable Vulkan on some architectures.
+            #$@(cond
+                ((target-x86-64?)
+                 '("-Dvulkan-drivers=swrast,nouveau")
+                 ;; TEMP: Reduce build time
+                 ;; '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast,nouveau")
+                 )
+                ((target-x86-32?)
+                 '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast"))
+                ((or (target-ppc64le?) (target-ppc32?))
+                 '("-Dvulkan-drivers=amd,swrast"))
+                ((target-aarch64?)
+                 '("-Dvulkan-drivers=freedreno,amd,broadcom,swrast"))
+                ((target-riscv64?)
+                 '("-Dvulkan-drivers=amd,swrast"))
+                (else
+                 '("-Dvulkan-drivers=auto")))
+
+            ;; Enable the Vulkan overlay layer on all architectures.
+            "-Dvulkan-layers=device-select,overlay"
+
+            ;; Enable all the codecs that were built by default as part of the
+            ;; 21.3.x releases to avoid functionality regressions.
+            "-Dvideo-codecs=all"
+
+            ;; Enable ZSTD compression for shader cache.
+            "-Dzstd=enabled"
+
+            ;; Also enable the tests.
+            "-Dbuild-tests=true"
+
+            "-Dllvm=enabled"))          ; default is x86/x86_64 only
         ((#:phases original-phases)
          #~(modify-phases #$original-phases
              (add-after 'unpack 'change-subproject-sources
