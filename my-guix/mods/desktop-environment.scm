@@ -111,9 +111,17 @@
   (package/inherit qqc2-desktop-style
     (name "qqc2-desktop-stfix")
     (arguments
-     (cons*
-      #:tests? #f
-      (package-arguments qqc2-desktop-style)))
+     (substitute-keyword-arguments (package-arguments qqc2-desktop-style)
+       ((#:tests? _)
+        #f)
+       ((#:phases original-phases)
+        #~(modify-phases #$original-phases
+            (replace 'check
+              (lambda* (#:key tests? #:allow-other-keys)
+                (when tests?
+                  (setenv "XDG_CACHE_HOME" ".cache")
+                  (invoke "dbus-launch" "ctest"
+                          "--rerun-failed" "--output-on-failure"))))))))
     (inputs (modify-inputs (package-inputs system-settings)
               (append kcolorscheme)))))
 
