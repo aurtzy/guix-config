@@ -187,25 +187,4 @@ managing it.")
                                       (cons (list (basename source) source)
                                             symlinks))))
                               '()
-                              (data-entries)))
-             (simple-service name
-                             home-shepherd-service-type
-                             (list
-                              (shepherd-service
-                               (documentation
-                                "Start git-annex assistant in known repositories.")
-                               (provision
-                                '(git-annex-assistant))
-                               (start
-                                #~(make-forkexec-constructor
-                                   (list #$(file-append git-annex
-                                                        "/bin/git-annex")
-                                         "assistant"
-                                         "--autostart"
-                                         "--foreground")))
-                               (stop
-                                #~(make-forkexec-constructor
-                                   (list #$(file-append git-annex
-                                                        "/bin/git-annex")
-                                         "assistant"
-                                         "--autostop"))))))))))))
+                              (data-entries)))))))))
