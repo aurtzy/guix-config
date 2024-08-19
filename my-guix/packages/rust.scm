@@ -196,7 +196,7 @@
   (package
     (inherit rust)
     (name "rust-binary")
-    (version "1.75.0")
+    (version "1.76.0")
     (source #f)
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
@@ -224,14 +224,14 @@
                      (uri (stable-uri version "x86_64-unknown-linux-gnu"))
                      (sha256
                       (base32
-                       "1xkl1p7yhijbj7krcqcnbbwkqs3b3hhib4z8z64n68gzz2v7hfa7"))))
+                       "16bkix015hpmqan6rcyyfk0fwggv2vb94jf9xi2wq0xm6qh9sn4x"))))
                   ((target-x86-32?)
                    (origin
                      (method url-fetch)
                      (uri (stable-uri version "i686-unknown-linux-gnu"))
                      (sha256
                       (base32
-                       "13v7qrbhjvz98w47ji26nddj59lxh93z05cb6f7k7ayy4n48syqh"))))))))
+                       "0gpshhlw2s7h1m02qabiwz5salmb36ybqkvcbqihk20v6k4yygjc"))))))))
           (delete 'patchelf)
           (replace 'install
             (lambda* (#:key outputs #:allow-other-keys)
