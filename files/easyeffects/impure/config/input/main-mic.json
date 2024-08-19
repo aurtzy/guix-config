@@ -32,14 +32,6 @@
             "threshold": -20.0,
             "wet": 0.0
         },
-        "deepfilternet#0": {
-            "attenuation-limit": 12.0,
-            "max-df-processing-threshold": 20.0,
-            "max-erb-processing-threshold": 30.0,
-            "min-processing-buffer": 0,
-            "min-processing-threshold": -10.0,
-            "post-filter-beta": 0.02
-        },
         "gate#0": {
             "attack": 20.0,
             "bypass": false,
@@ -79,7 +71,7 @@
             "bypass": false,
             "dithering": "None",
             "external-sidechain": false,
-            "gain-boost": false,
+            "gain-boost": true,
             "input-gain": 0.0,
             "lookahead": 5.0,
             "mode": "Herm Thin",
@@ -88,7 +80,27 @@
             "release": 5.0,
             "sidechain-preamp": 0.0,
             "stereo-link": 100.0,
-            "threshold": -5.0
+            "threshold": 0.0
+        },
+        "limiter#1": {
+            "alr": false,
+            "alr-attack": 5.0,
+            "alr-knee": 0.0,
+            "alr-release": 50.0,
+            "attack": 5.0,
+            "bypass": false,
+            "dithering": "None",
+            "external-sidechain": false,
+            "gain-boost": true,
+            "input-gain": 0.0,
+            "lookahead": 5.0,
+            "mode": "Herm Thin",
+            "output-gain": 0.0,
+            "oversampling": "None",
+            "release": 5.0,
+            "sidechain-preamp": 0.0,
+            "stereo-link": 100.0,
+            "threshold": 0.0
         },
         "loudness#1": {
             "bypass": false,
@@ -102,10 +114,25 @@
         },
         "plugins_order": [
             "loudness#1",
-            "deepfilternet#0",
+            "limiter#0",
+            "speex#0",
             "gate#0",
             "compressor#0",
-            "limiter#0"
-        ]
+            "limiter#1"
+        ],
+        "speex#0": {
+            "bypass": false,
+            "enable-agc": false,
+            "enable-denoise": true,
+            "enable-dereverb": false,
+            "input-gain": 0.0,
+            "noise-suppression": -6,
+            "output-gain": 0.0,
+            "vad": {
+                "enable": false,
+                "probability-continue": 90,
+                "probability-start": 95
+            }
+        }
     }
 }
