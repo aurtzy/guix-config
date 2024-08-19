@@ -61,6 +61,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
+  #:use-module (my-guix packages rust)
   #:use-module (my-guix utils))
 
 (define-public meson-1.3
@@ -220,12 +221,14 @@ panfrost,r300,r600,svga,swrast,tegra,v3d,vc4,virgl,zink"))
             ;; Explicitly enable Vulkan on some architectures.
             #$@(cond
                 ((target-x86-64?)
-                 '("-Dvulkan-drivers=swrast,nouveau")
                  ;; TEMP: Reduce build time
                  ;; '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast,nouveau")
+                 '("-Dvulkan-drivers=swrast,nouveau")
                  )
                 ((target-x86-32?)
-                 '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast"))
+                 ;; TEMP: Reduce build time
+                 ;; '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast")
+                 '("-Dvulkan-drivers=swrast,nouveau"))
                 ((or (target-ppc64le?) (target-ppc32?))
                  '("-Dvulkan-drivers=amd,swrast"))
                 ((target-aarch64?)
@@ -255,14 +258,15 @@ panfrost,r300,r600,svga,swrast,tegra,v3d,vc4,virgl,zink"))
                ;; Subproject source URLs are patched to point to the store,
                ;; which avoids an attempt to download them mid-build.
                (lambda _
-                 #+(if (target-x86-64?)
+                 #+(if (or (target-x86-64?) (target-x86-32?))
                        #~(for-each
                           (match-lambda
                             ((name source)
                              (patch-wrap-file name source)))
                           '#+(map (lambda (pkg)
-                                    (list (package-upstream-name* pkg)
-                                          (crate-package-source pkg)))
+                                    (let ((pkg (package/with-rust-binary pkg)))
+                                      (list (package-upstream-name* pkg)
+                                            (crate-package-source pkg))))
                                   (list rust-syn-2
                                         rust-unicode-ident-1
                                         rust-quote-1
@@ -283,9 +287,9 @@ panfrost,r300,r600,svga,swrast,tegra,v3d,vc4,virgl,zink"))
                 llvm-15
                 python-ply
                 python-pyyaml
-                rust
-                rust-bindgen-cli
-                rust-cbindgen-0.26)))
+                rust-binary
+                (package/with-rust-binary rust-bindgen-cli)
+                (package/with-rust-binary rust-cbindgen-0.26))))
     (inputs
      (modify-inputs (package-inputs mesa)
        (prepend (package/inherit libclc
