@@ -225,17 +225,27 @@ sandboxed Xwayland sessions.")
                     ("gamescope" ,gamescope)
                     ("sdl2" ,sdl2)))
                  #:name "fhs-union-64"))
-     ;; Requires i686-linux rust, which is not available in Guix at the moment
-     ;; (although rust-binary from (my-guix packages rust) may be used as a
-     ;; substitute input to achieve this).
-     ;;
-     ;; (union32
-     ;;  (fhs-union `(,@steam-client-libs
-     ;;               ,@steam-gameruntime-libs
-     ;;               ,@fhs-min-libs)
-     ;;             #:name "fhs-union-32"
-     ;;             #:system "i686-linux"))
-     )))
+     ;; Requires i686-linux rust; package upstream in Guix does not build, so a
+     ;; binary version is required if we want 32-bit NVK for the time being.
+     (union32
+      (fhs-union (map
+                  (match-lambda
+                    ((name pkg)
+                     (list name (replace-mesa->mesa-nvk-git pkg)))
+                    ((name pkg output)
+                     (list name (replace-mesa->mesa-nvk-git pkg) output)))
+                  `(,@(delete "gcc:lib"
+                              steam-client-libs
+                              (lambda (x elem)
+                                (equal? x
+                                        (car elem))))
+                    ,@steam-gameruntime-libs
+                    ,@fhs-min-libs
+                    ;; ("gdb" ,(@ (gnu packages gdb) gdb))
+                    ("gcc-toolchain" ,gcc-toolchain-12)
+                    ("sdl2" ,sdl2)))
+                 #:name "fhs-union-32"
+                 #:system "i686-linux")))))
 
 (define-public steam-custom
   (nonguix-container->package steam-container-custom))
