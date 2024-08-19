@@ -40,7 +40,7 @@
   #:use-module (gnu packages rust)
   #:use-module (ice-9 match)
   #:use-module (nonguix build-system binary)
-  #:export (rust-binary))
+  #:export (package/with-rust-binary))
 
 (define gcc-cc
   (package
@@ -310,3 +310,13 @@
                   `("LIBRARY_PATH" ":"
                     suffix (,(string-append libc "/lib"))))))))))))
 
+(define-syntax-rule (package/with-rust-binary pkg field ...)
+  "Create a package with the RUST keyword argument set as rust-binary.  This
+currently assumes that the keyword is not already set."
+  (package
+    (inherit (package/inherit pkg
+               (arguments
+                (cons*
+                 #:rust rust-binary
+                 (package-arguments pkg)))))
+    field ...))
