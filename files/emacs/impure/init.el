@@ -628,8 +628,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :commands magit
   :init
   (use-package magit-todos
-    :init
-    (magit-todos-mode t)
     :custom
     (magit-todos-keyword-suffix "[[:space:]]\\|:\\|$")
     (magit-todos-update 300)
