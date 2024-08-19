@@ -65,8 +65,6 @@
     (description (package-description gcc))
     (license (package-license gcc))))
 
-;;; TODO: Attempt to combine sources for different architectures
-
 (define* (make-rust-binary name version source
                            #:key
                            (outputs (list "out" "cargo")))
@@ -193,4 +191,122 @@
        (sha256
         (base32
          "13v7qrbhjvz98w47ji26nddj59lxh93z05cb6f7k7ayy4n48syqh"))))))
+
+(define-public rust-binary
+  (package
+    (inherit rust)
+    (name "rust-binary")
+    (version "1.75.0")
+    (source #f)
+    (build-system binary-build-system)
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (outputs '("out" "cargo"))
+    (native-inputs
+     (list `(,gcc "lib")))
+    (propagated-inputs
+     ;; This is needed for cargo, which specifically tries to run `cc'.
+     (list gcc-cc))
+    (arguments
+     (list
+      #:strip-binaries? #t
+      #:validate-runpath? #t
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'unpack
+            (lambda _
+              (define unpack (assoc-ref %standard-phases 'unpack))
+              (unpack
+               #:source
+               #+(cond
+                  ((target-x86-64?)
+                   (origin
+                     (method url-fetch)
+                     (uri (stable-uri version "x86_64-unknown-linux-gnu"))
+                     (sha256
+                      (base32
+                       "1xkl1p7yhijbj7krcqcnbbwkqs3b3hhib4z8z64n68gzz2v7hfa7"))))
+                  ((target-x86-32?)
+                   (origin
+                     (method url-fetch)
+                     (uri (stable-uri version "i686-unknown-linux-gnu"))
+                     (sha256
+                      (base32
+                       "13v7qrbhjvz98w47ji26nddj59lxh93z05cb6f7k7ayy4n48syqh"))))))))
+          (delete 'patchelf)
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (for-each
+               (lambda (output)
+                 (let* ((name (car output))
+                        (source (cond
+                                 ((equal? "out" name) "rustc/")
+                                 (else (string-append name "/"))))
+                        (target (assoc-ref outputs name))
+                        (arch #$(match (or (%current-target-system)
+                                           (%current-system))
+                                  ("x86_64-linux"
+                                   "x86_64-unknown-linux-gnu")
+                                  ("i686-linux"
+                                   "i686-unknown-linux-gnu"))))
+                   (if (equal? "out" name)
+                       (copy-recursively
+                        (format #f "rust-std-~a/lib/"
+                                arch)
+                        (string-append target "/lib/")))
+                   (if (equal? "rust-analyzer-preview" name)
+                       (copy-recursively
+                        (format #f "rust-analysis-~a/lib/"
+                                arch)
+                        (string-append target "/lib/")))
+                   (copy-recursively source target)))
+               outputs)))
+          (add-after 'install 'patchelf2
+            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
+
+              (let* ((ld.so (string-append
+                             (assoc-ref inputs "libc")
+                             #$((@@ (gnu packages bootstrap) glibc-dynamic-linker)))))
+                (for-each
+                 (lambda (output)
+                   (let* ((name (car output))
+                          (out (assoc-ref outputs name))
+                          (libdir (string-append out "/lib"))
+                          (bindir (string-append out "/bin"))
+                          (rpath (string-join
+                                  (append
+                                   (list "$ORIGIN" libdir)
+                                   (if (equal? "out" name)
+                                       (list)
+                                       (list
+                                        (string-append
+                                         (assoc-ref outputs "out")
+                                         "/lib")))
+                                   (map
+                                    (lambda (input)
+                                      (string-append (cdr input) "/lib"))
+                                    inputs))
+                                  ":")))
+
+                     (define (patch-elf file)
+                       (format #t "Patching ~a ...~%" file)
+                       (unless (string-contains file ".so")
+                         (invoke "patchelf" "--set-interpreter" ld.so file))
+                       (invoke "patchelf" "--set-rpath" rpath file))
+
+                     (for-each (lambda (file)
+                                 (when (elf-file? file)
+                                   (patch-elf file)))
+                               (find-files out (lambda (file stat)
+                                                 (elf-file? file))))))
+                 outputs))))
+          (add-after 'install 'wrap-rustc
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out"))
+                    (libc (assoc-ref inputs "libc"))
+                    (ld-wrapper (assoc-ref inputs "ld-wrapper")))
+                ;; Let gcc find ld and libc startup files.
+                (wrap-program (string-append out "/bin/rustc")
+                  `("PATH" ":" prefix (,(string-append ld-wrapper "/bin")))
+                  `("LIBRARY_PATH" ":"
+                    suffix (,(string-append libc "/lib"))))))))))))
 
