@@ -32,6 +32,7 @@
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (ice-9 exceptions)
+  #:use-module (my-guix build-system emacs)
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix mods)
@@ -274,71 +275,73 @@ elsewhere in possibly different forms).")
      "Configures Emacs.")
     (he-extension
      (compose (mod-he-packages
-               (list emacs-pgtk
-                     font-hack
-                     ;; tree-sitter
-                     tree-sitter-bash
-                     tree-sitter-c
-                     tree-sitter-go
-                     tree-sitter-gomod
-                     tree-sitter-javascript
-                     tree-sitter-python
-                     tree-sitter-rust
-                     ;; latex with org-mode
-                     texlive-beamer
-                     texlive-capt-of
-                     texlive-libertine
-                     texlive-scheme-basic
-                     texlive-setspace
-                     texlive-ulem
-                     texlive-wrapfig
-                     ;; project-specific files
-                     emacs-envrc
-                     emacs-editorconfig
-                     ;; completion bundle
-                     emacs-vertico
-                     emacs-consult
-                     emacs-marginalia
-                     emacs-orderless
-                     emacs-embark
-                     emacs-corfu
-                     ;; editing tweaks
-                     emacs-adaptive-wrap
-                     emacs-avy
-                     emacs-unfill
-                     emacs-vundo
-                     ;; git
-                     emacs-magit
-                     emacs-magit-todos ; XXX: Strangely only works with ripgrep?
-                     emacs-magit-annex
-                     emacs-git-annex
-                     emacs-forge
-                     ;; guix/guile/scheme hacking
-                     guile-3.0
-                     emacs-guix
-                     emacs-geiser
-                     emacs-geiser-guile
-                     emacs-paredit
-                     ;; dashboard on init
-                     emacs-dashboard
-                     ;; data science stuff
-                     emacs-jupyter
-                     emacs-code-cells
-                     emacs-csv-mode
-                     ;; misc
-                     emacs-dimmer
-                     emacs-eat
-                     emacs-hl-todo
-                     emacs-markdown-mode
-                     emacs-protobuf-mode
-                     emacs-ripgrep
-                     emacs-wgrep
-                     ;; packages being tried out go below here
-                     ;; emacs-dape                ;TODO: package this?
-                     emacs-org-noter
-                     emacs-pdf-tools
-                     ;; Enable viewing .zip files
-                     unzip))
+               (map
+                package-with-emacs-pgtk
+                (list emacs-pgtk
+                      font-hack
+                      ;; tree-sitter
+                      tree-sitter-bash
+                      tree-sitter-c
+                      tree-sitter-go
+                      tree-sitter-gomod
+                      tree-sitter-javascript
+                      tree-sitter-python
+                      tree-sitter-rust
+                      ;; latex with org-mode
+                      texlive-beamer
+                      texlive-capt-of
+                      texlive-libertine
+                      texlive-scheme-basic
+                      texlive-setspace
+                      texlive-ulem
+                      texlive-wrapfig
+                      ;; project-specific files
+                      emacs-envrc
+                      emacs-editorconfig
+                      ;; completion bundle
+                      emacs-vertico
+                      emacs-consult
+                      emacs-marginalia
+                      emacs-orderless
+                      emacs-embark
+                      emacs-corfu
+                      ;; editing tweaks
+                      emacs-adaptive-wrap
+                      emacs-avy
+                      emacs-unfill
+                      emacs-vundo
+                      ;; git
+                      emacs-magit
+                      emacs-magit-todos ; XXX: Strangely only works with ripgrep?
+                      emacs-magit-annex
+                      emacs-git-annex
+                      emacs-forge
+                      ;; guix/guile/scheme hacking
+                      guile-3.0
+                      emacs-guix
+                      emacs-geiser
+                      emacs-geiser-guile
+                      emacs-paredit
+                      ;; dashboard on init
+                      emacs-dashboard
+                      ;; data science stuff
+                      emacs-jupyter
+                      emacs-code-cells
+                      emacs-csv-mode
+                      ;; misc
+                      emacs-dimmer
+                      emacs-eat
+                      emacs-hl-todo
+                      emacs-markdown-mode
+                      emacs-protobuf-mode
+                      emacs-ripgrep
+                      emacs-wgrep
+                      ;; packages being tried out go below here
+                      ;; emacs-dape                ;TODO: package this?
+                      emacs-org-noter
+                      emacs-pdf-tools
+                      ;; Enable viewing .zip files
+                      unzip)))
               (mod-he-services
                (list
                 (simple-service name
