@@ -191,7 +191,9 @@
                                 (xorg-configuration
                                  (keyboard-layout
                                   (operating-system-keyboard-layout os)))))
-                           (auto-login-user "alvin")))))))))
+                           ;; FIXME: Time displays are blank when this is used
+                           ;; (auto-login-user "alvin")
+                           ))))))))
     (he-extension
      (compose
       (mod-he-extension wayland-mod)
