@@ -157,7 +157,7 @@
     (parameters `((,swapfile ,(swapfile-configuration
                                (file "/swapfile")
                                (device "/dev/mapper/cryptroot")
-                               (offset "5250304")))
+                               (offset "6036736")))
                   (,replace-mesa ,replace-mesa->mesa-nvk-git)
                   (,data-entries ,(list (data-entry
                                          (source "workshop")
