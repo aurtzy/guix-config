@@ -264,7 +264,10 @@ panfrost,r300,r600,svga,swrast,tegra,v3d,vc4,virgl,zink"))
                             ((name source)
                              (patch-wrap-file name source)))
                           '#+(map (lambda (pkg)
-                                    (let ((pkg (package/with-rust-binary pkg)))
+                                    (let ((pkg
+                                           (if (target-x86-32?)
+                                               (package/with-rust-binary pkg)
+                                               pkg)))
                                       (list (package-upstream-name* pkg)
                                             (crate-package-source pkg))))
                                   (list rust-syn-2
@@ -287,9 +290,14 @@ panfrost,r300,r600,svga,swrast,tegra,v3d,vc4,virgl,zink"))
                 llvm-15
                 python-ply
                 python-pyyaml
-                rust-binary
-                (package/with-rust-binary rust-bindgen-cli)
-                (package/with-rust-binary rust-cbindgen-0.26))))
+                ;; Support 32-bit NVK with rust-binary
+                (if (target-x86-32?) rust-binary rust)
+                (if (target-x86-32?)
+                    (package/with-rust-binary rust-bindgen-cli)
+                    rust-bindgen-cli)
+                (if (target-x86-32?)
+                    (package/with-rust-binary rust-cbindgen-0.26)
+                    rust-cbindgen-0.26))))
     (inputs
      (modify-inputs (package-inputs mesa)
        (prepend (package/inherit libclc
