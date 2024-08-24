@@ -652,11 +652,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
              :repeat-map magit-section-repeat-map
              ("C-<tab>" . magit-section-cycle))))
   (use-package forge)
-  ;; XXX: Re-define this function from transient, since emacs appears to be
-  ;; using the built-in older version instead which doesn't define this and
-  ;; causes an error with magit-branch.
-  (defun transient-prefix-object ()
-    (or transient--prefix transient-current-prefix))
   :preface
   (put 'magit-clean 'disabled nil))
 
