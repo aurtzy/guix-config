@@ -463,6 +463,11 @@ management/maintenance.")
       (mod-os-services
        (list (service fstrim-service-type)))))))
 
+(define mpv-input-file
+  (mixed-text-file
+   "mpv-input-file"
+   "D run \"" open-emacs-with-text-script "\" \"${metadata/ytdl_description}\"\n"))
+
 (define media-mod
   (mod
     (name 'media)
@@ -486,6 +491,7 @@ management/maintenance.")
                              `(("mpv/mpv.conf"
                                 ,(local-file
                                   (path-append-my-files "mpv/mpv.conf")))
+                               ("mpv/input.conf" ,mpv-input-file)
                                ("mpv/scripts/trigger-restart-playback-on-eof.lua"
                                 ,(local-file
                                   (path-append-my-files
