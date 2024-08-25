@@ -51,6 +51,8 @@
             swapfile-configuration-offset
             swapfile
 
+            open-emacs-with-text-script
+
             audio-mod
             bottles-mod
             breeze-theme-mod
@@ -119,6 +121,29 @@
                          "Not a procedure or package")
                         (make-exception-with-irritants
                          (list val)))))))))
+
+(define open-emacs-with-text-script
+  ;; Return a program file that - when invoked and passed text in the first
+  ;; argument - puts that text in a file and opens it with emacs.  If the
+  ;; argument is missing, a default message indicating this case is used.  The
+  ;; file is deleted when emacsclient returns (i.e. user is finished with the
+  ;; buffer).
+  (with-imported-modules '((guix build utils))
+    (program-file
+     "open-emacs-with-text"
+     #~(begin
+         (use-modules (guix build utils)
+                      (ice-9 match)
+                      (ice-9 textual-ports))
+         (let* ((port (mkstemp "/tmp/textfile-XXXXXX"))
+                (file (port-filename port))
+                (text (match (command-line)
+                        ((_ text _ ...) text)
+                        (else "No text provided."))))
+           (put-string port text)
+           (close-port port)
+           (invoke "emacsclient" "-a" "emacs" file)
+           (delete-file file))))))
 
 (define audio-mod
   (mod
