@@ -156,6 +156,7 @@
                       bluedevil
                       bluez-qt    ;XXX: Propagate for bluedevil settings to work
                       ffmpegthumbs
+                      filelight
                       gnome-tweaks
                       gwenview
                       icoutils
