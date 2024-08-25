@@ -156,7 +156,7 @@ translation between LLVM IR and SPIR-V.")
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
              (commit
               ;; "Bad", newer commit
-              "367191ff632e00b1822c53ecead8c48e18b73535"
+              "7b32df696e87810f8e738d113521d98a56c0ed0e"
               ;; "Good", older commit (for Factorio)
               ;; See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/11666
               ;; "67b778445afec51883e36618c8d5c535b3fd149f"
@@ -165,7 +165,7 @@ translation between LLVM IR and SPIR-V.")
        (file-name (git-file-name name "git"))
        (sha256 (base32
                 ;; "Bad" commit
-                "1vcm4k45wkfagc4y22m095b1a775a7c1x2v0qiig1lsvm9dq9ywd"
+                "0fgcvzhapcdvgh10dfqbcnxxhckrqng86sr7qmrbdlssr1h947m9"
                 ;; "Good" commit
                 ;; "1xpwikc3q9ann8mpasbki3mka85ypi6s2c2dzgxylyx7agap7lfw"
                 ))
