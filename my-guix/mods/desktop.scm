@@ -70,11 +70,11 @@
 
             desktop-mods))
 
-(use-package-modules avahi backup compression cryptsetup disk emacs emacs-xyz
-                     fonts freedesktop gl gnome gnome-xyz guile haskell-apps
-                     kde-frameworks kde-plasma linux music package-management
-                     protobuf pulseaudio qt tex tor tree-sitter video
-                     virtualization)
+(use-package-modules audio avahi backup compression cryptsetup disk emacs
+                     emacs-xyz fonts freedesktop gl gnome gnome-xyz guile
+                     haskell-apps kde-frameworks kde-plasma linux music
+                     package-management protobuf pulseaudio qt tex tor
+                     tree-sitter video virtualization)
 
 (use-service-modules cups desktop linux networking pm virtualization xorg)
 
@@ -129,20 +129,15 @@ enables the use of Pipewire.")
     (he-extension
      (compose
       (mod-he-packages
-       (list pavucontrol))
+       (list easyeffects
+             pavucontrol))
       (mod-he-services
        (list (service home-pipewire-service-type)
              (simple-service name
                              home-impure-symlinks-service-type
-                             `((".local/share/flatpak/overrides"
-                                ,(path-append-my-files "easyeffects/impure")
-                                "com.github.wwmm.easyeffects")
-                               (".var/app/com.github.wwmm.easyeffects/config/easyeffects"
+                             `((".config/easyeffects"
                                 ,(path-append-my-files
                                   "easyeffects/impure/config"))))
-             (simple-service name
-                             home-flatpak-profile-service-type
-                             '((flathub "com.github.wwmm.easyeffects")))
              (simple-service name
                              home-shepherd-service-type
                              (list
@@ -155,11 +150,8 @@ enables the use of Pipewire.")
                                 '(pipewire))
                                (start
                                 #~(make-forkexec-constructor
-                                   (list #$(file-append flatpak
-                                                        "/bin/flatpak")
-                                         "run"
-                                         "--user"
-                                         "com.github.wwmm.easyeffects"
+                                   (list #$(file-append easyeffects
+                                                        "/bin/easyeffects")
                                          "--gapplication-service")))
                                (stop
                                 #~(make-kill-destructor)))))))))))
