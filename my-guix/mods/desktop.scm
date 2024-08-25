@@ -482,14 +482,16 @@ management/maintenance.")
                                '(("mpv-without-cache"
                                   . "mpv --cache-secs=5")))))
              (simple-service name
-                             home-impure-symlinks-service-type
-                             `((".config/mpv"
-                                ,(path-append-my-files "mpv/impure/config")
-                                "mpv.conf"
-                                "scripts/trigger-restart-playback-on-eof.lua")))
-             (simple-service name
                              home-xdg-configuration-files-service-type
-                             `(("mpv/scripts/mpris.so"
+                             `(("mpv/mpv.conf"
+                                ,(local-file
+                                  (path-append-my-files "mpv/mpv.conf")))
+                               ("mpv/scripts/trigger-restart-playback-on-eof.lua"
+                                ,(local-file
+                                  (path-append-my-files
+                                   "mpv/scripts"
+                                   "trigger-restart-playback-on-eof.lua")))
+                               ("mpv/scripts/mpris.so"
                                 ,(file-append mpv-mpris "/lib/mpris.so"))))))))))
 
 (define password-management-mod
