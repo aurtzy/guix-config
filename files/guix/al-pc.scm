@@ -162,15 +162,15 @@
                   (,data-entries ,(list (data-entry
                                          (source "workshop")
                                          (borg-repository
-                                          "/media/backup/active-data.borg"))
+                                          "/media/backup/workshop.borg"))
                                         (data-entry
                                          (source "areas")
                                          (borg-repository
-                                          "/media/backup/active-data.borg"))
+                                          "/media/backup/areas.borg"))
                                         (data-entry
                                          (source "storage/library")
                                          (borg-repository
-                                          "/media/backup/active-data.borg"))
+                                          "/media/backup/library.borg"))
                                         (data-entry
                                          (source "storage/archives"))))))
     (mods (append desktop-mods
