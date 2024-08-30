@@ -112,6 +112,8 @@ parameter."
            (format (current-error-port) "~s\n" borg-repo)
            (for-each (cut format (current-error-port) "<- ~s\n" <>)
                      sources))
+         (define (patterns-file borg-repo)
+           (string-append borg-repo "/patterns"))
          (when #$(null? borg-repository-sources)
            (display "No data sources to back up.")
            (exit #f))
@@ -128,11 +130,7 @@ parameter."
                        `(#$(file-append borg "/bin/borg")
                          "create"
                          "--stats"
-                         ,@(let ((patterns-file
-                                  (string-append borg-repo "/patterns")))
-                             (if (file-exists? patterns-file)
-                                 (list "--exclude-from" patterns-file)
-                                 '()))
+                         "--exclude-from" ,(patterns-file borg-repo)
                          ;; Optimize for storage on an HDD
                          "--compression" "zstd,6"
                          ,(string-append borg-repo "::{utcnow}-auto")
@@ -142,16 +140,28 @@ parameter."
                (exit #f))
              (sync)))
           (filter
-           ;; Skip backing up repositories where not all relevant files exist
            (match-lambda
              ((borg-repo sources ..1)
-              (let ((all-exist? (and (file-exists? borg-repo)
-                                     (every file-exists? sources))))
-                (unless all-exist?
-                  (format (current-error-port) "\
+              ;; Skip backing up a repository if..
+              (cond
+               ;; ..not all relevant files exist
+               ((or (not (file-exists? borg-repo))
+                    (not (every file-exists? sources)))
+                (format (current-error-port) "\
 [WARNING] Skipping a backup; borg repository or source files not found: ")
-                  (format-repo-and-sources borg-repo sources))
-                all-exist?)))
+                (format-repo-and-sources borg-repo sources)
+                #f)
+               ;; ..patterns file is missing
+               ((not (file-exists? (patterns-file borg-repo)))
+                ;; XXX: This is technically sufficient for preventing unexpected
+                ;; backups of unnecessary files, but consider implementation
+                ;; with file-likes or similar to be more "sanitary".
+                (format (current-error-port) "\
+[WARNING] Skipping a backup; patterns file is missing: ~s\n"
+                        (patterns-file borg-repo))
+                #f)
+               (else
+                #t))))
            '#$borg-repository-sources))))))
 
 (define data-mod
