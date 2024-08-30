@@ -141,7 +141,18 @@ parameter."
                (display "Error encountered while backing up.\n")
                (exit #f))
              (sync)))
-          '#$borg-repository-sources)))))
+          (filter
+           ;; Skip backing up repositories where not all relevant files exist
+           (match-lambda
+             ((borg-repo sources ..1)
+              (let ((all-exist? (and (file-exists? borg-repo)
+                                     (every file-exists? sources))))
+                (unless all-exist?
+                  (format (current-error-port) "\
+[WARNING] Skipping a backup; borg repository or source files not found: ")
+                  (format-repo-and-sources borg-repo sources))
+                all-exist?)))
+           '#$borg-repository-sources))))))
 
 (define data-mod
   (mod
