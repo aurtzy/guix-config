@@ -161,16 +161,16 @@
                   (,replace-mesa ,replace-mesa->mesa-nvk-git)
                   (,data-entries ,(list (data-entry
                                          (source "workshop")
-                                         (borg-repository
-                                          "/media/backup/workshop.borg"))
+                                         (borg-repositories
+                                          '("/media/backup/workshop.borg")))
                                         (data-entry
                                          (source "areas")
-                                         (borg-repository
-                                          "/media/backup/areas.borg"))
+                                         (borg-repositories
+                                          '("/media/backup/areas.borg")))
                                         (data-entry
                                          (source "storage/library")
-                                         (borg-repository
-                                          "/media/backup/library.borg"))
+                                         (borg-repositories
+                                          '("/media/backup/library.borg")))
                                         (data-entry
                                          (source "storage/archives"))))))
     (mods (append desktop-mods

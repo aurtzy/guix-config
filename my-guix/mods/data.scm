@@ -36,7 +36,7 @@
             data-entry data-entry?
             this-data-entry
             data-entry-source
-            data-entry-borg-repository
+            data-entry-borg-repositories
 
             data-entries
             data-mod))
@@ -55,17 +55,19 @@
                       (if (absolute-file-name? value)
                           value
                           (path-append-my-home value)))))
-  ;; Path to borg repository that data source is backed up to, if any.  Relative
-  ;; to $HOME if path is not absolute.
-  (borg-repository data-entry-borg-repository
-                   (default #f)
+  ;; Paths to borg repositories that data source is backed up to, if any.
+  ;; These are relative to $HOME if paths are not absolute.
+  (borg-repositories data-entry-borg-repositories
+                   (default '())
                    (sanitize (lambda (value)
-                               (rnrs:assert (or (eq? #f value)
-                                                (string? value)))
-                               (cond
-                                ((eq? #f value) #f)
-                                ((absolute-file-name? value) value)
-                                (else (path-append-my-home value)))))))
+                               (rnrs:assert (and (list? value)
+                                                 (every string? value)))
+                               (map
+                                (lambda (elem)
+                                  (cond
+                                   ((absolute-file-name? elem) elem)
+                                   (else (path-append-my-home elem))))
+                                value)))))
 
 ;; data-entries: Parameter specifying user data entries.
 ;;
@@ -87,17 +89,22 @@
 (define (data-backup-create-script)
   "Return a script that creates backups of data from the data-entries
 parameter."
-  (define borg-repos
+  (define borg-repository-sources
+    ;; Construct alist with borg repository path as keys and list of entry
+    ;; sources as values so we can group together data entries that have the
+    ;; same repository when backing up.
     (fold
-     (lambda (data-entry borg-repos)
-       (match-record data-entry <data-entry> (source borg-repository)
-         (if borg-repository
-             (assoc-set! borg-repos
-                         borg-repository
-                         (cons source
-                               (or (assoc-ref borg-repos borg-repository)
-                                   '())))
-             borg-repos)))
+     (lambda (data-entry borg-repository-sources)
+       (match-record data-entry <data-entry> (source borg-repositories)
+         (fold
+          (lambda (borg-repo borg-repository-sources)
+            (assoc-set! borg-repository-sources
+                        borg-repo
+                        (cons source
+                              (or (assoc-ref borg-repository-sources borg-repo)
+                                  '()))))
+          borg-repository-sources
+          borg-repositories)))
      '()
      (data-entries)))
   (program-file
@@ -106,20 +113,25 @@ parameter."
      #~(begin
          (use-modules (guix build utils)
                       (ice-9 match)
+                      (srfi srfi-1)
                       (srfi srfi-26))
-         (when #$(null? borg-repos)
+         (define (format-repo-and-sources borg-repo sources)
+           (format (current-error-port) "~s\n" borg-repo)
+           (for-each (cut format (current-error-port) "<- ~s\n" <>)
+                     sources))
+         (when #$(null? borg-repository-sources)
            (display "No data sources to back up.")
            (exit #f))
          (for-each
           (match-lambda
             ((borg-repo sources ..1)
              (chdir (getenv "HOME"))
-             (format #t "Creating backups for: ~s\n" borg-repo)
-             (for-each (cut format #t "<- ~s\n" <>)
-                       sources)
-             (unless (false-if-exception
+             (format (current-error-port) "Creating backups for: ")
+             (format-repo-and-sources borg-repo sources)
+             (unless ((compose zero?
+                               status:exit-val)
                       (apply
-                       invoke
+                       system*
                        `(#$(file-append borg "/bin/borg")
                          "create"
                          "--stats"
@@ -136,7 +148,7 @@ parameter."
                (display "Error encountered while backing up.\n")
                (exit #f))
              (sync)))
-          '#$borg-repos)))))
+          '#$borg-repository-sources)))))
 
 (define data-mod
   (mod
