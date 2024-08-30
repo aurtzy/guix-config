@@ -108,10 +108,15 @@ parameter."
                       (ice-9 match)
                       (srfi srfi-1)
                       (srfi srfi-26))
+         (define (prettify-path path)
+           (if (string-prefix? "/" path)
+               path
+               (string-append "~/" path)))
          (define (format-repo-and-sources borg-repo sources)
-           (format (current-error-port) "~s\n" borg-repo)
+           (format (current-error-port) "~s\n" (prettify-path borg-repo))
            (for-each (cut format (current-error-port) "<- ~s\n" <>)
-                     sources))
+                     ;; Prefix ~/ to relative paths to make them more readable
+                     (map prettify-path sources)))
          (define (patterns-file borg-repo)
            (string-append borg-repo "/patterns"))
          (when #$(null? borg-repository-sources)
@@ -144,11 +149,16 @@ parameter."
              ((borg-repo sources ..1)
               ;; Skip backing up a repository if..
               (cond
-               ;; ..not all relevant files exist
-               ((or (not (file-exists? borg-repo))
-                    (not (every file-exists? sources)))
+               ;; ..repository is missing
+               ((not (file-exists? borg-repo))
                 (format (current-error-port) "\
-[WARNING] Skipping a backup; borg repository or source files not found: ")
+[WARNING] Skipping a backup; borg repository not found: ")
+                (format-repo-and-sources borg-repo sources)
+                #f)
+               ;; ..some source files are missing
+               ((not (every file-exists? sources))
+                (format (current-error-port) "\
+[WARNING] Skipping a backup; source files for borg repository not found: ")
                 (format-repo-and-sources borg-repo sources)
                 #f)
                ;; ..patterns file is missing
