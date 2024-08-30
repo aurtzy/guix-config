@@ -39,7 +39,7 @@
       (inherit
        (customize-linux
         #:name "linux"
-        #:linux linux-libre-6.9
+        #:linux linux-libre-6.10
         #:source (origin
                    (method git-fetch)
                    (uri
