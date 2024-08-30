@@ -108,6 +108,8 @@ parameter."
                       (ice-9 match)
                       (srfi srfi-1)
                       (srfi srfi-26))
+         ;; Operations should start in $HOME by default
+         (chdir (getenv "HOME"))
          (define (prettify-path path)
            (if (string-prefix? "/" path)
                path
@@ -125,7 +127,6 @@ parameter."
          (for-each
           (match-lambda
             ((borg-repo sources ..1)
-             (chdir (getenv "HOME"))
              (format (current-error-port) "Creating backups for: ")
              (format-repo-and-sources borg-repo sources)
              (unless ((compose zero?
