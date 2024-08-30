@@ -48,26 +48,19 @@
   data-entry?
   this-data-entry
   ;; Path to main data source for this data entry that is written to and read
-  ;; from, relative to $HOME if not absolute.
+  ;; from.  It should be relative to $HOME if not absolute.
   (source data-entry-source
           (sanitize (lambda (value)
                       (rnrs:assert (string? value))
-                      (if (absolute-file-name? value)
-                          value
-                          (path-append-my-home value)))))
+                      value)))
   ;; Paths to borg repositories that data source is backed up to, if any.
-  ;; These are relative to $HOME if paths are not absolute.
+  ;; These should be relative to $HOME if paths are not absolute.
   (borg-repositories data-entry-borg-repositories
                    (default '())
                    (sanitize (lambda (value)
                                (rnrs:assert (and (list? value)
                                                  (every string? value)))
-                               (map
-                                (lambda (elem)
-                                  (cond
-                                   ((absolute-file-name? elem) elem)
-                                   (else (path-append-my-home elem))))
-                                value)))))
+                               value))))
 
 ;; data-entries: Parameter specifying user data entries.
 ;;
@@ -180,10 +173,11 @@ managing it.")
                              (fold
                               (lambda (entry symlinks)
                                 (match-record entry <data-entry> (source)
-                                  (if (equal? (getenv "HOME")
-                                              (dirname source))
-                                      symlinks
-                                      (cons (list (basename source) source)
-                                            symlinks))))
+                                  (let ((source (canonicalize-path source)))
+                                    (if (equal? (getenv "HOME")
+                                                (dirname source))
+                                        symlinks
+                                        (cons (list (basename source) source)
+                                              symlinks)))))
                               '()
                               (data-entries)))))))))
