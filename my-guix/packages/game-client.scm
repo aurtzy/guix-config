@@ -205,45 +205,24 @@ sandboxed Xwayland sessions.")
      (binary-name "steam")
      (wrap-package steam-client-custom)
      (union64
-      (fhs-union (map
-                  (match-lambda
-                    ((name pkg)
-                     (list name (replace-mesa->mesa-nvk-git pkg)))
-                    ((name pkg output)
-                     (list name (replace-mesa->mesa-nvk-git pkg) output)))
-                  `(,@(delete "gcc:lib"
-                              steam-client-libs
-                              (lambda (x elem)
-                                (equal? x
-                                        (car elem))))
-                    ,@steam-gameruntime-libs
-                    ,@fhs-min-libs
-                    ;; Use newer version for gamescope (and remove older one
-                    ;; above)
-                    ("gdb" ,(@ (gnu packages gdb) gdb))
-                    ("gcc-toolchain" ,gcc-toolchain-12)
-                    ("gamescope" ,gamescope)
-                    ("sdl2" ,sdl2)))
+      (fhs-union (modify-inputs `(,@steam-client-libs
+                                  ,@steam-gameruntime-libs
+                                  ,@fhs-min-libs)
+                   (prepend (@ (gnu packages gdb) gdb)
+                            gamescope
+                            sdl2)
+                   (replace "gcc:lib" gcc-12)
+                   ;; Use newer version of gcc for gamescope
+                   (replace "mesa" mesa-nvk-git))
                  #:name "fhs-union-64"))
      ;; Requires i686-linux rust; package upstream in Guix does not build, so a
      ;; binary version is required if we want 32-bit NVK for the time being.
      (union32
-      (fhs-union (map
-                  (match-lambda
-                    ((name pkg)
-                     (list name (replace-mesa->mesa-nvk-git pkg)))
-                    ((name pkg output)
-                     (list name (replace-mesa->mesa-nvk-git pkg) output)))
-                  `(,@(delete "gcc:lib"
-                              steam-client-libs
-                              (lambda (x elem)
-                                (equal? x
-                                        (car elem))))
-                    ,@steam-gameruntime-libs
-                    ,@fhs-min-libs
-                    ;; ("gdb" ,(@ (gnu packages gdb) gdb))
-                    ("gcc-toolchain" ,gcc-toolchain-12)
-                    ("sdl2" ,sdl2)))
+      (fhs-union (modify-inputs `(,@steam-client-libs
+                                  ,@steam-gameruntime-libs
+                                  ,@fhs-min-libs)
+                   (prepend sdl2)
+                   (replace "mesa" mesa-nvk-git))
                  #:name "fhs-union-32"
                  #:system "i686-linux")))))
 
