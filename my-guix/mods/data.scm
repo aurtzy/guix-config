@@ -56,11 +56,11 @@
   ;; Paths to borg repositories that data source is backed up to, if any.
   ;; These should be relative to $HOME if paths are not absolute.
   (borg-repositories data-entry-borg-repositories
-                   (default '())
-                   (sanitize (lambda (value)
-                               (rnrs:assert (and (list? value)
-                                                 (every string? value)))
-                               value))))
+                     (default '())
+                     (sanitize (lambda (value)
+                                 (rnrs:assert (and (list? value)
+                                                   (every string? value)))
+                                 value))))
 
 ;; data-entries: Parameter specifying user data entries.
 ;;
