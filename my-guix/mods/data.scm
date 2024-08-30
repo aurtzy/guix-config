@@ -136,7 +136,7 @@ parameter."
                        `(#$(file-append borg "/bin/borg")
                          "create"
                          "--stats"
-                         "--exclude-from" ,(patterns-file borg-repo)
+                         "--patterns-from" ,(patterns-file borg-repo)
                          ;; Optimize for storage on an HDD
                          "--compression" "zstd,6"
                          ,(string-append borg-repo "::{utcnow}-auto")
