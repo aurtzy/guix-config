@@ -66,7 +66,7 @@
 
 (define-public meson-1.3
   (package
-    (inherit meson/newer)
+    (inherit meson)
     (version "1.3.2")
     (source (origin
               (method url-fetch)
