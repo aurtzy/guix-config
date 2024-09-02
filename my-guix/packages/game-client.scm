@@ -209,8 +209,8 @@ sandboxed Xwayland sessions.")
                                   ,@steam-gameruntime-libs
                                   ,@fhs-min-libs)
                    (prepend (@ (gnu packages gdb) gdb)
-                            gamescope
-                            sdl2)
+                            (replace-mesa->mesa-nvk-git gamescope)
+                            (replace-mesa->mesa-nvk-git sdl2))
                    (replace "gcc:lib" gcc-12)
                    ;; Use newer version of gcc for gamescope
                    (replace "mesa" mesa-nvk-git))
