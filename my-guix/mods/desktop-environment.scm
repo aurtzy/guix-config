@@ -130,8 +130,11 @@
     (replacement qqc2-desktop-stfix)))
 
 (define-public replace-qqc2-desktop-style
-  (package-input-rewriting/spec
-   `(("qqc2-desktop-style" . ,(const qqc2-desktop-style/fixed)))))
+  ;; TEMP: Test replacing to ensure patch works for upstream.
+  identity
+  ;; (package-input-rewriting/spec
+  ;;  `(("qqc2-desktop-style" . ,(const qqc2-desktop-style/fixed))))
+  )
 
 (define plasma-mod
   (mod
