@@ -56,7 +56,7 @@
     (operating-system
       (inherit base-os)
       (host-name "al-pc")
-      (kernel linux-gfxstrand-nvk)
+      (kernel linux)
       (initrd microcode-initrd)
       (firmware (list linux-firmware))
       (kernel-arguments
