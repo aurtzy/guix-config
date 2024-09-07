@@ -105,10 +105,7 @@
       (arguments
        (list
         #:configure-flags #~(list "-Dpipewire=enabled"
-                                  "-Denable_openvr_support=false"
-                                  (string-append "-Dc_args=-DHWDATA_PNP_IDS=\""
-                                                 #+hwdata:pnp
-                                                 "/share/hwdata/pnp.ids\""))
+                                  "-Denable_openvr_support=false")
         #:modules '((guix build meson-build-system)
                     (guix build utils)
                     (my-guix build utils))
@@ -140,6 +137,7 @@
       (native-inputs
        (list benchmark
              glslang
+             hwdata
              pkg-config
              vulkan-headers
              wayland-protocols/newer))
