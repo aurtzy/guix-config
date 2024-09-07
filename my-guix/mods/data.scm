@@ -190,7 +190,9 @@ managing it.")
       (mod-he-packages
        (list borg
              git-annex
-             git-annex-configure))
+             ;; TEMP: doesn't build due to install phase being removed
+             ;; git-annex-configure
+             ))
       (mod-he-services
        (list (service home-syncthing-service-type
                       (for-home
