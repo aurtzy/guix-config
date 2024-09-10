@@ -714,6 +714,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package org-agenda
   :after org
+  :bind (("C-c A" . #'find-org-agenda-file))
   :preface
   (defun refresh-org-agendas ()
     (interactive)
@@ -734,10 +735,17 @@ quits:  if a previous call to this function is still active, auto-return `t'."
               (-map (lambda (dir)
                       (file-expand-wildcards (concat dir "/agenda.org")))
                     data-dirs))))))
+  (defun find-org-agenda-file ()
+    "Edit an agenda file.  Uses the list of files from `org-agenda-files'."
+    (interactive)
+    (find-file (completing-read "Find agenda file: "
+                                (-map #'abbreviate-file-name
+                                      (org-agenda-files)))))
   :custom
   (org-agenda-span 10)
   :config
-  (refresh-org-agendas))
+  (refresh-org-agendas)
+  :functions (org-agenda-files))
 
 ;;;;; Programming languages
 
