@@ -716,7 +716,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :after org
   :bind (("C-c A" . #'find-org-agenda-file))
   :preface
-  (defun refresh-org-agendas ()
+  (defun refresh-org-agenda-files ()
     (interactive)
     (setq org-agenda-files
           (let* ((data-dirs '("~/workshop" "~/areas"))
@@ -744,7 +744,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :custom
   (org-agenda-span 10)
   :config
-  (refresh-org-agendas)
+  (refresh-org-agenda-files)
   :functions (org-agenda-files))
 
 ;;;;; Programming languages
