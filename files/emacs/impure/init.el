@@ -719,7 +719,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (defun refresh-org-agenda-files ()
     (interactive)
     (setq org-agenda-files
-          (let* ((data-dirs '("~/workshop" "~/areas"))
+          (let* ((data-dirs '("~/workshop" "~/areas" "~/library"))
                  (agendas-file (concat user-emacs-directory "agendas.el"))
                  ;; agendas.el (if exists) should evaluate to list of declared
                  ;; additional agenda files
