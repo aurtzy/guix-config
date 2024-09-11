@@ -536,10 +536,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (auto-insert-mode 1))
 
 (use-package envrc
-  :config
-  (envrc-global-mode t)
-  :preface
-  (declare-function envrc-global-mode "envrc"))
+  :hook (after-init . envrc-global-mode))
 
 (use-package eglot
   :commands eglot
