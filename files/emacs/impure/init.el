@@ -537,20 +537,9 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package envrc
   :config
-  ;; Override envrc-global-mode to fix issue with it not working.  See:
-  ;; https://github.com/purcell/envrc/pull/80
-  (define-globalized-minor-mode envrc-global-mode envrc-mode
-    (lambda () (when (and (not (minibufferp)) (not (file-remote-p default-directory))
-                          (executable-find envrc-direnv-executable))
-                 (envrc-mode 1))))
   (envrc-global-mode t)
   :preface
-  (declare-function envrc-global-mode "envrc")
-  (declare-function envrc-mode "envrc")
-  (declare-function envrc-global-mode-cmhh "envrc")
-  (declare-function envrc-global-mode-check-buffers "envrc")
-  (declare-function envrc-global-mode-enable-in-buffers "envrc")
-  (declare-function envrc-mode-set-explicitly "envrc"))
+  (declare-function envrc-global-mode "envrc"))
 
 (use-package eglot
   :commands eglot
