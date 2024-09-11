@@ -731,6 +731,30 @@ quits:  if a previous call to this function is still active, auto-return `t'."
                                       (org-agenda-files)))))
   :custom
   (org-agenda-span 10)
+  :init
+  (advice-add #'org-agenda
+              :around (lambda (original-function &rest args)
+                        (if (functionp 'envrc-global-mode)
+                            (let ((old-envrc-global-mode envrc-global-mode))
+                              (unwind-protect
+                                  (progn
+                                    (envrc-global-mode -1)
+                                    (apply original-function args))
+                                ;; Since we don't want to wait for direnv to
+                                ;; finish, set timeout to 1 second and ignore
+                                ;; any errors envrc encounters
+                                (let ((display-buffer-overriding-action
+                                       '(display-buffer-no-window
+                                         (allow-no-window t)))
+                                      (set-message-functions
+                                       (cons 'inhibit-message
+                                             set-message-functions))
+                                      (inhibit-message-regexps
+                                       (cons "[Dd]irenv"
+                                             inhibit-message-regexps)))
+                                  (with-timeout (1)
+                                    (envrc-global-mode old-envrc-global-mode)))))
+                          (apply original-function args))))
   :config
   (refresh-org-agenda-files)
   :functions (org-agenda-files))
