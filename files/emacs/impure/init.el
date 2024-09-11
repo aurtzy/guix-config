@@ -730,10 +730,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
              (list
               extra-agendas
               (-map (lambda (dir)
-                      (file-expand-wildcards (concat dir "/*/agenda.org")))
-                    data-dirs)
-              (-map (lambda (dir)
-                      (file-expand-wildcards (concat dir "/agenda.org")))
+                      (directory-files-recursively
+                       dir "\\.org$" nil
+                       (lambda (path)
+                         (not (string-prefix-p "." (file-name-base path))))))
                     data-dirs))))))
   (defun find-org-agenda-file ()
     "Edit an agenda file.  Uses the list of files from `org-agenda-files'."
