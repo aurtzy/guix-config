@@ -57,7 +57,7 @@
       (inherit base-os)
       (host-name "al-pc")
       (kernel linux)
-      (label (format #f "GNU with ~a ~a (Nouveau)"
+      (label (format #f "GNU with ~a ~a (Nonfree NVIDIA)"
                      (string-titlecase (package-name kernel))
                      (package-version kernel)))
       (initrd microcode-initrd)
@@ -161,7 +161,8 @@
                                (file "/swapfile")
                                (device "/dev/mapper/cryptroot")
                                (offset "6036736")))
-                  (,replace-mesa ,replace-mesa->nvsa-git)
+                  (,replace-mesa ,nvidia:replace-mesa)
+                  (,nvidia-proprietary? #t)
                   (,data-entries ,(list (data-entry
                                          (source "workshop")
                                          (borg-repositories
