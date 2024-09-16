@@ -64,19 +64,6 @@
   #:use-module (my-guix packages rust)
   #:use-module (my-guix utils))
 
-(define-public meson-1.3
-  (package
-    (inherit meson)
-    (version "1.3.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mesonbuild/meson/"
-                                  "releases/download/" version  "/meson-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1ajvkcyly1nsxwjc2vly1vlvfjrwpfnza5prfr104wxhr18b8bj9"))))))
-
 (define-public llvm-for-mesa/newer
   ;; Note: update the 'clang' input of mesa-opencl when bumping this.
   (let ((base-llvm llvm-18))
