@@ -59,9 +59,9 @@
     (inherit initial-os)
     (host-name "al-pc")
     (kernel linux)
-    (label (format #f "GNU with ~a ~a (Nouveau)"
-                   (string-titlecase (package-name kernel))
-                   (package-version kernel)))
+    (label (format #f "GNU with ~a ~a (Nonfree NVIDIA)"
+                     (string-titlecase (package-name kernel))
+                     (package-version kernel)))
     (initrd microcode-initrd)
     (firmware (list linux-firmware))
     (kernel-arguments
@@ -159,7 +159,9 @@
                 #:swapfile (swapfile-configuration
                             (file "/swapfile")
                             (device "/dev/mapper/cryptroot")
-                            (offset "6036736"))))
+                            (offset "6036736"))
+                #:replace-mesa nvidia:replace-mesa
+                #:nvidia-proprietary? #t))
     (base base-operating-system)
     (mods (list meta-desktop-mod
                 meta-entertainment-mod
