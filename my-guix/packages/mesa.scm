@@ -237,7 +237,7 @@ translation between LLVM IR and SPIR-V.")
        ))
     (arguments
      (cons*
-      #:meson meson-1.3
+      #:meson meson-1.5
       #:imported-modules `(,@%meson-build-system-modules
                            (guix build utils)
                            (my-guix build utils))
@@ -245,92 +245,35 @@ translation between LLVM IR and SPIR-V.")
         ((#:modules original-modules)
          (append original-modules
                  '((my-guix build utils))))
-        ((#:configure-flags _)
-         #~(list
-            #$@(cond
-                ((or (target-aarch64?) (target-arm32?))
-                 '("-Dgallium-drivers=etnaviv,freedreno,kmsro,lima,nouveau,\
-panfrost,r300,r600,svga,swrast,tegra,v3d,vc4,virgl,zink"))
-                ((or (target-ppc64le?) (target-ppc32?) (target-riscv64?))
-                 '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,svga,swrast,virgl,zink"))
-                (else
-                 '("-Dgallium-drivers=nouveau,swrast,zink")
-                 ;; TEMP: Reduce build time
-                 ;; '("-Dgallium-drivers=crocus,iris,nouveau,r300,r600,radeonsi,\
-                 ;; svga,swrast,virgl,zink")
-                 ))
-            ;; Enable various optional features.  TODO: opencl requires libclc,
-            ;; omx requires libomxil-bellagio
-            "-Dplatforms=x11,wayland"
-            "-Dglx=dri"              ;Thread Local Storage, improves performance
-            ;; "-Dopencl=true"
-            ;; "-Domx=true"
-            "-Dosmesa=true"
-            "-Dgallium-xa=enabled"
-
-            ;; features required by wayland
-            "-Dgles2=enabled"
-            "-Dgbm=enabled"
-            "-Dshared-glapi=enabled"
-
-            ;; Explicitly enable Vulkan on some architectures.
-            #$@(cond
-                ((target-x86-64?)
-                 ;; TEMP: Reduce build time
-                 ;; '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast,nouveau")
-                 '("-Dvulkan-drivers=swrast,nouveau")
-                 )
-                ((target-x86-32?)
-                 ;; TEMP: Reduce build time
-                 ;; '("-Dvulkan-drivers=intel,intel_hasvk,amd,swrast")
-                 '("-Dvulkan-drivers=swrast,nouveau"))
-                ((or (target-ppc64le?) (target-ppc32?))
-                 '("-Dvulkan-drivers=amd,swrast"))
-                ((target-aarch64?)
-                 '("-Dvulkan-drivers=freedreno,amd,broadcom,swrast"))
-                ((target-riscv64?)
-                 '("-Dvulkan-drivers=amd,swrast"))
-                (else
-                 '("-Dvulkan-drivers=auto")))
-
-            ;; Enable the Vulkan overlay layer on all architectures.
-            "-Dvulkan-layers=device-select,overlay"
-
-            ;; Enable all the codecs that were built by default as part of the
-            ;; 21.3.x releases to avoid functionality regressions.
-            "-Dvideo-codecs=all"
-
-            ;; Enable ZSTD compression for shader cache.
-            "-Dzstd=enabled"
-
-            ;; Also enable the tests.
-            "-Dbuild-tests=true"
-
-            "-Dllvm=enabled"))          ; default is x86/x86_64 only
+        ((#:configure-flags original-flags)
+         #~(append #$original-flags
+                   ;; Only enable NVIDIA drivers to reduce build times
+                   '#$(if (or (target-x86-64?) (target-x86-32?))
+                          '("-Dgallium-drivers=nouveau,swrast,zink"
+                            "-Dvulkan-drivers=swrast,nouveau")
+                          '())))
         ((#:phases original-phases)
          #~(modify-phases #$original-phases
              (add-after 'unpack 'change-subproject-sources
-               ;; Subproject source URLs are patched to point to the store,
-               ;; which avoids an attempt to download them mid-build.
+               ;; Subproject source URLs are patched to point to the
+               ;; store, which avoids an attempt to download them
+               ;; mid-build.
                (lambda _
-                 #+(if (or (target-x86-64?) (target-x86-32?))
-                       #~(for-each
-                          (match-lambda
-                            ((name source)
-                             (patch-wrap-file name source)))
-                          '#+(map (lambda (pkg)
-                                    (let ((pkg
-                                           (if (target-x86-32?)
-                                               (package/with-rust-binary pkg)
-                                               pkg)))
-                                      (list (package-upstream-name* pkg)
-                                            (crate-package-source pkg))))
-                                  (list rust-syn-2
-                                        rust-unicode-ident-1
-                                        rust-quote-1
-                                        rust-proc-macro2-1
-                                        rust-paste-1)))
-                       #~())))
+                 (for-each
+                  (match-lambda
+                    ((name source)
+                     (patch-wrap-file name source)))
+                  '#+(map (lambda (pkg)
+                            (let ((pkg (if (target-x86-32?)
+                                           (package/with-rust-binary pkg)
+                                           pkg)))
+                              (list (package-upstream-name* pkg)
+                                    (crate-package-source pkg))))
+                          (list rust-syn-2
+                                rust-unicode-ident-1
+                                rust-quote-1
+                                rust-proc-macro2-1
+                                rust-paste-1)))))
              (add-before 'build 'patch-out-rustfmt
                (lambda _
                  ;; XXX: Patch out rustfmt call, which appears to require rust
@@ -340,31 +283,29 @@ panfrost,r300,r600,svga,swrast,tegra,v3d,vc4,virgl,zink"))
                    (("subprocess\\.run\\(\\['rustfmt',.*$")
                     "pass\n")))))))))
     (native-inputs
-     (modify-inputs (package-native-inputs mesa)
-       (prepend clang-15
-                llvm-15
-                python-ply
-                python-pyyaml
-                ;; Support 32-bit NVK with rust-binary
-                (if (target-x86-32?) rust-binary rust)
-                (if (target-x86-32?)
+     (let ((native-inputs (modify-inputs (package-native-inputs mesa)
+                            (prepend clang-18
+                                     libclc
+                                     python-ply
+                                     python-pyyaml))))
+       (cond
+        ((target-x86-64?)
+         (modify-inputs native-inputs
+           (prepend rust
+                    rust-bindgen-cli
+                    rust-cbindgen-0.26)))
+        ;; Support NVK on x86_32 arch by using rust-binary
+        ((target-x86-32?)
+         (modify-inputs native-inputs
+           (prepend rust-binary
                     (package/with-rust-binary rust-bindgen-cli)
-                    rust-bindgen-cli)
-                (if (target-x86-32?)
-                    (package/with-rust-binary rust-cbindgen-0.26)
-                    rust-cbindgen-0.26))))
+                    (package/with-rust-binary rust-cbindgen-0.26))))
+        (else
+         native-inputs))))
     (inputs
      (modify-inputs (package-inputs mesa)
-       (prepend (package/inherit libclc
-                  (name "libclc")
-                  (propagated-inputs
-                   (modify-inputs (package-propagated-inputs libclc)
-                     (replace "spirv-llvm-translator"
-                       spirv-llvm-translator-15))))
-                wayland-protocols/newer)))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs mesa)
-       (replace "libdrm" libdrm/newer)))))
+       (replace "llvm-for-mesa" llvm-for-mesa/newer)
+       (replace "wayland-protocols" wayland-protocols/newer)))))
 
 (define mesa/nvsa-git
   (package
