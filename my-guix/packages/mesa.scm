@@ -159,46 +159,6 @@
         (base32
          "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
 
-(define-public spirv-llvm-translator-15
-  ;; Use commit from branch llvm_release_150 instead of tag due to issue
-  ;; (causing "not found" error) in headers:
-  ;; https://github.com/KhronosGroup/SPIRV-LLVM-Translator/issues/2261
-  ;;
-  ;; Mesa requires version < 15.1, so current Guix package cannot be used
-  (package
-    (name "spirv-llvm-translator")
-    (version "15.0.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/KhronosGroup/SPIRV-LLVM-Translator")
-             (commit "c8597d16bbfa7f7d2c2f49c2757344276c315a8a")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0z0cwpw9scrr7zc3ij2hp39vbmz93zkb347pf6xdysr4bpkhsdrs"))))
-    (build-system cmake-build-system)
-    (arguments
-     ;; 7 tests fail due to issue found here:
-     ;; https://github.com/KhronosGroup/SPIRV-LLVM-Translator/pull/2555
-     `(#:tests? #f
-       #:configure-flags
-       (list (string-append "-DLLVM_EXTERNAL_SPIRV_HEADERS_SOURCE_DIR="
-                            (assoc-ref %build-inputs "spirv-headers")
-                            "/include/spirv")
-             (string-append "-DLLVM_EXTERNAL_LIT="
-                            (assoc-ref %build-inputs "python-lit")
-                            "/bin/lit")
-             "-DLLVM_SPIRV_INCLUDE_TESTS=ON")))
-    (inputs (list llvm-15))
-    (native-inputs (list clang-15 llvm-15 python-lit spirv-headers))
-    (home-page "https://github.com/KhronosGroup/SPIRV-LLVM-Translator")
-    (synopsis "Bi-directional translation between SPIR-V and LLVM IR")
-    (description
-     "The LLVM/SPIR-V Bi-Directional Translator is a library and tool for
-translation between LLVM IR and SPIR-V.")
-    (license license:asl2.0)))
-
 (define-public nvsa-git
   ;; slimmed mesa git version for NVIDIA drivers.
   (package
