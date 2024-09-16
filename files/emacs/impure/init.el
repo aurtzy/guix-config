@@ -1,6 +1,7 @@
 ;;; init.el --- my init.el -*- lexical-binding: t -*-
 ;; Copyright © 2013-2022 Phil Hagelberg and contributors
 ;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
+;; Copyright © 2012-2016 Kyle Meyer <kyle@kyleam.com>
 ;;
 ;; This file is NOT part of GNU Emacs.
 ;;
@@ -629,6 +630,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
     :preface
     (declare-function magit-todos-mode "magit-todos"))
   :config
+  (transient-append-suffix #'magit-stash "f"
+    '("e" "Edit message" magit-stash-edit-message))
   (use-package magit-section
     :config
     (use-package magit-status
@@ -641,6 +644,19 @@ quits:  if a previous call to this function is still active, auto-return `t'."
              ("C-<tab>" . magit-section-cycle))))
   (use-package forge)
   :preface
+  ;; See discussion on editing stash messages here:
+  ;; https://www.github.com/magit/magit/issues/2650
+  (defun magit-stash-edit-message (stash message)
+    "Change STASH's message to MESSAGE."
+    (interactive
+     (let* ((stash (magit-read-stash "Rename"))
+            (old-msg (magit-git-string "show" "-s" "--format=%s" stash)))
+       (list stash (magit-read-string "Stash message" old-msg))))
+    (let ((commit (magit-rev-parse stash))
+          (inhibit-magit-refresh t))
+      (magit-stash-drop stash)
+      (magit-stash-store message "refs/stash" commit))
+    (magit-refresh))
   (put 'magit-clean 'disabled nil))
 
 (use-package org
