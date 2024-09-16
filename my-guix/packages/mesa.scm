@@ -14,7 +14,7 @@
 ;;; Copyright © 2020, 2021, 2022, 2023 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2021 Ivan Gankevich <i.gankevich@spbu.ru>
-;;; Copyright © 2021, 2022, 2023 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2021-2024 John Kehayias <john.kehayias@protonmail.com>
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2023 Kaelyn Takata <kaelyn.alexi@protonmail.com>
 ;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
@@ -76,6 +76,60 @@
               (sha256
                (base32
                 "1ajvkcyly1nsxwjc2vly1vlvfjrwpfnza5prfr104wxhr18b8bj9"))))))
+
+(define-public llvm-for-mesa/newer
+  ;; Note: update the 'clang' input of mesa-opencl when bumping this.
+  (let ((base-llvm llvm-18))
+    (package
+      (inherit base-llvm)
+      (name "llvm-for-mesa")
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-llvm)
+         ((#:modules modules '((guix build cmake-build-system)
+                               (guix build utils)))
+          `((ice-9 regex)
+            (srfi srfi-1)
+            (srfi srfi-26)
+            ,@modules))
+         ((#:configure-flags cf ''())
+          #~(cons*
+             #$@(if (%current-target-system)
+                    '("-DBUILD_SHARED_LIBS:BOOL=TRUE"
+                      "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE")
+                    '())
+             ;; Skipping tools and utils decreases the output by ~100 MiB.
+             "-DLLVM_BUILD_TOOLS=NO"
+             (remove
+              (cut string-match
+                   #$(if (%current-target-system)
+                         "-DLLVM_(LINK_LLVM_DYLIB|INSTALL_UTILS).*"
+                         "-DLLVM_INSTALL_UTILS.*") <>)
+              #$cf)))
+         ((#:phases phases '%standard-phases)
+          #~(modify-phases #$phases
+              #$@(if (%current-target-system)
+                     '()
+                     #~((add-after 'install 'delete-static-libraries
+                          ;; If these are just relocated then llvm-config
+                          ;; can't find them.
+                          (lambda* (#:key outputs #:allow-other-keys)
+                            (for-each delete-file
+                                      (find-files
+                                       (string-append
+                                        (assoc-ref outputs "out") "/lib")
+                                       "\\.a$"))))))
+              ;; llvm-config is how mesa and others find the various
+              ;; libraries and headers they use.
+              (add-after 'install 'build-and-install-llvm-config
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (let ((out (assoc-ref outputs "out")))
+                    (substitute*
+                      "tools/llvm-config/CMakeFiles/llvm-config.dir/link.txt"
+                      (((string-append (getcwd) "/build/lib"))
+                       (string-append out "/lib")))
+                    (invoke "make" "llvm-config")
+                    (install-file "bin/llvm-config"
+                                  (string-append out "/bin"))))))))))))
 
 (define-public libdrm/newer
   (package
