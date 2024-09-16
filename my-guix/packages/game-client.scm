@@ -207,11 +207,11 @@ sandboxed Xwayland sessions.")
                                   ,@steam-gameruntime-libs
                                   ,@fhs-min-libs)
                    (prepend (@ (gnu packages gdb) gdb)
-                            (replace-mesa->mesa-nvk-git gamescope)
-                            (replace-mesa->mesa-nvk-git sdl2))
+                            (replace-mesa->nvsa-git gamescope)
+                            (replace-mesa->nvsa-git sdl2))
                    (replace "gcc:lib" gcc-12)
                    ;; Use newer version of gcc for gamescope
-                   (replace "mesa" mesa-nvk-git))
+                   (replace "mesa" nvsa-git))
                  #:name "fhs-union-64"))
      ;; Requires i686-linux rust; package upstream in Guix does not build, so a
      ;; binary version is required if we want 32-bit NVK for the time being.
@@ -220,7 +220,7 @@ sandboxed Xwayland sessions.")
                                   ,@steam-gameruntime-libs
                                   ,@fhs-min-libs)
                    (prepend sdl2)
-                   (replace "mesa" mesa-nvk-git))
+                   (replace "mesa" nvsa-git))
                  #:name "fhs-union-32"
                  #:system "i686-linux")))))
 

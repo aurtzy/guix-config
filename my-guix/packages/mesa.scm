@@ -145,10 +145,11 @@
 translation between LLVM IR and SPIR-V.")
     (license license:asl2.0)))
 
-(define-public mesa-nvk-git
+(define-public nvsa-git
+  ;; slimmed mesa git version for NVIDIA drivers.
   (package
     (inherit mesa)
-    (name "mnvk")
+    (name "nvsa")
     (source
      (origin
        (method git-fetch)
@@ -311,10 +312,10 @@ panfrost,r300,r600,svga,swrast,tegra,v3d,vc4,virgl,zink"))
      (modify-inputs (package-propagated-inputs mesa)
        (replace "libdrm" libdrm/newer)))))
 
-(define mesa/nvk
+(define mesa/nvsa-git
   (package
     (inherit mesa)
-    (replacement mesa-nvk-git)))
+    (replacement nvsa-git)))
 
-(define-public replace-mesa->mesa-nvk-git
-  (package-input-rewriting `((,mesa . ,mesa/nvk))))
+(define-public replace-mesa->nvsa-git
+  (package-input-rewriting `((,mesa . ,mesa/nvsa-git))))
