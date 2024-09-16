@@ -463,6 +463,11 @@ management/maintenance.")
       (mod-os-services
        (list (service fstrim-service-type)))))))
 
+;; TODO: Emacs 30 will allow for passing emacsclient arguments to arbitrary
+;; functions, so I won't have to take the roundabout path of writing to a file
+;; and calling emacsclient with it; instead, I can just pass emacsclient the
+;; text to be written to a buffer.
+;; https://git.savannah.gnu.org/cgit/emacs.git/tree/etc/NEWS?h=emacs-30#n76
 (define mpv-input-file
   (mixed-text-file
    "mpv-input-file"
