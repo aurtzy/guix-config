@@ -118,20 +118,6 @@
                     (install-file "bin/llvm-config"
                                   (string-append out "/bin"))))))))))))
 
-(define-public libdrm/newer
-  (package
-    (inherit libdrm)
-    (name "libdrm")
-    (version "2.4.122")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://dri.freedesktop.org/libdrm/libdrm-"
-                    version ".tar.xz"))
-              (sha256
-               (base32
-                "0lgjj9ign3cl27hzmqnxr7xwv21mm486pifc029wmzvxfydhgxfr"))))))
-
 (define-public wayland-protocols/newer
   (package/inherit wayland-protocols
     (name "wayland-protocols")
