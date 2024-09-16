@@ -144,7 +144,7 @@
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
              (commit
               ;; "Bad", newer commit
-              "2d10233f2f1e5b779dde5c5553de12de4cf9e351"
+              "d3429a7e00dca7d101d8386db9d3f8b473f4e1e4"
               ;; "Good", older commit (for Factorio)
               ;; See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/11666
               ;; "67b778445afec51883e36618c8d5c535b3fd149f"
@@ -153,7 +153,7 @@
        (file-name (git-file-name name "git"))
        (sha256 (base32
                 ;; "Bad" commit
-                "0fpxnwi7avvj8jw5f0yg6rdmlfqf1486217pvid337pdndnfj6qp"
+                "1802r799ijci854qk1krgmyphw1l5lz12mp1v8w79d2637hckhrm"
                 ;; "Good" commit
                 ;; "1xpwikc3q9ann8mpasbki3mka85ypi6s2c2dzgxylyx7agap7lfw"
                 ))
