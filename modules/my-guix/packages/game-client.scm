@@ -208,6 +208,7 @@ sandboxed Xwayland sessions.")
                                   ,@fhs-min-libs)
                    (prepend (@ (gnu packages gdb) gdb)
                             (replace-mesa->nvsa-git gamescope)
+                            libglvnd
                             (replace-mesa->nvsa-git sdl2))
                    (replace "gcc:lib" gcc-12)
                    ;; Use newer version of gcc for gamescope

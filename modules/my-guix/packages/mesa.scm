@@ -143,20 +143,10 @@
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
              (commit
-              ;; "Bad", newer commit
-              "d3429a7e00dca7d101d8386db9d3f8b473f4e1e4"
-              ;; "Good", older commit (for Factorio)
-              ;; See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/11666
-              ;; "67b778445afec51883e36618c8d5c535b3fd149f"
-              )
-             ))
+              "d3429a7e00dca7d101d8386db9d3f8b473f4e1e4")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                ;; "Bad" commit
-                "1802r799ijci854qk1krgmyphw1l5lz12mp1v8w79d2637hckhrm"
-                ;; "Good" commit
-                ;; "1xpwikc3q9ann8mpasbki3mka85ypi6s2c2dzgxylyx7agap7lfw"
-                ))
+                "1802r799ijci854qk1krgmyphw1l5lz12mp1v8w79d2637hckhrm"))
        (patches
         (list
          ;; Needs rebase, so comment out for now.
@@ -237,6 +227,11 @@
          native-inputs))))
     (inputs
      (modify-inputs (package-inputs mesa)
+       ;; Add libglvnd to fix Factorio segfaulting on startup.
+       ;; Relevant discussions:
+       ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/11666
+       ;; https://issues.guix.gnu.org/49339
+       (prepend libglvnd)
        (replace "llvm-for-mesa" llvm-for-mesa/newer)
        (replace "wayland-protocols" wayland-protocols/newer)))))
 
