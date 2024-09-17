@@ -163,23 +163,27 @@ enables the use of Pipewire.")
                              `((".config/easyeffects"
                                 ,(path-append-my-files
                                   "easyeffects/impure/config"))))
-             (simple-service name
-                             home-shepherd-service-type
-                             (list
-                              (shepherd-service
-                               (documentation
-                                "Run Easy Effects (easyeffects).")
-                               (provision
-                                '(easyeffects))
-                               (requirement
-                                '(pipewire))
-                               (start
-                                #~(make-forkexec-constructor
-                                   (list #$(file-append easyeffects
-                                                        "/bin/easyeffects")
-                                         "--gapplication-service")))
-                               (stop
-                                #~(make-kill-destructor)))))))))))
+             ;; FIXME: easyeffects service crashes on startup with the error
+             ;; "Failed to open display", leading it to be disabled.  Needs
+             ;; investigation.  Use other means of starting it for now.
+             ;; (simple-service name
+             ;;                 home-shepherd-service-type
+             ;;                 (list
+             ;;                  (shepherd-service
+             ;;                   (documentation
+             ;;                    "Run Easy Effects (easyeffects).")
+             ;;                   (provision
+             ;;                    '(easyeffects))
+             ;;                   (requirement
+             ;;                    '(pipewire))
+             ;;                   (start
+             ;;                    #~(make-forkexec-constructor
+             ;;                       (list #$(file-append easyeffects
+             ;;                                            "/bin/easyeffects")
+             ;;                             "--gapplication-service")))
+             ;;                   (stop
+             ;;                    #~(make-kill-destructor)))))
+             ))))))
 
 (define bottles-mod
   (mod
