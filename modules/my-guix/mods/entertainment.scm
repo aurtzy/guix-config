@@ -31,7 +31,6 @@
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages game-client)
   #:use-module (my-guix packages minecraft-wayland)
-  #:use-module (my-guix packages syncplay)
   #:use-module (my-guix utils)
   #:export (game-mangers-mod
             minecraft-mod
@@ -40,7 +39,7 @@
 
             entertainment-mods))
 
-(use-package-modules freedesktop minetest sdl)
+(use-package-modules freedesktop minetest sdl video)
 
 (use-service-modules sysctl)
 
