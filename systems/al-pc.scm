@@ -57,6 +57,9 @@
       (inherit base-os)
       (host-name "al-pc")
       (kernel linux)
+      (label (format #f "GNU with ~a ~a (Nouveau)"
+                     (string-titlecase (package-name kernel))
+                     (package-version kernel)))
       (initrd microcode-initrd)
       (firmware (list linux-firmware))
       (kernel-arguments
