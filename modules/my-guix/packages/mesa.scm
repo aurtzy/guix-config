@@ -227,11 +227,6 @@
          native-inputs))))
     (inputs
      (modify-inputs (package-inputs mesa)
-       ;; Add libglvnd to fix Factorio segfaulting on startup.
-       ;; Relevant discussions:
-       ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/11666
-       ;; https://issues.guix.gnu.org/49339
-       (prepend libglvnd)
        (replace "llvm-for-mesa" llvm-for-mesa/newer)
        (replace "wayland-protocols" wayland-protocols/newer)))))
 
