@@ -686,6 +686,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
     (make-directory export-dir t)
     (define-auto-insert
       '(org-mode . "Org file")
+      ;; TODO: Set #+category to truncated string of project name
       `(nil
         "#+title: " _ \n
         "#+author:" \n
