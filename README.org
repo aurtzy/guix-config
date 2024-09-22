@@ -14,11 +14,11 @@ either being refined for upstreaming or are not suitable for upstream.
 
 Here is a general overview of notable files in this repository:
 
-- [[file:files]] contains configuration files that are not declared as Guile
-  modules. This includes the top-level Guix Home/System configuration files
-  for my systems ([[file:files/guix]]).
+- [[file:files]] contains configuration files that are not declared with Guile code.
 - [[file:modules]] contains Guile modules, where packages, services, and other
   utilities are defined.  =GUIX_PACKAGE_PATH= is also set to this directory.
+- [[file:systems]] is where the top-level Guix System/Home configuration files for
+  my systems are located.
 - [[file:scripts/setup]] is used for setting up additional things that the installer
   does not offer to do.
 - [[file:scripts/guix]] is used for bootstrapping the configuration when
