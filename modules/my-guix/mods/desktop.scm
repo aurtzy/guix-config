@@ -477,7 +477,7 @@ management/maintenance.")
    "mpv-input-file"
    "D show-text \"Displaying video description in Emacs...\""
    "; run \"" open-emacs-with-text-script "\" \"${metadata/ytdl_description}\"\n"
-   "c show-text \"Uploader: ${metadata/uploader}\""
+   "c show-text \"Uploader: ${metadata/uploader}\"\n"
    "C show-text \"Opening channel associated with video...\""
    "; run \"xdg-open\" \"${metadata/channel_url}\"\n"))
 
