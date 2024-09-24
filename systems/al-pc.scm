@@ -1,9 +1,11 @@
 (use-modules (gnu)
              (gnu home)
              (gnu home services desktop)
+             (gnu home services shepherd)
              (gnu home services sound)
              (gnu packages linux)
              (gnu services sddm)
+             (gnu services web)
              (gnu services xorg)
              (gnu system)
              (gnu system file-systems)
@@ -25,6 +27,7 @@
              (my-guix mods server)
              (my-guix packages mesa)
              (my-guix packages keyboard-center)
+             (my-guix packages redlib)
              (my-guix services hardware)
              (my-guix utils)
              (nongnu packages linux)
@@ -146,13 +149,44 @@
               (operating-system-file-systems base-os)))
       (services
        (cons* (service keyboard-center-service-type)
+              (service nginx-service-type)
+              (simple-service 'redlib-reverse-proxy
+                              nginx-service-type
+                              (list
+                               (nginx-server-configuration
+                                (listen '("8080"))
+                                (server-name '("redlib.localhost"))
+                                (locations
+                                 (list
+                                  (nginx-location-configuration
+                                   (uri "/")
+                                   (body '("proxy_pass http://localhost:8081;"))))))))
               (operating-system-user-services base-os))))))
 
 (define initial-home-environment
-  (let ((base-env base-desktop-home-environment))
+  (let ((base-he base-desktop-home-environment))
     (home-environment
-     (inherit base-env)
-     )))
+     (inherit base-he)
+     (services
+      (cons* (simple-service 'redlib
+                             home-shepherd-service-type
+                             (list
+                              (shepherd-service
+                               (documentation
+                                "Run Redlib service.")
+                               (provision
+                                '(redlib))
+                               (requirement
+                                '())
+                               (start
+                                #~(make-forkexec-constructor
+                                   (list #$(file-append redlib
+                                                        "/bin/redlib")
+                                         "--port" "8081")))
+                               (stop
+                                #~(make-kill-destructor)))))
+
+             (home-environment-user-services base-he))))))
 
 
 (define system
