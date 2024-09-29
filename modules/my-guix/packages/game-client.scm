@@ -220,23 +220,26 @@ sandboxed Xwayland sessions.")
      (binary-name "steam")
      (wrap-package steam-client-custom)
      (union64
+      ;; TODO: Bug?  Look into potential bug with modify-inputs changing
+      ;; output paths; seems to happen when there are multiple prepend
+      ;; clauses.
       (fhs-union (modify-inputs `(,@steam-client-libs
                                   ,@steam-gameruntime-libs
                                   ,@fhs-min-libs)
-                   ;; Debugging tools
-                   (prepend (@ (gnu packages gdb) gdb)
-                            (@ (gnu packages emacs) emacs))
-                   ;; Additional game tools/libraries
                    (prepend (replace-mesa->nvsa-git gamescope)
-                            (replace-mesa->nvsa-git sdl2))
+                            (replace-mesa->nvsa-git sdl2)
+
+                            libglvnd
+                            ;; Debugging tools
+                            (@ (gnu packages gdb) gdb)
+                            (@ (gnu packages emacs) emacs))
                    ;; Use newer version of gcc for gamescope
                    (replace "gcc:lib" gcc-12)
                    ;; Use mesa with glvnd to fix Factorio segfaulting on
                    ;; startup.  Relevant discussions:
                    ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/11666
                    ;; https://issues.guix.gnu.org/49339
-                   (replace "mesa" nvsa-git-with-libglvnd)
-                   (prepend libglvnd))
+                   (replace "mesa" nvsa-git-with-libglvnd))
                  #:name "fhs-union-64"))
      ;; Requires i686-linux rust; package upstream in Guix does not build, so a
      ;; binary version is required if we want 32-bit NVK for the time being.
