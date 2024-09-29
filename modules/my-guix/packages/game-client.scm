@@ -136,15 +136,14 @@
                    (string-append left-part right-part))))))))
       (native-inputs
        (list benchmark
+             gcc-12
              glslang
              hwdata
              pkg-config
              vulkan-headers
              wayland-protocols))
       (inputs
-       (list (module-ref (resolve-interface '(gnu packages commencement))
-                         'gcc-toolchain-12)
-             glm
+       (list glm
              libavif-1.0
              libdecor
              libdisplay-info
