@@ -195,7 +195,6 @@
                                (file "/swapfile")
                                (device "/dev/mapper/cryptroot")
                                (offset "6036736")))
-                  (,replace-mesa ,replace-mesa->nvsa-git)
                   (,data-entries ,(list (data-entry
                                          (source "workshop")
                                          (borg-repositories
