@@ -252,8 +252,6 @@ sandboxed Xwayland sessions.")
                             ;; Debugging tools
                             (@ (gnu packages gdb) gdb)
                             (@ (gnu packages emacs) emacs))
-                   ;; Use newer version of gcc for gamescope
-                   (replace "gcc:lib" gcc-12)
                    ;; Use mesa with glvnd to fix Factorio segfaulting on
                    ;; startup.  Relevant discussions:
                    ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/11666
