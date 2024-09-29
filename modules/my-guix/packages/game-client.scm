@@ -140,7 +140,7 @@
              hwdata
              pkg-config
              vulkan-headers
-             wayland-protocols/newer))
+             wayland-protocols))
       (inputs
        (list (module-ref (resolve-interface '(gnu packages commencement))
                          'gcc-toolchain-12)
