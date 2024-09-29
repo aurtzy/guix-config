@@ -118,6 +118,14 @@
               (lambda _
                 (substitute* "src/reshade_effect_manager.cpp"
                   (("/usr") #$output))))
+            ;; Related issue: https://issues.guix.gnu.org/71109
+            (add-after 'unpack 'patch-loader-path
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* "src/rendervulkan.cpp"
+                  (("dlopen\\( \"libvulkan\\.so")
+                   (string-append "dlopen( \""
+                                  (search-input-file
+                                   inputs "/lib/libvulkan.so"))))))
             (add-after 'unpack 'patch-subprojects
               (lambda _
                 ;; stb
