@@ -64,60 +64,6 @@
   #:use-module (my-guix packages rust)
   #:use-module (my-guix utils))
 
-(define-public llvm-for-mesa/newer
-  ;; Note: update the 'clang' input of mesa-opencl when bumping this.
-  (let ((base-llvm llvm-18))
-    (package
-      (inherit base-llvm)
-      (name "llvm-for-mesa")
-      (arguments
-       (substitute-keyword-arguments (package-arguments base-llvm)
-         ((#:modules modules '((guix build cmake-build-system)
-                               (guix build utils)))
-          `((ice-9 regex)
-            (srfi srfi-1)
-            (srfi srfi-26)
-            ,@modules))
-         ((#:configure-flags cf ''())
-          #~(cons*
-             #$@(if (%current-target-system)
-                    '("-DBUILD_SHARED_LIBS:BOOL=TRUE"
-                      "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE")
-                    '())
-             ;; Skipping tools and utils decreases the output by ~100 MiB.
-             "-DLLVM_BUILD_TOOLS=NO"
-             (remove
-              (cut string-match
-                   #$(if (%current-target-system)
-                         "-DLLVM_(LINK_LLVM_DYLIB|INSTALL_UTILS).*"
-                         "-DLLVM_INSTALL_UTILS.*") <>)
-              #$cf)))
-         ((#:phases phases '%standard-phases)
-          #~(modify-phases #$phases
-              #$@(if (%current-target-system)
-                     '()
-                     #~((add-after 'install 'delete-static-libraries
-                          ;; If these are just relocated then llvm-config
-                          ;; can't find them.
-                          (lambda* (#:key outputs #:allow-other-keys)
-                            (for-each delete-file
-                                      (find-files
-                                       (string-append
-                                        (assoc-ref outputs "out") "/lib")
-                                       "\\.a$"))))))
-              ;; llvm-config is how mesa and others find the various
-              ;; libraries and headers they use.
-              (add-after 'install 'build-and-install-llvm-config
-                (lambda* (#:key outputs #:allow-other-keys)
-                  (let ((out (assoc-ref outputs "out")))
-                    (substitute*
-                      "tools/llvm-config/CMakeFiles/llvm-config.dir/link.txt"
-                      (((string-append (getcwd) "/build/lib"))
-                       (string-append out "/lib")))
-                    (invoke "make" "llvm-config")
-                    (install-file "bin/llvm-config"
-                                  (string-append out "/bin"))))))))))))
-
 (define-public wayland-protocols/newer
   (package/inherit wayland-protocols
     (name "wayland-protocols")
@@ -177,26 +123,26 @@
                           '())))
         ((#:phases original-phases)
          #~(modify-phases #$original-phases
-             (add-after 'unpack 'change-subproject-sources
-               ;; Subproject source URLs are patched to point to the
-               ;; store, which avoids an attempt to download them
-               ;; mid-build.
-               (lambda _
-                 (for-each
-                  (match-lambda
-                    ((name source)
-                     (patch-wrap-file name source)))
-                  '#+(map (lambda (pkg)
-                            (let ((pkg (if (target-x86-32?)
-                                           (package/with-rust-binary pkg)
-                                           pkg)))
-                              (list (package-upstream-name* pkg)
-                                    (crate-package-source pkg))))
-                          (list rust-syn-2
-                                rust-unicode-ident-1
-                                rust-quote-1
-                                rust-proc-macro2-1
-                                rust-paste-1)))))
+             #$@(if (target-x86-32?)
+                    #~((add-after 'unpack 'patch-subproject-sources
+                         ;; Subproject source URLs are patched to point to the
+                         ;; store, which avoids an attempt to download them
+                         ;; mid-build.
+                         (lambda _
+                           (for-each
+                            (match-lambda
+                              ((name source)
+                               (patch-wrap-file name source)))
+                            '#+(map (lambda (pkg)
+                                      (let ((pkg (package/with-rust-binary pkg)))
+                                        (list (package-upstream-name* pkg)
+                                              (crate-package-source pkg))))
+                                    (list rust-syn-2
+                                          rust-unicode-ident-1
+                                          rust-quote-1
+                                          rust-proc-macro2-1
+                                          rust-paste-1))))))
+                    #~())
              (add-before 'build 'patch-out-rustfmt
                (lambda _
                  ;; XXX: Patch out rustfmt call, which appears to require rust
@@ -206,29 +152,14 @@
                    (("subprocess\\.run\\(\\['rustfmt',.*$")
                     "pass\n")))))))))
     (native-inputs
-     (let ((native-inputs (modify-inputs (package-native-inputs mesa)
-                            (prepend clang-18
-                                     libclc
-                                     python-ply
-                                     python-pyyaml))))
-       (cond
-        ((target-x86-64?)
-         (modify-inputs native-inputs
-           (prepend rust
-                    rust-bindgen-cli
-                    rust-cbindgen-0.26)))
-        ;; Support NVK on x86_32 arch by using rust-binary
-        ((target-x86-32?)
-         (modify-inputs native-inputs
-           (prepend rust-binary
-                    (package/with-rust-binary rust-bindgen-cli)
-                    (package/with-rust-binary rust-cbindgen-0.26))))
-        (else
-         native-inputs))))
-    (inputs
-     (modify-inputs (package-inputs mesa)
-       (replace "llvm-for-mesa" llvm-for-mesa/newer)
-       (replace "wayland-protocols" wayland-protocols/newer)))))
+     (let ((native-inputs (package-native-inputs mesa)))
+       ;; Support NVK on x86_32 arch by using rust-binary
+       (if (target-x86-32?)
+           (modify-inputs native-inputs
+             (prepend rust-binary
+                      (package/with-rust-binary rust-bindgen-cli)
+                      (package/with-rust-binary rust-cbindgen-0.26)))
+           native-inputs)))))
 
 (define mesa/nvsa-git
   (package
