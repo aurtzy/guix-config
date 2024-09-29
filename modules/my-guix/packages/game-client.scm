@@ -231,7 +231,7 @@ sandboxed Xwayland sessions.")
       (fhs-union (modify-inputs `(,@steam-client-libs
                                   ,@steam-gameruntime-libs
                                   ,@fhs-min-libs)
-                   (prepend sdl2)
+                   (prepend (replace-mesa->nvsa-git sdl2))
                    (replace "mesa" nvsa-git))
                  #:name "fhs-union-32"
                  #:system "i686-linux")))))
