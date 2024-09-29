@@ -9,6 +9,7 @@
              (gnu services xorg)
              (gnu system)
              (gnu system file-systems)
+             (gnu system privilege)
              (guix download)
              (guix git-download)
              (guix packages)
@@ -25,6 +26,7 @@
              (my-guix mods entertainment)
              (my-guix mods hardware)
              (my-guix mods server)
+             (my-guix packages game-client)
              (my-guix packages mesa)
              (my-guix packages keyboard-center)
              (my-guix packages redlib)
@@ -161,7 +163,21 @@
                                   (nginx-location-configuration
                                    (uri "/")
                                    (body '("proxy_pass http://localhost:8081;"))))))))
-              (operating-system-user-services base-os))))))
+              ;; HACK: gamescope searches multiple locations for needed vulkan
+              ;; files from mesa, one of which is here.  Conveniently provide
+              ;; them at this location.
+              (simple-service 'mesa-vulkan-files
+                              etc-service-type
+                              `(("vulkan" ,(file-append
+                                            nvsa-git "/share/vulkan"))))
+              (operating-system-user-services base-os)))
+      (privileged-programs
+       (cons* (privileged-program
+               (program
+                (file-append (replace-mesa->nvsa-git gamescope)
+                             "/bin/gamescope"))
+               (capabilities "cap_sys_nice=eip"))
+              (operating-system-privileged-programs base-os))))))
 
 (define initial-home-environment
   (let ((base-he base-desktop-home-environment))
