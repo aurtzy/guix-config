@@ -84,6 +84,22 @@
 ;; /tmp/.X11-unix not belonging to root or user.
 ;; `sudo chown $USER /tmp/.X11-unix' fixes this as a workaround.
 ;; Similar related issue: https://github.com/NixOS/nixpkgs/issues/162562
+;;
+;; FIXME: When the cap_sys_nice capability is set, gamescope becomes unable to
+;; find files like VkLayer_MESA_device_select.json (mesa has this).  Simple
+;; test: Copy gamescope from store to anywhere.  See that it still runs.  Run
+;; 'sudo setcap "cap_sys_nice=pie" gamescope' and see that attempting to run
+;; again gives a VkResult -9 error.
+;;
+;; 'strace gamescope' shows that gamescope searches data directories pulled
+;; from somewhere (what variable is used?) for these files.  The above test
+;; notably causes gamescope to /not/ search any data directories belonging to
+;; the user (security policy?  root owner things?); it succeeded before
+;; because the files were present in ~/.guix-home/profile/share/vulkan/...,
+;; which was searched.
+;;
+;; The following variables appear to be read: $XDG_CONFIG_DIRS,
+;; $XDG_DATA_DIRS, $XDG_CONFIG_HOME
 (define-public gamescope
   (let ((version "3.14.20")
         (revision "0")
