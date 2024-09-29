@@ -779,7 +779,9 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package cc-mode
   :init
-  (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode)))
+  (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode)))
 
 (use-package elisp-mode
   :hook ((emacs-lisp-mode . enable-paredit-mode)))
