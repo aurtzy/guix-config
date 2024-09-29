@@ -224,8 +224,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;; We could start with "j" as the (usually default) "jump" action.
 (use-package avy
   :bind (("M-j" . avy-goto-char)
-         :map
-         isearch-mode-map
+         :map isearch-mode-map
          ("M-j" . avy-isearch)))
 
 (use-package emacs
@@ -260,15 +259,14 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :defines (embark-region-map
             embark-sentence-map
             embark-paragraph-map)
-  :bind (:map
-         embark-region-map
-         ("M-f" . unfill-region)
-         :map
-         embark-sentence-map
-         ("M-f" . unfill-paragraph)
-         :map
-         embark-paragraph-map
-         ("M-f" . unfill-paragraph)))
+  :bind ( :map embark-region-map
+          ("M-f" . unfill-region)
+          :map
+          embark-sentence-map
+          ("M-f" . unfill-paragraph)
+          :map
+          embark-paragraph-map
+          ("M-f" . unfill-paragraph)))
 
 ;; Resource:
 ;; https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
@@ -420,10 +418,9 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (setq consult-narrow-key "<"))
 
 (use-package corfu
-  :bind (:map
-         corfu-map
-         ([return] . nil)
-         ([tab] . corfu-insert-candidate))
+  :bind ( :map corfu-map
+          ([return] . nil)
+          ([tab] . corfu-insert-candidate))
   :custom
   (corfu-cycle t)
   (corfu-separator ?\s)
@@ -444,11 +441,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
     (corfu-insert)))
 
 (use-package embark
-  :bind (:map
-         override-global-map
-         ("C-." . embark-act)
-         ("M-." . embark-dwim)
-         ("C-h B" . embark-bindings))
+  :bind ( :map override-global-map
+          ("C-." . embark-act)
+          ("M-." . embark-dwim)
+          ("C-h B" . embark-bindings))
   :custom
   (prefix-help-command #'embark-prefix-help-command)
   :config
@@ -505,9 +501,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
       "(specifications->manifest (list" _ "))")))
 
 (use-package guix-popup
-  :bind ((:map
-          mode-specific-map
-          ("g" . guix))))
+  :bind ( :map mode-specific-map
+          ("g" . guix)))
 
 (use-package guix-prettify
   :hook ((shell-mode . guix-prettify-mode)
@@ -595,9 +590,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
                                    "agenda.org"))
   :config
   (use-package project-dispatch
-    :bind (:map
-           ctl-x-map
-           ("p" . project-dispatch))))
+    :bind ( :map ctl-x-map
+            ("p" . project-dispatch))))
 
 (use-package server
   :config
@@ -640,12 +634,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
     :config
     (use-package magit-status
       ;; XXX: Reserve "C-<tab>" for other things (like `tab-bar-mode')
-      :bind (:map
-             magit-status-mode-map
-             ("C-<tab>" . nil)
-             ("C-c C-<tab>" . magit-section-cycle)
-             :repeat-map magit-section-repeat-map
-             ("C-<tab>" . magit-section-cycle))))
+      :bind ( :map magit-status-mode-map
+              ("C-<tab>" . nil)
+              ("C-c C-<tab>" . magit-section-cycle)
+              :repeat-map magit-section-repeat-map
+              ("C-<tab>" . magit-section-cycle))))
   (use-package forge)
   :preface
   ;; See discussion on editing stash messages here:
