@@ -37,6 +37,7 @@
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods base)
+  #:use-module (my-guix packages emacs)
   #:use-module (my-guix packages git-annex-configure)
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
@@ -349,11 +350,12 @@ elsewhere in possibly different forms).")
                       emacs-jupyter
                       emacs-code-cells
                       emacs-csv-mode
-                      ;; misc
+                      ;; etc
                       emacs-dimmer
                       emacs-eat
                       emacs-hl-todo
                       emacs-markdown-mode
+                      emacs-nftables-mode
                       emacs-protobuf-mode
                       emacs-ripgrep
                       emacs-wgrep
