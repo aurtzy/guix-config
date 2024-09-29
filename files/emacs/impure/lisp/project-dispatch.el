@@ -232,8 +232,10 @@ ROOT-DIRECTORY is used to determine the project."
   (interactive)
   (let* ((project (project-current nil (project-dispatch--root-directory)))
          (external-roots (project-external-roots project))
-         (dirs (cons (project-dispatch--from-directory)
-                     external-roots)))
+         (dirs (if (project-dispatch--include-external-roots)
+                   (cons (project-dispatch--from-directory)
+                         external-roots)
+                 (list (project-dispatch--from-directory)))))
     (consult-ripgrep dirs)))
 
 (transient-define-suffix project-dispatch-magit-status ()
