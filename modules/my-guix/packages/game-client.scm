@@ -223,8 +223,11 @@ sandboxed Xwayland sessions.")
       (fhs-union (modify-inputs `(,@steam-client-libs
                                   ,@steam-gameruntime-libs
                                   ,@fhs-min-libs)
+                   ;; Debugging tools
                    (prepend (@ (gnu packages gdb) gdb)
-                            (replace-mesa->nvsa-git gamescope)
+                            (@ (gnu packages emacs) emacs))
+                   ;; Additional game tools/libraries
+                   (prepend (replace-mesa->nvsa-git gamescope)
                             (replace-mesa->nvsa-git sdl2))
                    ;; Use newer version of gcc for gamescope
                    (replace "gcc:lib" gcc-12)
