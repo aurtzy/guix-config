@@ -516,6 +516,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Minor modes
 
+(use-package display-line-numbers
+  :after prog-mode
+  :hook (prog-mode . display-line-numbers-mode))
+
 (use-package editorconfig
   :config
   (editorconfig-mode 1)
