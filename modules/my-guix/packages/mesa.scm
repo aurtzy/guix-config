@@ -64,20 +64,6 @@
   #:use-module (my-guix packages rust)
   #:use-module (my-guix utils))
 
-(define-public wayland-protocols/newer
-  (package/inherit wayland-protocols
-    (name "wayland-protocols")
-    (version "1.34")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://gitlab.freedesktop.org/wayland/"
-                           name "/-/releases/" version "/downloads/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
-
 (define-public nvsa-git
   ;; slimmed mesa git version for NVIDIA drivers.
   (package
