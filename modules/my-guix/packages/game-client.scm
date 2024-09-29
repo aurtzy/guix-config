@@ -126,6 +126,14 @@
                    (string-append "dlopen( \""
                                   (search-input-file
                                    inputs "/lib/libvulkan.so"))))))
+            (add-after 'unpack 'patch-version
+              (lambda _
+                (substitute* "src/meson.build"
+                  (("(command\\s*:\\s*)\\['git'.*\\]" all command-match)
+                   (string-append command-match
+                                  "['echo', '"
+                                  #+version
+                                  "']")))))
             (add-after 'unpack 'patch-subprojects
               (lambda _
                 ;; stb
