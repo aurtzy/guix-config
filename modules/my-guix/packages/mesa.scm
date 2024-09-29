@@ -89,10 +89,10 @@
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
              (commit
-              "5378bdc5fddea514dd5b55ce929810b6eeda5b50")))
+              "fd11bbbb90eba6b174371caf07a9b8ca51310730")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "06iypbzhkx27sghayk1zv3mafkx4yniwrz2nl579j53p5wby1v27"))
+                "1amaipzns2cgyksqq9jzfmgmysa2clw42lhvl5n1kfgwrqbiv33z"))
        (patches
         (list
          ;; Needs rebase, so comment out for now.
