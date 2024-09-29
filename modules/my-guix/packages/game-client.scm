@@ -157,9 +157,11 @@
              libxext
              libxkbcommon
              libxmu
+             libxrender
              libxres
              libxt
              libxtst
+             libxxf86vm
              pipewire
              pixman
              sdl2
