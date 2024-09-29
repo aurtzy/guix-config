@@ -378,7 +378,7 @@ elsewhere in possibly different forms).")
                                 '( ;; Set editor for e.g. sudoedit
                                   ("VISUAL"
                                    .
-                                   "/usr/bin/env emacsclient -a emacs --no-wait")
+                                   "/usr/bin/env emacsclient -a emacs")
                                   ("EDITOR"
                                    .
                                    "/usr/bin/env emacs -nw")
