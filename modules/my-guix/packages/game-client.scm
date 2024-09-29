@@ -225,22 +225,15 @@ sandboxed Xwayland sessions.")
                                   ,@fhs-min-libs)
                    (prepend (@ (gnu packages gdb) gdb)
                             (replace-mesa->nvsa-git gamescope)
-                            libglvnd
                             (replace-mesa->nvsa-git sdl2))
                    ;; Use newer version of gcc for gamescope
                    (replace "gcc:lib" gcc-12)
-                   ;; Add libglvnd to mesa to fix Factorio segfaulting on
-                   ;; startup.  Do it here instead of in nvsa-git definition to
-                   ;; avoid issues with GL library not being found in system
-                   ;; environment; seems like it only works here because there's
-                   ;; only one place to search (i.e. /lib64) Relevant
-                   ;; discussions:
+                   ;; Use mesa with glvnd to fix Factorio segfaulting on
+                   ;; startup.  Relevant discussions:
                    ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/11666
                    ;; https://issues.guix.gnu.org/49339
-                   (replace "mesa"
-                     (package/inherit nvsa-git
-                       (inputs (modify-inputs (package-inputs nvsa-git)
-                                 (prepend libglvnd))))))
+                   (replace "mesa" nvsa-git-with-libglvnd)
+                   (prepend libglvnd))
                  #:name "fhs-union-64"))
      ;; Requires i686-linux rust; package upstream in Guix does not build, so a
      ;; binary version is required if we want 32-bit NVK for the time being.
@@ -249,7 +242,7 @@ sandboxed Xwayland sessions.")
                                   ,@steam-gameruntime-libs
                                   ,@fhs-min-libs)
                    (prepend (replace-mesa->nvsa-git sdl2))
-                   (replace "mesa" nvsa-git))
+                   (replace "mesa" nvsa-git-with-libglvnd))
                  #:name "fhs-union-32"
                  #:system "i686-linux")))))
 
