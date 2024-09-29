@@ -135,15 +135,14 @@
                     _ left-part right-part)
                    (string-append left-part right-part))))))))
       (native-inputs
-       (list benchmark
-             gcc-12
+       (list gcc-12
              glslang
-             hwdata
              pkg-config
-             vulkan-headers
-             wayland-protocols))
+             vulkan-headers))
       (inputs
-       (list glm
+       (list benchmark
+             glm
+             hwdata
              libavif-1.0
              libdecor
              libdisplay-info
@@ -168,7 +167,8 @@
              xcb-util-wm
              xcb-util-errors
              xorg-server-xwayland
-             wayland))
+             wayland
+             wayland-protocols))
       (home-page "https://github.com/ValveSoftware/gamescope")
       (synopsis "Session compositing window manager")
       (description "Gamescope is a Wayland compositor for running games,
