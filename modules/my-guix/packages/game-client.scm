@@ -138,6 +138,7 @@
        (list gcc-12
              glslang
              pkg-config
+             python-3
              vulkan-headers))
       (inputs
        (list benchmark
@@ -161,7 +162,6 @@
              libxtst
              pipewire
              pixman
-             python-3
              sdl2
              vulkan-loader
              xcb-util-wm
