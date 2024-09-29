@@ -154,3 +154,18 @@
 
 (define-public replace-mesa->nvsa-git
   (package-input-rewriting `((,mesa . ,mesa/nvsa-git))))
+
+(define-public nvsa-git-with-libglvnd
+  (package/inherit nvsa-git
+    (name "nvsa")
+    (inputs (modify-inputs (package-inputs nvsa-git)
+              (prepend libglvnd)))
+    (properties (cons `(hidden? . #t)
+                      (package-properties nvsa-git)))))
+
+(define mesa/nvsa-git-with-libglvnd
+  (package/inherit mesa
+    (replacement nvsa-git-with-libglvnd)))
+
+(define-public replace-mesa->nvsa-git-with-libglvnd
+  (package-input-rewriting `((,mesa . ,mesa/nvsa-git-with-libglvnd))))
