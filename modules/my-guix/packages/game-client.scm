@@ -242,6 +242,9 @@ sandboxed Xwayland sessions.")
       (fhs-union (modify-inputs `(,@steam-client-libs
                                   ,@steam-gameruntime-libs
                                   ,@fhs-min-libs)
+                   ;; gamescope MUST produce have same derivation as the
+                   ;; gamescope in privileged-programs so all of its
+                   ;; dependencies can be found in the container.
                    (prepend (replace-mesa->nvsa-git gamescope)
                             (replace-mesa->nvsa-git sdl2)
 
@@ -266,7 +269,9 @@ sandboxed Xwayland sessions.")
                    (prepend (replace-mesa->nvsa-git sdl2))
                    (replace "mesa" nvsa-git-with-libglvnd))
                  #:name "fhs-union-32"
-                 #:system "i686-linux")))))
+                 #:system "i686-linux"))
+     (exposed (cons* "/run/privileged/bin/gamescope"
+                     (ngc-exposed steam-container))))))
 
 (define-public steam-custom
   (nonguix-container->package steam-container-custom))
