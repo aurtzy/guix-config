@@ -75,21 +75,10 @@
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
              (commit
-              "a74ebffc6a6193445231563cdaa4494933b6c281")))
+              "5bd825a4b8fdc1b7f4a1d94f8826f13eeebc985a")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "1q2ml0cnbs48x5mv8a8zhgw5ch7596mp084z32r8b0ll9h6xk2h5"))
-       (patches
-        (list
-         ;; Needs rebase, so comment out for now.
-         ;; (origin
-         ;;   (method url-fetch)
-         ;;   (uri
-         ;;    "https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25576.patch")
-         ;;   (sha256 (base32
-         ;;            "0vcifnca44b27plb33r8kslna6qxj3ss9iwz70pq18ar1g7br1wv")))
-         ))
-       ))
+                "1gnf9yxaz1bqhc4jyh7wsqw3n82kaixc91ic40d2r7k9wkj1j9a5"))))
     (arguments
      (cons*
       #:meson meson-1.5
