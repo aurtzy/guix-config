@@ -75,10 +75,10 @@
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
              (commit
-              "5bd825a4b8fdc1b7f4a1d94f8826f13eeebc985a")))
+              "2fb4aed9d8b51b741fde7bb6a9c8c263a7be5fdd")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "1gnf9yxaz1bqhc4jyh7wsqw3n82kaixc91ic40d2r7k9wkj1j9a5"))))
+                "0z365fvmchm7s4ygni0fayh9ws563jqi6qw9c4lhnj9rn3kp6mya"))))
     (arguments
      (cons*
       #:meson meson-1.5
