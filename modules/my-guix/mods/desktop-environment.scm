@@ -100,42 +100,6 @@
                             (list (replace-mesa gnome-essential-extras)))))
                  (service gdm-service-type)))))))))
 
-;;; TEMP: This package definition doesn't really belong here, but it can be
-;;; moved to a dedicated module if it finds use elsewhere or meets with
-;;; complications upstreaming.
-
-;; XXX: Include kcolorscheme as an input; this fixes "org.kde.desktop" Kirigami
-;; platform plugin not being found resulting in a theming issue.
-(define-public qqc2-desktop-stfix
-  ;; Adding kcolorscheme seems to cause tests to fail; disable for now.
-  (package/inherit qqc2-desktop-style
-    (name "qqc2-desktop-stfix")
-    (arguments
-     (substitute-keyword-arguments (package-arguments qqc2-desktop-style)
-       ((#:tests? _)
-        #f)
-       ((#:phases original-phases)
-        #~(modify-phases #$original-phases
-            (replace 'check
-              (lambda* (#:key tests? #:allow-other-keys)
-                (when tests?
-                  (setenv "XDG_CACHE_HOME" ".cache")
-                  (invoke "dbus-launch" "ctest"
-                          "--rerun-failed" "--output-on-failure"))))))))
-    (inputs (modify-inputs (package-inputs system-settings)
-              (append kcolorscheme)))))
-
-(define-public qqc2-desktop-style/fixed
-  (package/inherit qqc2-desktop-style
-    (replacement qqc2-desktop-stfix)))
-
-(define-public replace-qqc2-desktop-style
-  ;; TEMP: Test replacing to ensure patch works for upstream.
-  identity
-  ;; (package-input-rewriting/spec
-  ;;  `(("qqc2-desktop-style" . ,(const qqc2-desktop-style/fixed))))
-  )
-
 (define plasma-mod
   (mod
     (inherit wayland-mod)
@@ -149,8 +113,7 @@
          (list
           (mod-os-extension wayland-mod)
           (mod-os-packages
-           (map (compose replace-qqc2-desktop-style
-                         replace-mesa)
+           (map replace-mesa
                 ;; Numerous packages here are included by recommendation of the
                 ;; wiki page on packaging, although I'm not sure what some of
                 ;; them do:
@@ -176,9 +139,7 @@
           (mod-os-services
            (list (service plasma-desktop-service-type
                           (plasma-desktop-configuration
-                           (plasma-package (replace-qqc2-desktop-style
-                                            (replace-mesa
-                                             plasma)))))
+                           (plasma-package (replace-mesa plasma))))
                  (service sddm-service-type
                           (sddm-configuration
                            (xorg-configuration
