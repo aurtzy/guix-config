@@ -824,7 +824,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :hook ((lisp-data-mode . enable-paredit-mode)))
 
 (use-package scheme
-  :hook ((scheme-mode . enable-paredit-mode))
+  :hook ((scheme-mode . enable-paredit-mode)
+         (scheme-mode . guix-devel-mode))
   :init
   (font-lock-add-keywords 'scheme-mode
                           '(("(\\(lambda\\*\\)"
