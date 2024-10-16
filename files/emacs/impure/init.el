@@ -122,9 +122,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (modus-themes-hl-line '(accented))
   :config
   (add-to-list 'default-frame-alist '(font . "Hack-11"))
-  ;; TODO: menu-bar was funky with frame transparency at the time of
-  ;; writing so menu-bar has been disabled; try re-enabling in future
-  (menu-bar-mode -1)
   (tool-bar-mode -1)
   (global-hl-line-mode 1))
 
