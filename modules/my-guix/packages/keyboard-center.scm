@@ -33,7 +33,6 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
-  #:use-module (guix licenses)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (my-guix utils))
@@ -86,86 +85,88 @@
     (description "Pythonic API to Linux uinput kernel module.")
     (license license:gpl3+)))
 
+;; TODO: Latest version requires Python 3.12+; look into this:
+;; https://git.ditigal.xyz/~ruther/guix-exprs/tree/main/item/ruther/packages/python-next.scm#L51
+;;
+;; FIXME: icons do not show up.  Potentially related:
+;; https://www.github.com/zocker-160/keyboard-center/issues/55
 (define-public keyboard-center
-  (let ((version "1.0.6")
-        (hash "0mb7kap4cwljdi4z1j580xbs5cldlaa2m037gdzak2vi33mv85f4"))
+  (let ((version "1.0.10")
+        (hash "1hc7vv7pzadqn27f4hg93ydrw2k94x3p004f3m58w4vxf5xnzj5n"))
     (package
       (name "keyboard-center")
       (version version)
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/zocker-160/keyboard-center/")
+                      (url "https://github.com/zocker-160/keyboard-center")
                       (commit version)))
                 (file-name (git-file-name name version))
                 (sha256 (base32 hash))))
       (build-system copy-build-system)
       (arguments
-       `(#:modules ((guix build copy-build-system)
+       (list
+        #:modules '((guix build copy-build-system)
                     (guix build qt-utils)
-                    (guix build utils))
-         #:imported-modules (,@%copy-build-system-modules
+                    (guix build utils)
+                    (ice-9 match))
+        #:imported-modules `(,@%copy-build-system-modules
                              (guix build qt-utils))
-         #:install-plan '(("src/"
-                           "/lib/keyboard-center/"
-                           #:include-regexp ("assets/"
-                                             "config/"
-                                             "devices/"
-                                             "gui/"
-                                             "lib/"
-                                             "main.py"
-                                             "mainUi.py"
-                                             "service.py"
-                                             "constants.py"))
-                          ("linux_packaging/assets/keyboard-center.sh"
-                           "/bin/keyboard-center")
-                          ("linux_packaging/60-keyboard-center.rules"
-                           "/lib/udev/rules.d/")
-                          ("linux_packaging/uinput-keyboard-center.conf"
-                           "/lib/modules-load.d/keyboard-center.conf")
-                          ("linux_packaging/assets/keyboard-center.png"
-                           "/share/icons/hicolor/512x512/apps/")
-                          ("linux_packaging/assets/keyboard-center.desktop"
-                           "/share/applications/"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'patch-script
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (substitute* "linux_packaging/assets/keyboard-center.sh"
-                   (("/opt") (string-append out "/lib")))
-                 (chmod "linux_packaging/assets/keyboard-center.sh" #o777))))
-           (add-after 'install 'wrap-prog
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((input-libpath (lambda (path)
-                                       (string-append
-                                        (assoc-ref inputs path)
-                                        "/lib")))
-                      (out (assoc-ref outputs "out"))
-                      (eudev (input-libpath "eudev"))
-                      (hidapi (input-libpath "hidapi")))
-                 (wrap-program (string-append out "/bin/keyboard-center")
-                   `("LD_LIBRARY_PATH" ":" = ,(list eudev hidapi)))
-                 (wrap-qt-program "keyboard-center"
-                                  #:output %output
-                                  #:inputs inputs)))))))
+        #:install-plan #~'(("src"
+                            "/lib/keyboard-center")
+                           ("linux_packaging/60-keyboard-center.rules"
+                            "/lib/udev/rules.d/")
+                           ("linux_packaging/uinput-keyboard-center.conf"
+                            "/lib/modules-load.d/keyboard-center.conf")
+                           ("linux_packaging/assets/keyboard-center.png"
+                            "/share/icons/hicolor/512x512/apps/")
+                           ("linux_packaging/assets/keyboard-center.desktop"
+                            "/share/applications/"))
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-libraries
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* "src/lib/hid.py"
+                    ;; "keyboard_center/lib/hid.py"
+                  (("library_paths = " assign)
+                   ;; Push the originally assigned tuple onto the next line to
+                   ;; make it a noop that can be ignored
+                   (string-append assign
+                                  "('"
+                                  (search-input-file
+                                   inputs "lib/libhidapi-hidraw.so")
+                                  "',)\n")))))
+            (add-after 'install 'install-bin
+              (lambda _
+                (mkdir-p (string-append #$output "/bin"))
+                (with-output-to-file (string-append
+                                      #$output "/bin/keyboard-center")
+                  (lambda _
+                    (display
+                     (string-append
+                      "#!" (which "sh") "\n"
+                      (which "python3")
+                      " " #$output "/lib/keyboard-center/main.py $@"))))
+                (chmod (string-append #$output "/bin/keyboard-center") #o777)))
+            (add-after 'install-bin 'wrap-program
+              (lambda* (#:key inputs #:allow-other-keys)
+                (wrap-program (string-append #$output "/bin/keyboard-center")
+                  '("LD_LIBRARY_PATH" ":" = (#$(file-append eudev "/lib"))))
+                (wrap-qt-program "keyboard-center"
+                                 #:output %output
+                                 #:inputs inputs))))))
       (inputs
        (list bash-minimal
-             eudev
              hidapi
+             libnotify
+             python
              qtwayland-5))
       (propagated-inputs
-       (list python
-             python-pyqt
-             ;; FIXME: Issue with icons not showing up, but including breeze
-             ;; doesn't seem to work.
-             ;; breeze
-             python-uinput
-             python-ruamel.yaml
+       (list python-pyqt
              python-pyusb
-             python-inotify-simple
-             libnotify))
+             python-ruamel.yaml
+             python-uinput))
       (synopsis "Application for mapping macro keys on Logitech keyboards")
       (description "")
       (home-page "https://github.com/zocker-160/keyboard-center")
-      (license gpl3))))
+      (license license:gpl3))))
