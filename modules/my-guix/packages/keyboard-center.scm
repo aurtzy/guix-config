@@ -29,11 +29,31 @@
   #:use-module (gnu packages serialization)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system pyproject)
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
+
+(define-public python-lupa
+  (package
+    (name "python-lupa")
+    (version "2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "lupa" version))
+       (sha256
+        (base32 "0kcjr2s7l59gprcjnrhaj5ahqsnh56wj8f4mvggsr6ldrxmh0nk6"))))
+    (build-system pyproject-build-system)
+    ;; There are tests that attempt to use internet.
+    (arguments (list #:tests? #f))
+    (home-page "https://github.com/scoder/lupa")
+    (synopsis "Python wrapper around Lua and LuaJIT")
+    (description "Python wrapper around Lua and @code{LuaJIT}.")
+    (license license:expat)))
 
 (define-public python-uinput
   (package
