@@ -1,0 +1,67 @@
+From 411c824493f8c6318c430cf1c721790090533397 Mon Sep 17 00:00:00 2001
+From: aurtzy <aurtzy@gmail.com>
+Date: Fri, 18 Oct 2024 16:47:27 -0400
+Subject: [PATCH] libsuinput: Add module initialization function
+
+This fixes the following error that can occur when importing from the
+_libsuinput module:
+
+ImportError: dynamic module does not define module export function (PyInit__libsuinput)
+---
+ libsuinput/src/suinput.c | 24 ++++++++++++++++++++++++
+ libsuinput/src/suinput.h |  2 ++
+ 2 files changed, 26 insertions(+)
+
+diff --git a/libsuinput/src/suinput.c b/libsuinput/src/suinput.c
+index 8d5fb71..ef6a14b 100644
+--- a/libsuinput/src/suinput.c
++++ b/libsuinput/src/suinput.c
+@@ -211,3 +211,27 @@ int suinput_enable_event(int uinput_fd, uint16_t ev_type, uint16_t ev_code)
+ 
+         return ioctl(uinput_fd, io, ev_code);
+ }
++
++PyMethodDef module_methods[] = {
++        {"suinput_open", suinput_open, METH_VARARGS},
++        {"suinput_enable_event", suinput_enable_event, METH_VARARGS},
++        {"suinput_create", suinput_create, METH_VARARGS},
++        {"suinput_write_event", suinput_write_event, METH_VARARGS},
++        {"suinput_emit", suinput_emit, METH_VARARGS},
++        {"suinput_emit_click", suinput_emit_click, METH_VARARGS},
++        {"suinput_emit_combo", suinput_emit_combo, METH_VARARGS},
++        {"suinput_syn", suinput_syn, METH_VARARGS},
++        {"suinput_destroy", suinput_destroy, METH_VARARGS}
++};
++
++static struct PyModuleDef module_def = {
++        .m_base = PyModuleDef_HEAD_INIT,
++        .m_name = "_libsuinput",
++        .m_doc = "doc",
++        .m_size = -1,
++        .m_methods = module_methods
++};
++
++PyObject *PyInit__libsuinput() {
++        return PyModule_Create(&module_def);
++}
+diff --git a/libsuinput/src/suinput.h b/libsuinput/src/suinput.h
+index 9173a13..ecbb892 100644
+--- a/libsuinput/src/suinput.h
++++ b/libsuinput/src/suinput.h
+@@ -22,11 +22,13 @@
+ #include <stdint.h>
+ 
+ #include <linux/uinput.h>
++#include <Python.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+ 
++PyObject *PyInit__libsuinput(void);
+ 
+ int suinput_open(void);
+ 
+-- 
+2.46.0
+

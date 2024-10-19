@@ -1,4 +1,4 @@
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -35,7 +35,8 @@
   #:use-module (guix git-download)
   #:use-module (guix licenses)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (my-guix utils))
 
 (define-public python-lupa
   (package
@@ -58,24 +59,32 @@
 (define-public python-uinput
   (package
     (name "python-uinput")
-    (version "0.11.2")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "python-uinput" version))
-              (sha256 (base32 "033zqiypjz0nigav6vz0s57pbzikvds55mxphrdpkdbpdikjnfcr"))))
-    (build-system python-build-system)
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-uinput" version))
+       (sha256 (base32
+                "1fkfic1mk681spsi0281m58mslghpipvlcmfshvmbpv49cs9fdl5"))
+       (patches
+        (search-my-patches
+         "0001-libsuinput-Add-module-initialization-function.patch"))))
+    (build-system pyproject-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (delete 'check)
-         (delete 'sanity-check)
-         (delete 'validate-runpath))))
-    (propagated-inputs
-     (list eudev))
-    (home-page "http://tjjr.fi/sw/python-uinput/")
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-libudev
+            (lambda _
+              (substitute* "setup.py"
+                (("libraries=\\[.*libudev_so\\]" all)
+                 (string-append
+                  "library_dirs=['" #$eudev "/lib'], "
+                  "extra_link_args=['-ludev']"))))))))
+    (home-page "https://github.com/pyinput/python-uinput")
     (synopsis "Pythonic API to Linux uinput kernel module.")
     (description "Pythonic API to Linux uinput kernel module.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public keyboard-center
   (let ((version "1.0.6")
