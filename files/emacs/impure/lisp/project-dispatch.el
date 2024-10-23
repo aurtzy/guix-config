@@ -34,6 +34,11 @@
 (require 'project)
 (require 'transient)
 
+
+;;;
+;;; Prefixes.
+;;;
+
 (transient-define-prefix project-dispatch ()
   "Dispatch some command for a project."
   ["Options"
@@ -58,6 +63,11 @@
   ["Find"
    [("f" "file" project-dispatch-find-file)]
    [("g" "regexp" project-dispatch-find-regexp)]])
+
+
+;;;
+;;; Infix handling.
+;;;
 
 (transient-define-infix project-dispatch:--root-directory ()
   :class transient-option
@@ -163,6 +173,11 @@ executing BODY."
                  (inhibit-same-window t))
              nil)))
      ,@body))
+
+
+;;;
+;;; Suffixes.
+;;;
 
 (transient-define-suffix project-dispatch-switch-to-buffer ()
   "Switch to buffer in project."
