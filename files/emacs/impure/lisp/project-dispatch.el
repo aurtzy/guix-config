@@ -189,19 +189,6 @@ ROOT-DIRECTORY is used to determine the project."
   (let* ((args (transient-args transient-current-command)))
     (and args (transient-arg-value "--prefer-other-window" args))))
 
-(defmacro maybe-prefer-other-window (&rest body)
-  "Run BODY, maybe preferring other window.
-
-If the --prefer-other-window transient argument is enabled, an
-attempt will be made to display buffers in another window while
-executing BODY."
-  `(let* ((display-buffer-overriding-action
-           (if (project-dispatch--prefer-other-window)
-               '(display-buffer-use-some-window
-                 (inhibit-same-window t))
-             nil)))
-     ,@body))
-
 (defmacro project-dispatch--with-environment (&rest body)
   "Run BODY with `project-dispatch' \"environment\" options set."
   ;; Define variables that determine the environment.
