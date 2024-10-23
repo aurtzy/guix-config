@@ -197,32 +197,28 @@ executing BODY."
 (transient-define-suffix project-dispatch-switch-to-buffer ()
   "Switch to buffer in project."
   (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    ;; TODO: Generalize this so there isn't a hard dependency on consult
-    (consult-project-buffer)))
+  (project-dispatch--with-environment
+   ;; TODO: Generalize this so there isn't a hard dependency on consult
+   (consult-project-buffer)))
 
 (transient-define-suffix project-dispatch-list-buffers ()
   "Display a list of open buffers for project."
   (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    (project-list-buffers)))
+  (project-dispatch--with-environment
+   (project-list-buffers)))
 
 (transient-define-suffix project-dispatch-dired ()
   "Open Dired in project root."
   (interactive)
-  (maybe-prefer-other-window
+  (project-dispatch--with-environment
    (dired (project-dispatch--from-directory))))
 
 (transient-define-suffix project-dispatch-find-file ()
   "Find file in project."
   (interactive)
-  (maybe-prefer-other-window
-   (let* ((project-current-directory-override
-           (project-dispatch--root-directory))
-          (project (project-current t))
-          (dirs (cons (project-dispatch--from-directory)
+  (project-dispatch--with-environment
+   (let* ((project (project-current t))
+          (dirs (cons default-directory
                       (if (project-dispatch--include-external-roots)
                           (project-external-roots project)
                         '()))))
@@ -236,57 +232,57 @@ executing BODY."
 (transient-define-suffix project-dispatch-kill-buffers ()
   "Kill all buffers related to project."
   (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    (call-interactively #'project-kill-buffers)))
+  (project-dispatch--with-environment
+   (call-interactively #'project-kill-buffers)))
 
 (transient-define-suffix project-dispatch-shell ()
   "Start an Eat terminal emulator in project."
   (interactive)
   ;; TODO: We should be able to swap out what shell is used here
-  (maybe-prefer-other-window
-   (let ((default-directory (project-dispatch--from-directory)))
-     (eat nil t))))
+  (project-dispatch--with-environment
+   (eat nil t)))
 
 (transient-define-suffix project-dispatch-shell-command ()
   "Run a shell command asynchronously in a project."
   (interactive)
-  (let ((default-directory (project-dispatch--from-directory)))
-    (call-interactively #'async-shell-command)))
+  (project-dispatch--with-environment
+   (call-interactively #'async-shell-command)))
 
 (transient-define-suffix project-dispatch-execute-extended-command ()
   "Execute an extended command in project root."
   (interactive)
-  (let ((default-directory (project-dispatch--from-directory)))
-    (call-interactively #'execute-extended-command)))
+  (project-dispatch--with-environment
+   (call-interactively #'execute-extended-command)))
 
 (transient-define-suffix project-dispatch-find-regexp ()
   "Search project for regexp."
   (interactive)
-  (maybe-prefer-other-window
-   (let* ((project (project-current nil (project-dispatch--root-directory)))
+  (project-dispatch--with-environment
+   (let* ((project (project-current t))
           (external-roots (project-external-roots project))
-          (dirs (if (project-dispatch--include-external-roots)
-                    (cons (project-dispatch--from-directory)
-                          external-roots)
-                  (list (project-dispatch--from-directory)))))
+          (dirs (cons default-directory
+                      (if (project-dispatch--include-external-roots)
+                          external-roots
+                        '()))))
      (consult-ripgrep dirs))))
 
 (transient-define-suffix project-dispatch-magit-status ()
   "Open the Magit dispatch transient for project."
   (interactive)
-  (magit-status-setup-buffer (project-dispatch--root-directory)))
+  (project-dispatch--with-environment
+   (magit-status-setup-buffer default-directory)))
 
 (transient-define-suffix project-dispatch-compile ()
   "Compile the project."
   (interactive)
-  (let ((default-directory (project-dispatch--from-directory)))
-    (call-interactively #'compile)))
+  (project-dispatch--with-environment
+   (call-interactively #'compile)))
 
 (transient-define-suffix project-dispatch-vc-dir ()
   "Run VC-Dir in project."
   (interactive)
-  (vc-dir (project-dispatch--from-directory)))
+  (project-dispatch--with-environment
+   (vc-dir (project-dispatch--from-directory))))
 
 (provide 'project-dispatch)
 ;;; project-dispatch.el ends here
