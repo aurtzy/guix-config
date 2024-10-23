@@ -310,7 +310,7 @@ ROOT-DIRECTORY is used to determine the project."
   "Open the Magit dispatch transient for project."
   (interactive)
   (project-dispatch--with-environment
-   (magit-status-setup-buffer default-directory)))
+   (magit-status-setup-buffer)))
 
 (transient-define-suffix project-dispatch-compile ()
   "Compile the project."
