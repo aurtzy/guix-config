@@ -201,20 +201,32 @@ ROOT-DIRECTORY is used to determine the project."
   `(let ((from-directory (project-dispatch--from-directory))
          (prefer-other-window (project-dispatch--prefer-other-window))
          ;; Only enable envrc if the initial environment has it enabled.
-         (enable-envrc? (and (boundp 'envrc-mode) envrc-mode)))
-     ;; Set the environment here.
-     (let ((default-directory from-directory)
-           ;; This handles edge cases with `project' commands.
-           (project-current-directory-override from-directory)
-           (display-buffer-overriding-action
-            (and prefer-other-window '(display-buffer-use-some-window
-                                       (inhibit-same-window t)))))
-       (with-temp-buffer
-         ;; Make sure commands are always run in the correct direnv
-         ;; environment when using envrc-mode.
-         (when (and enable-envrc? (functionp 'envrc-mode))
-           (envrc-mode 1))
-         ,@body))))
+         (enable-envrc? (and (boundp 'envrc-mode) envrc-mode))
+         ;; Save the environment to restore in case of problem.
+         (old-default-directory default-directory)
+         (old-project-current-directory-override
+          project-current-directory-override)
+         (old-display-buffer-overriding-action
+          display-buffer-overriding-action))
+     (unwind-protect
+         (let ((default-directory from-directory)
+               ;; This handles edge cases with `project' commands.
+               (project-current-directory-override from-directory)
+               (display-buffer-overriding-action
+                (and prefer-other-window '(display-buffer-use-some-window
+                                           (inhibit-same-window t)))))
+           (with-temp-buffer
+             ;; Make sure commands are run in the correct direnv environment
+             ;; if envrc-mode is enabled.
+             (when (and enable-envrc? (functionp 'envrc-mode))
+               (envrc-mode 1))
+             ,@body))
+       (setq default-directory
+             old-default-directory
+             project-current-directory-override
+             old-project-current-directory-override
+             display-buffer-overriding-action
+             old-display-buffer-overriding-action))))
 
 
 ;;;
