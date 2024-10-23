@@ -36,15 +36,17 @@
 
 (transient-define-prefix project-dispatch ()
   "Dispatch some command for a project."
+  ["Options"
+   ("p" "Switch project" project-dispatch:--root-directory)
+   ("d" "From directory" project-dispatch:--from-directory)
+   ("e" "Include external roots (Find)" "--include-external-roots")]
   ["Project commands"
-   ("p" "Switch project" project-dispatch:--root-directory)]
-  [[("b" "Switch buffer" project-dispatch-switch-to-buffer)
+   [("b" "Switch buffer" project-dispatch-switch-to-buffer)
     ("k" "Kill buffers" project-dispatch-kill-buffers)]
    [("m" "Magit status" project-dispatch-magit-status)
     ("C-b" "Buffer list" project-dispatch-list-buffers)]]
   ["From directory"
-   ("d" "From directory" project-dispatch:--from-directory)]
-  [[("c" "Compile" project-dispatch-compile)
+   [("c" "Compile" project-dispatch-compile)
     ("D" "Dired" project-dispatch-dired)
     ("s" "Shell" project-dispatch-shell)]
    [("v" "VC dir" project-dispatch-vc-dir)
@@ -54,8 +56,7 @@
     ("o D" "Dired" project-dispatch-dired-other-window)
     ("o s" "Shell" project-dispatch-shell-other-window)]]
   ["Find"
-   ("e" "Include external roots" "--include-external-roots")]
-  [[("f" "file" project-dispatch-find-file)
+   [("f" "file" project-dispatch-find-file)
     ("g" "regexp" project-dispatch-find-regexp)]
    ["Other window"
     ("o f" "file" project-dispatch-find-file-other-window)]])
