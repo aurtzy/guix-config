@@ -24,7 +24,6 @@
 
 ;; TODO this commentary
 ;; TODO Remove hard dependencies on e.g. consult and eat
-;; TODO "Find" commands should all be able to work off of subdirectories as well
 
 ;;; Code:
 
@@ -204,11 +203,19 @@ executing BODY."
   "Find file in project."
   (interactive)
   (maybe-prefer-other-window
-   (let ((project-current-directory-override
-          (project-dispatch--root-directory)))
-     (if (project-dispatch--include-external-roots)
-         (project-or-external-find-file)
-       (project-find-file)))))
+   (let* ((project-current-directory-override
+           (project-dispatch--root-directory))
+          (project (project-current t))
+          (dirs (cons (project-dispatch--from-directory)
+                      (if (project-dispatch--include-external-roots)
+                          (project-external-roots project)
+                        '()))))
+     (project-find-file-in (thing-at-point 'filename)
+                           dirs
+                           project
+                           ;; TODO: Support some way of enabling INCLUDE-ALL
+                           ;; include-all
+                           ))))
 
 (transient-define-suffix project-dispatch-kill-buffers ()
   "Kill all buffers related to project."
