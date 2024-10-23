@@ -209,13 +209,15 @@ ROOT-DIRECTORY is used to determine the project."
          (old-display-buffer-overriding-action
           display-buffer-overriding-action))
      (unwind-protect
-         (let ((default-directory from-directory)
-               ;; This handles edge cases with `project' commands.
-               (project-current-directory-override from-directory)
-               (display-buffer-overriding-action
-                (and prefer-other-window '(display-buffer-use-some-window
-                                           (inhibit-same-window t)))))
-           (with-temp-buffer
+         ;; Don't let the current buffer affect execution in case it's not
+         ;; related to the project.
+         (with-temp-buffer
+           (let ((default-directory from-directory)
+                 ;; This handles edge cases with `project' commands.
+                 (project-current-directory-override from-directory)
+                 (display-buffer-overriding-action
+                  (and prefer-other-window '(display-buffer-use-some-window
+                                             (inhibit-same-window t)))))
              ;; Make sure commands are run in the correct direnv environment
              ;; if envrc-mode is enabled.
              (when (and enable-envrc? (functionp 'envrc-mode))
@@ -236,9 +238,6 @@ ROOT-DIRECTORY is used to determine the project."
 (transient-define-suffix project-dispatch-switch-to-buffer ()
   "Switch to buffer in project."
   (interactive)
-  ;; FIXME: For some reason, when using `consult-buffer' the current buffer
-  ;; shows up even if it's not in the same project when `default-directory' is
-  ;; set (from `project-dispatch--with-environment').
   (project-dispatch--with-environment
    (call-interactively project-dispatch-switch-to-buffer-command)))
 
