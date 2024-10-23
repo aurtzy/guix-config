@@ -41,11 +41,13 @@
    ("d" "From directory" project-dispatch:--from-directory)
    ("e" "Include external roots (Find)" "--include-external-roots")]
   ["Project commands"
+   :pad-keys t
    [("b" "Switch buffer" project-dispatch-switch-to-buffer)
     ("k" "Kill buffers" project-dispatch-kill-buffers)]
    [("m" "Magit status" project-dispatch-magit-status)
     ("C-b" "Buffer list" project-dispatch-list-buffers)]]
   ["From directory"
+   :pad-keys t
    [("c" "Compile" project-dispatch-compile)
     ("D" "Dired" project-dispatch-dired)
     ("s" "Shell" project-dispatch-shell)]
