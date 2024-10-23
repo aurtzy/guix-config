@@ -159,15 +159,19 @@ ROOT-DIRECTORY is used to determine the project."
         (transient-arg-value "--include-external-roots" args)
       nil)))
 
+(defun project-dispatch--prefer-other-window ()
+  "Return whether other window should be preferred when displaying buffers."
+  (let* ((args (transient-args transient-current-command)))
+    (and args (transient-arg-value "--prefer-other-window" args))))
+
 (defmacro maybe-prefer-other-window (&rest body)
   "Run BODY, maybe preferring other window.
 
 If the --prefer-other-window transient argument is enabled, an
 attempt will be made to display buffers in another window while
 executing BODY."
-  `(let* ((args (transient-args transient-current-command))
-          (display-buffer-overriding-action
-           (if (and args (transient-arg-value "--prefer-other-window" args))
+  `(let* ((display-buffer-overriding-action
+           (if (project-dispatch--prefer-other-window)
                '(display-buffer-use-some-window
                  (inhibit-same-window t))
              nil)))
