@@ -58,6 +58,14 @@ This is called whenever the function
   :type 'function
   :group 'project-dispatch)
 
+(defcustom project-dispatch-switch-to-buffer-command #'project-switch-to-buffer
+  "The command used for switching project buffers.
+
+This is called whenever the function
+`project-dispatch-switch-to-buffer' is invoked."
+  :type 'function
+  :group 'project-dispatch)
+
 
 ;;;
 ;;; Prefixes.
@@ -216,12 +224,11 @@ ROOT-DIRECTORY is used to determine the project."
 (transient-define-suffix project-dispatch-switch-to-buffer ()
   "Switch to buffer in project."
   (interactive)
-  ;; FIXME: For some reason, the current buffer shows up even if it's not in
-  ;; the same project when `default-directory' is set (from
-  ;; `project-dispatch--with-environment').
+  ;; FIXME: For some reason, when using `consult-buffer' the current buffer
+  ;; shows up even if it's not in the same project when `default-directory' is
+  ;; set (from `project-dispatch--with-environment').
   (project-dispatch--with-environment
-   ;; TODO: Generalize this so there isn't a hard dependency on consult
-   (consult-project-buffer)))
+   (call-interactively project-dispatch-switch-to-buffer-command)))
 
 (transient-define-suffix project-dispatch-list-buffers ()
   "Display a list of open buffers for project."
