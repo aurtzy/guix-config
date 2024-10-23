@@ -36,7 +36,8 @@
             build-path-augmentation
             sanitizer
             crate-package-source
-            compose-lambda))
+            compose-lambda
+            package-all-inputs))
 
 (define (path-append . paths)
   (string-join paths "/"))
@@ -113,3 +114,23 @@ to compose for the composed procedure."
     ((_ formals body ...)
      (lambda formals
        (apply (apply compose (let () body ...)) formals)))))
+
+(define (package-all-inputs package)
+  "Return a list of all inputs of PACKAGE, recursively."
+  (let %package-all-inputs ((next-inputs (package-direct-inputs package))
+                            (all-inputs '()))
+    (match next-inputs
+      ((input next-inputs ...)
+       (cond ((member input all-inputs)
+              (%package-all-inputs next-inputs all-inputs))
+             (else
+              (%package-all-inputs
+               (append next-inputs
+                       (match input
+                         ((_ (? package? pkg) _ ...)
+                          (package-direct-inputs pkg))
+                         (else
+                          '())))
+               (cons input all-inputs)))))
+      (else
+       all-inputs))))
