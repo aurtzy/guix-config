@@ -588,7 +588,9 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :config
   (use-package project-dispatch
     :bind ( :map ctl-x-map
-            ("p" . project-dispatch))))
+            ("p" . project-dispatch))
+    :custom
+    (project-dispatch-switch-to-buffer-command #'consult-project-buffer)))
 
 (use-package server
   :config
