@@ -47,10 +47,10 @@
    ("e" "Include external roots (Find)" "--include-external-roots")]
   ["Project commands"
    :pad-keys t
-   [("b" "Switch buffer" project-dispatch-switch-to-buffer)
-    ("k" "Kill buffers" project-dispatch-kill-buffers)]
-   [("m" "Magit status" project-dispatch-magit-status)
-    ("C-b" "Buffer list" project-dispatch-list-buffers)]]
+   [("B" "Buffer list" project-dispatch-list-buffers)
+    ("b" "Switch buffer" project-dispatch-switch-to-buffer)]
+   [("k" "Kill buffers" project-dispatch-kill-buffers)
+    ("m" "Magit status" project-dispatch-magit-status)]]
   ["From directory"
    :pad-keys t
    [("c" "Compile" project-dispatch-compile)
