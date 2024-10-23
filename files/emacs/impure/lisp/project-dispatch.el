@@ -177,6 +177,18 @@ executing BODY."
              nil)))
      ,@body))
 
+(defmacro project-dispatch--with-environment (&rest body)
+  "Run BODY with `project-dispatch' \"environment\" options set."
+  `(let* ((from-directory (project-dispatch--from-directory))
+          (prefer-other-window (project-dispatch--prefer-other-window))
+          (default-directory from-directory)
+          ;; This handles edge cases with `project' commands.
+          (project-current-directory-override from-directory)
+          (display-buffer-overriding-action
+           (and prefer-other-window '(display-buffer-use-some-window
+                                      (inhibit-same-window t)))))
+     ,@body))
+
 
 ;;;
 ;;; Suffixes.
