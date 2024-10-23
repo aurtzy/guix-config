@@ -23,15 +23,40 @@
 ;;; Commentary:
 
 ;; TODO this commentary
-;; TODO Remove hard dependencies on e.g. consult and eat
+;; TODO Make consult and magit optional.
 
 ;;; Code:
 
 (require 'consult)
-(require 'eat)
 (require 'magit)
 (require 'project)
 (require 'transient)
+
+
+;;;
+;;; Global variables.
+;;;
+
+(defgroup project-dispatch nil
+  "Customization for `project-dispatch'."
+  :group 'project-dispatch)
+
+(defcustom project-dispatch-shell-command
+  ;; Modified version of `project-eshell' from `project.el'.
+  (lambda ()
+    (interactive)
+    (let* ((eshell-buffer-name (project-prefixed-buffer-name "eshell"))
+           (eshell-buffer (get-buffer eshell-buffer-name)))
+      (if (and eshell-buffer (not current-prefix-arg))
+          (pop-to-buffer eshell-buffer
+                         (bound-and-true-p display-comint-buffer-action))
+        (eshell t))))
+  "The command used for opening a shell in a project.
+
+This is called whenever the function
+`project-dispatch-shell-command' is invoked."
+  :type 'function
+  :group 'project-dispatch)
 
 
 ;;;
@@ -250,9 +275,8 @@ executing BODY."
 (transient-define-suffix project-dispatch-shell ()
   "Start an Eat terminal emulator in project."
   (interactive)
-  ;; TODO: We should be able to swap out what shell is used here
   (project-dispatch--with-environment
-   (eat nil t)))
+   (call-interactively project-dispatch-shell-command)))
 
 (transient-define-suffix project-dispatch-shell-command ()
   "Run a shell command asynchronously in a project."
