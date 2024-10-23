@@ -39,6 +39,7 @@
   ["Options"
    ("p" "Switch project" project-dispatch:--root-directory)
    ("d" "From directory" project-dispatch:--from-directory)
+   ("o" "Prefer other window" "--prefer-other-window")
    ("e" "Include external roots (Find)" "--include-external-roots")]
   ["Project commands"
    :pad-keys t
@@ -53,15 +54,10 @@
     ("s" "Shell" project-dispatch-shell)]
    [("v" "VC dir" project-dispatch-vc-dir)
     ("!" "Run" project-dispatch-shell-command)
-    ("M-x" "Extended command" project-dispatch-execute-extended-command)]
-   ["Other window"
-    ("o D" "Dired" project-dispatch-dired-other-window)
-    ("o s" "Shell" project-dispatch-shell-other-window)]]
+    ("M-x" "Extended command" project-dispatch-execute-extended-command)]]
   ["Find"
-   [("f" "file" project-dispatch-find-file)
-    ("g" "regexp" project-dispatch-find-regexp)]
-   ["Other window"
-    ("o f" "file" project-dispatch-find-file-other-window)]])
+   [("f" "file" project-dispatch-find-file)]
+   [("g" "regexp" project-dispatch-find-regexp)]])
 
 (transient-define-infix project-dispatch:--root-directory ()
   :class transient-option
@@ -154,6 +150,20 @@ ROOT-DIRECTORY is used to determine the project."
         (transient-arg-value "--include-external-roots" args)
       nil)))
 
+(defmacro maybe-prefer-other-window (&rest body)
+  "Run BODY, maybe preferring other window.
+
+If the --prefer-other-window transient argument is enabled, an
+attempt will be made to display buffers in another window while
+executing BODY."
+  `(let* ((args (transient-args transient-current-command))
+          (display-buffer-overriding-action
+           (if (and args (transient-arg-value "--prefer-other-window" args))
+               '(display-buffer-use-some-window
+                 (inhibit-same-window t))
+             nil)))
+     ,@body))
+
 (transient-define-suffix project-dispatch-switch-to-buffer ()
   "Switch to buffer in project."
   (interactive)
@@ -172,30 +182,18 @@ ROOT-DIRECTORY is used to determine the project."
 (transient-define-suffix project-dispatch-dired ()
   "Open Dired in project root."
   (interactive)
-  (dired (project-dispatch--from-directory)))
-
-(transient-define-suffix project-dispatch-dired-other-window ()
-  "Open Dired in project root, in another window."
-  (interactive)
-  (let ((display-buffer-overriding-action '(display-buffer-use-some-window
-                                            (inhibit-same-window t))))
-    (project-dispatch-dired)))
+  (maybe-prefer-other-window
+   (dired (project-dispatch--from-directory))))
 
 (transient-define-suffix project-dispatch-find-file ()
   "Find file in project."
   (interactive)
-  (let ((project-current-directory-override
-         (project-dispatch--root-directory)))
-    (if (project-dispatch--include-external-roots)
-        (project-or-external-find-file)
-      (project-find-file))))
-
-(transient-define-suffix project-dispatch-find-file-other-window ()
-  "Find file in project, in another window."
-  (interactive)
-  (let ((display-buffer-overriding-action '(display-buffer-use-some-window
-                                            (inhibit-same-window t))))
-    (project-dispatch-find-file)))
+  (maybe-prefer-other-window
+   (let ((project-current-directory-override
+          (project-dispatch--root-directory)))
+     (if (project-dispatch--include-external-roots)
+         (project-or-external-find-file)
+       (project-find-file)))))
 
 (transient-define-suffix project-dispatch-kill-buffers ()
   "Kill all buffers related to project."
@@ -208,15 +206,9 @@ ROOT-DIRECTORY is used to determine the project."
   "Start an Eat terminal emulator in project."
   (interactive)
   ;; TODO: We should be able to swap out what shell is used here
-  (let ((default-directory (project-dispatch--from-directory)))
-    (eat nil t)))
-
-(transient-define-suffix project-dispatch-shell-other-window ()
-  "Start a shell in project, in another window."
-  (interactive)
-  (let ((display-buffer-overriding-action '(display-buffer-use-some-window
-                                            (inhibit-same-window t))))
-    (project-dispatch-shell)))
+  (maybe-prefer-other-window
+   (let ((default-directory (project-dispatch--from-directory)))
+     (eat nil t))))
 
 (transient-define-suffix project-dispatch-shell-command ()
   "Run a shell command asynchronously in a project."
