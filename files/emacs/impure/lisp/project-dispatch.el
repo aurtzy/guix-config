@@ -197,6 +197,9 @@ executing BODY."
 (transient-define-suffix project-dispatch-switch-to-buffer ()
   "Switch to buffer in project."
   (interactive)
+  ;; FIXME: For some reason, the current buffer shows up even if it's not in
+  ;; the same project when `default-directory' is set (from
+  ;; `project-dispatch--with-environment').
   (project-dispatch--with-environment
    ;; TODO: Generalize this so there isn't a hard dependency on consult
    (consult-project-buffer)))
