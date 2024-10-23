@@ -159,10 +159,10 @@
        (list bash-minimal
              hidapi
              libnotify
-             python
              qtwayland-5))
       (propagated-inputs
-       (list python-pyqt
+       (list python
+             python-pyqt
              python-pyusb
              python-ruamel.yaml
              python-uinput))
