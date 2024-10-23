@@ -179,14 +179,12 @@ ROOT-DIRECTORY is used to determine the project."
 
 (defun project-dispatch--include-external-roots ()
   "Return whether or not external roots should be included in find commands."
-  (let* ((args (transient-args transient-current-command)))
-    (if args
-        (transient-arg-value "--include-external-roots" args)
-      nil)))
+  (let ((args (transient-args transient-current-command)))
+    (and args (transient-arg-value "--include-external-roots" args))))
 
 (defun project-dispatch--prefer-other-window ()
   "Return whether other window should be preferred when displaying buffers."
-  (let* ((args (transient-args transient-current-command)))
+  (let ((args (transient-args transient-current-command)))
     (and args (transient-arg-value "--prefer-other-window" args))))
 
 (defmacro project-dispatch--with-environment (&rest body)
