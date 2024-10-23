@@ -240,13 +240,14 @@ executing BODY."
 (transient-define-suffix project-dispatch-find-regexp ()
   "Search project for regexp."
   (interactive)
-  (let* ((project (project-current nil (project-dispatch--root-directory)))
-         (external-roots (project-external-roots project))
-         (dirs (if (project-dispatch--include-external-roots)
-                   (cons (project-dispatch--from-directory)
-                         external-roots)
-                 (list (project-dispatch--from-directory)))))
-    (consult-ripgrep dirs)))
+  (maybe-prefer-other-window
+   (let* ((project (project-current nil (project-dispatch--root-directory)))
+          (external-roots (project-external-roots project))
+          (dirs (if (project-dispatch--include-external-roots)
+                    (cons (project-dispatch--from-directory)
+                          external-roots)
+                  (list (project-dispatch--from-directory)))))
+     (consult-ripgrep dirs))))
 
 (transient-define-suffix project-dispatch-magit-status ()
   "Open the Magit dispatch transient for project."
