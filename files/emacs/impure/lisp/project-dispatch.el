@@ -179,15 +179,24 @@ executing BODY."
 
 (defmacro project-dispatch--with-environment (&rest body)
   "Run BODY with `project-dispatch' \"environment\" options set."
-  `(let* ((from-directory (project-dispatch--from-directory))
-          (prefer-other-window (project-dispatch--prefer-other-window))
-          (default-directory from-directory)
-          ;; This handles edge cases with `project' commands.
-          (project-current-directory-override from-directory)
-          (display-buffer-overriding-action
-           (and prefer-other-window '(display-buffer-use-some-window
-                                      (inhibit-same-window t)))))
-     ,@body))
+  ;; Define variables that determine the environment.
+  `(let ((from-directory (project-dispatch--from-directory))
+         (prefer-other-window (project-dispatch--prefer-other-window))
+         ;; Only enable envrc if the initial environment has it enabled.
+         (enable-envrc? (and (boundp 'envrc-mode) envrc-mode)))
+     ;; Set the environment here.
+     (let ((default-directory from-directory)
+           ;; This handles edge cases with `project' commands.
+           (project-current-directory-override from-directory)
+           (display-buffer-overriding-action
+            (and prefer-other-window '(display-buffer-use-some-window
+                                       (inhibit-same-window t)))))
+       (with-temp-buffer
+         ;; Make sure commands are always run in the correct direnv
+         ;; environment when using envrc-mode.
+         (when (and enable-envrc? (functionp 'envrc-mode))
+           (envrc-mode 1))
+         ,@body))))
 
 
 ;;;
