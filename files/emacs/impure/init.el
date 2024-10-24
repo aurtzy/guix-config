@@ -589,7 +589,14 @@ quits:  if a previous call to this function is still active, auto-return `t'."
     :bind ( :map ctl-x-map
             ("p" . project-dispatch))
     :custom
-    (project-dispatch-switch-to-buffer-command #'consult-project-buffer)))
+    (project-dispatch-switch-to-buffer-command #'consult-project-buffer)
+    (project-dispatch-find-file-command (lambda ()
+                                          (interactive)
+                                          (consult-find default-directory)))
+    (project-dispatch-find-regexp-command (lambda ()
+                                            (interactive)
+                                            (consult-ripgrep
+                                             default-directory)))))
 
 (use-package server
   :config
