@@ -23,12 +23,11 @@
 ;;; Commentary:
 
 ;; TODO this commentary
-;; TODO Make consult and magit optional.
+;; TODO Make consult optional.
 
 ;;; Code:
 
 (require 'consult)
-(require 'magit)
 (require 'project)
 (require 'transient)
 
@@ -141,7 +140,8 @@ This is called whenever the function
    [("B" "Buffer list" project-dispatch-list-buffers)
     ("b" "Switch buffer" project-dispatch-switch-to-buffer)]
    [("k" "Kill buffers" project-dispatch-kill-buffers)
-    ("m" "Magit status" project-dispatch-magit-status)]]
+    ("m" "Magit status" project-dispatch-magit-status
+     :if (lambda () (featurep 'magit)))]]
   ["From directory"
    :pad-keys t
    [("c" "Compile" project-dispatch-compile)
@@ -327,7 +327,7 @@ ROOT-DIRECTORY is used to determine the project."
   "Open the Magit dispatch transient for project."
   (interactive)
   (project-dispatch--with-environment
-   (magit-status-setup-buffer)))
+   (and (fboundp 'magit-status-setup-buffer) (magit-status-setup-buffer))))
 
 (defun project-dispatch-compile--setup-suffixes (_)
   "Set up suffixes according to `project-dispatch-compile-suffixes'."
