@@ -23,11 +23,10 @@
 ;;; Commentary:
 
 ;; TODO this commentary
-;; TODO Make consult optional.
 
 ;;; Code:
 
-(require 'consult)
+(require 'grep)
 (require 'project)
 (require 'transient)
 
@@ -113,6 +112,22 @@ for `project-dispatch-compile-suffixes' to add \"make -k\" and
   "The command used for opening a file in a project.
 
 This is called whenever the function `project-dispatch-find-file'
+is invoked."
+  :type 'function
+  :group 'project-dispatch)
+
+(defcustom project-dispatch-find-regexp-command
+  ;; Modified version of `project-find-regexp' from `project.el'.
+  (lambda (regexp)
+    (interactive (list (project--read-regexp)))
+    (xref-show-xrefs
+     (apply-partially #'project--find-regexp-in-files
+                      regexp
+                      (project--files-in-directory default-directory nil))
+     nil))
+  "The command used for finding regexp matches in a project.
+
+This is called whenever the function `project-dispatch-find-regexp'
 is invoked."
   :type 'function
   :group 'project-dispatch)
@@ -332,7 +347,7 @@ ROOT-DIRECTORY is used to determine the project."
   "Search project for regexp."
   (interactive)
   (project-dispatch--with-environment
-   (consult-ripgrep default-directory)))
+   (call-interactively project-dispatch-find-regexp-command)))
 
 (transient-define-suffix project-dispatch-magit-status ()
   "Open the Magit dispatch transient for project."
