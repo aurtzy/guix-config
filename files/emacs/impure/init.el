@@ -38,6 +38,9 @@
 (defconst state-dir
   (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
 
+(defconst search-excluded-directories `(,@vc-directory-exclusion-list
+                                        ".direnv"))
+
 ;;;; User info
 
 (setq user-full-name "aurtzy"
