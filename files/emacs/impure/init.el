@@ -331,7 +331,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
          ;; orig. bookmark-jump
          ("C-x r b" . consult-bookmark)
          ;; orig. project-switch-to-buffer
-         ;; ("C-x p b" . consult-project-buffer) ;use project-dispatch instead
+         ;; ("C-x p b" . consult-project-buffer) ;use disproject instead
          ;; Custom M-# bindings for fast register access
          ("M-#" . consult-register-load)
          ;; orig. abbrev-prefix-mark (unrelated)
@@ -598,18 +598,17 @@ quits:  if a previous call to this function is still active, auto-return `t'."
                                    ".envrc"
                                    "agenda.org"))
   :config
-  (use-package project-dispatch
+  (use-package disproject
     :bind ( :map ctl-x-map
-            ("p" . project-dispatch))
+            ("p" . disproject))
     :custom
-    (project-dispatch-switch-to-buffer-command #'consult-project-buffer)
-    (project-dispatch-find-file-command (lambda ()
-                                          (interactive)
-                                          (consult-find default-directory)))
-    (project-dispatch-find-regexp-command (lambda ()
-                                            (interactive)
-                                            (consult-ripgrep
-                                             default-directory)))))
+    (disproject-switch-to-buffer-command #'consult-project-buffer)
+    (disproject-find-file-command (lambda ()
+                                    (interactive)
+                                    (consult-find default-directory)))
+    (disproject-find-regexp-command (lambda ()
+                                      (interactive)
+                                      (consult-ripgrep default-directory)))))
 
 (use-package server
   :config

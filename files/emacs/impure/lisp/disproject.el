@@ -1,4 +1,4 @@
-;;; project-dispatch.el --- Dispatch project commands with transient  -*- lexical-binding: t; -*-
+;;; disproject.el --- Dispatch project commands with transient  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024 aurtzy
 ;; Copyright (C) 2008-2023 The Magit Project Contributors
@@ -34,12 +34,12 @@
 ;;; Macros.
 ;;;
 
-(defmacro project-dispatch--with-environment (&rest body)
-  "Run BODY with `project-dispatch' \"environment\" options set."
+(defmacro disproject--with-environment (&rest body)
+  "Run BODY with `disproject' \"environment\" options set."
   ;; Define variables that determine the environment.
-  `(let ((from-directory (or (project-dispatch--from-directory)
+  `(let ((from-directory (or (disproject--from-directory)
                              default-directory))
-         (prefer-other-window (project-dispatch--prefer-other-window))
+         (prefer-other-window (disproject--prefer-other-window))
          ;; Only enable envrc if the initial environment has it enabled.
          (enable-envrc? (and (boundp 'envrc-mode) envrc-mode))
          ;; Save the environment to restore in case of problem.
@@ -75,12 +75,12 @@
 ;;; Global variables.
 ;;;
 
-(defgroup project-dispatch nil
-  "Customization for `project-dispatch'."
-  :group 'project-dispatch)
+(defgroup disproject nil
+  "Customization for `disproject'."
+  :group 'disproject)
 
-(defcustom project-dispatch-compile-suffixes '(("c" "make" "Make" "make -k"))
-  "Commands for the `project-dispatch-compile' prefix.
+(defcustom disproject-compile-suffixes '(("c" "make" "Make" "make -k"))
+  "Commands for the `disproject-compile' prefix.
 
 The value should be a list of transient-like specification
 entries (KEY NAME DESCRIPTION COMPILE-COMMAND), where KEY is the
@@ -92,16 +92,16 @@ keybind and description, respectively.  The COMPILE-COMMAND value
 is passed to `compile' as the shell command to run.
 
 For example, the following may be used as a dir-locals.el value
-for `project-dispatch-compile-suffixes' to add \"make -k\" and
+for `disproject-compile-suffixes' to add \"make -k\" and
 \"guile --help\" in a particular project:
 
   ((\"m\" \"Make\" \"echo Running make...; make -k\")
    (\"g\" \"Guile help\" \"echo Get some help from Guile...; guile --help\")))"
   :type '(alist :key-type string
                 :value-type (list string string string))
-  :group 'project-dispatch)
+  :group 'disproject)
 
-(defcustom project-dispatch-find-file-command
+(defcustom disproject-find-file-command
   (lambda ()
     (interactive)
     (let* ((project (project-current t))
@@ -114,12 +114,12 @@ for `project-dispatch-compile-suffixes' to add \"make -k\" and
                             )))
   "The command used for opening a file in a project.
 
-This is called whenever the function `project-dispatch-find-file'
-is invoked."
+This is called whenever the function `disproject-find-file' is
+invoked."
   :type 'function
-  :group 'project-dispatch)
+  :group 'disproject)
 
-(defcustom project-dispatch-find-regexp-command
+(defcustom disproject-find-regexp-command
   ;; Modified version of `project-find-regexp' from `project.el'.
   (lambda (regexp)
     (interactive (list (project--read-regexp)))
@@ -130,12 +130,12 @@ is invoked."
      nil))
   "The command used for finding regexp matches in a project.
 
-This is called whenever the function `project-dispatch-find-regexp'
-is invoked."
+This is called whenever the function `disproject-find-regexp' is
+invoked."
   :type 'function
-  :group 'project-dispatch)
+  :group 'disproject)
 
-(defcustom project-dispatch-shell-command
+(defcustom disproject-shell-command
   ;; Modified version of `project-eshell' from `project.el'.
   (lambda ()
     (interactive)
@@ -147,75 +147,73 @@ is invoked."
         (eshell t))))
   "The command used for opening a shell in a project.
 
-This is called whenever the function
-`project-dispatch-shell-command' is invoked."
+This is called whenever the function `disproject-shell-command'
+is invoked."
   :type 'function
-  :group 'project-dispatch)
+  :group 'disproject)
 
-(defcustom project-dispatch-switch-to-buffer-command #'project-switch-to-buffer
+(defcustom disproject-switch-to-buffer-command #'project-switch-to-buffer
   "The command used for switching project buffers.
 
 This is called whenever the function
-`project-dispatch-switch-to-buffer' is invoked."
+`disproject-switch-to-buffer' is invoked."
   :type 'function
-  :group 'project-dispatch)
+  :group 'disproject)
 
 
 ;;;
 ;;; Prefixes.
 ;;;
 
-(transient-define-prefix project-dispatch ()
+(transient-define-prefix disproject ()
   "Dispatch some command for a project."
   ["Options"
-   ("p" "Switch project" project-dispatch:--root-directory)
-   ("d" "From directory" project-dispatch:--from-directory)
+   ("p" "Switch project" disproject:--root-directory)
+   ("d" "From directory" disproject:--from-directory)
    ("o" "Prefer other window" "--prefer-other-window")]
   ["Project commands"
    :pad-keys t
-   [("B" "Buffer list" project-dispatch-list-buffers)
-    ("b" "Switch buffer" project-dispatch-switch-to-buffer)]
-   [("k" "Kill buffers" project-dispatch-kill-buffers)
-    ("m" "Magit status" project-dispatch-magit-status
+   [("B" "Buffer list" disproject-list-buffers)
+    ("b" "Switch buffer" disproject-switch-to-buffer)]
+   [("k" "Kill buffers" disproject-kill-buffers)
+    ("m" "Magit status" disproject-magit-status
      :if (lambda () (featurep 'magit)))]]
   ["From directory"
    :pad-keys t
-   [("c" "Compile" project-dispatch-compile)
-    ("D" "Dired" project-dispatch-dired)
-    ("s" "Shell" project-dispatch-shell)]
-   [("v" "VC dir" project-dispatch-vc-dir)
-    ("!" "Run" project-dispatch-shell-command)
-    ("M-x" "Extended command" project-dispatch-execute-extended-command)]]
+   [("c" "Compile" disproject-compile)
+    ("D" "Dired" disproject-dired)
+    ("s" "Shell" disproject-shell)]
+   [("v" "VC dir" disproject-vc-dir)
+    ("!" "Run" disproject-shell-command)
+    ("M-x" "Extended command" disproject-execute-extended-command)]]
   ["Find"
-   [("f" "file" project-dispatch-find-file)]
-   [("g" "regexp" project-dispatch-find-regexp)]])
+   [("f" "file" disproject-find-file)]
+   [("g" "regexp" disproject-find-regexp)]])
 
-(transient-define-prefix project-dispatch-compile ()
+(transient-define-prefix disproject-compile ()
   "Dispatch compilation commands.
 
-This prefix can be configured with
-`project-dispatch-compile-suffixes'."
+This prefix can be configured with `disproject-compile-suffixes'."
   ["Compile"
    :class transient-column
-   :setup-children project-dispatch-compile--setup-suffixes])
+   :setup-children disproject-compile--setup-suffixes])
 
 
 ;;;
 ;;; Infix handling.
 ;;;
 
-(transient-define-infix project-dispatch:--root-directory ()
+(transient-define-infix disproject:--root-directory ()
   :class transient-option
   :argument "--root-directory="
   :init-value (lambda (obj)
-                (oset obj value (project-dispatch--find-root-directory
+                (oset obj value (disproject--find-root-directory
                                  default-directory)))
   :always-read t
   :reader (lambda (&rest _ignore)
-            (project-dispatch--find-root-directory
-             (project-prompt-project-dir))))
+            (disproject--find-root-directory (project-prompt-project-dir))))
 
-(defun project-dispatch--find-root-directory (directory &optional silent)
+(defun disproject--find-root-directory (directory &optional silent)
   "Attempt to find project root directory from DIRECTORY.  May return nil.
 
 A message is printed if no root directory can be found.  SILENT
@@ -231,18 +229,18 @@ may be set to a non-nil value to suppress it."
                directory))
     nil))
 
-(defun project-dispatch--root-directory ()
+(defun disproject--root-directory ()
   "Return the project root directory defined in transient arguments."
   (if-let ((args (transient-args transient-current-command))
            (root-dir (transient-arg-value "--root-directory=" args)))
       root-dir
     (project-root (project-current t))))
 
-(defclass project-dispatch-option-switches (transient-switches)
+(defclass disproject-option-switches (transient-switches)
   ()
   "Class used for a set of switches where exactly one is selected.")
 
-(cl-defmethod transient-infix-read ((obj project-dispatch-option-switches))
+(cl-defmethod transient-infix-read ((obj disproject-option-switches))
   "Cycle through mutually exclusive switch options from OBJ.
 
 This method skips over nil, so exactly one switch of this object
@@ -254,15 +252,15 @@ is always selected."
         next-value
       (car choices))))
 
-(transient-define-infix project-dispatch:--from-directory ()
-  :class project-dispatch-option-switches
+(transient-define-infix disproject:--from-directory ()
+  :class disproject-option-switches
   :argument-format "--from-%s-directory"
   :argument-regexp "\\(--from-\\(root\\|sub\\)-directory\\)"
   :init-value (lambda (obj)
                 (oset obj value "--from-root-directory"))
   :choices '("root" "sub"))
 
-(defun project-dispatch--prompt-directory (root-directory)
+(defun disproject--prompt-directory (root-directory)
   "Prompt for a subdirectory in project and return the selected path.
 
 ROOT-DIRECTORY is used to determine the project."
@@ -278,17 +276,17 @@ ROOT-DIRECTORY is used to determine the project."
              (delete-dups all-dirs)
              nil 'file-name-history)))
 
-(defun project-dispatch--from-directory ()
-  "Return the working directory to be used for `project-dispatch' commands."
+(defun disproject--from-directory ()
+  "Return the working directory to be used for `disproject' commands."
   (let ((args (transient-args transient-current-command))
-        (root-directory (project-dispatch--root-directory)))
+        (root-directory (disproject--root-directory)))
     (cond
      ((transient-arg-value "--from-root-directory" args)
       root-directory)
      ((transient-arg-value "--from-sub-directory" args)
-      (project-dispatch--prompt-directory root-directory)))))
+      (disproject--prompt-directory root-directory)))))
 
-(defun project-dispatch--prefer-other-window ()
+(defun disproject--prefer-other-window ()
   "Return whether other window should be preferred when displaying buffers."
   (let ((args (transient-args transient-current-command)))
     (and args (transient-arg-value "--prefer-other-window" args))))
@@ -298,76 +296,75 @@ ROOT-DIRECTORY is used to determine the project."
 ;;; Suffixes.
 ;;;
 
-(transient-define-suffix project-dispatch-switch-to-buffer ()
+(transient-define-suffix disproject-switch-to-buffer ()
   "Switch to buffer in project."
   (interactive)
-  (project-dispatch--with-environment
-   (call-interactively project-dispatch-switch-to-buffer-command)))
+  (disproject--with-environment
+   (call-interactively disproject-switch-to-buffer-command)))
 
-(transient-define-suffix project-dispatch-list-buffers ()
+(transient-define-suffix disproject-list-buffers ()
   "Display a list of open buffers for project."
   (interactive)
-  (project-dispatch--with-environment
+  (disproject--with-environment
    (project-list-buffers)))
 
-(transient-define-suffix project-dispatch-dired ()
+(transient-define-suffix disproject-dired ()
   "Open Dired in project root."
   (interactive)
-  (project-dispatch--with-environment
-   (dired (project-dispatch--from-directory))))
+  (disproject--with-environment
+   (dired (disproject--from-directory))))
 
-(transient-define-suffix project-dispatch-find-file ()
+(transient-define-suffix disproject-find-file ()
   "Find file in project."
   (interactive)
-  (project-dispatch--with-environment
-   (call-interactively project-dispatch-find-file-command)))
+  (disproject--with-environment
+   (call-interactively disproject-find-file-command)))
 
-(transient-define-suffix project-dispatch-kill-buffers ()
+(transient-define-suffix disproject-kill-buffers ()
   "Kill all buffers related to project."
   (interactive)
-  (project-dispatch--with-environment
+  (disproject--with-environment
    (call-interactively #'project-kill-buffers)))
 
-(transient-define-suffix project-dispatch-shell ()
+(transient-define-suffix disproject-shell ()
   "Start an Eat terminal emulator in project."
   (interactive)
-  (project-dispatch--with-environment
-   (call-interactively project-dispatch-shell-command)))
+  (disproject--with-environment
+   (call-interactively disproject-shell-command)))
 
-(transient-define-suffix project-dispatch-shell-command ()
+(transient-define-suffix disproject-shell-command ()
   "Run a shell command asynchronously in a project."
   (interactive)
-  (project-dispatch--with-environment
+  (disproject--with-environment
    (call-interactively #'async-shell-command)))
 
-(transient-define-suffix project-dispatch-execute-extended-command ()
+(transient-define-suffix disproject-execute-extended-command ()
   "Execute an extended command in project root."
   (interactive)
-  (project-dispatch--with-environment
+  (disproject--with-environment
    (call-interactively #'execute-extended-command)))
 
-(transient-define-suffix project-dispatch-find-regexp ()
+(transient-define-suffix disproject-find-regexp ()
   "Search project for regexp."
   (interactive)
-  (project-dispatch--with-environment
-   (call-interactively project-dispatch-find-regexp-command)))
+  (disproject--with-environment
+   (call-interactively disproject-find-regexp-command)))
 
-(transient-define-suffix project-dispatch-magit-status ()
+(transient-define-suffix disproject-magit-status ()
   "Open the Magit dispatch transient for project."
   (interactive)
-  (project-dispatch--with-environment
+  (disproject--with-environment
    (and (fboundp 'magit-status-setup-buffer) (magit-status-setup-buffer))))
 
-(defun project-dispatch-compile--setup-suffixes (_)
-  "Set up suffixes according to `project-dispatch-compile-suffixes'."
-  (project-dispatch--with-environment
+(defun disproject-compile--setup-suffixes (_)
+  "Set up suffixes according to `disproject-compile-suffixes'."
+  (disproject--with-environment
    (hack-dir-local-variables-non-file-buffer)
-   ;; XXX: Since infix arguments from `project-dispatch' are not made
-   ;; available for `project-dispatch-compile', work around it by setting
-   ;; `default-directory' from the current (desired) environment to be used
-   ;; later.
+   ;; XXX: Since infix arguments from `disproject' are not made available for
+   ;; `disproject-compile', work around it by setting `default-directory' from
+   ;; the current (desired) environment to be used later.
    (transient-parse-suffixes
-    'project-dispatch-compile
+    'disproject-compile
     `(,@(mapcar
          (pcase-lambda (`(,key ,name ,description ,compile-command))
            `(,key
@@ -376,26 +373,26 @@ ROOT-DIRECTORY is used to determine the project."
              (lambda ()
                (interactive)
                (let ((default-directory ,default-directory))
-                 (project-dispatch--with-environment
+                 (disproject--with-environment
                   (let* ((compilation-buffer-name-function
                           (lambda (major-mode-name)
                             (project-prefixed-buffer-name
                              (concat ,name "-" major-mode-name)))))
                     (compile ,compile-command)))))))
-         project-dispatch-compile-suffixes)
+         disproject-compile-suffixes)
       ("!"
        "Aternative command..."
        (lambda ()
          (interactive)
          (let ((default-directory ,default-directory))
-           (project-dispatch--with-environment
+           (disproject--with-environment
             (call-interactively #'compile)))))))))
 
-(transient-define-suffix project-dispatch-vc-dir ()
+(transient-define-suffix disproject-vc-dir ()
   "Run VC-Dir in project."
   (interactive)
-  (project-dispatch--with-environment
-   (vc-dir (project-dispatch--from-directory))))
+  (disproject--with-environment
+   (vc-dir (disproject--from-directory))))
 
-(provide 'project-dispatch)
-;;; project-dispatch.el ends here
+(provide 'disproject)
+;;; disproject.el ends here
