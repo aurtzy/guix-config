@@ -99,6 +99,24 @@ for `project-dispatch-compile-suffixes' to add \"make -k\" and
   :type '(alist :key-type string :value-type (list string string))
   :group 'project-dispatch)
 
+(defcustom project-dispatch-find-file-command
+  (lambda ()
+    (interactive)
+    (let* ((project (project-current t))
+           (dirs (list default-directory)))
+      (project-find-file-in (thing-at-point 'filename)
+                            dirs
+                            project
+                            ;; TODO: Support some way of enabling INCLUDE-ALL
+                            ;; include-all
+                            )))
+  "The command used for opening a file in a project.
+
+This is called whenever the function `project-dispatch-find-file'
+is invoked."
+  :type 'function
+  :group 'project-dispatch)
+
 (defcustom project-dispatch-shell-command
   ;; Modified version of `project-eshell' from `project.el'.
   (lambda ()
@@ -284,14 +302,7 @@ ROOT-DIRECTORY is used to determine the project."
   "Find file in project."
   (interactive)
   (project-dispatch--with-environment
-   (let* ((project (project-current t))
-          (dirs (list default-directory)))
-     (project-find-file-in (thing-at-point 'filename)
-                           dirs
-                           project
-                           ;; TODO: Support some way of enabling INCLUDE-ALL
-                           ;; include-all
-                           ))))
+   (call-interactively project-dispatch-find-file-command)))
 
 (transient-define-suffix project-dispatch-kill-buffers ()
   "Kill all buffers related to project."
