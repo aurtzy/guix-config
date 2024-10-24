@@ -378,6 +378,16 @@ quits:  if a previous call to this function is still active, auto-return `t'."
          ("M-s" . consult-history)
          ;; orig. previous-matching-history-element
          ("M-r" . consult-history))
+  :custom
+  (consult-find-args (pcase search-excluded-directories
+                       (`(,first-dir . ,rest-dirs)
+                        (concat "find . ( ("
+                                " -name " first-dir
+                                (mapconcat
+                                 (lambda (name)
+                                   (concat " -or -name " name))
+                                 rest-dirs)
+                                " ) -prune -or -true )"))))
   ;; The :init configuration is always executed (Not lazy)
   :init
 
