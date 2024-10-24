@@ -79,12 +79,14 @@
   "Customization for `project-dispatch'."
   :group 'project-dispatch)
 
-(defcustom project-dispatch-compile-suffixes '(("c" "Make" "make -k"))
+(defcustom project-dispatch-compile-suffixes '(("c" "make" "Make" "make -k"))
   "Commands for the `project-dispatch-compile' prefix.
 
 The value should be a list of transient-like specification
-entries (KEY DESCRIPTION COMPILE-COMMAND), where KEY is the
-project root path that is used as the alist key.  KEY and
+entries (KEY NAME DESCRIPTION COMPILE-COMMAND), where KEY is the
+project root path that is used as the alist key.
+
+NAME is used to construct the compilation buffer name.  KEY and
 DESCRIPTION are passed to transient suffix constructors as the
 keybind and description, respectively.  The COMPILE-COMMAND value
 is passed to `compile' as the shell command to run.
@@ -95,7 +97,8 @@ for `project-dispatch-compile-suffixes' to add \"make -k\" and
 
   ((\"m\" \"Make\" \"echo Running make...; make -k\")
    (\"g\" \"Guile help\" \"echo Get some help from Guile...; guile --help\")))"
-  :type '(alist :key-type string :value-type (list string string))
+  :type '(alist :key-type string
+                :value-type (list string string string))
   :group 'project-dispatch)
 
 (defcustom project-dispatch-find-file-command
@@ -366,7 +369,7 @@ ROOT-DIRECTORY is used to determine the project."
    (transient-parse-suffixes
     'project-dispatch-compile
     `(,@(mapcar
-         (pcase-lambda (`(,key ,description ,compile-command))
+         (pcase-lambda (`(,key ,name ,description ,compile-command))
            `(,key
              ;; TODO: Color the command
              ,(concat description "  ::  " compile-command)
@@ -374,7 +377,11 @@ ROOT-DIRECTORY is used to determine the project."
                (interactive)
                (let ((default-directory ,default-directory))
                  (project-dispatch--with-environment
-                  (compile ,compile-command))))))
+                  (let* ((compilation-buffer-name-function
+                          (lambda (major-mode-name)
+                            (project-prefixed-buffer-name
+                             (concat ,name "-" major-mode-name)))))
+                    (compile ,compile-command)))))))
          project-dispatch-compile-suffixes)
       ("!"
        "Aternative command..."
