@@ -22,7 +22,8 @@
 
 ;;; Commentary:
 
-;; TODO this commentary
+;; Disproject is a `transient.el' interface that provides integration with
+;; `project.el' for managing and interacting with projects.
 
 ;;; Code:
 
