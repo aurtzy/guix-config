@@ -32,6 +32,45 @@
 (require 'project)
 (require 'transient)
 
+;;;
+;;; Macros.
+;;;
+
+(defmacro project-dispatch--with-environment (&rest body)
+  "Run BODY with `project-dispatch' \"environment\" options set."
+  ;; Define variables that determine the environment.
+  `(let ((from-directory (project-dispatch--from-directory))
+         (prefer-other-window (project-dispatch--prefer-other-window))
+         ;; Only enable envrc if the initial environment has it enabled.
+         (enable-envrc? (and (boundp 'envrc-mode) envrc-mode))
+         ;; Save the environment to restore in case of problem.
+         (old-default-directory default-directory)
+         (old-project-current-directory-override
+          project-current-directory-override)
+         (old-display-buffer-overriding-action
+          display-buffer-overriding-action))
+     (unwind-protect
+         ;; Don't let the current buffer affect execution in case it's not
+         ;; related to the project.
+         (with-temp-buffer
+           (let ((default-directory from-directory)
+                 ;; This handles edge cases with `project' commands.
+                 (project-current-directory-override from-directory)
+                 (display-buffer-overriding-action
+                  (and prefer-other-window '(display-buffer-use-some-window
+                                             (inhibit-same-window t)))))
+             ;; Make sure commands are run in the correct direnv environment
+             ;; if envrc-mode is enabled.
+             (when (and enable-envrc? (functionp 'envrc-mode))
+               (envrc-mode 1))
+             ,@body))
+       (setq default-directory
+             old-default-directory
+             project-current-directory-override
+             old-project-current-directory-override
+             display-buffer-overriding-action
+             old-display-buffer-overriding-action))))
+
 
 ;;;
 ;;; Global variables.
@@ -194,41 +233,6 @@ ROOT-DIRECTORY is used to determine the project."
   "Return whether other window should be preferred when displaying buffers."
   (let ((args (transient-args transient-current-command)))
     (and args (transient-arg-value "--prefer-other-window" args))))
-
-(defmacro project-dispatch--with-environment (&rest body)
-  "Run BODY with `project-dispatch' \"environment\" options set."
-  ;; Define variables that determine the environment.
-  `(let ((from-directory (project-dispatch--from-directory))
-         (prefer-other-window (project-dispatch--prefer-other-window))
-         ;; Only enable envrc if the initial environment has it enabled.
-         (enable-envrc? (and (boundp 'envrc-mode) envrc-mode))
-         ;; Save the environment to restore in case of problem.
-         (old-default-directory default-directory)
-         (old-project-current-directory-override
-          project-current-directory-override)
-         (old-display-buffer-overriding-action
-          display-buffer-overriding-action))
-     (unwind-protect
-         ;; Don't let the current buffer affect execution in case it's not
-         ;; related to the project.
-         (with-temp-buffer
-           (let ((default-directory from-directory)
-                 ;; This handles edge cases with `project' commands.
-                 (project-current-directory-override from-directory)
-                 (display-buffer-overriding-action
-                  (and prefer-other-window '(display-buffer-use-some-window
-                                             (inhibit-same-window t)))))
-             ;; Make sure commands are run in the correct direnv environment
-             ;; if envrc-mode is enabled.
-             (when (and enable-envrc? (functionp 'envrc-mode))
-               (envrc-mode 1))
-             ,@body))
-       (setq default-directory
-             old-default-directory
-             project-current-directory-override
-             old-project-current-directory-override
-             display-buffer-overriding-action
-             old-display-buffer-overriding-action))))
 
 
 ;;;
