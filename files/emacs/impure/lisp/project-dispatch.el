@@ -39,7 +39,8 @@
 (defmacro project-dispatch--with-environment (&rest body)
   "Run BODY with `project-dispatch' \"environment\" options set."
   ;; Define variables that determine the environment.
-  `(let ((from-directory (project-dispatch--from-directory))
+  `(let ((from-directory (or (project-dispatch--from-directory)
+                             default-directory))
          (prefer-other-window (project-dispatch--prefer-other-window))
          ;; Only enable envrc if the initial environment has it enabled.
          (enable-envrc? (and (boundp 'envrc-mode) envrc-mode))
