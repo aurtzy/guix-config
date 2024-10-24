@@ -533,7 +533,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (auto-insert-mode 1))
 
 (use-package envrc
-  ;; TODO: Integrate into project-dispatch?
   :bind ("C-c d" . #'envrc-command-map)
   :hook (after-init . envrc-global-mode))
 
