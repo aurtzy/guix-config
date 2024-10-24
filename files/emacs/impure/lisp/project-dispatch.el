@@ -81,6 +81,25 @@
   "Customization for `project-dispatch'."
   :group 'project-dispatch)
 
+(defcustom project-dispatch-compile-suffixes '(("c" "Make" "make -k"))
+  "Commands for the `project-dispatch-compile' prefix.
+
+The value should be a list of transient-like specification
+entries (KEY DESCRIPTION COMPILE-COMMAND), where KEY is the
+project root path that is used as the alist key.  KEY and
+DESCRIPTION are passed to transient suffix constructors as the
+keybind and description, respectively.  The COMPILE-COMMAND value
+is passed to `compile' as the shell command to run.
+
+For example, the following may be used as a dir-locals.el value
+for `project-dispatch-compile-suffixes' to add \"make -k\" and
+\"guile --help\" in a particular project:
+
+  ((\"m\" \"Make\" \"echo Running make...; make -k\")
+   (\"g\" \"Guile help\" \"echo Get some help from Guile...; guile --help\")))"
+  :type '(alist :key-type string :value-type (list string string))
+  :group 'project-dispatch)
+
 (defcustom project-dispatch-shell-command
   ;; Modified version of `project-eshell' from `project.el'.
   (lambda ()
@@ -135,6 +154,15 @@ This is called whenever the function
   ["Find"
    [("f" "file" project-dispatch-find-file)]
    [("g" "regexp" project-dispatch-find-regexp)]])
+
+(transient-define-prefix project-dispatch-compile ()
+  "Dispatch compilation commands.
+
+This prefix can be configured with
+`project-dispatch-compile-suffixes'."
+  ["Compile"
+   :class transient-column
+   :setup-children project-dispatch-compile--setup-suffixes])
 
 
 ;;;
@@ -316,11 +344,34 @@ ROOT-DIRECTORY is used to determine the project."
   (project-dispatch--with-environment
    (magit-status-setup-buffer)))
 
-(transient-define-suffix project-dispatch-compile ()
-  "Compile the project."
-  (interactive)
+(defun project-dispatch-compile--setup-suffixes (_)
+  "Set up suffixes according to `project-dispatch-compile-suffixes'."
   (project-dispatch--with-environment
-   (call-interactively #'compile)))
+   (hack-dir-local-variables-non-file-buffer)
+   ;; XXX: Since infix arguments from `project-dispatch' are not made
+   ;; available for `project-dispatch-compile', work around it by setting
+   ;; `default-directory' from the current (desired) environment to be used
+   ;; later.
+   (transient-parse-suffixes
+    'project-dispatch-compile
+    `(,@(mapcar
+         (pcase-lambda (`(,key ,description ,compile-command))
+           `(,key
+             ;; TODO: Color the command
+             ,(concat description "  ::  " compile-command)
+             (lambda ()
+               (interactive)
+               (let ((default-directory ,default-directory))
+                 (project-dispatch--with-environment
+                  (compile ,compile-command))))))
+         project-dispatch-compile-suffixes)
+      ("!"
+       "Aternative command..."
+       (lambda ()
+         (interactive)
+         (let ((default-directory ,default-directory))
+           (project-dispatch--with-environment
+            (call-interactively #'compile)))))))))
 
 (transient-define-suffix project-dispatch-vc-dir ()
   "Run VC-Dir in project."
