@@ -353,6 +353,7 @@ elsewhere in possibly different forms).")
                       emacs-csv-mode
                       ;; etc
                       emacs-dimmer
+                      emacs-disproject
                       emacs-eat
                       emacs-hl-todo
                       emacs-markdown-mode
