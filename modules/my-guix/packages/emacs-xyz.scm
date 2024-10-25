@@ -16,10 +16,43 @@
 ;;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (my-guix packages emacs-xyz)
-  #:use-module (guix download)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (guix build-system emacs)
+  #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (my-guix utils))
+
+(define-public emacs-disproject
+  (package
+    (name "emacs-disproject")
+    (version "0.1.0")
+    (source
+     (let ((local-disproject (path-append-my-home "/src/disproject")))
+       (if (file-exists? local-disproject)
+           (local-file local-disproject
+                       #:recursive? #t
+                       #:select?
+                       (lambda (file stat)
+                         (not (string-contains file "/.git/"))))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/aurtzy/disproject")
+                   (commit "5378bdc5fddea514dd5b55ce929810b6eeda5b50")))
+             (file-name (git-file-name name "git"))
+             (sha256
+              ;; TODO: get correct hash
+              (base32 "06iypbzhkx27sghayk1zv3mafkx4yniwrz2nl579j53p5wby1v27"))))))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-transient))
+    (home-page "https://github.com/aurtzy/disproject")
+    (synopsis "Transient interface for managing and interacting with projects")
+    (description
+     "Disproject is a package for Emacs that provides integration with
+project.el via extendable Transient menus.")
+    (license license:gpl3+)))
 
 (define-public emacs-nftables-mode
   (package
