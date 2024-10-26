@@ -600,7 +600,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :config
   (use-package disproject
     :bind ( :map ctl-x-map
-            ("p" . disproject))
+            ("p" . disproject-dispatch))
     :custom
     (disproject-switch-to-buffer-command #'consult-project-buffer)
     (disproject-find-file-command #'consult-find)
