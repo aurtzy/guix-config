@@ -603,12 +603,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
             ("p" . disproject))
     :custom
     (disproject-switch-to-buffer-command #'consult-project-buffer)
-    (disproject-find-file-command (lambda ()
-                                    (interactive)
-                                    (consult-find default-directory)))
-    (disproject-find-regexp-command (lambda ()
-                                      (interactive)
-                                      (consult-ripgrep default-directory)))))
+    (disproject-find-file-command #'consult-find)
+    (disproject-find-regexp-command #'consult-ripgrep)))
 
 (use-package server
   :config
