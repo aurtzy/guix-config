@@ -581,6 +581,9 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :custom
   (flymake-number-of-errors-to-display 4))
 
+(use-package flyspell
+  :hook (prog-mode . flyspell-prog-mode))
+
 (use-package hl-todo
   :config
   (global-hl-todo-mode t)
