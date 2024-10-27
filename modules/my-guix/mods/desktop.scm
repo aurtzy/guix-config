@@ -73,9 +73,9 @@
 
             desktop-mods))
 
-(use-package-modules audio avahi backup compression cryptsetup disk emacs
-                     emacs-xyz fonts freedesktop gl gnome gnome-xyz guile
-                     haskell-apps kde-frameworks kde-plasma linux music
+(use-package-modules aspell audio avahi backup compression cryptsetup disk
+                     emacs emacs-xyz fonts freedesktop gl gnome gnome-xyz
+                     guile haskell-apps kde-frameworks kde-plasma linux music
                      package-management protobuf pulseaudio qt tex tor
                      tree-sitter video virtualization)
 
@@ -351,6 +351,9 @@ elsewhere in possibly different forms).")
                       emacs-jupyter
                       emacs-code-cells
                       emacs-csv-mode
+                      ;; ispell/aspell for flyspell
+                      aspell
+                      aspell-dict-en
                       ;; etc
                       emacs-dimmer
                       emacs-disproject
