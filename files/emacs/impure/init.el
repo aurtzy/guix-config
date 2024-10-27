@@ -46,6 +46,12 @@
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
 
+;;;; Package management
+
+(use-package use-package-core
+  :custom
+  (use-package-enable-imenu-support t))
+
 ;;;; Make it harder to exit Emacs
 
 (use-package emacs
