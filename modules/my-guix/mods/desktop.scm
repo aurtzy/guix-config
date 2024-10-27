@@ -368,6 +368,7 @@ elsewhere in possibly different forms).")
                       ;; emacs-dape                ;TODO: package this?
                       emacs-org-noter
                       emacs-pdf-tools
+                      ispell
                       ;; Enable viewing .zip files
                       unzip)))
               (mod-he-services
