@@ -28,7 +28,7 @@
 (define-public emacs-disproject
   (package
     (name "emacs-disproject")
-    (version "0.1.0")
+    (version "0.3.0")
     (source
      (let ((local-disproject (path-append-my-home "/src/disproject")))
        (if (file-exists? local-disproject)
@@ -44,7 +44,7 @@
                    (commit (string-append "v" version))))
              (file-name (git-file-name name "git"))
              (sha256
-              (base32 "1whidgdahn3vnamhaqcb75ldrlib97k6qlvbbyd03j83hrlv7zv0"))))))
+              (base32 "0r6igy1nhdkrn49y42y3nh8mnh5ii77ysvx394xf8j4fsrmsp1jc"))))))
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-transient))
     (home-page "https://github.com/aurtzy/disproject")
