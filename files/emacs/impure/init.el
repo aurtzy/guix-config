@@ -206,7 +206,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (define-globalized-minor-mode global-adaptive-wrap-prefix-mode
     adaptive-wrap-prefix-mode
     (lambda ()
-      (adaptive-wrap-prefix-mode 1)))
+      (adaptive-wrap-prefix-mode 1))
+    :group 'adaptive-wrap)
   (declare-function adaptive-wrap-prefix-mode "adaptive-wrap"))
 
 (use-package autorevert
