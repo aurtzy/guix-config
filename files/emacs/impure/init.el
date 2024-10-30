@@ -582,7 +582,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (flymake-number-of-errors-to-display 4))
 
 (use-package flyspell
-  :hook (prog-mode . flyspell-prog-mode))
+  :hook ((text-mode . flyspell-mode)
+         (prog-mode . flyspell-prog-mode)))
 
 (use-package hl-todo
   :config
@@ -692,8 +693,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture))
   :hook ((org-mode . (lambda ()
-                       (electric-pair-local-mode -1)
-                       (flyspell-mode t))))
+                       (electric-pair-local-mode -1))))
   :custom
   (org-todo-keywords
    '((sequence "TODO(t)" "PROG(p!)" "|" "DONE(d!)" "SKIP(s@/!)")))
