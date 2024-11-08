@@ -94,6 +94,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
           (yes-or-no-p prompt)
         (set 'confirm-kill-emacs-active-p nil)))))
 
+;;;; Set `custom-file' so customization information doesn't end up in init.el.
+(use-package emacs
+  :custom
+  (custom-file (locate-user-emacs-file "custom.el")))
+
 ;;;; Enable `imenu' support for `use-package'.
 (use-package use-package-core
   :custom
@@ -119,6 +124,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (extras) Additional configurations.
 ;;;
 
+;;;; Load configurations from `custom-file'.
+(use-package emacs
+  :config
+  (load custom-file 'noerror 'nomessage))
+
 
 ;;; DEPRECATED OLD LAYOUT BELOW
 ;; Configurations should be slowly organized to appropriate places above, and
@@ -127,12 +137,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; Global configurations
 
 ;;;; Emacs-managed files
-
-(use-package emacs
-  :custom
-  (custom-file (locate-user-emacs-file "custom.el"))
-  :config
-  (load custom-file 'noerror 'nomessage))
 
 (use-package emacs
   :custom
