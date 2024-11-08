@@ -77,6 +77,23 @@
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
 
+;;;; Make it harder to exit Emacs.
+(use-package emacs
+  :custom
+  (confirm-kill-emacs #'confirm-kill-emacs-yes-or-no-p)
+  :preface
+  (defvar confirm-kill-emacs-active-p nil)
+  (defun confirm-kill-emacs-yes-or-no-p (prompt)
+    "`yes-or-no-p', wrapped with an additional condition for confirming
+quits:  if a previous call to this function is still active, auto-return `t'."
+    (interactive)
+    (if confirm-kill-emacs-active-p
+        t
+      (set 'confirm-kill-emacs-active-p t)
+      (unwind-protect
+          (yes-or-no-p prompt)
+        (set 'confirm-kill-emacs-active-p nil)))))
+
 ;;;; Enable `imenu' support for `use-package'.
 (use-package use-package-core
   :custom
@@ -108,24 +125,6 @@
 ;; eventually there shouldn't be anything under here anymore.
 
 ;;; Global configurations
-
-;;;; Make it harder to exit Emacs
-
-(use-package emacs
-  :custom
-  (confirm-kill-emacs #'confirm-kill-emacs-yes-or-no-p)
-  :preface
-  (defvar confirm-kill-emacs-active-p nil)
-  (defun confirm-kill-emacs-yes-or-no-p (prompt)
-    "`yes-or-no-p', wrapped with an additional condition for confirming
-quits:  if a previous call to this function is still active, auto-return `t'."
-    (interactive)
-    (if confirm-kill-emacs-active-p
-        t
-      (set 'confirm-kill-emacs-active-p t)
-      (unwind-protect
-          (yes-or-no-p prompt)
-        (set 'confirm-kill-emacs-active-p nil)))))
 
 ;;;; Emacs-managed files
 
