@@ -88,10 +88,16 @@
                              home-impure-symlinks-service-type
                              `((".local/share/flatpak/overrides"
                                 ,(path-append-my-files "soundux/impure")
-                                "io.github.Soundux")))
+                                "io.github.Soundux")
+                               (".local/share/flatpak/overrides"
+                                ,(path-append-my-files "element")
+                                ;; XXX: Using wayland causes window to be
+                                ;; blank, so disable for now.
+                                "im.riot.Riot")))
              (simple-service name
                              home-flatpak-profile-service-type
                              '((flathub "in.cinny.Cinny")
+                               (flathub "im.riot.Riot")
                                (flathub "io.github.Soundux")))))))))
 
 (define programming-mod
