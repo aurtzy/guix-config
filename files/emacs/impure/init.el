@@ -24,12 +24,72 @@
 ;; Phil Hagelberg's better-defaults configuration
 ;; David Wilson's (davwil, System Crafters) videos
 ;; Mickey Petersen's Mastering Emacs articles
+;;
+;; Organization scheme:
+;;
+;; This configuration is broken up into 5 main sections: "definitions",
+;; "minor-modes", "transients", "major-modes", and "extras".
+;;
+;; Most code in these sections should be wrapped in a `use-package' and sorted
+;; alphabetically (i.e. based on package name used for `use-package').  The
+;; `use-package' configurations should have an comment (a child outline
+;; heading of the section, for outline support) that describe the
+;; configuration like a docstring of sorts.
+;;
+;; "definitions" consists of custom functions and variable settings.  An
+;; exception to sorting is made for user-defined variables; in this case, they
+;; should be prefixed with "my-emacs/" and placed at the top of the section.
+;;
+;; "minor-modes" consists of configurations for minor modes.
+;;
+;; "transients" consists of configurations for temporary/passing commands that
+;; don't persist like minor/major modes do; a key bind for an command that,
+;; say, edits some text and completes soon after the invocation is an example
+;; of this.  This is not to be confused with `transient.el', although
+;; configurations for Transient interfaces usually make sense to include here
+;; as well.
+;;
+;; "major-modes" consists of major mode configurations.
+;;
+;; "extras" is where any code that doesn't belong in the above sections goes.
+;; This includes arbitrary one-time-run elisp like loading a file, for
+;; example.
 
 ;;; Code:
 
 (add-to-list 'load-path (concat user-emacs-directory "lisp"))
 
 (require 'dash)
+
+
+;;;
+;;; (definitions) Function and variable definitions.
+;;;
+
+
+;;;
+;;; (minor-modes) Minor modes.
+;;;
+
+
+;;;
+;;; (transients) Transients.
+;;;
+
+
+;;;
+;;; (major-modes) Major modes.
+;;;
+
+
+;;;
+;;; (extras) Additional configurations.
+;;;
+
+
+;;; DEPRECATED OLD LAYOUT BELOW
+;; Configurations should be slowly organized to appropriate places above, and
+;; eventually there shouldn't be anything under here anymore.
 
 ;;; Global configurations
 
