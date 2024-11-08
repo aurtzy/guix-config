@@ -114,6 +114,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (kept-new-versions 4)
   (delete-by-moving-to-trash t))
 
+;;;; Enable directory-local variables for remote files.
+(use-package emacs
+  :custom
+  (enable-remote-dir-locals t))
+
 ;;;; Enable `imenu' support for `use-package'.
 (use-package use-package-core
   :custom
@@ -157,12 +162,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;; eventually there shouldn't be anything under here anymore.
 
 ;;; Global configurations
-
-;;;; Emacs management files
-
-(use-package emacs
-  :custom
-  (enable-remote-dir-locals t))
 
 ;;;; Visual interface
 
