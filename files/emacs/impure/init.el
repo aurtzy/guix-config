@@ -66,6 +66,9 @@
 ;;; (definitions) Function and variable definitions.
 ;;;
 
+(defconst my-emacs/state-dir
+  (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
+
 
 ;;;
 ;;; (minor-modes) Minor modes.
@@ -94,9 +97,6 @@
 ;;; Global configurations
 
 ;;;; User-defined variables
-
-(defconst state-dir
-  (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
 
 (defconst search-excluded-directories `(,@vc-directory-exclusion-list
                                         ".direnv"))
@@ -144,7 +144,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package emacs
   :custom
-  (backup-directory-alist `(("." . ,state-dir)))
+  (backup-directory-alist `(("." . ,my-emacs/state-dir)))
   (backup-by-copying t)
   (version-control t)
   (delete-old-versions t)
