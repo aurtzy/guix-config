@@ -99,6 +99,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :custom
   (custom-file (locate-user-emacs-file "custom.el")))
 
+;;;; Always check for the most recent file to load.
+(use-package emacs
+  :custom
+  (load-prefer-newer t))
+
 ;;;; Enable `imenu' support for `use-package'.
 (use-package use-package-core
   :custom
@@ -137,10 +142,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; Global configurations
 
 ;;;; Emacs-managed files
-
-(use-package emacs
-  :custom
-  (load-prefer-newer t))
 
 (use-package emacs
   :custom
