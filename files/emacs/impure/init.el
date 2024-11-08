@@ -77,6 +77,11 @@
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
 
+;;;; Enable `imenu' support for `use-package'.
+(use-package use-package-core
+  :custom
+  (use-package-enable-imenu-support t))
+
 
 ;;;
 ;;; (minor-modes) Minor modes.
@@ -103,12 +108,6 @@
 ;; eventually there shouldn't be anything under here anymore.
 
 ;;; Global configurations
-
-;;;; Package management
-
-(use-package use-package-core
-  :custom
-  (use-package-enable-imenu-support t))
 
 ;;;; Make it harder to exit Emacs
 
