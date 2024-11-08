@@ -124,6 +124,13 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Enable some Emacs file history tracking modes.
+(use-package emacs
+  :config
+  (savehist-mode 1)
+  (save-place-mode 1)
+  (recentf-mode 1))
+
 
 ;;;
 ;;; (transients) Transients.
@@ -150,14 +157,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;; eventually there shouldn't be anything under here anymore.
 
 ;;; Global configurations
-
-;;;; Emacs-managed files
-
-(use-package emacs
-  :config
-  (savehist-mode 1)
-  (save-place-mode 1)
-  (recentf-mode 1))
 
 ;;;; Emacs management files
 
