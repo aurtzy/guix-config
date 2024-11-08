@@ -104,6 +104,16 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :custom
   (load-prefer-newer t))
 
+;;;; Control backups and deletion of files.
+(use-package emacs
+  :custom
+  (backup-directory-alist `(("." . ,my-emacs/state-dir)))
+  (backup-by-copying t)
+  (version-control t)
+  (delete-old-versions t)
+  (kept-new-versions 4)
+  (delete-by-moving-to-trash t))
+
 ;;;; Enable `imenu' support for `use-package'.
 (use-package use-package-core
   :custom
@@ -142,15 +152,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; Global configurations
 
 ;;;; Emacs-managed files
-
-(use-package emacs
-  :custom
-  (backup-directory-alist `(("." . ,my-emacs/state-dir)))
-  (backup-by-copying t)
-  (version-control t)
-  (delete-old-versions t)
-  (kept-new-versions 4)
-  (delete-by-moving-to-trash t))
 
 (use-package emacs
   :config
