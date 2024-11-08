@@ -652,8 +652,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (declare-function global-hl-todo-mode "hl-todo"))
 
 (use-package repeat
-  :custom
-  (repeat-exit-key "g")
   :config
   (repeat-mode t))
 
