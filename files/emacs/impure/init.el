@@ -69,6 +69,10 @@
 (defvar my-emacs/state-dir
   (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
 
+(defvar my-emacs/search-excluded-directories
+  `(,@vc-directory-exclusion-list
+    ".direnv"))
+
 
 ;;;
 ;;; (minor-modes) Minor modes.
@@ -97,9 +101,6 @@
 ;;; Global configurations
 
 ;;;; User-defined variables
-
-(defvar search-excluded-directories `(,@vc-directory-exclusion-list
-                                      ".direnv"))
 
 ;;;; User info
 
@@ -446,7 +447,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
          ;; orig. previous-matching-history-element
          ("M-r" . consult-history))
   :custom
-  (consult-find-args (pcase search-excluded-directories
+  (consult-find-args (pcase my-emacs/search-excluded-directories
                        (`(,first-dir . ,rest-dirs)
                         (concat "find . ( ("
                                 " -name " first-dir
