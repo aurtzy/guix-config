@@ -298,7 +298,11 @@ elsewhere in possibly different forms).")
     (he-extension
      (compose (mod-he-packages
                (map
-                package-with-emacs-pgtk
+                (compose package-with-emacs-pgtk
+                         (package-input-rewriting/spec
+                          `(("emacs-transient"
+                             .
+                             ,(const emacs-transient/newer)))))
                 (list emacs-pgtk
                       font-hack
                       ;; tree-sitter
