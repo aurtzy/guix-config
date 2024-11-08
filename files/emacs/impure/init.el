@@ -73,6 +73,10 @@
   `(,@vc-directory-exclusion-list
     ".direnv"))
 
+;;;; User info
+(setq user-full-name "aurtzy"
+      user-mail-address "aurtzy@gmail.com")
+
 
 ;;;
 ;;; (minor-modes) Minor modes.
@@ -99,13 +103,6 @@
 ;; eventually there shouldn't be anything under here anymore.
 
 ;;; Global configurations
-
-;;;; User-defined variables
-
-;;;; User info
-
-(setq user-full-name "aurtzy"
-      user-mail-address "aurtzy@gmail.com")
 
 ;;;; Package management
 
