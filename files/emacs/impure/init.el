@@ -66,7 +66,7 @@
 ;;; (definitions) Function and variable definitions.
 ;;;
 
-(defconst my-emacs/state-dir
+(defvar my-emacs/state-dir
   (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
 
 
@@ -98,8 +98,8 @@
 
 ;;;; User-defined variables
 
-(defconst search-excluded-directories `(,@vc-directory-exclusion-list
-                                        ".direnv"))
+(defvar search-excluded-directories `(,@vc-directory-exclusion-list
+                                      ".direnv"))
 
 ;;;; User info
 
