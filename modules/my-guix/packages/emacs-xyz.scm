@@ -42,7 +42,7 @@
 (define-public emacs-disproject
   (package
     (name "emacs-disproject")
-    (version "0.3.0")
+    (version "0.9.0")
     (source
      (let ((local-disproject (path-append-my-home "/src/disproject")))
        (if (file-exists? local-disproject)
@@ -58,14 +58,33 @@
                    (commit (string-append "v" version))))
              (file-name (git-file-name name "git"))
              (sha256
-              (base32 "0r6igy1nhdkrn49y42y3nh8mnh5ii77ysvx394xf8j4fsrmsp1jc"))))))
+              (base32 "1dzdfpkmd5n4b22xsi9kgwkpd7866zmv1iw10gqcln40bpskq66b"))))))
     (build-system emacs-build-system)
     (propagated-inputs (list emacs-transient))
     (home-page "https://github.com/aurtzy/disproject")
     (synopsis "Transient interface for managing and interacting with projects")
     (description
      "Disproject is a package for Emacs that provides integration with
-project.el via extendable Transient menus.")
+@code{project.el} and allows for dispatching various project-related commands
+via Transient menus.
+
+It is similar to (and inspired by) the function @code{project-switch-project},
+but also attempts to improve on its feature set in addition to the use of
+Transient.  Some notable features include:
+
+@enumerate
+@item Auto-detecting the current project when starting the menu.
+@item Switching between active projects (i.e. only those with open buffers).
+@item Defining custom per-project commands to show in the menu. Mechanisms are
+provided to make it easy to integrate with @code{compile} (e.g. automatic
+buffer naming) or run custom elisp code.  See
+@code{disproject-custom-suffixes} for documentation.
+@item An option to prefer displaying buffers to another window when executing
+commands.
+@item When available, integration with: @code{envrc}; @code{magit};
+@code{magit-todos}.
+@item A set of customizable variables to substitute some commands in the menu.
+@end enumerate")
     (license license:gpl3+)))
 
 (define-public emacs-nftables-mode
