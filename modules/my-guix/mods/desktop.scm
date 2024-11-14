@@ -365,6 +365,7 @@ elsewhere in possibly different forms).")
                       emacs-hl-todo
                       emacs-markdown-mode
                       emacs-nftables-mode
+                      emacs-package-lint
                       emacs-page-break-lines
                       emacs-protobuf-mode
                       emacs-ripgrep
