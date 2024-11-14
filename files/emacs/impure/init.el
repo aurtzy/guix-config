@@ -147,6 +147,9 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 (use-package flymake
   :hook prog-mode)
 
+(use-package package-lint-flymake
+  :hook (emacs-lisp-mode . package-lint-flymake-setup))
+
 ;;;; Enable some Emacs file history tracking modes.
 
 (use-package emacs
