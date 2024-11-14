@@ -131,10 +131,21 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :custom
   (use-package-enable-imenu-support t))
 
+;;;; Customize `flymake'.
+
+(use-package flymake
+  :custom
+  (flymake-number-of-errors-to-display 4))
+
 
 ;;;
 ;;; (minor-modes) Minor modes.
 ;;;
+
+;;;; Enable `flymake' for programming-mode buffers.
+
+(use-package flymake
+  :hook prog-mode)
 
 ;;;; Enable some Emacs file history tracking modes.
 
@@ -644,11 +655,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
     ;; to unavailable feature; see: https://github.com/joaotavora/eglot/issues/615
     ;; depending on its implementation the above may need to be tweaked
     ))
-
-(use-package flymake
-  :hook prog-mode
-  :custom
-  (flymake-number-of-errors-to-display 4))
 
 (use-package flyspell
   :hook ((text-mode . flyspell-mode)
