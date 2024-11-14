@@ -371,7 +371,7 @@ elsewhere in possibly different forms).")
                       emacs-ripgrep
                       emacs-wgrep
                       ;; packages being tried out go below here
-                      ;; emacs-dape                ;TODO: package this?
+                      emacs-dape
                       emacs-org-noter
                       emacs-pdf-tools
                       ispell
