@@ -30,11 +30,11 @@
 ;; This configuration is broken up into 5 main sections: "definitions",
 ;; "minor-modes", "transients", "major-modes", and "extras".
 ;;
-;; Most code in these sections should be wrapped in a `use-package' and sorted
-;; alphabetically (i.e. based on package name used for `use-package').  The
-;; `use-package' configurations should have an comment (a child outline
-;; heading of the section, for outline support) that describe the
-;; configuration like a docstring of sorts.
+;; Most code in these sections should be wrapped in a `use-package'.
+;; Additionally, each section should be broken up into sub-sections with
+;; heading comments (for outline support) that document what exactly is
+;; configured, like a docstring of sorts.  A sub-section may have more than
+;; one `use-package'.
 ;;
 ;; "definitions" consists of custom functions and variable settings.  An
 ;; exception to sorting is made for user-defined variables; in this case, they
@@ -74,10 +74,12 @@
     ".direnv"))
 
 ;;;; User info
+
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
 
 ;;;; Make it harder to exit Emacs.
+
 (use-package emacs
   :custom
   (confirm-kill-emacs #'confirm-kill-emacs-yes-or-no-p)
@@ -95,16 +97,19 @@ quits:  if a previous call to this function is still active, auto-return `t'."
         (set 'confirm-kill-emacs-active-p nil)))))
 
 ;;;; Set `custom-file' so customization information doesn't end up in init.el.
+
 (use-package emacs
   :custom
   (custom-file (locate-user-emacs-file "custom.el")))
 
 ;;;; Always check for the most recent file to load.
+
 (use-package emacs
   :custom
   (load-prefer-newer t))
 
 ;;;; Control backups and deletion of files.
+
 (use-package emacs
   :custom
   (backup-directory-alist `(("." . ,my-emacs/state-dir)))
@@ -115,11 +120,13 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (delete-by-moving-to-trash t))
 
 ;;;; Enable directory-local variables for remote files.
+
 (use-package emacs
   :custom
   (enable-remote-dir-locals t))
 
 ;;;; Enable `imenu' support for `use-package'.
+
 (use-package use-package-core
   :custom
   (use-package-enable-imenu-support t))
@@ -130,6 +137,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;
 
 ;;;; Enable some Emacs file history tracking modes.
+
 (use-package emacs
   :config
   (savehist-mode 1)
@@ -152,6 +160,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;
 
 ;;;; Load configurations from `custom-file'.
+
 (use-package emacs
   :config
   (load custom-file 'noerror 'nomessage))
