@@ -383,7 +383,13 @@ elsewhere in possibly different forms).")
                                 `((".config/emacs"
                                    ,(path-append-my-files "emacs/impure")
                                    "init.el"
-                                   "lisp")))
+                                   "lisp")
+                                  (".aspell.en.prepl"
+                                   ,(path-append-my-files
+                                     "aspell/aspell.en.prepl"))
+                                  (".aspell.en.pws"
+                                   ,(path-append-my-files
+                                     "aspell/aspell.en.pws"))))
                 (simple-service name
                                 home-environment-variables-service-type
                                 '( ;; Set editor for e.g. sudoedit
