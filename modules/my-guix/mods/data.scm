@@ -207,7 +207,15 @@ managing it.")
                              (fold
                               (lambda (entry symlinks)
                                 (match-record entry <data-entry> (source)
-                                  (let ((source (canonicalize-path source)))
+                                  (let ((source
+                                         (canonicalize-path
+                                          (if (absolute-file-name? source)
+                                              source
+                                              ;; guix may not necessarily be
+                                              ;; invoked from $HOME, so
+                                              ;; explicitly append to it here.
+                                              (string-append (getenv "HOME")
+                                                             "/" source)))))
                                     (if (equal? (getenv "HOME")
                                                 (dirname source))
                                         symlinks
