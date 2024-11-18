@@ -385,11 +385,11 @@ elsewhere in possibly different forms).")
                                    "init.el"
                                    "lisp")
                                   (".aspell.en.prepl"
-                                   ,(path-append-my-files
-                                     "aspell/aspell.en.prepl"))
+                                   ,(path-append-my-home
+                                     "areas/aspell/aspell.en.prepl"))
                                   (".aspell.en.pws"
-                                   ,(path-append-my-files
-                                     "aspell/aspell.en.pws"))))
+                                   ,(path-append-my-home
+                                     "areas/aspell/aspell.en.pws"))))
                 (simple-service name
                                 home-environment-variables-service-type
                                 '( ;; Set editor for e.g. sudoedit
