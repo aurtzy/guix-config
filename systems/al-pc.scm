@@ -37,25 +37,6 @@
              ((nongnu services nvidia) #:prefix nvidia:)
              (nongnu system linux-initrd))
 
-(define linux-gfxstrand-nvk
-  (let ((revision "0")
-        (commit "b45193ba1ba2b7292ed7312d3a06e4ebda30a313"))
-    (package
-      (inherit
-       (customize-linux
-        #:name "linux"
-        #:linux linux-libre-6.10
-        #:source (origin
-                   (method git-fetch)
-                   (uri
-                    (git-reference
-                     (url "https://gitlab.freedesktop.org/gfxstrand/linux")
-                     (commit commit)))
-                   (sha256
-                    (base32
-                     "0kcdiyswd4sz7la9d6hw57ccw8vf12xmpzzx39fdkh6pmwcgrbyv")))))
-      (version (git-version "gfxstrand-nvk" revision commit)))))
-
 (define initial-operating-system
   (let ((base-os base-desktop-operating-system))
     (operating-system
