@@ -697,7 +697,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
     :custom
     (disproject-switch-to-buffer-command #'consult-project-buffer)
     (disproject-find-file-command #'consult-find)
-    (disproject-find-regexp-command #'consult-ripgrep)))
+    (disproject-find-regexp-command #'consult-ripgrep)
+    (disproject-find-line-command #'consult-line-multi)))
 
 (use-package server
   :config
