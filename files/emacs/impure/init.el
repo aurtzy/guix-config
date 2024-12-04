@@ -142,13 +142,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
-;;;; Enable `flymake' for programming-mode buffers.
+;;;; Load `flymake'-related setup functions.
 
-(use-package flymake
-  :hook prog-mode)
+(use-package flymake)
 
-(use-package package-lint-flymake
-  :hook (emacs-lisp-mode . package-lint-flymake-setup))
+(use-package package-lint-flymake)
 
 ;;;; Enable some Emacs file history tracking modes.
 
