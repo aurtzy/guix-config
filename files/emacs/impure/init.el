@@ -478,6 +478,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
                                    (concat " -or -name " name))
                                  rest-dirs)
                                 " ) -prune -or -true )"))))
+  (consult-async-split-style 'perl-comma)
   ;; The :init configuration is always executed (Not lazy)
   :init
 
@@ -498,6 +499,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
   :config
+  (add-to-list 'consult-async-split-styles-alist
+               '(perl-comma :initial "," :function consult--split-perl))
 
   ;; Optionally configure preview. The default value
   ;; is 'any, such that any key triggers the preview.
