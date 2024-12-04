@@ -302,7 +302,13 @@ elsewhere in possibly different forms).")
                          (package-input-rewriting/spec
                           `(("emacs-transient"
                              .
-                             ,(const emacs-transient/newer)))))
+                             ,(const
+                               (let ((transform
+                                      ((@ (guix transformations) options->transformation)
+                                       '((with-commit
+                                          .
+                                          "emacs-transient=645f1b2cd4881a7fb7acb2d2a3bc125701786e05")))))
+                                 (transform emacs-transient/newer)))))))
                 (list emacs-pgtk
                       font-hack
                       ;; tree-sitter
