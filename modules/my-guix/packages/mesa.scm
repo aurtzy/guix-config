@@ -74,10 +74,10 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "e474d4ebeef40ac9d5dabe3a032dd0c5b02824f6")))
+             (commit "07b8ce43514d5ac8d9fe61c1b80257a860327bf7")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "00mvmvkizqxjsx5pyv16h33fa045qiy0qp43da07iw1n72if0h95"))))
+                "12whdi6v405wfwncy81xbfr150p6999f4gyswmpgbsr7g40gp41b"))))
     (arguments
      (cons*
       #:meson meson-1.5
@@ -97,12 +97,11 @@
                           '())))
         ((#:phases original-phases)
          #~(modify-phases #$original-phases
-             #$@(if (target-x86-32?)
-                    #~((add-after 'unpack 'patch-subproject-sources
-                         ;; Subproject source URLs are patched to point to the
-                         ;; store, which avoids an attempt to download them
-                         ;; mid-build.
-                         (lambda _
+             #$@(let ((patch-subproject-sources
+                       ;; Subproject source URLs are patched to point to the
+                       ;; store, which avoids an attempt to download them
+                       ;; mid-build.
+                       #~(lambda _
                            (for-each
                             (match-lambda
                               ((name source)
@@ -116,7 +115,15 @@
                                           rust-quote-1
                                           rust-proc-macro2-1
                                           rust-paste-1))))))
-                    #~())
+                  (cond
+                   ((target-x86-32?)
+                    #~((add-after 'unpack 'patch-subproject-sources
+                         #$patch-subproject-sources)))
+                   ((target-x86-64?)
+                    #~((replace 'patch-subproject-sources
+                         #$patch-subproject-sources)))
+                   (else
+                    #~())))
              (add-before 'build 'patch-out-rustfmt
                (lambda _
                  ;; XXX: Patch out rustfmt call, which appears to require rust
@@ -133,7 +140,16 @@
              (prepend rust-binary
                       (package/with-rust-binary rust-bindgen-cli)
                       (package/with-rust-binary rust-cbindgen-0.26)))
-           native-inputs)))))
+           ;; Mesa requires rust >= 1.78 now.
+           (modify-inputs native-inputs
+             (replace "rust" rust-binary)
+             (replace "rust-bindgen-cli"
+               (package/with-rust-binary rust-bindgen-cli))
+             (replace "rust-cbindgen"
+               (package/with-rust-binary rust-cbindgen-0.26))))))
+    (inputs
+     (modify-inputs (package-inputs mesa)
+       (replace "wayland-protocols" wayland-protocols-next)))))
 
 (define mesa/nvsa-git
   (package
