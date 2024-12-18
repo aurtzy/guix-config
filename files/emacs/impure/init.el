@@ -137,6 +137,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :custom
   (flymake-number-of-errors-to-display 4))
 
+;;;; Show help at point.
+
+(use-package emacs
+  :custom (help-at-pt-display-when-idle t))
+
 
 ;;;
 ;;; (minor-modes) Minor modes.
