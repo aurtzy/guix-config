@@ -25,21 +25,7 @@
   #:use-module (guix packages)
   #:use-module (my-guix utils))
 
-(define-public emacs-transient/newer
-  (package/inherit emacs-transient
-    (name "emacs-transient")
-    (version "0.7.8")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/magit/transient")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1k30zhj2acs9spri6pqcyc0v0wcd9smb3xgl1vm0i6485d9lvr2p"))))))
-
-(define-public emacs-disproject
+(define-public emacs-disproject/newer
   (package
     (name "emacs-disproject")
     (version "0.9.0")
@@ -64,27 +50,11 @@
     (home-page "https://github.com/aurtzy/disproject")
     (synopsis "Transient interface for managing and interacting with projects")
     (description
-     "Disproject is a package for Emacs that provides integration with
-@code{project.el} and allows for dispatching various project-related commands
-via Transient menus.
-
-It is similar to (and inspired by) the function @code{project-switch-project},
-but also attempts to improve on its feature set in addition to the use of
-Transient.  Some notable features include:
-
-@enumerate
-@item Auto-detecting the current project when starting the menu.
-@item Switching between active projects (i.e. only those with open buffers).
-@item Defining custom per-project commands to show in the menu. Mechanisms are
-provided to make it easy to integrate with @code{compile} (e.g. automatic
-buffer naming) or run custom elisp code.  See
-@code{disproject-custom-suffixes} for documentation.
-@item An option to prefer displaying buffers to another window when executing
-commands.
-@item When available, integration with: @code{envrc}; @code{magit};
-@code{magit-todos}.
-@item A set of customizable variables to substitute some commands in the menu.
-@end enumerate")
+     "Disproject is a package for GNU Emacs that implements Transient menus for
+dispatching project-related commands on top of the @code{project.el} library.  It
+aims to provide a more featureful version of the @code{project-switch-project}
+command, which it is inspired by.  Those who are familiar with Projectile may also
+find similarities to @code{projectile-commander}.")
     (license license:gpl3+)))
 
 (define-public emacs-nftables-mode
