@@ -199,21 +199,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Visual interface
 
-(use-package dimmer
-  ;; TEMP: Disable; seems to introduce issues after a recent update.  Relevant
-  ;; issue: https://github.com/gonewest818/dimmer.el/issues/69
-  :disabled
-  :custom
-  (dimmer-fraction 0.25)
-  :config
-  (dimmer-mode t)
-  (dimmer-configure-org)
-  (dimmer-configure-magit)
-  :preface
-  (declare-function dimmer-mode "dimmer")
-  (declare-function dimmer-configure-org "dimmer")
-  (declare-function dimmer-configure-magit "dimmer"))
-
 (use-package emacs
   :custom
   (inhibit-startup-message t)
