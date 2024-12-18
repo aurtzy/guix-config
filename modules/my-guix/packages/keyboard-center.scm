@@ -80,6 +80,7 @@
                  (string-append
                   "library_dirs=['" #$eudev "/lib'], "
                   "extra_link_args=['-ludev']"))))))))
+    (native-inputs (list python-setuptools python-wheel))
     (home-page "https://github.com/pyinput/python-uinput")
     (synopsis "Pythonic API to Linux uinput kernel module.")
     (description "Pythonic API to Linux uinput kernel module.")
