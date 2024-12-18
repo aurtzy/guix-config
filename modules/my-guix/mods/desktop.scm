@@ -298,17 +298,7 @@ elsewhere in possibly different forms).")
     (he-extension
      (compose (mod-he-packages
                (map
-                (compose package-with-emacs-pgtk
-                         (package-input-rewriting/spec
-                          `(("emacs-transient"
-                             .
-                             ,(const
-                               (let ((transform
-                                      ((@ (guix transformations) options->transformation)
-                                       '((with-commit
-                                          .
-                                          "emacs-transient=645f1b2cd4881a7fb7acb2d2a3bc125701786e05")))))
-                                 (transform emacs-transient/newer)))))))
+                package-with-emacs-pgtk
                 (list emacs-pgtk
                       font-hack
                       ;; tree-sitter
