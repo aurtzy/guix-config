@@ -356,7 +356,7 @@ elsewhere in possibly different forms).")
                       aspell-dict-en
                       ;; etc
                       emacs-dimmer
-                      emacs-disproject
+                      emacs-disproject/newer
                       emacs-eat
                       emacs-hl-todo
                       emacs-markdown-mode
