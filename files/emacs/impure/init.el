@@ -27,7 +27,7 @@
 ;;
 ;; Organization scheme:
 ;;
-;; This configuration is broken up into 5 main sections: "definitions",
+;; This configuration is broken up into 5 main sections: "settings",
 ;; "minor-modes", "transients", "major-modes", and "extras".
 ;;
 ;; Most code in these sections should be wrapped in a `use-package'.
@@ -36,9 +36,9 @@
 ;; configured, like a docstring of sorts.  A sub-section may have more than
 ;; one `use-package'.
 ;;
-;; "definitions" consists of custom functions and variable settings.  An
-;; exception to sorting is made for user-defined variables; in this case, they
-;; should be prefixed with "my-emacs/" and placed at the top of the section.
+;; "settings" consists of function/variable definitions and customizations.
+;; User-defined variables also belong here, but they should be prefixed with
+;; "my-emacs/" and placed at the top of the section.
 ;;
 ;; "minor-modes" consists of configurations for minor modes.
 ;;
@@ -63,7 +63,7 @@
 
 
 ;;;
-;;; (definitions) Function and variable definitions.
+;;; (settings) Function/variable definitions and customizations.
 ;;;
 
 (defvar my-emacs/state-dir
