@@ -80,7 +80,6 @@
                 "12whdi6v405wfwncy81xbfr150p6999f4gyswmpgbsr7g40gp41b"))))
     (arguments
      (cons*
-      #:meson meson-1.5
       #:imported-modules `(,@%meson-build-system-modules
                            (guix build utils)
                            (my-guix build utils))
