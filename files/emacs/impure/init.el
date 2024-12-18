@@ -142,6 +142,14 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 (use-package emacs
   :custom (help-at-pt-display-when-idle t))
 
+;;;; Add "tooltip" org link for arbitrary tooltips.
+
+(use-package ol
+  :config
+  (org-link-set-parameters
+   "tooltip"
+   :follow (lambda (path _prefix) (message "%s" path))))
+
 
 ;;;
 ;;; (minor-modes) Minor modes.
