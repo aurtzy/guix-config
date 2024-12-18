@@ -38,7 +38,9 @@
 ;;
 ;; "settings" consists of function/variable definitions and customizations.
 ;; User-defined variables also belong here, but they should be prefixed with
-;; "my-emacs/" and placed at the top of the section.
+;; "my-emacs/" and placed at the top of the section.  One-shot code like
+;; loading a file also goes here.  This can also be considered a miscellaneous
+;; section for configurations that don't belong anywhere else.
 ;;
 ;; "minor-modes" consists of configurations for minor modes.
 ;;
@@ -50,10 +52,6 @@
 ;; as well.
 ;;
 ;; "major-modes" consists of major mode configurations.
-;;
-;; "extras" is where any code that doesn't belong in the above sections goes.
-;; This includes arbitrary one-time-run elisp like loading a file, for
-;; example.
 
 ;;; Code:
 
@@ -96,11 +94,14 @@ quits:  if a previous call to this function is still active, auto-return `t'."
           (yes-or-no-p prompt)
         (set 'confirm-kill-emacs-active-p nil)))))
 
-;;;; Set `custom-file' so customization information doesn't end up in init.el.
+;;;; Set `custom-file' so customization information doesn't end up in init.el
+;; ...and load it, if available.
 
 (use-package emacs
   :custom
-  (custom-file (locate-user-emacs-file "custom.el")))
+  (custom-file (locate-user-emacs-file "custom.el"))
+  :config
+  (load custom-file 'noerror 'nomessage))
 
 ;;;; Always check for the most recent file to load.
 
@@ -178,17 +179,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;
 ;;; (major-modes) Major modes.
 ;;;
-
-
-;;;
-;;; (extras) Additional configurations.
-;;;
-
-;;;; Load configurations from `custom-file'.
-
-(use-package emacs
-  :config
-  (load custom-file 'noerror 'nomessage))
 
 
 ;;; DEPRECATED OLD LAYOUT BELOW
