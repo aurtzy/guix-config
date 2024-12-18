@@ -76,6 +76,14 @@
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
 
+;;;; Load theme.
+
+(use-package emacs
+  :custom
+  (modus-themes-hl-line '(accented))
+  :config
+  (load-theme 'modus-vivendi))
+
 ;;;; Make it harder to exit Emacs.
 
 (use-package emacs
@@ -197,15 +205,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (frame-resize-pixelwise t)
   (use-dialog-box nil)
   (echo-keystrokes 0.25)
-  (modus-themes-hl-line '(accented))
   :config
   (add-to-list 'default-frame-alist '(font . "Hack-11"))
   (tool-bar-mode -1)
   (global-hl-line-mode 1))
-
-(use-package emacs
-  :config
-  (load-theme 'modus-vivendi))
 
 (use-package emacs
   :preface
