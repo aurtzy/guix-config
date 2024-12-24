@@ -76,6 +76,21 @@
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
 
+;;;; Make the frame background slightly transparent.
+
+(use-package emacs
+  :preface
+  (defun toggle-frame-transparency ()
+    "Toggles frame transparency."
+    (interactive)
+    (if (not (eql 100 (frame-parameter nil 'alpha-background)))
+        (set-frame-parameter nil 'alpha-background 100)
+      (set-frame-parameter nil 'alpha-background
+                           (alist-get 'alpha-background
+                                      default-frame-alist))))
+  :config
+  (add-to-list 'default-frame-alist '(alpha-background . 90)))
+
 ;;;; Load theme.
 
 (use-package emacs
@@ -209,19 +224,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (add-to-list 'default-frame-alist '(font . "Hack-11"))
   (tool-bar-mode -1)
   (global-hl-line-mode 1))
-
-(use-package emacs
-  :preface
-  (defun toggle-frame-transparency ()
-    "Toggles frame transparency."
-    (interactive)
-    (if (not (eql 100 (frame-parameter nil 'alpha-background)))
-        (set-frame-parameter nil 'alpha-background 100)
-      (set-frame-parameter nil 'alpha-background
-                           (alist-get 'alpha-background
-                                      default-frame-alist))))
-  :config
-  (add-to-list 'default-frame-alist '(alpha-background . 90)))
 
 (use-package uniquify
   :custom
