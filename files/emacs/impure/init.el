@@ -80,6 +80,12 @@
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
 
+;;;; Fix some byte-compiler warnings.
+;; See: https://github.com/jwiegley/use-package/issues/636
+
+(eval-when-compile
+  (setq use-package-expand-minimally byte-compile-current-file))
+
 ;;;; Set a variable for directories to exclude in searches.
 
 (defvar my-emacs/search-excluded-directories
