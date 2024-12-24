@@ -80,7 +80,8 @@
 
 (use-package uniquify
   :custom
-  (uniquify-buffer-name-style 'post-forward))
+  (uniquify-buffer-name-style 'reverse)
+  (uniquify-strip-common-suffix nil))
 
 ;;;; Make the frame background slightly transparent.
 
