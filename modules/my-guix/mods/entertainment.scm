@@ -55,6 +55,8 @@
                              "$HOME/storage/steam-alt-library"
                              "$HOME/.config/r2modmanPlus-local"))
 
+(define videa-src (path-append-my-home "areas/videa"))
+
 (define game-managers-mod
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
          (steam-dest ".local/share/guix-sandbox-home"))
@@ -145,6 +147,23 @@
      (compose (mod-he-packages
                (list minetest))))))
 
+(define videa-mod
+  (mod
+    (name 'videa)
+    (he-extension
+     (mod-he-services
+      (list (simple-service name
+                            home-flatpak-profile-service-type
+                            '((flathub "info.febvre.Komikku")))
+            (simple-service name
+                            home-impure-symlinks-service-type
+                            `((".local/share/flatpak/overrides"
+                               ,(path-append-my-files "videa")
+                               "info.febvre.Komikku")
+                              (".var/app/info.febvre.Komikku/data"
+                               ,videa-src
+                               "komikku.db"))))))))
+
 (define syncplay-mod
   (mod
     (name 'syncplay)
@@ -156,4 +175,5 @@
   (list game-managers-mod
         minecraft-mod
         minetest-mod
-        syncplay-mod))
+        syncplay-mod
+        videa-mod))
