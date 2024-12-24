@@ -76,6 +76,12 @@
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
 
+;;;; Configure how to uniquify buffer names.
+
+(use-package uniquify
+  :custom
+  (uniquify-buffer-name-style 'post-forward))
+
 ;;;; Make the frame background slightly transparent.
 
 (use-package emacs
@@ -224,10 +230,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   (add-to-list 'default-frame-alist '(font . "Hack-11"))
   (tool-bar-mode -1)
   (global-hl-line-mode 1))
-
-(use-package uniquify
-  :custom
-  (uniquify-buffer-name-style 'post-forward))
 
 (use-package window
   :custom
