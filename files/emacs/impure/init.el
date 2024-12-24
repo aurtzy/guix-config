@@ -72,7 +72,6 @@
 
 ;;;; Unconditionally require some packages.
 
-(require 'dash)
 (require 'use-package)
 
 ;;;; User info
@@ -862,18 +861,18 @@ quits:  if a previous call to this function is still active, auto-return `t'."
             (flatten-tree
              (list
               extra-agendas
-              (-map (lambda (dir)
-                      (directory-files-recursively
-                       dir "\\.org$" nil
-                       (lambda (path)
-                         (not (string-prefix-p "." (file-name-base path))))))
-                    data-dirs))))))
+              (mapcar (lambda (dir)
+                        (directory-files-recursively
+                         dir "\\.org$" nil
+                         (lambda (path)
+                           (not (string-prefix-p "." (file-name-base path))))))
+                      data-dirs))))))
   (defun find-org-agenda-file ()
     "Edit an agenda file.  Uses the list of files from `org-agenda-files'."
     (interactive)
     (find-file (completing-read "Find agenda file: "
-                                (-map #'abbreviate-file-name
-                                      (org-agenda-files)))))
+                                (mapcar #'abbreviate-file-name
+                                        (org-agenda-files)))))
   :custom
   (org-agenda-span 10)
   :init
