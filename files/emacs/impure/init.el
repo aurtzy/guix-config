@@ -27,11 +27,11 @@
 ;;
 ;; Organization scheme:
 ;;
-;; This configuration is broken up into 5 main sections: "settings",
-;; "minor-modes", "transients", "major-modes", and "extras".
+;; This configuration is broken up into the following main sections:
+;; "settings", "minor-modes", "transients", "major-modes".
 ;;
-;; Most code in these sections should be wrapped in a `use-package'.
-;; Additionally, each section should be broken up into sub-sections with
+;; Generally, code in these sections should be wrapped in a `use-package'.
+;; Additionally, the sections should be broken up into sub-sections with
 ;; heading comments (for outline support) that document what exactly is
 ;; configured, like a docstring of sorts.  A sub-section may have more than
 ;; one `use-package'.
