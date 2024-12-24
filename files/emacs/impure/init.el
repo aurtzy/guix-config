@@ -28,7 +28,7 @@
 ;; Organization scheme:
 ;;
 ;; This configuration is broken up into the following main sections:
-;; "settings", "minor-modes", "transients", "major-modes".
+;; "initial", "settings", "minor-modes", "transients", "major-modes".
 ;;
 ;; Generally, code in these sections should be wrapped in a `use-package'.
 ;; Additionally, the sections should be broken up into sub-sections with
@@ -36,11 +36,17 @@
 ;; configured, like a docstring of sorts.  A sub-section may have more than
 ;; one `use-package'.
 ;;
+;; "initial" is a special section for exceptional cases with code that should
+;; be at the top of the config, possibly run before everything else.
+;; Variables/functions that may change due to external factors and can be used
+;; in different parts of the configuration usually belong here.  For example,
+;; custom user-defined variables of names or file locations are sensible
+;; inclusions.
+;;
 ;; "settings" consists of function/variable definitions and customizations.
-;; User-defined variables also belong here, but they should be prefixed with
-;; "my-emacs/" and placed at the top of the section.  One-shot code like
-;; loading a file also goes here.  This can also be considered a miscellaneous
-;; section for configurations that don't belong anywhere else.
+;; One-shot code like loading a file also goes here.  This can also be
+;; considered a miscellaneous section for configurations that don't belong
+;; anywhere else.
 ;;
 ;; "minor-modes" consists of configurations for minor modes.
 ;;
@@ -55,26 +61,40 @@
 
 ;;; Code:
 
-(add-to-list 'load-path (concat user-emacs-directory "lisp"))
-
-(require 'dash)
-
 
 ;;;
-;;; (settings) Function/variable definitions and customizations.
+;;; (initial) Initial settings.
 ;;;
 
-(defvar my-emacs/state-dir
-  (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
+;;;; Add additional load paths.
 
-(defvar my-emacs/search-excluded-directories
-  `(,@vc-directory-exclusion-list
-    ".direnv"))
+(add-to-list 'load-path (concat user-emacs-directory "lisp"))
+
+;;;; Unconditionally require some packages.
+
+(require 'dash)
+(require 'use-package)
 
 ;;;; User info
 
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
+
+;;;; Set a variable for directories to exclude in searches.
+
+(defvar my-emacs/search-excluded-directories
+  `(,@vc-directory-exclusion-list
+    ".direnv"))
+
+;;;; Set a variable pointing to local state directory.
+
+(defvar my-emacs/state-dir
+  (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
+
+
+;;;
+;;; (settings) Function/variable definitions and customizations.
+;;;
 
 ;;;; Configure how to uniquify buffer names.
 
