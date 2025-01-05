@@ -101,6 +101,15 @@
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Specify additional `project.el' root markers.
+
+(use-package project
+  :custom
+  (project-vc-extra-root-markers '(".dir-locals.el"
+                                   "manifest.scm"
+                                   ".envrc"
+                                   "agenda.org")))
+
 ;;;; Configure how to uniquify buffer names.
 
 (use-package uniquify
@@ -229,6 +238,17 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;
 ;;; (transients) Transients.
 ;;;
+
+;;;; Configure `disproject' commands.
+
+(use-package disproject
+  :bind ( :map ctl-x-map
+          ("p" . disproject-dispatch))
+  :custom
+  (disproject-switch-to-buffer-command #'consult-project-buffer)
+  (disproject-find-file-command #'consult-find)
+  (disproject-find-regexp-command #'consult-ripgrep)
+  (disproject-find-line-command #'consult-line-multi))
 
 
 ;;;
@@ -705,22 +725,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package emacs
   :bind (("C-z" . nil)))
-
-(use-package project
-  :custom
-  (project-vc-extra-root-markers '(".dir-locals.el"
-                                   "manifest.scm"
-                                   ".envrc"
-                                   "agenda.org"))
-  :config
-  (use-package disproject
-    :bind ( :map ctl-x-map
-            ("p" . disproject-dispatch))
-    :custom
-    (disproject-switch-to-buffer-command #'consult-project-buffer)
-    (disproject-find-file-command #'consult-find)
-    (disproject-find-regexp-command #'consult-ripgrep)
-    (disproject-find-line-command #'consult-line-multi)))
 
 (use-package server
   :config
