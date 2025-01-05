@@ -860,6 +860,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
                                   '())))
             (flatten-tree
              (list
+              "~/areas/notes"
               extra-agendas
               (mapcar (lambda (dir)
                         (directory-files-recursively
