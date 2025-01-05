@@ -111,7 +111,7 @@
 
 (use-package project
   :custom
-  (project-vc-extra-root-markers '(".dir-locals.el"
+  (project-vc-extra-root-markers `(,dir-locals-file
                                    "manifest.scm"
                                    ".envrc"
                                    "agenda.org")))
