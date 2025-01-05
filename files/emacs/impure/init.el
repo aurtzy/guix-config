@@ -101,6 +101,25 @@
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Define function for creating new notes files.
+
+(use-package org
+  :config
+  (require 'autoinsert)
+  (defun my-emacs-find-new-notes-file (file title)
+    "Create new notes FILE with TITLE."
+    (if (file-exists-p file)
+        (user-error "File already exists: %s" file)
+      ;; Don't prompt to auto-insert since we're inserting a specific custom
+      ;; template here.
+      (let ((auto-insert nil))
+        (with-current-buffer (find-file file)
+          (skeleton-insert
+           `(nil
+             "#+title: " ,title \n
+             "#+filetags: " _ \n \n
+             "* Agenda")))))))
+
 ;;;; Explicitly set `org-agenda-span'.
 
 (use-package org-agenda
@@ -244,6 +263,60 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;
 ;;; (transients) Transients.
 ;;;
+
+;;;; Add command to find notes files.
+
+(use-package org
+  :config
+  (declare-function org-get-tags "org")
+  (defvar auto-insert)
+  (defun my-emacs-find-notes-file ()
+    "Edit a notes file."
+    (interactive)
+    (let* ((default-directory
+            "~/areas/notes/")
+           (choices
+            (mapcar
+             (lambda (file)
+               (with-current-buffer (org-get-agenda-file-buffer file)
+                 (let ((title
+                        (or (org-get-title) ""))
+                       (tags
+                        (save-excursion
+                          (goto-char (point-min))
+                          (mapconcat #'identity (org-get-tags) ":"))))
+                   (cons (concat file " \t" title " \t" tags)
+                         file))))
+             (mapcar #'file-relative-name
+                     ;; Exclude dotfiles.
+                     (directory-files-recursively default-directory
+                                                  "^[^\\.].*\\.org$"))))
+           (choice
+            (completing-read "File or new notes name: " choices))
+           (file-choice
+            (alist-get choice choices nil nil #'equal)))
+      (cond
+       (file-choice
+        (find-file file-choice))
+       (t
+        (let* ((default-directory
+                (read-directory-name "Data directory: "))
+               (default-prefix
+                (format-time-string "%Y%m%dT%H%M%SZ~" nil t))
+               (notes-file
+                (read-string "File name: "
+                             (cons (concat default-prefix choice ".org")
+                                   (1+ (length default-prefix)))))
+               (entry-type (string-remove-suffix
+                            "s"
+                            (capitalize
+                             (file-name-nondirectory
+                              (directory-file-name default-directory)))))
+               (base-name
+                (and (string-match "^\\([^~]+~\\)?\\(.*\\)\\.org$" notes-file)
+                     (match-string 2 notes-file))))
+          (my-emacs-find-new-notes-file
+           notes-file (concat entry-type " notes: " base-name))))))))
 
 ;;;; Configure `disproject' commands.
 
