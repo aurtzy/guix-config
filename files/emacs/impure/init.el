@@ -264,6 +264,29 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Add `disproject.el' command to initialize a `dir-locals-file' project.
+
+(use-package disproject
+  :config
+  (transient-insert-suffix 'disproject-manage-projects-dispatch '(0 0)
+    '("d" "with `dir-locals-file'" my-emacs-disproject-init-dir-locals-file))
+  :config
+  (require 'transient)
+  (transient-define-suffix my-emacs-disproject-init-dir-locals-file (dir)
+    "Initialize a project in DIR with an initial `dir-locals-file'.
+
+This assumes that `dir-locals-file' is a valid project root.
+
+The current buffer name's `file-name-base' is used as initial
+input, with the expectation that this function will be most often
+used from notes files."
+    (interactive "GNew project in: ")
+    (let ((project-dir (file-name-concat
+                        dir (read-string "Project name: "
+                                         (file-name-base (buffer-name))))))
+      (make-directory project-dir t)
+      (find-file (file-name-concat project-dir dir-locals-file)))))
+
 ;;;; Add `disproject.el' command to switch between related projects.
 ;; TODO: Possibly worth upstreaming.
 
