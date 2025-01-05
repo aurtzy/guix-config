@@ -101,6 +101,44 @@
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Add org link type for data entry files.
+
+(use-package org
+  :config
+  (org-link-set-parameters
+   "data-entry-file"
+   :follow #'my-emacs-open-data-entry-file
+   :complete #'my-emacs-complete-data-entry-file)
+  :config
+  (defun my-emacs-open-data-entry-file (path _prefix)
+    "Find a data entry file associated with PATH."
+    ;; TODO: Support searching archives.
+    (let* ((default-directory "~/")
+           (found-data-entry-file
+            (and (file-exists-p path) path)))
+      (if found-data-entry-file
+          (org-link-open-as-file found-data-entry-file t)
+        (user-error "File not found: %s" path))))
+  (defun my-emacs-complete-data-entry-file ()
+    "Read a data entry file with completion."
+    (let* ((default-directory
+            "~/")
+           (data-types
+            '("workshop" "areas" "library"))
+           (entry-choices
+            (mapcar
+             (lambda (path)
+               (concat (file-relative-name path) "/"))
+             (mapcan (lambda (data-type)
+                       (seq-filter #'file-directory-p
+                                   (directory-files data-type t "^[^\\.]")))
+                     data-types)))
+           (entry-dir
+            (completing-read "Entry dir: " entry-choices)))
+      (concat "data-entry-file:"
+              (file-relative-name
+               (read-file-name "Data entry file: " entry-dir))))))
+
 ;;;; Add notes directory to org agenda files.
 
 (use-package org
