@@ -101,6 +101,18 @@
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Add notes directory to org agenda files.
+
+(use-package org
+  :config
+  (declare-function org-store-new-agenda-file-list "org")
+  (setq org-agenda-files
+        (cl-remove-duplicates (append org-agenda-files
+                                      '("~/areas/notes/"
+                                        "~/areas/notes/workshop/"
+                                        "~/areas/notes/areas/"
+                                        "~/areas/notes/library/")))))
+
 ;;;; Define function for creating new notes files.
 
 (use-package org
@@ -333,6 +345,7 @@ name (if any) or the current buffer name's `file-name-base'."
 ;;;; Add command to find notes files.
 
 (use-package org
+  :bind ("C-c A" . my-emacs-find-notes-file)
   :config
   (declare-function org-get-tags "org")
   (defvar auto-insert)
@@ -992,64 +1005,6 @@ name (if any) or the current buffer name's `file-name-base'."
   :config
   (add-to-list 'org-file-apps
                '("epub" . "xdg-open %s")))
-
-(use-package org-agenda
-  :after org
-  :bind (("C-c A" . #'find-org-agenda-file))
-  :preface
-  (defun refresh-org-agenda-files ()
-    (interactive)
-    (setq org-agenda-files
-          (let* ((data-dirs '("~/workshop" "~/areas" "~/library"))
-                 (agendas-file (concat user-emacs-directory "agendas.el"))
-                 ;; agendas.el (if exists) should evaluate to list of declared
-                 ;; additional agenda files
-                 (extra-agendas (if (file-exists-p agendas-file)
-                                    (load agendas-file)
-                                  '())))
-            (flatten-tree
-             (list
-              "~/areas/notes"
-              extra-agendas
-              (mapcar (lambda (dir)
-                        (directory-files-recursively
-                         dir "\\.org$" nil
-                         (lambda (path)
-                           (not (string-prefix-p "." (file-name-base path))))))
-                      data-dirs))))))
-  (defun find-org-agenda-file ()
-    "Edit an agenda file.  Uses the list of files from `org-agenda-files'."
-    (interactive)
-    (find-file (completing-read "Find agenda file: "
-                                (mapcar #'abbreviate-file-name
-                                        (org-agenda-files)))))
-  :init
-  (advice-add #'org-agenda
-              :around (lambda (original-function &rest args)
-                        (if (functionp 'envrc-global-mode)
-                            (let ((old-envrc-global-mode envrc-global-mode))
-                              (unwind-protect
-                                  (progn
-                                    (envrc-global-mode -1)
-                                    (apply original-function args))
-                                ;; Since we don't want to wait for direnv to
-                                ;; finish, set timeout to 1 second and ignore
-                                ;; any errors envrc encounters
-                                (let ((display-buffer-overriding-action
-                                       '(display-buffer-no-window
-                                         (allow-no-window t)))
-                                      (set-message-functions
-                                       (cons 'inhibit-message
-                                             set-message-functions))
-                                      (inhibit-message-regexps
-                                       (cons "[Dd]irenv"
-                                             inhibit-message-regexps)))
-                                  (with-timeout (1)
-                                    (envrc-global-mode old-envrc-global-mode)))))
-                          (apply original-function args))))
-  :config
-  (refresh-org-agenda-files)
-  :functions (org-agenda-files))
 
 ;;;;; Programming languages
 
