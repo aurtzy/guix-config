@@ -87,13 +87,13 @@
 
 ;;;; Set a variable for directories to exclude in searches.
 
-(defvar my-emacs/search-excluded-directories
+(defvar my-emacs-search-excluded-directories
   `(,@vc-directory-exclusion-list
     ".direnv"))
 
 ;;;; Set a variable pointing to local state directory.
 
-(defvar my-emacs/state-dir
+(defvar my-emacs-state-dir
   (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
 
 
@@ -183,7 +183,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package emacs
   :custom
-  (backup-directory-alist `(("." . ,my-emacs/state-dir)))
+  (backup-directory-alist `(("." . ,my-emacs-state-dir)))
   (backup-by-copying t)
   (version-control t)
   (delete-old-versions t)
@@ -514,7 +514,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
          ;; orig. previous-matching-history-element
          ("M-r" . consult-history))
   :custom
-  (consult-find-args (pcase my-emacs/search-excluded-directories
+  (consult-find-args (pcase my-emacs-search-excluded-directories
                        (`(,first-dir . ,rest-dirs)
                         (concat "find . ( ("
                                 " -name " first-dir
