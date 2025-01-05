@@ -101,6 +101,12 @@
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Explicitly set `org-agenda-span'.
+
+(use-package org-agenda
+  :custom
+  (org-agenda-span 10))
+
 ;;;; Specify additional `project.el' root markers.
 
 (use-package project
@@ -878,8 +884,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
     (find-file (completing-read "Find agenda file: "
                                 (mapcar #'abbreviate-file-name
                                         (org-agenda-files)))))
-  :custom
-  (org-agenda-span 10)
   :init
   (advice-add #'org-agenda
               :around (lambda (original-function &rest args)
