@@ -550,9 +550,7 @@ management/maintenance.")
      (compose (mod-os-packages
                (list nss-mdns))
               (mod-os-services
-               ;; TEMP: Disable for now to avoid RCE in cups
-               (list ;; (service cups-service-type)
-                ))))))
+               (list (service cups-service-type)))))))
 
 (define swapfile-mod
   (mod
