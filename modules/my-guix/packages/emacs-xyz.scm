@@ -26,36 +26,18 @@
   #:use-module (my-guix utils))
 
 (define-public emacs-disproject/newer
-  (package
-    (name "emacs-disproject")
-    (version "0.9.0")
-    (source
-     (let ((local-disproject (path-append-my-home "/src/disproject")))
-       (if (file-exists? local-disproject)
+  (let ((local-disproject (path-append-my-home "/src/disproject")))
+    (if (file-exists? local-disproject)
+        (package
+          (inherit emacs-disproject)
+          (name "emacs-disproject")
+          (version (string-append (package-version emacs-disproject)
+                                  "-dev"))
+          (source
            (local-file local-disproject
                        #:recursive? #t
-                       #:select?
-                       (lambda (file stat)
-                         (not (string-contains file "/.git/"))))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/aurtzy/disproject")
-                   (commit (string-append "v" version))))
-             (file-name (git-file-name name "git"))
-             (sha256
-              (base32 "1dzdfpkmd5n4b22xsi9kgwkpd7866zmv1iw10gqcln40bpskq66b"))))))
-    (build-system emacs-build-system)
-    (propagated-inputs (list emacs-transient))
-    (home-page "https://github.com/aurtzy/disproject")
-    (synopsis "Transient interface for managing and interacting with projects")
-    (description
-     "Disproject is a package for GNU Emacs that implements Transient menus for
-dispatching project-related commands on top of the @code{project.el} library.  It
-aims to provide a more featureful version of the @code{project-switch-project}
-command, which it is inspired by.  Those who are familiar with Projectile may also
-find similarities to @code{projectile-commander}.")
-    (license license:gpl3+)))
+                       #:select? (git-predicate local-disproject))))
+        emacs-disproject)))
 
 (define-public emacs-nftables-mode
   (package
