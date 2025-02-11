@@ -295,6 +295,12 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Disable menu bar, which doesn't correctly apply transparency on GNOME.
+
+(use-package emacs
+  :config
+  (menu-bar-mode -1))
+
 ;;;; Load `flymake'-related setup functions.
 
 (use-package flymake)
