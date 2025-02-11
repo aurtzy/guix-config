@@ -18,7 +18,7 @@
 ;;; Copyright © 2022 Petr Hodina <phodina@protonmail.com>
 ;;; Copyright © 2023 Kaelyn Takata <kaelyn.alexi@protonmail.com>
 ;;; Copyright © 2023 Zheng Junjie <873216071@qq.com>
-;;; Copyright © 2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2024-2025 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -74,10 +74,10 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "c21bc65ba7525b2d0f66e26d565437833506845d")))
+             (commit "1ade9a05d8ba07e1f2a5493694d01fa18b70914c")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "0jwjn9x7i4q9qbpww9x5kjs7lxpqqd07cd1l7pg7d90dy0scqckh"))))
+                "058yv0csxvd20fs7xcpan53p40xxay6crsmsx2xzvx5pz4cxqxs9"))))
     (arguments
      (cons*
       #:imported-modules `(,@%meson-build-system-modules
