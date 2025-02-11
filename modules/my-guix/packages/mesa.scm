@@ -145,10 +145,7 @@
              (replace "rust-bindgen-cli"
                (package/with-rust-binary rust-bindgen-cli))
              (replace "rust-cbindgen"
-               (package/with-rust-binary rust-cbindgen-0.26))))))
-    (inputs
-     (modify-inputs (package-inputs mesa)
-       (replace "wayland-protocols" wayland-protocols-next)))))
+               (package/with-rust-binary rust-cbindgen-0.26))))))))
 
 (define mesa/nvsa-git
   (package
