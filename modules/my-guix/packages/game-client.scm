@@ -8,7 +8,7 @@
 ;;; Copyright © 2023 Elijah Malaby
 ;;; Copyright © 2023 Timo Wilken <guix@twilken.net>
 ;;; Copyright © 2022 Demis Balbach <db@minikn.xyz>
-;;; Copyright © 2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2024-2025 aurtzy <aurtzy@gmail.com>
 ;;; Copyright © 2024 dan <i@dan.games>
 ;;;
 ;;; This file is NOT part of GNU Guix.
@@ -64,6 +64,50 @@
   #:use-module (nongnu packages game-client)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
+
+(define stb-deprecated
+  (let ((stb (@@ (gnu packages stb) stb)))
+    (package
+      (inherit stb)
+      (name "stb-deprecated")
+      (arguments
+       (substitute-keyword-arguments (package-arguments stb)
+         ((#:phases original-phases)
+          #~(modify-phases #$original-phases
+              (replace 'install
+                (lambda _
+                  (let ((files (make-regexp "\\.(c|h|md)$")))
+                    (with-directory-excursion "deprecated"
+                      (for-each (lambda (file)
+                                  (install-file file #$output))
+                                (scandir "." (cut regexp-exec files <>))))
+                    #t))))))))))
+
+(define (make-deprecated-stb-header-package name version description)
+  (package
+    (inherit stb-deprecated)
+    (name name)
+    (version version)
+    (source #f)
+    (inputs (list stb-deprecated))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let ((stb (assoc-ref %build-inputs "stb-deprecated"))
+                         (lib (string-join (string-split ,name #\-) "_"))
+                         (out (assoc-ref %outputs "out")))
+                     (install-file (string-append stb "/" lib ".h")
+                                   (string-append out "/include"))
+                     #t))))
+    (description description)))
+
+(define-public stb-image-resize
+  (make-deprecated-stb-header-package
+   "stb-image-resize" "0.97"
+   "stb-image-resize is a library that supports scaling and translation of
+images."))
 
 (define-public libavif-1.0
   (package
