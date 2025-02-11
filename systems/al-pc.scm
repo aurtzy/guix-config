@@ -177,14 +177,11 @@
                                 '())
                                (start
                                 #~(make-forkexec-constructor
-                                   (list #$(file-append redlib
-                                                        "/bin/redlib")
+                                   (list #$(file-append redlib "/bin/redlib")
                                          "--port" "8081")))
                                (stop
                                 #~(make-kill-destructor)))))
-
              (home-environment-user-services base-he))))))
-
 
 (define system
   (modded-system
