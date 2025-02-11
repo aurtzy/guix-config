@@ -305,14 +305,14 @@ sandboxed Xwayland sessions.")
                  #:name "fhs-union-64"))
      ;; Requires i686-linux rust; package upstream in Guix does not build, so a
      ;; binary version is required if we want 32-bit NVK for the time being.
-     (union32
-      (fhs-union (modify-inputs `(,@steam-client-libs
-                                  ,@steam-gameruntime-libs
-                                  ,@fhs-min-libs)
-                   (prepend (replace-mesa->nvsa-git sdl2))
-                   (replace "mesa" nvsa-git-with-libglvnd))
-                 #:name "fhs-union-32"
-                 #:system "i686-linux"))
+     ;; (union32
+     ;;  (fhs-union (modify-inputs `(,@steam-client-libs
+     ;;                              ,@steam-gameruntime-libs
+     ;;                              ,@fhs-min-libs)
+     ;;               (prepend (replace-mesa->nvsa-git sdl2))
+     ;;               (replace "mesa" nvsa-git-with-libglvnd))
+     ;;             #:name "fhs-union-32"
+     ;;             #:system "i686-linux"))
      (exposed (cons* "/run/privileged/bin/gamescope"
                      (ngc-exposed steam-container))))))
 
