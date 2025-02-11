@@ -291,17 +291,11 @@ sandboxed Xwayland sessions.")
                    ;; dependencies can be found in the container.
                    (prepend (replace-mesa->nvsa-git gamescope)
                             (replace-mesa->nvsa-git sdl2)
-
-                            libglvnd
                             ;; Debugging tools
                             ;; (@ (gnu packages gdb) gdb)
                             ;; (@ (gnu packages emacs) emacs)
                             )
-                   ;; Use mesa with glvnd to fix Factorio segfaulting on
-                   ;; startup.  Relevant discussions:
-                   ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/11666
-                   ;; https://issues.guix.gnu.org/49339
-                   (replace "mesa" nvsa-git-with-libglvnd))
+                   (replace "mesa" nvsa-git))
                  #:name "fhs-union-64"))
      ;; Requires i686-linux rust; package upstream in Guix does not build, so a
      ;; binary version is required if we want 32-bit NVK for the time being.
