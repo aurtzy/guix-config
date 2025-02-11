@@ -337,49 +337,6 @@ used from notes files."
       (make-directory project-dir t)
       (find-file (file-name-concat project-dir dir-locals-file)))))
 
-;;;; Add `disproject.el' command to switch between related projects.
-;; TODO: Possibly worth upstreaming.
-
-(use-package disproject
-  :config
-  (transient-insert-suffix 'disproject-dispatch "C-p"
-    '("r" "Switch to related project"
-      my-emacs-disproject-switch-project-related))
-  :config
-  (require 'transient)
-  (transient-define-suffix my-emacs-disproject-switch-project-related ()
-    "Switch to known project related to current buffer or project name.
-
-The `project-name' function is used to determine project names.
-
-A project is related when its name matches the selected project's
-name (if any) or the current buffer name's `file-name-base'."
-    :transient t
-    (interactive)
-    (let* ((selected-project
-            (disproject-scope-selected-project (disproject--scope)))
-           (selected-project-instance
-            (disproject-project-instance selected-project))
-           (names
-            `(,@(if selected-project
-                    (list (project-name selected-project-instance)))
-              ,(file-name-base (buffer-name))))
-           (choices (seq-mapcat
-                     (lambda (project)
-                       (if (and project
-                                ;; Exclude current project.
-                                (if selected-project-instance
-                                    (not (file-equal-p
-                                          (project-root project)
-                                          (project-root
-                                           selected-project-instance))))
-                                (member (project-name project) names))
-                           (list (project-root project))))
-                     (mapcar (apply-partially #'project-current nil)
-                             (project-known-project-roots)))))
-      (disproject--switch-project
-       (completing-read "Select related project: " choices nil t)))))
-
 ;;;; Add command to find notes files.
 
 (use-package org
