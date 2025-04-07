@@ -478,7 +478,8 @@ management/maintenance.")
       (mod-os-packages
        (list btrfs-progs
              cryptsetup
-             gnome-disk-utility
+             (let ((replace-mesa (replace-mesa)))
+               (replace-mesa gnome-disk-utility))
              gparted
              gptfdisk
              lvm2
