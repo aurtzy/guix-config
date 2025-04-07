@@ -326,7 +326,13 @@ elsewhere in possibly different forms).")
                       emacs-consult
                       emacs-marginalia
                       emacs-orderless
-                      emacs-embark
+                      ;; Fix Embark using features that have changed in more
+                      ;; recent versions of Org; see:
+                      ;; <https://github.com/oantolin/embark/issues/723#issuecomment-2212767073>
+                      (package/inherit emacs-embark
+                        (propagated-inputs
+                         (modify-inputs (package-propagated-inputs emacs-embark)
+                           (prepend emacs-org))))
                       emacs-corfu
                       ;; editing tweaks
                       emacs-adaptive-wrap
