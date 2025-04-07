@@ -41,6 +41,7 @@
   #:use-module (my-guix packages git-annex-configure)
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
+  #:use-module (nonguix utils)
   #:use-module ((rnrs base) #:prefix rnrs:)
   #:use-module (srfi srfi-1)
   #:export (replace-mesa
@@ -281,14 +282,11 @@ elsewhere in possibly different forms).")
     (os-extension
      (let ((replace-mesa (replace-mesa)))
        (compose
-        (mod-os-packages
-         (list (replace-mesa network-manager-applet)))
         (mod-os-services
-         (delete 'network-manager-applet
-                 (modify-services %desktop-services
-                   (delete gdm-service-type))
-                 (lambda (name serv)
-                   (eq? name (service-type-name (service-kind serv)))))))))))
+         (with-transformation
+          replace-mesa
+          (modify-services %desktop-services
+            (delete gdm-service-type)))))))))
 
 (define emacs-mod
   (mod
