@@ -466,6 +466,7 @@ used from notes files."
   :custom
   (scroll-margin 5)
   (scroll-conservatively 1000)
+  (next-screen-context-lines 5)
   :config
   (add-hook 'shell-mode-hook
             'remove-scroll-margin)
