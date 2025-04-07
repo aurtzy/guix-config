@@ -72,27 +72,49 @@
           (mod-os-services
            (with-transformation
             replace-mesa
-            (list (if nvidia-proprietary?
-                      (set-xorg-configuration
-                       (xorg-configuration
-                        (keyboard-layout (operating-system-keyboard-layout os))
-                        (modules (cons (module-ref (resolve-interface
-                                                    '(nongnu packages nvidia))
-                                                   'nvda)
-                                       %default-xorg-modules))
-                        (drivers '("nvidia"))))
-                      (set-xorg-configuration
-                       (xorg-configuration
-                        (keyboard-layout (operating-system-keyboard-layout os)))))
-                  (service gnome-desktop-service-type
-                           (gnome-desktop-configuration
-                            (extra-packages
-                             (list gnome-essential-extras
-                                   gnome-shell-extensions
-                                   gnome-shell-extension-gsconnect
-                                   gnome-tweaks
-                                   xdg-desktop-portal-kde))))
-                  (service gdm-service-type))))))))))
+            (append
+             ;; TODO: Fix GDM not using of Wayland on nonfree drivers.  We
+             ;; use SDDM instead for now as a hack, which does not have
+             ;; this issue.
+             ;; (set-xorg-configuration
+             ;;  (xorg-configuration
+             ;;   (keyboard-layout (operating-system-keyboard-layout os))
+             ;;   (modules (cons (module-ref (resolve-interface
+             ;;                               '(nongnu packages nvidia))
+             ;;                              'nvda)
+             ;;                  %default-xorg-modules))
+             ;;   (drivers '("nvidia"))))
+             (if nvidia-proprietary?
+                 (list
+                  (service sddm-service-type
+                           (sddm-configuration
+                            (xorg-configuration
+                             (if nvidia-proprietary?
+                                 (xorg-configuration
+                                  (keyboard-layout
+                                   (operating-system-keyboard-layout os))
+                                  (modules
+                                   (cons (module-ref (resolve-interface
+                                                      '(nongnu packages nvidia))
+                                                     'nvda)
+                                         %default-xorg-modules))
+                                  (drivers '("nvidia")))
+                                 (xorg-configuration
+                                  (keyboard-layout
+                                   (operating-system-keyboard-layout os))))))))
+                 (list
+                  (set-xorg-configuration
+                   (xorg-configuration
+                    (keyboard-layout (operating-system-keyboard-layout os))))
+                  (service gdm-service-type)))
+             (list (service gnome-desktop-service-type
+                            (gnome-desktop-configuration
+                             (extra-packages
+                              (list gnome-essential-extras
+                                    gnome-shell-extensions
+                                    gnome-shell-extension-gsconnect
+                                    gnome-tweaks
+                                    xdg-desktop-portal-kde))))))))))))))
 
 (define plasma-mod
   (mod
