@@ -101,6 +101,13 @@
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Translate ANSI escape sequences in compilation buffer to text properties.
+
+(use-package ansi-color
+  :config
+  (require 'compile)
+  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
+
 ;;;; Add org link type for data entry files.
 
 (use-package org
