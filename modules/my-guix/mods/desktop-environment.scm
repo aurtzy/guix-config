@@ -33,6 +33,7 @@
   #:use-module (my-guix mods desktop)
   #:use-module (my-guix mods hardware)
   #:use-module (my-guix utils)
+  #:use-module (nonguix utils)
   #:export (gnome-mod
             plasma-mod
             wayland-mod))
@@ -68,37 +69,30 @@
              (nvidia-proprietary? (nvidia-proprietary?)))
          (list
           (mod-os-extension wayland-mod)
-          (mod-os-packages
-           (map replace-mesa
-                (list gvfs
-                      gnome-tweaks
-                      gnome-shell-extensions
-                      gnome-shell-extension-gsconnect
-                      xdg-desktop-portal-kde)))
           (mod-os-services
-           (list (if nvidia-proprietary?
-                     (set-xorg-configuration
-                      (xorg-configuration
-                       (keyboard-layout (operating-system-keyboard-layout os))
-                       (modules (cons (module-ref (resolve-interface
-                                                   '(nongnu packages nvidia))
-                                                  'nvda)
-                                      %default-xorg-modules))
-                       (drivers '("nvidia"))))
-                     (set-xorg-configuration
-                      (xorg-configuration
-                       (keyboard-layout (operating-system-keyboard-layout os)))))
-                 (service gnome-desktop-service-type
-                          (gnome-desktop-configuration
-                           (core-services
-                            (list (replace-mesa gnome-meta-core-services)))
-                           (shell
-                            (list (replace-mesa gnome-meta-core-shell)))
-                           (utilities
-                            (list (replace-mesa gnome-meta-core-utilities)))
-                           (extra-packages
-                            (list (replace-mesa gnome-essential-extras)))))
-                 (service gdm-service-type)))))))))
+           (with-transformation
+            replace-mesa
+            (list (if nvidia-proprietary?
+                      (set-xorg-configuration
+                       (xorg-configuration
+                        (keyboard-layout (operating-system-keyboard-layout os))
+                        (modules (cons (module-ref (resolve-interface
+                                                    '(nongnu packages nvidia))
+                                                   'nvda)
+                                       %default-xorg-modules))
+                        (drivers '("nvidia"))))
+                      (set-xorg-configuration
+                       (xorg-configuration
+                        (keyboard-layout (operating-system-keyboard-layout os)))))
+                  (service gnome-desktop-service-type
+                           (gnome-desktop-configuration
+                            (extra-packages
+                             (list gnome-essential-extras
+                                   gnome-shell-extensions
+                                   gnome-shell-extension-gsconnect
+                                   gnome-tweaks
+                                   xdg-desktop-portal-kde))))
+                  (service gdm-service-type))))))))))
 
 (define plasma-mod
   (mod
