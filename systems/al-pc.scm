@@ -35,7 +35,8 @@
              (nongnu packages linux)
              ((nongnu packages nvidia) #:prefix nvidia:)
              ((nongnu services nvidia) #:prefix nvidia:)
-             (nongnu system linux-initrd))
+             (nongnu system linux-initrd)
+             (nonguix utils))
 
 (define initial-operating-system
   (let ((base-os base-desktop-operating-system))
@@ -214,6 +215,9 @@
                         nvidia-mod
                         ssh-server-mod
                         web-server-mod)))
+    (final-he-extension (lambda (he)
+                          (let ((replace-mesa (replace-mesa)))
+                            (with-transformation replace-mesa he))))
     (initial-os initial-operating-system)
     (initial-he initial-home-environment)))
 
