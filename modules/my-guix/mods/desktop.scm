@@ -359,6 +359,7 @@ elsewhere in possibly different forms).")
                       aspell
                       aspell-dict-en
                       ;; etc
+                      emacs-denote
                       emacs-dimmer
                       emacs-disproject/newer
                       emacs-eat
