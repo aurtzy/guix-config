@@ -64,6 +64,51 @@
   #:use-module (my-guix packages rust)
   #:use-module (my-guix utils))
 
+(define-public spirv-headers-next
+  (package/inherit spirv-headers
+    (name "spirv-headers-next")
+    (version "1.4.304.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/KhronosGroup/SPIRV-Headers")
+             (commit (string-append "vulkan-sdk-" version))))
+       (sha256
+        (base32 "1hlmjhavc6lyw39visr93rq4frrqxd785h7zci8pr3m6vj5kw91h"))
+       (file-name (git-file-name name version))))))
+
+(define-public spirv-tools-next
+  (package/inherit spirv-tools
+    (name "spirv-tools-next")
+    (version "1.4.304.1")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/KhronosGroup/SPIRV-Tools")
+            (commit (string-append "vulkan-sdk-" version))))
+      (sha256
+       (base32 "08ipi93bi9idp8rvgmsv2l8k0gdjvnc7cid49q8knkwvp9gphlka"))
+      (file-name (git-file-name name version))))
+    (inputs (modify-inputs (package-inputs spirv-tools)
+              (replace "spirv-headers" spirv-headers-next)))))
+
+(define-public wayland-protocols-next
+  (package/inherit wayland-protocols
+    (name "wayland-protocols-next")
+    (version "1.41")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/wayland/wayland-protocols")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "148wh3cw88pv1adbhmkr13ass2vznzpa03hc3f6hwmwfv4bjsdlr"))))))
+
 (define-public nvsa-git
   ;; slimmed mesa git version for NVIDIA drivers.
   (package
@@ -74,10 +119,10 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "a3ddb223e2f163043d24844cf85264190aed3084")))
+             (commit "d1a2ba57f9f8fe0ed87a7286605bda4a954abd71")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "1im4mq4pyamc5zd6dgdfb6hk60c43nygxc777yx4lbv12ms6xbyl"))))
+                "0vjcys2hqcgzd4ra8kv5v17ip0qs7llqz26c1zw6xfyr55x6lqzl"))))
     (arguments
      (cons*
       #:imported-modules `(,@%meson-build-system-modules
@@ -132,7 +177,13 @@
                    (("subprocess\\.run\\(\\['rustfmt',.*$")
                     "pass\n")))))))))
     (native-inputs
-     (let ((native-inputs (package-native-inputs mesa)))
+     (let ((native-inputs
+            (let ((replace-spirv-inputs
+                   (package-input-rewriting/spec
+                    `(("spirv-headers" . ,(const spirv-headers-next))
+                      ("spirv-tools" . ,(const spirv-tools-next))))))
+              (modify-inputs (package-native-inputs mesa)
+                (prepend (replace-spirv-inputs libclc))))))
        ;; Support NVK on x86_32 arch by using rust-binary
        (if (target-x86-32?)
            (modify-inputs native-inputs
@@ -145,7 +196,10 @@
              (replace "rust-bindgen-cli"
                (package/with-rust-binary rust-bindgen-cli))
              (replace "rust-cbindgen"
-               (package/with-rust-binary rust-cbindgen-0.26))))))))
+               (package/with-rust-binary rust-cbindgen-0.26))))))
+    (inputs
+     (modify-inputs (package-inputs mesa)
+       (replace "wayland-protocols" wayland-protocols-next)))))
 
 (define mesa/nvsa-git
   (package
