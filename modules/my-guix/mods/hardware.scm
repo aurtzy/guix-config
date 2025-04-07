@@ -72,5 +72,7 @@ configurations.")
         (mod-os-kernel-arguments
          (if nvidia-proprietary?
              (list "modprobe.blacklist=nouveau"
+                   ;; TODO: This may be needed to get GDM to run on Wayland.
+                   ;; "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
                    "nvidia_drm.modeset=1")
              (list "nouveau.config=NvGspRm=1"))))))))
