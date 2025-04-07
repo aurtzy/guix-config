@@ -603,7 +603,8 @@ swapfile configuration information needed.")
     (os-extension
      (compose (mod-os-packages
                (list virt-manager
-                     gnome-boxes))
+                     (let ((replace-mesa (replace-mesa)))
+                       (replace-mesa gnome-boxes))))
               (mod-os-services
                (list (service libvirt-service-type
                               (libvirt-configuration
