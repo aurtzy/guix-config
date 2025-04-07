@@ -35,7 +35,7 @@
         "gate#0": {
             "attack": 20.0,
             "bypass": false,
-            "curve-threshold": -48.0,
+            "curve-threshold": -50.0,
             "curve-zone": -8.0,
             "dry": -100.0,
             "hpf-frequency": 10.0,
@@ -126,7 +126,7 @@
             "enable-denoise": true,
             "enable-dereverb": false,
             "input-gain": 0.0,
-            "noise-suppression": -6,
+            "noise-suppression": -12,
             "output-gain": 0.0,
             "vad": {
                 "enable": false,
