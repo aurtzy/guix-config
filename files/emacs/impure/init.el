@@ -302,6 +302,12 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Enable context menus.
+
+(use-package mouse
+  :config
+  (context-menu-mode))
+
 ;;;; Disable menu bar, which doesn't correctly apply transparency on GNOME.
 
 (use-package emacs
