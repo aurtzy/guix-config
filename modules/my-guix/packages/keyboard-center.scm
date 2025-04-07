@@ -50,6 +50,7 @@
     (build-system pyproject-build-system)
     ;; There are tests that attempt to use internet.
     (arguments (list #:tests? #f))
+    (native-inputs (list python-cython python-setuptools python-wheel))
     (home-page "https://github.com/scoder/lupa")
     (synopsis "Python wrapper around Lua and LuaJIT")
     (description "Python wrapper around Lua and @code{LuaJIT}.")
