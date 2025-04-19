@@ -156,7 +156,8 @@
                                       '("~/areas/notes/"
                                         "~/areas/notes/workshop/"
                                         "~/areas/notes/areas/"
-                                        "~/areas/notes/library/")))))
+                                        "~/areas/notes/library/"))
+                              :test #'equal)))
 
 ;;;; Define function for creating new notes files.
 
