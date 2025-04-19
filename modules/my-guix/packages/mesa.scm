@@ -136,7 +136,7 @@
          #~(append #$original-flags
                    ;; Only enable NVIDIA drivers to reduce build times
                    '#$(if (or (target-x86-64?) (target-x86-32?))
-                          '("-Dgallium-drivers=nouveau,swrast,zink"
+                          '("-Dgallium-drivers=nouveau,llvmpipe,zink"
                             "-Dvulkan-drivers=swrast,nouveau")
                           '())))
         ((#:phases original-phases)
