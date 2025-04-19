@@ -92,52 +92,53 @@
           openssh ;; ssh
           ))
    (services
-    (list (service home-dbus-service-type)
-          (service home-bash-service-type
-                   (home-bash-configuration
-                    (environment-variables
-                     `( ;; Exclude certain commands from history
-                       ("HISTCONTROL" . "ignoreboth")
-                       ("HISTIGNORE" . "history:history *:exit:exit *")
+    (cons* (service home-dbus-service-type)
+           (service home-bash-service-type
+                    (home-bash-configuration
+                     (environment-variables
+                      `( ;; Exclude certain commands from history
+                        ("HISTCONTROL" . "ignoreboth")
+                        ("HISTIGNORE" . "history:history *:exit:exit *")
 
-                       ;; Explicitly set application data directory
-                       ("XDG_DATA_HOME" . ,XDG_DATA_HOME)
+                        ;; Explicitly set application data directory
+                        ("XDG_DATA_HOME" . ,XDG_DATA_HOME)
 
-                       ;; Add flatpak data directory
-                       ("XDG_DATA_DIRS"
-                        . ,(build-path-augmentation
-                            "XDG_DATA_DIRS"
-                            (string-append
-                             XDG_DATA_HOME "/flatpak/exports/share")
-                            ;; This won't actually be used since we always do
-                            ;; user installation, but it make should make
-                            ;; flatpak stop complaining
-                            "/var/lib/flatpak/exports/share"))
-                       ;; Include more in PATH
-                       ("PATH"
-                        . ,(build-path-augmentation
-                            "PATH"
-                            "$HOME/.local/bin"))))
-                    (aliases
-                     `((",guix-without-flatpak"
-                        . "GUIX_FLATPAK_DISABLE=1 guix")
-                       ("l." . "ls -d .*")
-                       ("la" . "ls -a")
-                       ("diff" . "diff --color=auto")))
-                    (bashrc
-                     ;; Import function definitions in bashrc file
-                     (list (local-file
-                            (path-append-my-files "bash/bashrc")
-                            "bashrc")))))
-          (simple-service 'home-files
-                          home-files-service-type
-                          `((".local/bin/guix"
-                             ,(program-file
-                               "wrapped-guix-script"
-                               wrapped-guix-script))
-                            (".inputrc"
-                             ,(plain-file
-                               "inputrc"
-                               "set revert-all-at-newline on\n"))))
-          (service home-flatpak-service-type)
-          (service home-impure-symlinks-service-type)))))
+                        ;; Add flatpak data directory
+                        ("XDG_DATA_DIRS"
+                         . ,(build-path-augmentation
+                             "XDG_DATA_DIRS"
+                             (string-append
+                              XDG_DATA_HOME "/flatpak/exports/share")
+                             ;; This won't actually be used since we always do
+                             ;; user installation, but it make should make
+                             ;; flatpak stop complaining
+                             "/var/lib/flatpak/exports/share"))
+                        ;; Include more in PATH
+                        ("PATH"
+                         . ,(build-path-augmentation
+                             "PATH"
+                             "$HOME/.local/bin"))))
+                     (aliases
+                      `((",guix-without-flatpak"
+                         . "GUIX_FLATPAK_DISABLE=1 guix")
+                        ("l." . "ls -d .*")
+                        ("la" . "ls -a")
+                        ("diff" . "diff --color=auto")))
+                     (bashrc
+                      ;; Import function definitions in bashrc file
+                      (list (local-file
+                             (path-append-my-files "bash/bashrc")
+                             "bashrc")))))
+           (simple-service 'home-files
+                           home-files-service-type
+                           `((".local/bin/guix"
+                              ,(program-file
+                                "wrapped-guix-script"
+                                wrapped-guix-script))
+                             (".inputrc"
+                              ,(plain-file
+                                "inputrc"
+                                "set revert-all-at-newline on\n"))))
+           (service home-flatpak-service-type)
+           (service home-impure-symlinks-service-type)
+           %base-home-services))))
