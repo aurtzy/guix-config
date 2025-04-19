@@ -204,22 +204,27 @@ managing it.")
                                 ,(data-backup-create-script))))
              (simple-service name
                              home-impure-symlinks-service-type
-                             (fold
-                              (lambda (entry symlinks)
-                                (match-record entry <data-entry> (source)
-                                  (let ((source
-                                         (canonicalize-path
-                                          (if (absolute-file-name? source)
-                                              source
-                                              ;; guix may not necessarily be
-                                              ;; invoked from $HOME, so
-                                              ;; explicitly append to it here.
-                                              (string-append (getenv "HOME")
-                                                             "/" source)))))
-                                    (if (equal? (getenv "HOME")
-                                                (dirname source))
-                                        symlinks
-                                        (cons (list (basename source) source)
-                                              symlinks)))))
-                              '()
-                              (data-entries)))))))))
+                             (concatenate
+                              (map
+                               (match-record-lambda <data-entry> (source)
+                                 (define source-path
+                                   (canonicalize-path
+                                    (if (absolute-file-name? source)
+                                        source
+                                        ;; guix may not necessarily be
+                                        ;; invoked from $HOME, so
+                                        ;; explicitly append to it here.
+                                        (string-append (getenv "HOME")
+                                                       "/" source))))
+                                 ;; ~/data is the destination directory, so
+                                 ;; don't create a symlink if the source is
+                                 ;; in that directory.
+                                 (if (equal? (string-append (getenv "HOME")
+                                                            "/data")
+                                             (dirname source-path))
+                                     '()
+                                     (list
+                                      (list (string-append
+                                             "data/" (basename source-path))
+                                            source-path))))
+                               (data-entries))))))))))

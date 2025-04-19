@@ -191,12 +191,12 @@
                                (device "/dev/mapper/cryptroot")
                                (offset "6036736")))
                   (,data-entries ,(list (data-entry
-                                         (source "workshop")
+                                         (source "data/workshop")
                                          (borg-repositories
                                           '("/media/backup/workshop.borg"
                                             "/media/usb-backup/workshop.borg")))
                                         (data-entry
-                                         (source "areas")
+                                         (source "data/areas")
                                          (borg-repositories
                                           '("/media/backup/areas.borg"
                                             "/media/usb-backup/areas.borg")))

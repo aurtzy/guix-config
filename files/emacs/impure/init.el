@@ -129,7 +129,7 @@
   (defun my-emacs-complete-data-entry-file ()
     "Read a data entry file with completion."
     (let* ((default-directory
-            "~/")
+            "~/data/")
            (data-types
             '("workshop" "areas" "library"))
            (entry-choices
@@ -153,10 +153,10 @@
   (declare-function org-store-new-agenda-file-list "org")
   (setq org-agenda-files
         (cl-remove-duplicates (append org-agenda-files
-                                      '("~/areas/notes/"
-                                        "~/areas/notes/workshop/"
-                                        "~/areas/notes/areas/"
-                                        "~/areas/notes/library/"))
+                                      '("~/data/areas/notes/"
+                                        "~/data/areas/notes/workshop/"
+                                        "~/data/areas/notes/areas/"
+                                        "~/data/areas/notes/library/"))
                               :test #'equal)))
 
 ;;;; Define function for creating new notes files.
@@ -368,7 +368,7 @@ used from notes files."
     "Edit a notes file."
     (interactive)
     (let* ((default-directory
-            "~/areas/notes/")
+            "~/data/areas/notes/")
            (choices
             (mapcar
              (lambda (file)

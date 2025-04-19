@@ -227,7 +227,7 @@ Internet.")
                           home-impure-symlinks-service-type
                           `((,firefox-profile
                              ,(path-append-my-home
-                               "/areas/firefox/profile")
+                               "/data/areas/firefox/profile")
                              "bookmarkbackups")
                             (".local/share/flatpak/overrides"
                              ,(path-append-my-files "brave/impure")
@@ -241,7 +241,7 @@ Internet.")
                           ;; overwriting it, so we just copy it without a backup
                           ;; instead (if it exists)
                           #~(let ((src #$(path-append-my-home
-                                          "areas/firefox/profile"
+                                          "data/areas/firefox/profile"
                                           "search.json.mozlz4"))
                                   (dest #$(path-append-my-home
                                            firefox-profile
@@ -387,10 +387,10 @@ elsewhere in possibly different forms).")
                                    "lisp")
                                   (".aspell.en.prepl"
                                    ,(path-append-my-home
-                                     "areas/aspell/aspell.en.prepl"))
+                                     "data/areas/aspell/aspell.en.prepl"))
                                   (".aspell.en.pws"
                                    ,(path-append-my-home
-                                     "areas/aspell/aspell.en.pws"))))
+                                     "data/areas/aspell/aspell.en.pws"))))
                 (simple-service name
                                 home-environment-variables-service-type
                                 '( ;; Set editor for e.g. sudoedit

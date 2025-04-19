@@ -56,7 +56,7 @@
                                 ,(path-append-my-files "akregator")
                                 "org.kde.akregator")
                                (".var/app/org.kde.akregator/data/akregator/data"
-                                ,(path-append-my-home "areas/feeds")
+                                ,(path-append-my-home "data/areas/feeds")
                                 "feeds.opml")))))))))
 
 (define creative-mod
