@@ -273,9 +273,10 @@ sandboxed Xwayland sessions.")
   (let ((steam-client-libs (@@ (nongnu packages game-client)
                                steam-client-libs))
         (steam-gameruntime-libs (@@ (nongnu packages game-client)
-                                    steam-gameruntime-libs)))
+                                    steam-gameruntime-libs))
+        (container (steam-container-for nvsa-git)))
     (nonguix-container
-     (inherit steam-container)
+     (inherit container)
      (name "steam-custom")
      (binary-name "steam")
      (wrap-package steam-client-custom)
@@ -308,7 +309,7 @@ sandboxed Xwayland sessions.")
      ;;             #:name "fhs-union-32"
      ;;             #:system "i686-linux"))
      (exposed (cons* "/run/privileged/bin/gamescope"
-                     (ngc-exposed steam-container))))))
+                     (ngc-exposed container))))))
 
 (define-public steam-custom
   (nonguix-container->package steam-container-custom))
