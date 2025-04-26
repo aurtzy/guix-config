@@ -23,15 +23,19 @@
 ;;; as the base path?
 
 (define-module (my-guix utils)
+  #:use-module (guix build utils)
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (ice-9 exceptions)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (my-guix config)
   #:use-module (oop goops)
+  #:use-module (srfi srfi-1)
   #:export (path-append
             path-append-my-home
             path-append-my-files
+            path-append-my-assets-directory
             search-my-patches
             build-path-augmentation
             sanitizer
@@ -50,6 +54,46 @@
          GUIX_CONFIG_DIR
          "files"
          paths))
+
+(define (path-append-my-assets-directory alias . paths)
+  "Path-append PATHS to the assets directory corresponding to ALIAS, as
+specified in DENOTE_ALIASES_FILE, and return the result.  If the file does not
+exist or an entry for ALIAS is not found, #false is returned."
+  (define aliases
+    (false-if-exception (call-with-input-file DENOTE_ALIASES_FILE read)))
+
+  (define alias-id
+    (assoc-ref aliases alias))
+
+  (define (is-sub-directory? file)
+    (and (not (string-prefix? "." file))
+         (and=> (stat file #f)
+                (lambda (st)
+                  (eq? 'directory (stat:type st))))))
+
+  (if (not alias-id)
+      #f
+      (let* ((data-directories
+              (with-directory-excursion DENOTE_DIRECTORY
+                (map canonicalize-path
+                     (scandir "." is-sub-directory?))))
+             (all-assets-directories
+              (concatenate
+               (map (lambda (data-dir)
+                      (with-directory-excursion data-dir
+                        (map canonicalize-path
+                             (scandir data-dir is-sub-directory?))))
+                    data-directories)))
+             (matched-asset-dir
+              (car (member alias-id all-assets-directories
+                           (lambda (alias-id path)
+                             (string-contains path alias-id))))))
+        (unless matched-asset-dir
+          (raise-exception
+           (make-exception-with-message
+            (format #f "Aliased ID found, but assets directory does not exist: ~s (~s)"
+                    alias alias-id))))
+        (apply path-append matched-asset-dir paths))))
 
 (define (search-my-patches . names)
   (map (lambda (name)
