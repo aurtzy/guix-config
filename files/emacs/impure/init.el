@@ -411,6 +411,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Add fontification for denote files in `dired-mode'.
+
+(use-package dired :hook (dired-mode . denote-dired-mode))
+
 ;;;; Enable context menus.
 
 (use-package mouse
