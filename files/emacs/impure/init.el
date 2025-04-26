@@ -172,6 +172,18 @@ alist of aliases to denote IDs.")
   (require 'compile)
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
 
+;;;; Set personal dictionary location.
+
+(use-package ispell
+  :config
+  (setq ispell-personal-dictionary
+        (let* ((identifier (my-emacs-denote-aliases-assoc-ref "emacs"))
+               (notes-file (denote-get-path-by-id identifier))
+               (assets-dir (file-name-as-directory
+                            (file-name-concat (file-name-directory notes-file)
+                                              "emacs"))))
+          (file-name-concat assets-dir ".static/aspell.en.pws"))))
+
 ;;;; Add org link type for entry-local denote assets.
 
 (use-package org
