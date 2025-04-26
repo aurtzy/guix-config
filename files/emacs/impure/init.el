@@ -72,6 +72,7 @@
 
 ;;;; Unconditionally require some packages.
 
+(require 'denote)
 (require 'use-package)
 
 ;;;; User info
@@ -95,6 +96,68 @@
 
 (defvar my-emacs-state-dir
   (concat (or (getenv "XDG_STATE_HOME") "~/.local/state") "/emacs/"))
+
+;;;; Set aliases file for translating names to denote identifiers.
+
+(defvar my-emacs-denote-aliases-file "areas/aliases.lisp"
+  "Aliases file path, relative to `denote-directory'.  Stores an
+alist of aliases to denote IDs.")
+
+;;;; Configure denote.
+;; This is a hard dependency due some reliance on denote for managing and
+;; accessing external files; notably, the "assets directories", where files
+;; associated with notes can live.
+
+(use-package denote
+  :custom
+  (denote-directory "~/data/")
+  ;; Avoid traversing past data directories.
+  (denote-excluded-directories-regexp "^[^/]*/.*")
+  ;; TODO: Set `denote-excluded-files-regexp' to exclude archived files?
+
+  ;; Infer "active" keywords, pulled from areas.
+  (denote-infer-keywords nil)
+  :config
+  (my-emacs-denote-set-known-keywords)
+  ;; Regenerate keywords after denote file changes/additions.
+  (add-hook 'denote-after-new-note-hook #'my-emacs-denote-set-known-keywords)
+  (add-hook 'denote-after-rename-file-hook #'my-emacs-denote-set-known-keywords)
+  :preface
+  (defun my-emacs-denote-set-known-keywords ()
+    "Set `denote-known-keywords' to ones found from areas."
+    (setq denote-known-keywords
+          (cl-delete-duplicates
+           (mapcan #'denote-extract-keywords-from-path
+                   (directory-files (file-name-as-directory
+                                     (file-name-concat denote-directory "areas"))
+                                    :full))
+           :test #'string-equal)))
+
+  ;; Functions for accessing assets directories.
+
+  (defun my-emacs-denote-assets-directory (file)
+    "Return assets directory from FILE note.  Prompt to create, if nonexistent."
+    (interactive
+     (list (denote-file-prompt nil "Select FILE associated with assets")))
+    (let* ((file (or file (buffer-file-name)))
+           (identifier (denote-retrieve-filename-identifier-with-error file))
+           (assets-dir (file-name-concat (file-name-directory file) identifier)))
+      (unless (file-exists-p assets-dir)
+        (unless (y-or-n-p "Assets directory doesn't exist.  Create it? ")
+          (user-error "Assets directory doesn't exist"))
+        (make-directory assets-dir t))
+      (file-name-as-directory assets-dir)))
+
+  (defun my-emacs-denote-aliases-assoc-ref (alias)
+    "Return the denote ID associated with ALIAS."
+    (if-let* ((mappings-file (file-name-concat denote-directory
+                                               my-emacs-denote-aliases-file))
+              ((file-exists-p mappings-file))
+              (mappings (read (with-temp-buffer
+                                (insert-file-contents mappings-file)
+                                (buffer-string)))))
+        (cdr (assoc alias mappings))
+      nil)))
 
 
 ;;;
