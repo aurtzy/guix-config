@@ -253,18 +253,18 @@ alist of aliases to denote IDs.")
               (file-relative-name
                (read-file-name "Data entry file: " entry-dir))))))
 
-;;;; Add notes directory to org agenda files.
+;;;; Add active data directories to org agenda files.
 
 (use-package org
   :config
-  (declare-function org-store-new-agenda-file-list "org")
   (setq org-agenda-files
-        (cl-remove-duplicates (append org-agenda-files
-                                      '("~/data/areas/notes/"
-                                        "~/data/areas/notes/workshop/"
-                                        "~/data/areas/notes/areas/"
-                                        "~/data/areas/notes/library/"))
-                              :test #'equal)))
+        (cl-remove-duplicates
+         (append org-agenda-files
+                 (mapcar (lambda (data-dir-name)
+                           (file-name-as-directory
+                            (file-name-concat denote-directory data-dir-name)))
+                         '("workshop" "areas" "library")))
+         :test #'equal)))
 
 ;;;; Define function for creating new notes files.
 
