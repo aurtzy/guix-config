@@ -29,7 +29,8 @@
             base-file-system-flags-ref
             BASE_FILE_SYSTEM_OPTIONS
             base-file-system-options-ref
-            XDG_DATA_HOME))
+            XDG_DATA_HOME
+            DENOTE_DIRECTORY))
 
 ;; Base directory for Guix configurations
 (define GUIX_CONFIG_DIR
@@ -79,3 +80,6 @@ order: FILE-SYSTEM-TYPE => DEVICE-TYPE"
 (define XDG_DATA_HOME (string-append
                        (getenv "HOME")
                        "/.local/share"))
+
+;; This should match what's configured in init.el.
+(define DENOTE_DIRECTORY (string-append (getenv "HOME") "/data"))
