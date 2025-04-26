@@ -166,6 +166,17 @@ alist of aliases to denote IDs.")
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Provide function for setting project to associated assets directory.
+
+(use-package project
+  :preface
+  (defun my-emacs-project-set-assets-directory-override ()
+    "Set a file-local project directory override to associated assets directory."
+    (let* ((file (buffer-file-name))
+           (assets-directory (my-emacs-denote-assets-directory file)))
+      (make-local-variable 'project-current-directory-override)
+      (setq project-current-directory-override assets-directory))))
+
 ;;;; Translate ANSI escape sequences in compilation buffer to text properties.
 
 (use-package ansi-color
