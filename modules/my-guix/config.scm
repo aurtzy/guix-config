@@ -30,7 +30,8 @@
             BASE_FILE_SYSTEM_OPTIONS
             base-file-system-options-ref
             XDG_DATA_HOME
-            DENOTE_DIRECTORY))
+            DENOTE_DIRECTORY
+            DENOTE_ALIASES_FILE))
 
 ;; Base directory for Guix configurations
 (define GUIX_CONFIG_DIR
@@ -83,3 +84,6 @@ order: FILE-SYSTEM-TYPE => DEVICE-TYPE"
 
 ;; This should match what's configured in init.el.
 (define DENOTE_DIRECTORY (string-append (getenv "HOME") "/data"))
+
+(define DENOTE_ALIASES_FILE (string-append DENOTE_DIRECTORY
+                                           "/areas/aliases.lisp"))
