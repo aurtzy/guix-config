@@ -2,6 +2,7 @@
 ;; Copyright © 2013-2022 Phil Hagelberg and contributors
 ;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
 ;; Copyright © 2012-2016 Kyle Meyer <kyle@kyleam.com>
+;; Copyright © 2022-2024  Free Software Foundation, Inc.
 ;;
 ;; This file is NOT part of GNU Emacs.
 ;;
@@ -171,6 +172,36 @@ alist of aliases to denote IDs.")
   (require 'compile)
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
 
+;;;; Add org link type for entry-local denote assets.
+
+(use-package org
+  :config
+  (org-link-set-parameters
+   "denote-asset"
+   :follow #'my-emacs-denote-asset-follow
+   :complete #'my-emacs-denote-asset-complete)
+
+  (defun my-emacs-denote-asset-follow (path &optional prefix)
+    "Follow PATH for `denote-asset' org link with potential PREFIX argument."
+    (let* ((identifier (denote-retrieve-filename-identifier-with-error
+                        (buffer-file-name)))
+           (assets-dir (file-name-concat (file-name-directory
+                                          (denote-get-path-by-id identifier))
+                                         identifier))
+           (asset-file (file-name-concat assets-dir path)))
+      (org-link-open-as-file asset-file prefix)))
+
+  (defun my-emacs-denote-asset-complete ()
+    "Provide completion for and return a `denote-asset' link."
+    (let* ((identifier
+            (denote-retrieve-filename-identifier-with-error (buffer-file-name)))
+           (assets-dir
+            (my-emacs-denote-assets-directory identifier))
+           (relative-path
+            (file-relative-name (read-file-name "Denote asset: " assets-dir)
+                                assets-dir)))
+      (concat "denote-asset:" relative-path))))
+
 ;;;; Add org link type for data entry files.
 
 (use-package org
@@ -179,7 +210,7 @@ alist of aliases to denote IDs.")
    "data-entry-file"
    :follow #'my-emacs-open-data-entry-file
    :complete #'my-emacs-complete-data-entry-file)
-  :config
+  :preface
   (defun my-emacs-open-data-entry-file (path _prefix)
     "Find a data entry file associated with PATH."
     ;; TODO: Support searching archives.
@@ -189,6 +220,7 @@ alist of aliases to denote IDs.")
       (if found-data-entry-file
           (org-link-open-as-file found-data-entry-file t)
         (user-error "File not found: %s" path))))
+
   (defun my-emacs-complete-data-entry-file ()
     "Read a data entry file with completion."
     (let* ((default-directory
