@@ -120,7 +120,7 @@
   (defun my-emacs-open-data-entry-file (path _prefix)
     "Find a data entry file associated with PATH."
     ;; TODO: Support searching archives.
-    (let* ((default-directory "~/")
+    (let* ((default-directory "~/data/")
            (found-data-entry-file
             (and (file-exists-p path) path)))
       (if found-data-entry-file
