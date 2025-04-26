@@ -44,18 +44,16 @@
 (use-service-modules sysctl)
 
 (define games-src
-  (path-append-my-home "data/areas/games"))
+  (path-append-my-static-assets-directory "games"))
 
-(define steam-extra-shares '( ;; Work around steam needing access to files when
+(define steam-extra-shares `( ;; Work around steam needing access to files when
                               ;; uploading screenshots/pictures to chat (portal
                               ;; doesn't seem to apply here..?).
                              "$HOME/Pictures/Screenshots"
-                             "$HOME/data/areas/games"
+                             ,games-src
                              "$HOME/Games"
                              "$HOME/storage/steam-alt-library"
                              "$HOME/.config/r2modmanPlus-local"))
-
-(define videa-src (path-append-my-home "data/areas/videa"))
 
 (define game-managers-mod
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
@@ -79,14 +77,7 @@
         (mod-he-services
          (list (simple-service name
                                home-impure-symlinks-service-type
-                               `( ;; Flatpak overrides
-                                 (".local/share/flatpak/overrides"
-                                  ,(path-append-my-files "lutris/impure")
-                                  "net.lutris.Lutris")
-                                 (".local/share/flatpak/overrides"
-                                  ,(path-append-my-files "steam/impure")
-                                  "com.valvesoftware.Steam")
-                                 ;; Mindustry
+                               `( ;; Mindustry
                                  (,(path-append lutris-dest "Mindustry")
                                   ,(path-append games-src "mindustry/files")
                                   "saves"
@@ -104,6 +95,20 @@
                                   "Players/Backups"
                                   "Worlds/Backups"
                                   "Captures")))
+               (simple-service name
+                               home-files-service-type
+                               `((".local/share/flatpak/overrides/net.lutris.Lutris"
+                                  ,(mixed-text-file "net.lutris.Lutris" "\
+[Context]
+filesystems=" (path-append-my-static-assets-directory "games") ";!home;~/.guix-home;~/Games
+"))))
+               (simple-service name
+                               home-files-service-type
+                               `((".local/share/flatpak/overrides/com.valvesoftware.Steam"
+                                  ,(mixed-text-file "com.valvesoftware.Steam" "\
+[Context]
+filesystems=" (path-append-my-static-assets-directory "games") ";~/storage/steam-alt-library;~/Games
+"))))
                (simple-service name
                                home-flatpak-profile-service-type
                                '((flathub "net.lutris.Lutris")
@@ -156,12 +161,17 @@
                             home-flatpak-profile-service-type
                             '((flathub "info.febvre.Komikku")))
             (simple-service name
+                            home-files-service-type
+                            `((".local/share/flatpak/overrides/info.febvre.Komikku"
+                               ,(mixed-text-file "info.febvre.Komikku" "\
+[Context]
+filesystems=" (path-append-my-static-assets-directory "komikku" "komikku.db") "
+"))))
+            (simple-service name
                             home-impure-symlinks-service-type
-                            `((".local/share/flatpak/overrides"
-                               ,(path-append-my-files "videa")
-                               "info.febvre.Komikku")
-                              (".var/app/info.febvre.Komikku/data"
-                               ,videa-src
+                            `((".var/app/info.febvre.Komikku/data"
+                               ,(path-append-my-static-assets-directory
+                                 "komikku")
                                "komikku.db"))))))))
 
 (define syncplay-mod

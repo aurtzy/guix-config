@@ -35,13 +35,15 @@
   #:export (path-append
             path-append-my-home
             path-append-my-files
-            path-append-my-assets-directory
+            path-append-my-static-assets-directory
             search-my-patches
             build-path-augmentation
             sanitizer
             crate-package-source
             compose-lambda
             package-all-inputs))
+
+(define static-assets-sub-directory ".static")
 
 (define (path-append . paths)
   (string-join paths "/"))
@@ -55,8 +57,8 @@
          "files"
          paths))
 
-(define (path-append-my-assets-directory alias . paths)
-  "Path-append PATHS to the assets directory corresponding to ALIAS, as
+(define (path-append-my-static-assets-directory alias . paths)
+  "Path-append PATHS to the static assets directory corresponding to ALIAS, as
 specified in DENOTE_ALIASES_FILE, and return the result.  If the file does not
 exist or an entry for ALIAS is not found, #false is returned."
   (define aliases
@@ -93,7 +95,7 @@ exist or an entry for ALIAS is not found, #false is returned."
            (make-exception-with-message
             (format #f "Aliased ID found, but assets directory does not exist: ~s (~s)"
                     alias alias-id))))
-        (apply path-append matched-asset-dir paths))))
+        (apply path-append matched-asset-dir static-assets-sub-directory paths))))
 
 (define (search-my-patches . names)
   (map (lambda (name)

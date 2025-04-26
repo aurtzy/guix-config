@@ -226,23 +226,30 @@ Internet.")
           (simple-service name
                           home-impure-symlinks-service-type
                           `((,firefox-profile
-                             ,(path-append-my-home
-                               "/data/areas/firefox/profile")
+                             ,(path-append-my-static-assets-directory
+                               "firefox" "default-profile")
                              "bookmarkbackups")
                             (".local/share/flatpak/overrides"
                              ,(path-append-my-files "brave/impure")
-                             "com.brave.Browser")
-                            (".local/share/flatpak/overrides"
-                             ,(path-append-my-files "firefox/impure")
-                             "org.mozilla.firefox")))
+                             "com.brave.Browser")))
+          (simple-service name
+                          home-files-service-type
+                          `((".local/share/flatpak/overrides/org.mozilla.firefox"
+                             ,(mixed-text-file "org.mozilla.firefox" "\
+[Context]
+filesystems=" (path-append-my-static-assets-directory "firefox" "default-profile") ";xdg-pictures/screenshots;~/.local/share/fonts:ro;/run/current-system/profile/share/fonts:ro;~/.guix-home:ro
+[Session Bus Policy]
+# TEMP: Shouldn't be necessary anymore when Plasma updates to 6.1.4
+org.freedesktop.ScreenSaver=talk
+"))))
           (simple-service name
                           home-activation-service-type
                           ;; This file isn't /that/ important, and Firefox keeps
                           ;; overwriting it, so we just copy it without a backup
                           ;; instead (if it exists)
-                          #~(let ((src #$(path-append-my-home
-                                          "data/areas/firefox/profile"
-                                          "search.json.mozlz4"))
+                          #~(let ((src #$(path-append-my-static-assets-directory
+                                          "firefox"
+                                          "default-profile/search.json.mozlz4"))
                                   (dest #$(path-append-my-home
                                            firefox-profile
                                            "search.json.mozlz4")))
@@ -384,13 +391,7 @@ elsewhere in possibly different forms).")
                                 `((".config/emacs"
                                    ,(path-append-my-files "emacs/impure")
                                    "init.el"
-                                   "lisp")
-                                  (".aspell.en.prepl"
-                                   ,(path-append-my-home
-                                     "data/areas/aspell/aspell.en.prepl"))
-                                  (".aspell.en.pws"
-                                   ,(path-append-my-home
-                                     "data/areas/aspell/aspell.en.pws"))))
+                                   "lisp")))
                 (simple-service name
                                 home-environment-variables-service-type
                                 '( ;; Set editor for e.g. sudoedit

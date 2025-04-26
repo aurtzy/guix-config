@@ -23,6 +23,7 @@
 (define-module (my-guix mods desktop-extra)
   #:use-module (gnu)
   #:use-module (gnu home)
+  #:use-module (gnu home services)
   #:use-module (gnu services)
   #:use-module (my-guix config)
   #:use-module (my-guix mods)
@@ -51,13 +52,17 @@
                              '((flathub "org.mozilla.Thunderbird")
                                (flathub "org.kde.akregator")))
              (simple-service name
+                             home-files-service-type
+                             `((".local/share/flatpak/overrides/org.kde.akregator"
+                                ,(mixed-text-file "org.kde.akregator" "\
+[Context]
+filesystems=" (path-append-my-static-assets-directory "akregator") "
+"))))
+             (simple-service name
                              home-impure-symlinks-service-type
-                             `((".local/share/flatpak/overrides"
-                                ,(path-append-my-files "akregator")
-                                "org.kde.akregator")
-                               (".var/app/org.kde.akregator/data/akregator/data"
-                                ,(path-append-my-home "data/areas/feeds")
-                                "feeds.opml")))))))))
+                             `((".var/app/org.kde.akregator/data/akregator/data/feeds.opml"
+                                ,(path-append-my-static-assets-directory
+                                  "akregator" "akregator-feeds.opml"))))))))))
 
 (define creative-mod
   (mod
@@ -85,10 +90,14 @@
      (compose
       (mod-he-services
        (list (simple-service name
-                             home-impure-symlinks-service-type
-                             `((".local/share/flatpak/overrides"
-                                ,(path-append-my-files "soundux/impure")
-                                "io.github.Soundux")))
+                             home-files-service-type
+                             ;; Segfault happens when DRI is enabled?
+                             `((".local/share/flatpak/overrides/io.github.Soundux"
+                                ,(mixed-text-file "io.github.Soundux" "\
+[Context]
+devices=!dri
+filesystems=" (path-append-my-static-assets-directory "memes") ";~/storage/tmp/audio/etc
+"))))
              (simple-service name
                              home-flatpak-profile-service-type
                              '((flathub "in.cinny.Cinny")

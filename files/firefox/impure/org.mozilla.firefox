@@ -1,6 +1,0 @@
-[Context]
-filesystems=xdg-pictures/screenshots;~/.local/share/fonts:ro;~/data/areas/firefox;/run/current-system/profile/share/fonts:ro;~/.guix-home:ro
-
-[Session Bus Policy]
-# TEMP: Shouldn't be necessary anymore when Plasma updates to 6.1.4
-org.freedesktop.ScreenSaver=talk
