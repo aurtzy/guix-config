@@ -422,6 +422,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Prettify-rename denote buffers.
+
+(use-package denote-rename-buffer :config (denote-rename-buffer-mode t))
+
 ;;;; Add fontification for denote files in `dired-mode'.
 
 (use-package dired :hook (dired-mode . denote-dired-mode))
