@@ -36,10 +36,12 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pkg-config)
@@ -122,6 +124,49 @@ images."))
               (sha256
                (base32 "0k72q7yvfdn92wkslyifw14319nm981a8r3kd84i4ylxmrkgi0zm"))))))
 
+;; Upstream strongly recommends using some of its pinned dependencies due to
+;; relying on unstable features; these should be checked when updating
+;; gamescope.  See:
+;; <https://github.com/ValveSoftware/gamescope/commit/7741cd587fa2274989f3307a3c6f23ab08e98460>
+(define %gamescope-version "3.16.4")
+
+(define libliftoff-for-gamescope
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://gitlab.freedesktop.org/emersion/libliftoff.git")
+          (commit "8b08dc1c14fd019cc90ddabe34ad16596b0691f4")))
+    (file-name (git-file-name "libliftoff-for-gamescope" %gamescope-version))
+    (sha256 (base32 "163g8ndsbma7acy2k9mrnvlpb7yi4431hgkx1gygkafgwpq1ii1x"))))
+
+(define reshade-for-gamescope
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/Joshua-Ashton/reshade")
+          (commit "696b14cd6006ae9ca174e6164450619ace043283")))
+    (file-name (git-file-name "reshade-for-gamescope" %gamescope-version))
+    (sha256
+     (base32 "1zvhf3pgd8bhn8bynrsh725xn1dszsf05j8c9g6zabgv7vnz04a5"))))
+
+(define vkroots-for-gamescope
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/Joshua-Ashton/vkroots")
+          (commit "5106d8a0df95de66cc58dc1ea37e69c99afc9540")))
+    (file-name (git-file-name "vkroots-for-gamescope" %gamescope-version))
+    (sha256 (base32 "0hrp0xqq93552ipw2bmryixgm1aywnz49xagsx5rwzg2d0hwa0aa"))))
+
+(define wlroots-for-gamescope
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://github.com/Joshua-Ashton/wlroots.git")
+          (commit "4bc5333a2cbba0b0b88559f281dbde04b849e6ef")))
+    (file-name (git-file-name "wlroots-for-gamescope" %gamescope-version))
+    (sha256 (base32 "14m9j9qkaphzm3g36im43b6h92rh3xyjh7j46vw9w2qm602ndwcf"))))
+
 ;; From: https://gitlab.com/nonguix/nonguix/-/merge_requests/200
 ;;
 ;; XXX: When run inside steam container, sometimes complains about
@@ -145,115 +190,126 @@ images."))
 ;; The following variables appear to be read: $XDG_CONFIG_DIRS,
 ;; $XDG_DATA_DIRS, $XDG_CONFIG_HOME
 (define-public gamescope
-  (let ((version "3.14.20")
-        (revision "0")
-        (commit "650b0959a7677c89ea1395025ae9ebc84d982f0a"))
-    (package
-      (name "gamescope")
-      (version (git-version version revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/ValveSoftware/gamescope")
-               (commit commit)
-               (recursive? #t)))
-         (sha256
-          (base32 "10c4bk3ahphp4cg9fkpbd6wazx4q5r7b587l87wpyc477da0q6v8"))
-         (file-name (git-file-name name version))))
-      (build-system meson-build-system)
-      (arguments
-       (list
-        #:configure-flags #~(list "-Dpipewire=enabled"
-                                  "-Denable_openvr_support=false")
-        #:modules '((guix build meson-build-system)
-                    (guix build utils)
-                    (my-guix build utils))
-        #:imported-modules `(,@%meson-build-system-modules
-                             (guix build utils)
-                             (my-guix build utils))
-        #:phases
-        #~(modify-phases %standard-phases
-            (add-after 'unpack 'patch-usr-dir
-              (lambda _
-                (substitute* "src/reshade_effect_manager.cpp"
-                  (("/usr") #$output))))
+  (package
+    (name "gamescope")
+    (version %gamescope-version)
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ValveSoftware/gamescope")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "09h7046vwqn0w3kv1zaij4h3rcrvs1r2qlm0vva3mk3gg44fnhjl"))
+       (modules '((guix build utils)
+                  (ice-9 match)))
+       (snippet
+        #~(begin
+            ;; Add some dependencies to source tree where they're expected.
+            (for-each (match-lambda
+                        ((source dest)
+                         (copy-recursively source dest)))
+                      '((#$libliftoff-for-gamescope "subprojects/libliftoff")
+                        (#$reshade-for-gamescope "src/reshade")
+                        (#$vkroots-for-gamescope "subprojects/vkroots")
+                        (#$wlroots-for-gamescope "subprojects/wlroots")))))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:configure-flags #~(list "-Dpipewire=enabled"
+                                "-Denable_openvr_support=false")
+      #:modules '((guix build meson-build-system)
+                  (guix build utils)
+                  (my-guix build utils))
+      #:imported-modules `(,@%meson-build-system-modules
+                           (guix build utils)
+                           (my-guix build utils))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-usr-dir
+            (lambda _
+              (substitute* "src/reshade_effect_manager.cpp"
+                (("/usr") #$output))))
+          (add-after 'unpack 'patch-loader-path
+            ;; TODO: Test this again and document what exactly this fixes.
+            ;;
             ;; Related issue: https://issues.guix.gnu.org/71109
-            (add-after 'unpack 'patch-loader-path
-              (lambda* (#:key inputs #:allow-other-keys)
-                (substitute* "src/rendervulkan.cpp"
-                  (("dlopen\\( \"libvulkan\\.so")
-                   (string-append "dlopen( \""
-                                  (search-input-file
-                                   inputs "/lib/libvulkan.so"))))))
-            (add-after 'unpack 'patch-version
-              (lambda _
-                (substitute* "src/meson.build"
-                  (("(command\\s*:\\s*)\\['git'.*\\]" all command-match)
-                   (string-append command-match
-                                  "['echo', '"
-                                  #+version
-                                  "']")))))
-            (add-after 'unpack 'patch-subprojects
-              (lambda _
-                ;; stb
-                (patch-wrap-file
-                 "stb"
-                 #+(file-append
-                    (directory-union "stb" (list stb-image
-                                                 stb-image-write
-                                                 stb-image-resize))
-                    "/include"))
-                ;; libdisplay-info
-                (substitute* "src/meson.build"
-                  ;; Allow newer versions
-                  (("(version: \\['>= 0\\.0\\.0'), '< 0\\.2\\.0'(\\])"
-                    _ left-part right-part)
-                   (string-append left-part right-part))))))))
-      (native-inputs
-       (list gcc-12
-             glslang
-             pkg-config
-             python-3
-             vulkan-headers))
-      (inputs
-       (list benchmark
-             glm
-             hwdata
-             libavif-1.0
-             libdecor
-             libdisplay-info
-             libdrm
-             libinput
-             libseat
-             libx11
-             libxcomposite
-             libxcursor
-             libxdamage
-             libxext
-             libxkbcommon
-             libxmu
-             libxrender
-             libxres
-             libxt
-             libxtst
-             libxxf86vm
-             pipewire
-             pixman
-             sdl2
-             vulkan-loader
-             xcb-util-wm
-             xcb-util-errors
-             xorg-server-xwayland
-             wayland
-             wayland-protocols))
-      (home-page "https://github.com/ValveSoftware/gamescope")
-      (synopsis "Session compositing window manager")
-      (description "Gamescope is a Wayland compositor for running games,
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "src/rendervulkan.cpp"
+                (("dlopen\\( \"libvulkan\\.so")
+                 (string-append "dlopen( \""
+                                (search-input-file
+                                 inputs "/lib/libvulkan.so"))))))
+          (add-after 'unpack 'patch-version
+            (lambda _
+              (substitute* "src/meson.build"
+                (("^vcs_tag = .*$")
+                 (string-append
+                  "vcs_tag = '" #$(package-version this-package) "'\n")))))
+          (add-after 'unpack 'patch-deps
+            (lambda _
+              ;; stb
+              (patch-wrap-file
+               "stb"
+               #+(file-append
+                  ;; TODO: reference with this-package-native-input instead
+                  (directory-union "stb" (list stb-image
+                                               stb-image-write
+                                               stb-image-resize))
+                  "/include"))
+              ;; libdisplay-info
+              (substitute* "src/meson.build"
+                (("../thirdparty/SPIRV-Headers")
+                 #$(this-package-native-input "spirv-headers"))))))))
+    (native-inputs
+     (list gcc-14
+           glslang
+           pkg-config
+           python-3
+           spirv-headers
+           vulkan-headers))
+    (inputs
+     (list benchmark
+           glm
+           hwdata
+           lcms
+           libavif-1.0
+           libdecor
+           libdisplay-info
+           libdrm
+           libei
+           libinput
+           libseat
+           libx11
+           libxcomposite
+           libxcursor
+           libxdamage
+           libxext
+           libxkbcommon
+           libxmu
+           libxrender
+           libxres
+           libxt
+           libxtst
+           libxxf86vm
+           luajit
+           pipewire
+           pixman
+           sdl2
+           vulkan-loader
+           xcb-util-wm
+           xcb-util-errors
+           xorg-server-xwayland
+           wayland
+           wayland-protocols))
+    (home-page "https://github.com/ValveSoftware/gamescope")
+    (synopsis "Session compositing window manager")
+    (description "Gamescope is a Wayland compositor for running games,
 formerly known as steamcompmgr.  It is designed for use in embedded sessions
 and as a nested compositor on top of a regular desktop environment through
 sandboxed Xwayland sessions.")
-      (license license:bsd-2))))
+    (license license:bsd-2)))
 
 (define steam-client-custom
   (let ((steam-client (@@ (nongnu packages game-client) steam-client)))
