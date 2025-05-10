@@ -1,4 +1,1 @@
-(use-modules (gnu))
-
-(specifications->manifest (list "rust:tools"
-                                "rust:cargo"))
+(specifications->manifest (list "rust" "rust:rust-src" "rust:tools" "rust:cargo"))
