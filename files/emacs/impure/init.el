@@ -419,6 +419,23 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Override read-only key-bind for `compilation-minor-mode' in Comint buffers.
+
+(use-package comint
+  :bind ( :map comint-mode-map
+          ("C-x C-q" . my-emacs/toggle-compilation-minor-mode))
+  :preface
+  (defun my-emacs/toggle-compilation-minor-mode ()
+    (interactive)
+    (if compilation-minor-mode
+        (progn
+          (compilation-minor-mode -1)
+          (read-only-mode -1)
+          (message "Disabled compilation mode"))
+      (compilation-minor-mode 1)
+      (read-only-mode 1)
+      (message "Enabled compilation mode"))))
+
 ;;;; Prettify-rename denote buffers.
 
 (use-package denote :config (denote-rename-buffer-mode t))
