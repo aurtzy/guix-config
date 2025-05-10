@@ -132,7 +132,11 @@ filesystems=" (path-append-my-static-assets-directory "games") ";!home;~/.guix-h
                                   ,(mixed-text-file "com.valvesoftware.Steam" "\
 [Context]
 filesystems=" (path-append-my-static-assets-directory "games") ";~/storage/steam-alt-library;~/Games
-"))))
+"))
+                                 (".local/share/flatpak/overrides/com.github.Matoking.protontricks"
+                                  ,(mixed-text-file "com.github.Matoking.protontricks" "\
+[Context]
+filesystems=~/.local/share/.guix-sandbox-home"))))
                (simple-service name
                                home-flatpak-profile-service-type
                                '((flathub "net.lutris.Lutris")
