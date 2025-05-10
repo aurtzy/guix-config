@@ -275,14 +275,14 @@ alist of aliases to denote IDs.")
 
 (use-package org
   :config
-  (setq org-agenda-files
-        (cl-remove-duplicates
-         (append org-agenda-files
-                 (mapcar (lambda (data-dir-name)
-                           (file-name-as-directory
-                            (file-name-concat denote-directory data-dir-name)))
-                         '("workshop" "areas" "library")))
-         :test #'equal)))
+  (org-store-new-agenda-file-list
+   (cl-delete-duplicates
+    (append (mapcar (lambda (data-dir-name)
+                      (file-name-as-directory
+                       (file-name-concat denote-directory data-dir-name)))
+                    '("workshop" "areas" "library"))
+            org-agenda-files)
+    :test #'equal)))
 
 ;;;; Define function for creating new notes files.
 
