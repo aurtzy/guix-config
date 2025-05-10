@@ -424,7 +424,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Prettify-rename denote buffers.
 
-(use-package denote-rename-buffer :config (denote-rename-buffer-mode t))
+(use-package denote :config (denote-rename-buffer-mode t))
 
 ;;;; Add fontification for denote files in `dired-mode'.
 
