@@ -88,6 +88,12 @@
 (eval-when-compile
   (setq use-package-expand-minimally byte-compile-current-file))
 
+;;;; Set `custom-file' so customization information doesn't end up in init.el.
+;; ...and load it, if available.
+
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(load custom-file 'noerror 'nomessage)
+
 ;;;; Set a variable for directories to exclude in searches.
 
 (defvar my-emacs-search-excluded-directories
@@ -359,15 +365,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
       (unwind-protect
           (yes-or-no-p prompt)
         (set 'confirm-kill-emacs-active-p nil)))))
-
-;;;; Set `custom-file' so customization information doesn't end up in init.el
-;; ...and load it, if available.
-
-(use-package emacs
-  :custom
-  (custom-file (locate-user-emacs-file "custom.el"))
-  :config
-  (load custom-file 'noerror 'nomessage))
 
 ;;;; Always check for the most recent file to load.
 
