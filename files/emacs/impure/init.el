@@ -506,49 +506,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
       ;; TODO: Command: Move files between data directories.
       ("r k" "keywords" my-emacs-denote-rename-file-keywords)
       ("r t" "title" my-emacs-denote-rename-file-title)
-      ("r r" "file" my-emacs-denote-rename-file)]
-     ;; TEMP: Convenience commands for easing transition to denote.
-     ["Denote transitioning"
-      ("t m" "Add front matter" denote-add-front-matter
-       :inapt-if-not (lambda () (buffer-file-name)))
-      ("t d" "Transition directory"
-       (lambda () (interactive)
-         (let* ((name (directory-file-name (dired-get-filename)))
-                (denote-use-directory default-directory)
-                (notes-file (call-interactively #'denote))
-                (identifier (denote-retrieve-filename-identifier notes-file)))
-           (rename-file name identifier)
-           (message "Renamed: %s -> %s" name identifier)))
-       :inapt-if-not (lambda () (derived-mode-p 'dired-mode)))
-      ("t t" "Transition file"
-       (lambda () (interactive)
-         (when-let* ((file (buffer-file-name))
-                     (name (file-name-nondirectory file))
-                     (identifier (or (denote-extract-id-from-string file)
-                                     (denote-create-unique-file-identifier file)))
-                     (new-name (file-name-concat default-directory
-                                                 (concat identifier "--" name))))
-           (message "Renaming file to: %s" new-name)
-           (rename-visited-file new-name))
-         (call-interactively #'denote-add-front-matter)
-         (let* ((identifier (denote-retrieve-filename-identifier
-                             (buffer-file-name)))
-                (notes-file (denote-get-path-by-id identifier))
-                (title (denote-retrieve-filename-title notes-file))
-                (assets-dir (completing-read
-                             "Also rename assets directory (empty to skip): "
-                             (directory-files ".")
-                             ;; Assume assets directory likely uses TITLE as
-                             ;; name.
-                             nil nil title)))
-           ;; Rename assets directory, if it exists.
-           (unless (string-empty-p assets-dir)
-             (rename-file assets-dir identifier)
-             (message "Renamed: %s -> %s" assets-dir identifier))
-           (denote-rename-file-using-front-matter notes-file)
-           (push-mark)
-           (call-interactively #'org-next-visible-heading)))
-       :inapt-if-not (lambda () (buffer-file-name)))]]
+      ("r r" "file" my-emacs-denote-rename-file)]]
     ["Manage"
      ("m a" "Aliases file" my-emacs-denote-find-aliases-file)])
 
