@@ -123,15 +123,17 @@ filesystems=" (path-append-my-static-assets-directory "games") ";~/storage/steam
                                home-bash-service-type
                                (home-bash-extension
                                 (aliases
-                                 ;; It's fairly common for me to launch from
-                                 ;; command-line for latest mesa or because of
-                                 ;; differences in system/home configuration, so
-                                 ;; set aliases for steam with NVK/proprietary
-                                 ;; driver
+                                 ;; Set aliases for steam-with-NVK and
+                                 ;; steam-with-proprietry driver for
+                                 ;; convenience.
                                  '(("steam-custom"
-                                    . "guix shell steam-custom -- steam")
+                                    . "\
+gamescope --backend sdl -w 1280 -h 720 -W 1280 -H 720 --force-grab-cursor --fullscreen -- \\
+	guix shell steam-custom -- steam")
                                    ("steam-nvidia"
-                                    . "guix shell steam-nvidia -- steam"))))))))))))
+                                    . "\
+gamescope -w 2560 -h 1440 -W 2560 -H 1440 --force-grab-cursor --fullscreen -- \\
+	guix shell steam-nvidia -- steam"))))))))))))
 
 (define minecraft-mod
   (mod
