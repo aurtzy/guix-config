@@ -55,7 +55,8 @@
                              ,games-src
                              "$HOME/Games"
                              "$HOME/storage/steam-alt-library"
-                             "$HOME/.config/r2modmanPlus-local"))
+                             "$HOME/.config/r2modmanPlus-local"
+                             "$HOME/solid-drive/steam-library"))
 
 (define game-managers-mod
   (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
