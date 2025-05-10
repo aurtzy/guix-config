@@ -111,19 +111,6 @@
    "stb-image-resize is a library that supports scaling and translation of
 images."))
 
-(define-public libavif-1.0
-  (package
-    (inherit libavif)
-    (version "1.0.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/AOMediaCodec/libavif")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name (package-name libavif) version))
-              (sha256
-               (base32 "0k72q7yvfdn92wkslyifw14319nm981a8r3kd84i4ylxmrkgi0zm"))))))
-
 ;; Upstream strongly recommends using some of its pinned dependencies due to
 ;; relying on unstable features; these should be checked when updating
 ;; gamescope.  See:
@@ -274,7 +261,7 @@ images."))
            glm
            hwdata
            lcms
-           libavif-1.0
+           libavif
            libdecor
            libdisplay-info
            libdrm
