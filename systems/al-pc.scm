@@ -145,21 +145,7 @@
                                   (nginx-location-configuration
                                    (uri "/")
                                    (body '("proxy_pass http://localhost:8081;"))))))))
-              ;; HACK: gamescope searches multiple locations for needed vulkan
-              ;; files from mesa, one of which is here.  Conveniently provide
-              ;; them at this location.
-              (simple-service 'mesa-vulkan-files
-                              etc-service-type
-                              `(("vulkan" ,(file-append
-                                            nvsa-git "/share/vulkan"))))
-              (operating-system-user-services base-os)))
-      (privileged-programs
-       (cons* (privileged-program
-               (program
-                (file-append (replace-mesa->nvsa-git gamescope)
-                             "/bin/gamescope"))
-               (capabilities "cap_sys_nice=eip"))
-              (operating-system-privileged-programs base-os))))))
+              (operating-system-user-services base-os))))))
 
 (define initial-home-environment
   (let ((base-he base-desktop-home-environment))
