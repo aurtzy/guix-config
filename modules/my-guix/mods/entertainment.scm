@@ -125,10 +125,8 @@
                                   ,(mixed-text-file "net.lutris.Lutris" "\
 [Context]
 filesystems=" (path-append-my-static-assets-directory "games") ";!home;~/.guix-home;~/Games
-"))))
-               (simple-service name
-                               home-files-service-type
-                               `((".local/share/flatpak/overrides/com.valvesoftware.Steam"
+"))
+                                 (".local/share/flatpak/overrides/com.valvesoftware.Steam"
                                   ,(mixed-text-file "com.valvesoftware.Steam" "\
 [Context]
 filesystems=" (path-append-my-static-assets-directory "games") ";~/storage/steam-alt-library;~/Games
