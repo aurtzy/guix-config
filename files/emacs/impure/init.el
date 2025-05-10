@@ -419,6 +419,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Enable `compilation-minor-mode' in log files.
+
+(use-package compile
+  :mode ("\\.log\\'" . compilation-minor-mode))
+
 ;;;; Override read-only key-bind for `compilation-minor-mode' in Comint buffers.
 
 (use-package comint
