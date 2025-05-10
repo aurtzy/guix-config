@@ -24,7 +24,9 @@
   #:use-module (gnu home)
   #:use-module (gnu home services)
   #:use-module (gnu home services shells)
+  #:use-module (gnu packages gl)
   #:use-module (gnu services)
+  #:use-module (gnu system privilege)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods desktop)
   #:use-module (my-guix home services)
@@ -61,15 +63,37 @@
     (mod
       (name 'game-managers)
       (os-extension
-       (mod-os-service
-        sysctl-service-type
-        (lambda (config)
-          (sysctl-configuration
-           (inherit config)
-           ;; Copied value from Arch Linux (and context given in link):
-           ;; https://archlinux.org/news/increasing-the-default-vmmax_map_count-value/
-           (settings (cons* '("vm.max_map_count" . "1048576")
-                            (sysctl-configuration-settings config)))))))
+       (compose
+        (mod-os-services
+         (let ((replace-mesa (replace-mesa)))
+           (list (simple-service name
+                                 profile-service-type
+                                 (list (replace-mesa gamescope)))
+                 (simple-service name
+                                 privileged-program-service-type
+                                 (list
+                                  (privileged-program
+                                   (program
+                                    (file-append
+                                     (replace-mesa gamescope) "/bin/gamescope"))
+                                   (capabilities "cap_sys_nice=eip"))))
+                 ;; HACK: Using privileges causes gamescope to not inherit
+                 ;; environment, so it fails an attempt to search for needed
+                 ;; vulkan files.  Conveniently provide them at this location,
+                 ;; which gamescope searches by default.
+                 (simple-service name
+                                 etc-service-type
+                                 `(("vulkan" ,(file-append (replace-mesa mesa)
+                                                           "/share/vulkan")))))))
+        (mod-os-service
+         sysctl-service-type
+         (lambda (config)
+           (sysctl-configuration
+            (inherit config)
+            ;; Copied value from Arch Linux (and context given in link):
+            ;; https://archlinux.org/news/increasing-the-default-vmmax_map_count-value/
+            (settings (cons* '("vm.max_map_count" . "1048576")
+                             (sysctl-configuration-settings config))))))))
       (he-extension
        (compose
         (mod-he-packages
