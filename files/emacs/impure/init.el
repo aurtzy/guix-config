@@ -391,6 +391,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Configure `global-page-break-lines-mode'.
+
+(use-package page-break-lines
+  :config (global-page-break-lines-mode t))
+
 ;;;; Configure `vundo-popup-mode'.
 
 (use-package vundo-popup
@@ -1117,12 +1122,6 @@ used from notes files."
 (use-package repeat
   :config
   (repeat-mode t))
-
-(use-package page-break-lines
-  :config
-  (global-page-break-lines-mode t)
-  :preface
-  (declare-function global-page-break-lines-mode "page-break-lines"))
 
 ;;;; Miscellaneous
 
