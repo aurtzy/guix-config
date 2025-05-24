@@ -391,6 +391,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Configure `envrc-global-mode'.
+
+(use-package envrc
+  :hook (after-init . envrc-global-mode))
+
 ;;;; Configure `editorconfig-mode'.
 
 (use-package editorconfig
@@ -466,6 +471,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;
 ;;; (transients) Transients.
 ;;;
+
+;;;; Set up `envrc' command map.
+
+(use-package envrc
+  :bind ("C-c d" . #'envrc-command-map))
 
 ;;;; Add a Transient menu for managing denote files.
 ;; TODO: Support denote silos.
@@ -1083,10 +1093,6 @@ used from notes files."
   (auto-insert-directory (concat user-emacs-directory "inserts"))
   :config
   (auto-insert-mode 1))
-
-(use-package envrc
-  :bind ("C-c d" . #'envrc-command-map)
-  :hook (after-init . envrc-global-mode))
 
 (use-package eglot
   :commands eglot
