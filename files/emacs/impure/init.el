@@ -394,16 +394,25 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;; Configure `envrc-global-mode'.
 
 (use-package envrc
+  :custom
+  (envrc-none-lighter '(" envrc/"
+                        (:propertize "N" face envrc-mode-line-none-face)))
+  (envrc-on-lighter '(" envrc/"
+                      (:propertize "O" face envrc-mode-line-on-face)))
+  (envrc-error-lighter '(" envrc/"
+                         (:propertize "E" face envrc-mode-line-error-face)))
   :hook (after-init . envrc-global-mode))
 
 ;;;; Configure `editorconfig-mode'.
 
 (use-package editorconfig
+  :delight " EdCfg"
   :config (editorconfig-mode 1))
 
 ;;;; Configure `global-page-break-lines-mode'.
 
 (use-package page-break-lines
+  :delight
   :config (global-page-break-lines-mode t))
 
 ;;;; Configure `vundo-popup-mode'.
