@@ -391,6 +391,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Configure `editorconfig-mode'.
+
+(use-package editorconfig
+  :config (editorconfig-mode 1))
+
 ;;;; Configure `global-page-break-lines-mode'.
 
 (use-package page-break-lines
@@ -1064,12 +1069,6 @@ used from notes files."
 (use-package display-line-numbers
   :after prog-mode
   :hook (prog-mode . display-line-numbers-mode))
-
-(use-package editorconfig
-  :config
-  (editorconfig-mode 1)
-  :preface
-  (declare-function editorconfig-mode "editorconfig"))
 
 (use-package elec-pair
   :config
