@@ -65,7 +65,8 @@
   #:use-module (nonguix multiarch-container)
   #:use-module (nongnu packages game-client)
   #:use-module (ice-9 match)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define stb-deprecated
   (let ((stb (@@ (gnu packages stb) stb)))
@@ -208,10 +209,7 @@ images."))
                                 "-Denable_openvr_support=false")
       #:modules '((guix build meson-build-system)
                   (guix build utils)
-                  (my-guix build utils))
-      #:imported-modules `(,@%meson-build-system-modules
-                           (guix build utils)
-                           (my-guix build utils))
+                  (srfi srfi-26))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch-usr-dir
@@ -219,8 +217,7 @@ images."))
               (substitute* "src/reshade_effect_manager.cpp"
                 (("/usr") #$output))))
           (add-after 'unpack 'patch-loader-path
-            ;; TODO: Test this again and document what exactly this fixes.
-            ;;
+            ;; "Failed to load vulkan module" error occurs without this patch.
             ;; Related issue: https://issues.guix.gnu.org/71109
             (lambda* (#:key inputs #:allow-other-keys)
               (substitute* "src/rendervulkan.cpp"
@@ -234,68 +231,81 @@ images."))
                 (("^vcs_tag = .*$")
                  (string-append
                   "vcs_tag = '" #$(package-version this-package) "'\n")))))
-          (add-after 'unpack 'patch-deps
+          (add-after 'unpack 'patch-stb
             (lambda _
-              ;; stb
-              (patch-wrap-file
-               "stb"
-               #+(file-append
-                  ;; TODO: reference with this-package-native-input instead
-                  (directory-union "stb" (list stb-image
-                                               stb-image-write
-                                               stb-image-resize))
-                  "/include"))
-              ;; libdisplay-info
+              (let ((stb-files-dir #+(directory-union
+                                      "stb"
+                                      (map (cut this-package-native-input <>)
+                                           (list "stb-image"
+                                                 "stb-image-write"
+                                                 "stb-image-resize")))))
+                (copy-recursively (string-append stb-files-dir "/include")
+                                  "subprojects/stb"))
+              (copy-recursively "subprojects/packagefiles/stb"
+                                "subprojects/stb")
+              (call-with-output-file "subprojects/stb.wrap"
+                (cut format <> "\
+[wrap-file]
+directory = stb
+"))))
+          (add-after 'unpack 'patch-spirv-headers
+            (lambda _
               (substitute* "src/meson.build"
                 (("../thirdparty/SPIRV-Headers")
                  #$(this-package-native-input "spirv-headers"))))))))
-    (native-inputs
-     (list gcc-14
-           glslang
-           pkg-config
-           python-3
-           spirv-headers
-           vulkan-headers))
-    (inputs
-     (list benchmark
-           glm
-           hwdata
-           lcms
-           libavif
-           libdecor
-           libdisplay-info
-           libdrm
-           libei
-           libinput
-           libseat
-           libx11
-           libxcomposite
-           libxcursor
-           libxdamage
-           libxext
-           libxkbcommon
-           libxmu
-           libxrender
-           libxres
-           libxt
-           libxtst
-           libxxf86vm
-           luajit
-           pipewire
-           pixman
-           sdl2
-           vulkan-loader
-           xcb-util-wm
-           xcb-util-errors
-           xorg-server-xwayland
-           wayland
-           wayland-protocols))
+    (native-inputs (list gcc-14
+                         glslang
+                         pkg-config
+                         python-3
+                         spirv-headers
+                         stb-image
+                         stb-image-write
+                         stb-image-resize
+                         vulkan-headers))
+    (inputs (list benchmark
+                  glm
+                  hwdata
+                  lcms
+                  libavif
+                  libdecor
+                  libdisplay-info
+                  libdrm
+                  libei
+                  libinput
+                  libseat
+                  libx11
+                  libxcomposite
+                  libxcursor
+                  libxdamage
+                  libxext
+                  libxkbcommon
+                  libxmu
+                  libxrender
+                  libxres
+                  libxt
+                  libxtst
+                  libxxf86vm
+                  luajit
+                  pipewire
+                  pixman
+                  sdl2
+                  vulkan-loader
+                  xcb-util-wm
+                  xcb-util-errors
+                  xorg-server-xwayland
+                  wayland
+                  wayland-protocols))
     (home-page "https://github.com/ValveSoftware/gamescope")
-    (synopsis "Session compositing window manager")
-    (description "Gamescope is a Wayland compositor for running games,
-formerly known as steamcompmgr.  It is designed for use in embedded sessions
-and as a nested compositor on top of a regular desktop environment through
-sandboxed Xwayland sessions.")
+    (synopsis "Micro-compositor for running games")
+    (description
+     "gamescope is a micro-compositor for running games.  Its goal is to
+provide an isolated compositor that is tailored towards gaming and supports
+many gaming-centric features such as:
+@itemize
+@item Spoofing resolutions.
+@item Upscaling.
+@item Limiting framerates.
+@end itemize")
     (license license:bsd-2)))
 
 (define steam-client-custom
