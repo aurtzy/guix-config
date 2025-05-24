@@ -136,9 +136,11 @@ alist of aliases to denote IDs.")
     (setq denote-known-keywords
           (cl-delete-duplicates
            (mapcan #'denote-extract-keywords-from-path
-                   (directory-files (file-name-as-directory
-                                     (file-name-concat denote-directory "areas"))
-                                    :full))
+                   (ignore-errors
+                     (directory-files (file-name-as-directory
+                                       (file-name-concat denote-directory
+                                                         "areas"))
+                                      :full)))
            :test #'string-equal)))
 
   ;; Functions for accessing assets directories.
@@ -157,7 +159,7 @@ alist of aliases to denote IDs.")
       (file-name-as-directory assets-dir)))
 
   (defun my-emacs-denote-aliases-assoc-ref (alias)
-    "Return the denote ID associated with ALIAS."
+    "Return the denote ID associated with ALIAS.  May return nil."
     (if-let* ((mappings-file (file-name-concat denote-directory
                                                my-emacs-denote-aliases-file))
               ((file-exists-p mappings-file))
@@ -194,13 +196,13 @@ alist of aliases to denote IDs.")
 
 (use-package ispell
   :config
-  (setq ispell-personal-dictionary
-        (let* ((identifier (my-emacs-denote-aliases-assoc-ref "emacs"))
-               (notes-file (denote-get-path-by-id identifier))
-               (assets-dir (file-name-as-directory
-                            (file-name-concat (file-name-directory notes-file)
-                                              "emacs"))))
-          (file-name-concat assets-dir ".static/aspell.en.pws"))))
+  (when-let* ((identifier (my-emacs-denote-aliases-assoc-ref "emacs")))
+    (setq ispell-personal-dictionary
+          (let* ((notes-file (denote-get-path-by-id identifier))
+                 (assets-dir (file-name-as-directory
+                              (file-name-concat (file-name-directory notes-file)
+                                                "emacs"))))
+            (file-name-concat assets-dir ".static/aspell.en.pws")))))
 
 ;;;; Add org link type for entry-local denote assets.
 
