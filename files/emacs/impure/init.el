@@ -382,6 +382,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Configure `vundo-popup-mode'.
+
+(use-package vundo-popup
+  :config (vundo-popup-mode 1))
+
 ;;;; Enable `compilation-minor-mode' in log files.
 
 (use-package compile
