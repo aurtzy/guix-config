@@ -303,13 +303,22 @@ alist of aliases to denote IDs.")
   :config
   (add-to-list 'default-frame-alist '(alpha-background . 90)))
 
-;;;; Load theme.
+;;;; Set up global visuals for Emacs, including theming and fonts.
 
 (use-package emacs
   :custom
   (modus-themes-hl-line '(accented))
+  (visible-bell t)
+  (frame-inhibit-implied-resize t)
+  (frame-resize-pixelwise t)
+  :custom-face
+  (mode-line ((t . (:family "Iosevka Etoile"))))
+  (mode-line-inactive ((t . (:family "Iosevka Etoile"))))
   :config
-  (load-theme 'modus-vivendi))
+  (load-theme 'modus-vivendi)
+  (add-to-list 'default-frame-alist '(font . "Hack-11"))
+  (tool-bar-mode -1)
+  (global-hl-line-mode 1))
 
 ;;;; Make it harder to exit Emacs.
 
@@ -667,15 +676,8 @@ used from notes files."
 (use-package emacs
   :custom
   (inhibit-startup-message t)
-  (visible-bell t)
-  (frame-inhibit-implied-resize t)
-  (frame-resize-pixelwise t)
   (use-dialog-box nil)
-  (echo-keystrokes 0.25)
-  :config
-  (add-to-list 'default-frame-alist '(font . "Hack-11"))
-  (tool-bar-mode -1)
-  (global-hl-line-mode 1))
+  (echo-keystrokes 0.25))
 
 (use-package window
   :custom

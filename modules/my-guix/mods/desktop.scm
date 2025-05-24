@@ -306,6 +306,7 @@ elsewhere in possibly different forms).")
                 package-with-emacs-pgtk
                 (list emacs-pgtk
                       font-hack
+                      font-iosevka-etoile
                       ;; tree-sitter
                       tree-sitter-bash
                       tree-sitter-c
