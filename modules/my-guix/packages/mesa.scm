@@ -119,10 +119,10 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "84b9c281fe82dd66f2552687cecb61a8e22809d0")))
+             (commit "2ec3b83f992b61df3fa786be011ad0cd1cacec86")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "152q9hfza9q3cfbxlswh6c14p3adfk78kljv6165gj4p1hzl8q9l"))))
+                "1fs87vdkhyl2aqlnbb75r0grn2r1m4il4mps0w1f517gs8lizff4"))))
     (arguments
      (cons*
       #:imported-modules `(,@%meson-build-system-modules
@@ -133,7 +133,8 @@
          (append original-modules
                  '((my-guix build utils))))
         ((#:configure-flags original-flags)
-         #~(append #$original-flags
+         ;; gallium-xa was deprecated and removed upstream.
+         #~(append (delete "-Dgallium-xa=enabled" #$original-flags)
                    ;; Only enable NVIDIA drivers to reduce build times
                    '#$(if (or (target-x86-64?) (target-x86-32?))
                           '("-Dgallium-drivers=nouveau,llvmpipe,zink"
@@ -158,7 +159,8 @@
                                           rust-unicode-ident-1
                                           rust-quote-1
                                           rust-proc-macro2-1
-                                          rust-paste-1))))))
+                                          rust-paste-1
+                                          rust-rustc-hash-2))))))
                   (cond
                    ((target-x86-32?)
                     #~((add-after 'unpack 'patch-subproject-sources
