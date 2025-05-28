@@ -391,15 +391,20 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Shrink `paredit' lighter.
+
+(use-package paredit
+  :delight " (ed")
+
 ;;;; Configure `envrc-global-mode'.
 
 (use-package envrc
   :custom
-  (envrc-none-lighter '(" envrc/"
+  (envrc-none-lighter '(" env/"
                         (:propertize "N" face envrc-mode-line-none-face)))
-  (envrc-on-lighter '(" envrc/"
+  (envrc-on-lighter '(" env/"
                       (:propertize "O" face envrc-mode-line-on-face)))
-  (envrc-error-lighter '(" envrc/"
+  (envrc-error-lighter '(" env/"
                          (:propertize "E" face envrc-mode-line-error-face)))
   :hook (after-init . envrc-global-mode))
 
@@ -832,6 +837,7 @@ used from notes files."
 ;; Resource:
 ;; https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
 (use-package whitespace
+  :delight (global-whitespace-mode)
   :custom
   (whitespace-style '(face
                       tabs
