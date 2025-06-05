@@ -420,11 +420,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
   :delight
   :config (global-page-break-lines-mode t))
 
-;;;; Configure `vundo-popup-mode'.
-
-(use-package vundo-popup
-  :config (vundo-popup-mode 1))
-
 ;;;; Enable `compilation-minor-mode' in log files.
 
 (use-package compile
@@ -485,6 +480,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;
 ;;; (transients) Transients.
 ;;;
+
+;;;; Set up `vundo' key-bind.
+
+(use-package vundo
+  :bind ("C-M-?" . vundo))
 
 ;;;; Set up `envrc' command map.
 
