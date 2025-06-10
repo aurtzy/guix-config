@@ -334,33 +334,17 @@ many gaming-centric features such as:
      (binary-name "steam")
      (wrap-package steam-client-custom)
      (union64
-      ;; TODO: Bug?  Look into potential bug with modify-inputs changing
-      ;; output paths; seems to happen when there are multiple prepend
-      ;; clauses.
-      (fhs-union (modify-inputs `(,@steam-client-libs
-                                  ,@steam-gameruntime-libs
-                                  ,@fhs-min-libs)
-                   ;; gamescope MUST produce have same derivation as the
-                   ;; gamescope in privileged-programs so all of its
-                   ;; dependencies can be found in the container.
-                   (prepend (replace-mesa->nvsa-git gamescope)
-                            (replace-mesa->nvsa-git sdl2)
-                            ;; Debugging tools
-                            ;; (@ (gnu packages gdb) gdb)
-                            ;; (@ (gnu packages emacs) emacs)
-                            )
-                   (replace "mesa" nvsa-git))
-                 #:name "fhs-union-64"))
-     ;; Requires i686-linux rust; package upstream in Guix does not build, so a
-     ;; binary version is required if we want 32-bit NVK for the time being.
-     ;; (union32
-     ;;  (fhs-union (modify-inputs `(,@steam-client-libs
-     ;;                              ,@steam-gameruntime-libs
-     ;;                              ,@fhs-min-libs)
-     ;;               (prepend (replace-mesa->nvsa-git sdl2))
-     ;;               (replace "mesa" nvsa-git-with-libglvnd))
-     ;;             #:name "fhs-union-32"
-     ;;             #:system "i686-linux"))
+      (fhs-union (modify-inputs (ngc-packages container)
+                   (prepend libglvnd)
+                   (replace "mesa"
+                     (package/inherit nvsa-git
+                       (inputs (modify-inputs (package-inputs nvsa-git)
+                                 (prepend libglvnd))))))))
+     (union32
+      ;; Avoid building 32-bit version of mesa normally unless a situation
+      ;; calls for it.  Note that Guix's Rust does not build on i686-linux, so
+      ;; an alternative (like rust-binary) must be used to enable 32-bit NVK.
+      (ngc-union32 (steam-container-for mesa)))
      (exposed (cons* "/run/privileged/bin/gamescope"
                      (ngc-exposed container))))))
 
