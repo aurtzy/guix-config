@@ -163,8 +163,8 @@ enables the use of Pipewire.")
              (simple-service name
                              home-impure-symlinks-service-type
                              `((".config/easyeffects"
-                                ,(path-append-my-files
-                                  "easyeffects/impure/config"))))
+                                ,(path-append-my-static-assets-directory
+                                  "easyeffects" "config"))))
              ;; FIXME: easyeffects service crashes on startup with the error
              ;; "Failed to open display", leading it to be disabled.  Needs
              ;; investigation.  Use other means of starting it for now.
