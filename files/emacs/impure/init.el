@@ -199,9 +199,7 @@ alist of aliases to denote IDs.")
   (when-let* ((identifier (my-emacs-denote-aliases-assoc-ref "emacs")))
     (setq ispell-personal-dictionary
           (let* ((notes-file (denote-get-path-by-id identifier))
-                 (assets-dir (file-name-as-directory
-                              (file-name-concat (file-name-directory notes-file)
-                                                "emacs"))))
+                 (assets-dir (my-emacs-denote-assets-directory notes-file)))
             (file-name-concat assets-dir ".static/aspell.en.pws")))))
 
 ;;;; Add org link type for entry-local denote assets.
