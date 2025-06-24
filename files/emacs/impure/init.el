@@ -226,7 +226,7 @@ alist of aliases to denote IDs.")
     (let* ((identifier
             (denote-retrieve-filename-identifier-with-error (buffer-file-name)))
            (assets-dir
-            (my-emacs-denote-assets-directory identifier))
+            (my-emacs-denote-assets-directory (denote-get-path-by-id identifier)))
            (relative-path
             (file-relative-name (read-file-name "Denote asset: " assets-dir)
                                 assets-dir)))
