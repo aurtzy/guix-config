@@ -689,7 +689,18 @@ used from notes files."
   (disproject-switch-to-buffer-command #'consult-project-buffer)
   (disproject-find-file-command #'consult-find)
   (disproject-find-regexp-command #'consult-ripgrep)
-  (disproject-find-line-command #'consult-line-multi))
+  (disproject-find-line-command #'consult-line-multi)
+  (disproject-find-special-file-suffixes
+   '(["Other options"
+      (disproject-infix-customize-switch)]
+     ["Special files"
+      ("c" disproject-find-special-file :file "CHANGELOG")
+      ("g g" disproject-find-special-file :file "guix.scm")
+      ("g m" disproject-find-special-file :file "manifest.scm")
+      (disproject-find-dir-locals-file)
+      (disproject-find-dir-locals-2-file)
+      ("m" disproject-find-special-file :file ("Makefile" "makefile"
+                                               "GNUmakefile"))])))
 
 
 ;;;
