@@ -75,10 +75,10 @@
             desktop-mods))
 
 (use-package-modules aspell audio avahi backup compression cryptsetup disk
-                     emacs emacs-xyz fonts freedesktop gl gnome gnome-xyz
-                     guile haskell-apps kde-frameworks kde-plasma linux music
-                     package-management protobuf pulseaudio qt tex tor
-                     tree-sitter video virtualization)
+                     emacs emacs-build emacs-xyz fonts freedesktop gl gnome
+                     gnome-xyz guile haskell-apps kde-frameworks kde-plasma
+                     linux music package-management protobuf pulseaudio qt tex
+                     tor tree-sitter video virtualization)
 
 (use-service-modules cups desktop linux networking pm virtualization xorg)
 
