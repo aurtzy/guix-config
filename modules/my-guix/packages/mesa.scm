@@ -64,6 +64,20 @@
   #:use-module (my-guix packages rust)
   #:use-module (my-guix utils))
 
+(define-public meson-next
+  (package/inherit meson
+    (name "meson-next")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mesonbuild/meson/"
+                           "releases/download/" version  "/meson-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0bwfr2fm2vjv8qyl7nn5lb1q5dgan3cdf4na7p89nlbi28qj76qa"))))))
+
 (define-public spirv-headers-next
   (package/inherit spirv-headers
     (name "spirv-headers-next")
@@ -119,12 +133,13 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "2ec3b83f992b61df3fa786be011ad0cd1cacec86")))
+             (commit "d4b742f93441e929e556d695dd70ad0f9c7fb235")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "1fs87vdkhyl2aqlnbb75r0grn2r1m4il4mps0w1f517gs8lizff4"))))
+                "0c91zm026wm1aw7l4hy4xvn8csaack2s6zjpm4vzg0sa7i3jrcg0"))))
     (arguments
      (cons*
+      #:meson meson-next
       #:imported-modules `(,@%meson-build-system-modules
                            (guix build utils)
                            (my-guix build utils))
