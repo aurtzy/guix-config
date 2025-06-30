@@ -148,8 +148,9 @@
          (append original-modules
                  '((my-guix build utils))))
         ((#:configure-flags original-flags)
-         ;; gallium-xa was deprecated and removed upstream.
-         #~(append (delete "-Dgallium-xa=enabled" #$original-flags)
+         #~(append (lset-difference equal? #$original-flags
+                                    ;; These flags were removed upstream.
+                                    '("-Dgallium-xa=enabled" "-Dosmesa=true"))
                    ;; Only enable NVIDIA drivers to reduce build times
                    '#$(if (or (target-x86-64?) (target-x86-32?))
                           '("-Dgallium-drivers=nouveau,llvmpipe,zink"
