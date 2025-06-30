@@ -122,7 +122,72 @@ alist of aliases to denote IDs.")
   ;; Avoid traversing past data directories.
   (denote-excluded-directories-regexp "^[^/]*/.*")
   (denote-known-keywords '(">inbox" ">todos" ">done" ">events"))
+  :config
+  (add-hook 'after-save-hook #'my-emacs-denote-set-status-keywords)
   :preface
+  (defun my-emacs-denote-set-status-keywords ()
+    "Set the current note's status keywords, if applicable, and save the buffer.
+
+This does nothing if the current buffer is not a denote note file."
+    (interactive)
+    (declare-function org-element-parse-buffer "org")
+    (declare-function org-element-property "org")
+    (defvar org-map-continue-from)
+    (defvar org-ts-regexp)
+    (require 'org)
+    (when-let* ((file (buffer-file-name))
+                (_ (denote-file-is-note-p file)))
+      (let ((keywords (denote-extract-keywords-from-path file)))
+        ;; "Inbox" entry.  Only apply if there are no keywords, in which case
+        ;; it is likely to be either 1. a new note, or 2. an edge case that
+        ;; needs additional sorting (perhaps via a new keyword).  This keyword
+        ;; must be manually removed, as there is no way to decisively indicate
+        ;; "sorting has completed".
+        (unless keywords
+          (setq keywords (cons ">inbox" keywords)))
+        (pcase (file-name-extension file)
+          ("org"
+           ;; Statuses may change, so reset the rest before continuing.
+           (setq keywords (seq-difference keywords '(">done" ">todos" ">events")))
+           ;; "Task" entries.
+           (let (task-status)
+             ;; `task-status': nil for "no tasks found"; 'todo for "there is
+             ;; an active TODO"; 'done for "there are tasks, and all of them
+             ;; are done".
+             (org-map-entries (lambda ()
+                                (cond
+                                 ((org-entry-is-done-p)
+                                  (setq task-status 'done)
+                                  ;; Assume that if a headline is marked as
+                                  ;; done, any todos under it are no longer
+                                  ;; relevant, so we skip its subheadings.
+                                  (let ((initial-pos-bol (pos-bol)))
+                                    (org-forward-heading-same-level 1)
+                                    ;; If position is the same, we're at the
+                                    ;; last heading of this level.
+                                    (when (eql (pos-bol) initial-pos-bol)
+                                      (org-next-visible-heading 1))
+                                    (setq org-map-continue-from (point))))
+                                 ((org-entry-is-todo-p)
+                                  (setq task-status 'todo)
+                                  ;; We can conclude that the entry still has
+                                  ;; stuff to do at this point.
+                                  (setq org-map-continue-from (point-max))))))
+             (pcase task-status
+               ('todo (setq keywords (cons ">todos" keywords)))
+               ('done (setq keywords (cons ">done" keywords)))))
+           ;; "Event" entries.
+           (when (save-excursion
+                   (ignore-error search-failed
+                     (goto-char (point-min))
+                     (search-forward-regexp org-ts-regexp)))
+             (setq keywords (cons ">events" keywords)))))
+        (setq keywords (cl-remove-duplicates keywords :test #'equal))
+        (let ((denote-rename-confirmations nil))
+          (denote-rename-file
+           file 'keep-current keywords 'keep-current 'keep-current)
+          (save-buffer)))))
+
   ;; Functions for accessing assets directories.
 
   (defun my-emacs-denote-assets-directory (file)
