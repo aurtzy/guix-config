@@ -121,24 +121,8 @@ alist of aliases to denote IDs.")
   (denote-directory "~/data/")
   ;; Avoid traversing past data directories.
   (denote-excluded-directories-regexp "^[^/]*/.*")
-  :config
-  (my-emacs-denote-set-known-keywords)
-  ;; Regenerate keywords after denote file changes/additions.
-  (add-hook 'denote-after-new-note-hook #'my-emacs-denote-set-known-keywords)
-  (add-hook 'denote-after-rename-file-hook #'my-emacs-denote-set-known-keywords)
+  (denote-known-keywords '(">inbox" ">todos" ">done" ">events"))
   :preface
-  (defun my-emacs-denote-set-known-keywords ()
-    "Set `denote-known-keywords' to ones found from areas."
-    (setq denote-known-keywords
-          (cl-delete-duplicates
-           (mapcan #'denote-extract-keywords-from-path
-                   (ignore-errors
-                     (directory-files (file-name-as-directory
-                                       (file-name-concat denote-directory
-                                                         "areas"))
-                                      :full)))
-           :test #'string-equal)))
-
   ;; Functions for accessing assets directories.
 
   (defun my-emacs-denote-assets-directory (file)
