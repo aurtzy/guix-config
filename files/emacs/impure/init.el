@@ -121,8 +121,6 @@ alist of aliases to denote IDs.")
   (denote-directory "~/data/")
   ;; Avoid traversing past data directories.
   (denote-excluded-directories-regexp "^[^/]*/.*")
-  ;; Infer "active" keywords, pulled from areas.
-  (denote-infer-keywords nil)
   :config
   (my-emacs-denote-set-known-keywords)
   ;; Regenerate keywords after denote file changes/additions.
