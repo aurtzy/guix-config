@@ -707,6 +707,16 @@ used from notes files."
 ;;; (major-modes) Major modes.
 ;;;
 
+;;;; Don't parse "<" or ">" as parentheses in `org-mode'.
+
+(use-package org
+  :hook (org-mode . my-emacs-set-angled-brackets-to-symbol-constituent)
+  :preface
+  (defun my-emacs-set-angled-brackets-to-symbol-constituent ()
+    "Set the syntax for angled brackets (\"<\", \">\") to \"symbol constituent\"."
+    (modify-syntax-entry ?< "_")
+    (modify-syntax-entry ?> "_")))
+
 
 ;;; DEPRECATED OLD LAYOUT BELOW
 ;; Configurations should be slowly organized to appropriate places above, and
