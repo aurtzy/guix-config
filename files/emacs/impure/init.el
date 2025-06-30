@@ -121,8 +121,6 @@ alist of aliases to denote IDs.")
   (denote-directory "~/data/")
   ;; Avoid traversing past data directories.
   (denote-excluded-directories-regexp "^[^/]*/.*")
-  ;; TODO: Set `denote-excluded-files-regexp' to exclude archived files?
-
   ;; Infer "active" keywords, pulled from areas.
   (denote-infer-keywords nil)
   :config
