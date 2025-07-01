@@ -434,6 +434,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Hide `dired' details by default.
+
+(use-package dired :hook (dired-mode . dired-hide-details-mode))
+
 ;;;; Shrink `paredit' lighter.
 
 (use-package paredit
