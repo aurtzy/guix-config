@@ -128,6 +128,8 @@ alist of aliases to denote IDs.")
   :preface
   (defun my-emacs-denote-sluggify-keyword (string)
     "Make an appropriate keyword from STRING."
+    (defvar org-tag-re)
+    (require 'org)
     (downcase (denote-slug-hyphenate
                ;; We assume that `org-tag-re' can match single characters as
                ;; components of a complete tag string.  We then use this
