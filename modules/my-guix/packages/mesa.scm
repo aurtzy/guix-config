@@ -133,10 +133,10 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "89f3ee4cb2e71dfe13812bae7d754bbe79596bcb")))
+             (commit "2e2826d121c1473da7c7ecd5031731e72fb71335")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "1ra9m2sxsjja65qc7n6idqca45c58ki16x6dbgzjd0sbisa7bvmp"))))
+                "07fd2mpj7apcd1f9b07yys40j3xjqg033fmsw6giv5xnf3q6mq8v"))))
     (arguments
      (cons*
       #:meson meson-next
