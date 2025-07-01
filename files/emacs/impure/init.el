@@ -121,10 +121,25 @@ alist of aliases to denote IDs.")
   (denote-directory "~/data/")
   ;; Avoid traversing past data directories.
   (denote-excluded-directories-regexp "^[^/]*/.*")
-  (denote-known-keywords '(">inbox" ">todos" ">done" ">events"))
+  (denote-file-name-slug-functions '((keyword . my-emacs-denote-sluggify-keyword)))
+  (denote-known-keywords '("#inbox" "#todos" "#done" "#events"))
   :config
   (add-hook 'after-save-hook #'my-emacs-denote-set-status-keywords)
   :preface
+  (defun my-emacs-denote-sluggify-keyword (string)
+    "Make an appropriate keyword from STRING."
+    (downcase (denote-slug-hyphenate
+               ;; We assume that `org-tag-re' can match single characters as
+               ;; components of a complete tag string.  We then use this
+               ;; assumption to filter characters that are considered not a
+               ;; valid part of the tag regexp.  This may fail if the regexp
+               ;; expands in the future to match multi-character sequences.
+               (apply #'concat
+                      (seq-map (lambda (char)
+                                 (let ((str (string char)))
+                                   (if (string-match org-tag-re str) str "")))
+                               string)))))
+
   (defun my-emacs-denote-set-status-keywords ()
     "Set the current note's status keywords, if applicable, and save the buffer.
 
@@ -144,11 +159,11 @@ This does nothing if the current buffer is not a denote note file."
         ;; must be manually removed, as there is no way to decisively indicate
         ;; "sorting has completed".
         (unless keywords
-          (setq keywords (cons ">inbox" keywords)))
+          (setq keywords (cons "#inbox" keywords)))
         (pcase (file-name-extension file)
           ("org"
            ;; Statuses may change, so reset the rest before continuing.
-           (setq keywords (seq-difference keywords '(">done" ">todos" ">events")))
+           (setq keywords (seq-difference keywords '("#done" "#todos" "#events")))
            ;; "Task" entries.
            (let (task-status)
              ;; `task-status': nil for "no tasks found"; 'todo for "there is
@@ -174,14 +189,14 @@ This does nothing if the current buffer is not a denote note file."
                                   ;; stuff to do at this point.
                                   (setq org-map-continue-from (point-max))))))
              (pcase task-status
-               ('todo (setq keywords (cons ">todos" keywords)))
-               ('done (setq keywords (cons ">done" keywords)))))
+               ('todo (setq keywords (cons "#todos" keywords)))
+               ('done (setq keywords (cons "#done" keywords)))))
            ;; "Event" entries.
            (when (save-excursion
                    (ignore-error search-failed
                      (goto-char (point-min))
                      (search-forward-regexp org-ts-regexp)))
-             (setq keywords (cons ">events" keywords)))))
+             (setq keywords (cons "#events" keywords)))))
         (setq keywords (cl-remove-duplicates keywords :test #'equal))
         (let ((denote-rename-confirmations nil))
           (denote-rename-file
