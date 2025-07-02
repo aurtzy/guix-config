@@ -124,7 +124,8 @@ alist of aliases to denote IDs.")
   (denote-file-name-slug-functions '((keyword . my-emacs-denote-sluggify-keyword)))
   (denote-known-keywords '("#inbox"))
   :config
-  (add-hook 'after-save-hook #'my-emacs-denote-set-status-keywords)
+  (add-hook 'after-save-hook #'my-emacs-denote-set-current-buffer-status-keywords)
+  (add-hook 'denote-after-rename-file-hook #'my-emacs-denote-set-status-keywords)
   :preface
   (defun my-emacs-denote-sluggify-keyword (string)
     "Make an appropriate keyword from STRING."
@@ -142,27 +143,34 @@ alist of aliases to denote IDs.")
                                    (if (string-match org-tag-re str) str "")))
                                string)))))
 
-  (defun my-emacs-denote-set-status-keywords ()
-    "Set the current note's status keywords, if applicable, and save the buffer.
-
-This does nothing if the current buffer is not a denote note file."
-    (interactive)
+  (defun my-emacs-denote-set-status-keywords (&optional identifier)
+    "Set the current note's status keywords, if applicable."
     (require 'org)
-    (when-let* ((file (buffer-file-name))
-                (_ (denote-file-is-note-p file)))
-      (let ((keywords (denote-extract-keywords-from-path file)))
-        ;; "Inbox" status: only apply if there are no keywords, in which case
-        ;; it is likely to be either 1. a new note, or 2. an edge case that
-        ;; needs additional sorting (perhaps via a new keyword).  This keyword
-        ;; must be manually removed, as there is no way to decisively indicate
-        ;; "sorting has completed".
-        (unless keywords
-          (setq keywords (cons "#inbox" keywords)))
-        (setq keywords (seq-difference keywords '("#inbox")))
-        (let ((denote-rename-confirmations nil))
+    (let* ((id (or identifier (alist-get 'id denote-current-data)))
+           (file (denote-get-path-by-id id))
+           (keywords (denote-extract-keywords-from-path file))
+           (new-keywords keywords)
+           (denote-rename-confirmations nil)
+           (denote-save-buffers t))
+      ;; "Inbox" status: only apply if there are no keywords, in which case
+      ;; it is likely to be either 1. a new note, or 2. an edge case that
+      ;; needs additional sorting (perhaps via a new keyword).  This keyword
+      ;; must be manually removed, as there is no way to decisively indicate
+      ;; "sorting has completed".
+      (unless keywords
+        (push "#inbox" new-keywords))
+      (unless (equal keywords new-keywords)
+        ;; Don't run this function more than once.
+        (let ((denote-after-rename-file-hook
+               (delq 'my-emacs-denote-set-status-keywords
+                     denote-after-rename-file-hook)))
           (denote-rename-file
-           file 'keep-current keywords 'keep-current 'keep-current)
-          (save-buffer)))))
+           file 'keep-current new-keywords 'keep-current 'keep-current)))))
+
+  (defun my-emacs-denote-set-current-buffer-status-keywords ()
+    "Set the current buffer note's status keywords, if applicable."
+    (if-let* ((id (denote-extract-id-from-string (buffer-file-name))))
+      (my-emacs-denote-set-status-keywords id)))
 
   ;; Functions for accessing assets directories.
 
