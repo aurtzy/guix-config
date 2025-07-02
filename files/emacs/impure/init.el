@@ -124,9 +124,27 @@ alist of aliases to denote IDs.")
   (denote-file-name-slug-functions '((keyword . my-emacs-denote-sluggify-keyword)))
   (denote-known-keywords '("#inbox"))
   :config
+  (add-hook 'denote-after-new-note-hook #'my-emacs-denote-mirror-title-to-first-headline)
+  (add-hook 'before-save-hook #'my-emacs-denote-mirror-title-to-first-headline)
   (add-hook 'after-save-hook #'my-emacs-denote-set-current-buffer-status-keywords)
   (add-hook 'denote-after-rename-file-hook #'my-emacs-denote-set-status-keywords)
   :preface
+  (defun my-emacs-denote-mirror-title-to-first-headline ()
+    "Set the first headline to the note's title property (or create it).
+
+This does not do anything if the buffer file does not satisfy
+`denote-file-is-note-p'."
+    (when (and (denote-filename-is-note-p (buffer-file-name))
+               (equal "org" (file-name-extension (buffer-file-name))))
+      (save-excursion
+        (goto-char (point-min))
+        (org-next-visible-heading 1)
+        (unless (org-at-heading-p)
+          (org-insert-heading))
+        (if-let* ((title (org-get-title)))
+            (org-edit-headline title)
+          (user-error "Buffer has no Org title property")))))
+
   (defun my-emacs-denote-sluggify-keyword (string)
     "Make an appropriate keyword from STRING."
     (defvar org-tag-re)
