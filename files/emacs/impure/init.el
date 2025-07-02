@@ -1287,27 +1287,6 @@ used from notes files."
   (org-log-reschedule 'note)
   (org-log-into-drawer t)
   :init
-  (let ((export-dir "~/Documents/org"))
-    (make-directory export-dir t)
-    (define-auto-insert
-      '(org-mode . "Org file")
-      ;; TODO: Set #+category to truncated string of project name
-      `(nil
-        "#+title: " _ \n
-        "#+author:" \n
-        "#+date:" \n
-        "#+options: author:nil date:nil num:nil toc:nil tags:nil" \n
-        "#+startup: showall" \n
-        "#+export_file_name: " ,export-dir "/export" \n
-        "#+latex_header: \\usepackage{libertine}" \n
-        "#+latex_header: \\renewcommand*\\oldstylenums[1]{{\\fontfamily{fxlj}\\selectfont #1}}" \n
-        "#+latex_header: \\usepackage{lmodern}" \n
-        "#+latex_header: \\usepackage[margin=3cm]{geometry}" \n
-        "#+latex_header: \\usepackage{setspace}" \n
-        "# #+latex_header: \\doublespacing" \n
-        "#+options: timestamp:nil" \n
-        \n
-        \n)))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
