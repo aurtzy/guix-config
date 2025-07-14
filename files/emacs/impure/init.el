@@ -125,8 +125,8 @@ alist of aliases to denote IDs.")
   (denote-known-keywords '("#inbox"))
   :config
   (add-hook 'denote-after-new-note-hook #'my-emacs-denote-mirror-title-to-first-headline)
+  (add-hook 'denote-after-new-note-hook #'my-emacs-denote-set-new-note-status-keywords)
   (add-hook 'before-save-hook #'my-emacs-denote-mirror-title-to-first-headline)
-  (add-hook 'after-save-hook #'my-emacs-denote-set-current-buffer-status-keywords)
   (add-hook 'denote-after-rename-file-hook #'my-emacs-denote-set-status-keywords)
   :preface
   (defun my-emacs-denote-mirror-title-to-first-headline ()
@@ -161,8 +161,15 @@ This does not do anything if the buffer file does not satisfy
                                    (if (string-match org-tag-re str) str "")))
                                string)))))
 
-  (defun my-emacs-denote-set-status-keywords (&optional identifier)
-    "Set the current note's status keywords, if applicable."
+  (defun my-emacs-denote-set-status-keywords (&optional identifier new-note?)
+    "Set the current note's status keywords, if applicable.
+
+IDENTIFIER, if non-nil, specifies the identifier of the note to set
+keywords for.  Otherwise, use `denote-current-data' to determine the
+note to modify.
+
+When NEW-NOTE? is non-nil and the note initially has no keywords,
+the \"#inbox\" keyword is included."
     (require 'org)
     (when-let* ((id (or identifier (alist-get 'id denote-current-data)))
                 (file (or (denote-get-path-by-id id)
@@ -185,7 +192,7 @@ This does not do anything if the buffer file does not satisfy
         ;; needs additional sorting (perhaps via a new keyword).  This keyword
         ;; must be manually removed, as there is no way to decisively indicate
         ;; "sorting has completed".
-        (unless keywords
+        (when (and new-note? (null keywords))
           (push "#inbox" new-keywords))
         (unless (equal keywords new-keywords)
           ;; Don't run this function more than once.
@@ -195,10 +202,8 @@ This does not do anything if the buffer file does not satisfy
             (denote-rename-file
              file 'keep-current new-keywords 'keep-current 'keep-current))))))
 
-  (defun my-emacs-denote-set-current-buffer-status-keywords ()
-    "Set the current buffer note's status keywords, if applicable."
-    (if-let* ((id (denote-extract-id-from-string (buffer-file-name))))
-      (my-emacs-denote-set-status-keywords id)))
+  (defun my-emacs-denote-set-new-note-status-keywords ()
+    (my-emacs-denote-set-status-keywords nil :new-note))
 
   ;; Functions for accessing assets directories.
 
