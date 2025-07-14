@@ -619,7 +619,9 @@ swapfile configuration information needed.")
   (mod
     (name 'virtualization)
     (description
-     "Adds virtualization packages and services to the system environment.")
+     "Adds virtualization packages and services to the system environment.
+
+Authorized users should be part of the \"libvirt\" user group.")
     (os-extension
      (compose (mod-os-packages
                (list virt-manager
