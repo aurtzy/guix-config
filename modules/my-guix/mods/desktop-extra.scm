@@ -56,13 +56,13 @@
                              `((".local/share/flatpak/overrides/org.kde.akregator"
                                 ,(mixed-text-file "org.kde.akregator" "\
 [Context]
-filesystems=" (path-append-my-static-assets-directory "akregator") "
+filesystems=" (path-append-my-assets-directory "akregator" ".static") "
 "))))
              (simple-service name
                              home-impure-symlinks-service-type
                              `((".var/app/org.kde.akregator/data/akregator/data/feeds.opml"
-                                ,(path-append-my-static-assets-directory
-                                  "akregator" "akregator-feeds.opml"))))))))))
+                                ,(path-append-my-assets-directory
+                                  "akregator" ".static/akregator-feeds.opml"))))))))))
 
 (define creative-mod
   (mod
@@ -96,7 +96,7 @@ filesystems=" (path-append-my-static-assets-directory "akregator") "
                                 ,(mixed-text-file "io.github.Soundux" "\
 [Context]
 devices=!dri
-filesystems=" (path-append-my-static-assets-directory "memes") ";~/storage/tmp/audio/etc
+filesystems=" (path-append-my-assets-directory "memes") ";~/storage/tmp/audio/etc
 "))))
              (simple-service name
                              home-flatpak-profile-service-type

@@ -163,8 +163,8 @@ enables the use of Pipewire.")
              (simple-service name
                              home-impure-symlinks-service-type
                              `((".config/easyeffects"
-                                ,(path-append-my-static-assets-directory
-                                  "easyeffects" "config"))))
+                                ,(path-append-my-assets-directory
+                                  "easyeffects" ".static/config"))))
              ;; FIXME: easyeffects service crashes on startup with the error
              ;; "Failed to open display", leading it to be disabled.  Needs
              ;; investigation.  Use other means of starting it for now.
@@ -226,8 +226,8 @@ Internet.")
           (simple-service name
                           home-impure-symlinks-service-type
                           `((,firefox-profile
-                             ,(path-append-my-static-assets-directory
-                               "firefox" "default-profile")
+                             ,(path-append-my-assets-directory
+                               "firefox" ".static/default-profile")
                              "bookmarkbackups")
                             (".local/share/flatpak/overrides"
                              ,(path-append-my-files "brave/impure")
@@ -237,7 +237,13 @@ Internet.")
                           `((".local/share/flatpak/overrides/org.mozilla.firefox"
                              ,(mixed-text-file "org.mozilla.firefox" "\
 [Context]
-filesystems=" (path-append-my-static-assets-directory "firefox" "default-profile") ";xdg-pictures/screenshots;~/.local/share/fonts:ro;/run/current-system/profile/share/fonts:ro;~/.guix-home:ro
+filesystems=" (string-join (list (path-append-my-assets-directory
+                                  "firefox" ".static/default-profile")
+                                 "xdg-pictures/screenshots"
+                                 "~/.local/share/fonts:ro"
+                                 "/run/current-system/profile/share/fonts:ro"
+                                 "~/.guix-home:ro")
+                           ";") "
 [Session Bus Policy]
 # TEMP: Shouldn't be necessary anymore when Plasma updates to 6.1.4
 org.freedesktop.ScreenSaver=talk
@@ -247,9 +253,9 @@ org.freedesktop.ScreenSaver=talk
                           ;; This file isn't /that/ important, and Firefox keeps
                           ;; overwriting it, so we just copy it without a backup
                           ;; instead (if it exists)
-                          #~(let ((src #$(path-append-my-static-assets-directory
+                          #~(let ((src #$(path-append-my-assets-directory
                                           "firefox"
-                                          "default-profile/search.json.mozlz4"))
+                                          ".static/default-profile/search.json.mozlz4"))
                                   (dest #$(path-append-my-home
                                            firefox-profile
                                            "search.json.mozlz4")))

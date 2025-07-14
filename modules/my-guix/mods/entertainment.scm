@@ -46,7 +46,7 @@
 (use-service-modules sysctl)
 
 (define games-src
-  (path-append-my-static-assets-directory "games"))
+  (path-append-my-assets-directory "games" ".static"))
 
 (define steam-extra-shares `( ;; Work around steam needing access to files when
                               ;; uploading screenshots/pictures to chat (portal
@@ -125,12 +125,21 @@
                                `((".local/share/flatpak/overrides/net.lutris.Lutris"
                                   ,(mixed-text-file "net.lutris.Lutris" "\
 [Context]
-filesystems=" (path-append-my-static-assets-directory "games") ";!home;~/.guix-home;~/Games
+filesystems=" (string-join (list (path-append-my-assets-directory
+                                  "games" ".static")
+                                 "!home"
+                                 "~/.guix-home"
+                                 "~/Games")
+                           ";") "
 "))
                                  (".local/share/flatpak/overrides/com.valvesoftware.Steam"
                                   ,(mixed-text-file "com.valvesoftware.Steam" "\
 [Context]
-filesystems=" (path-append-my-static-assets-directory "games") ";~/storage/steam-alt-library;~/Games
+filesystems=" (string-join (list (path-append-my-assets-directory
+                                  "games" ".static")
+                                 "~/storage/steam-alt-library"
+                                 "~/Games")
+                           ";") "
 "))
                                  (".local/share/flatpak/overrides/com.github.Matoking.protontricks"
                                   ,(mixed-text-file "com.github.Matoking.protontricks" "\
@@ -194,13 +203,14 @@ gamescope -w 2560 -h 1440 -W 2560 -H 1440 --force-grab-cursor --fullscreen -- \\
                             `((".local/share/flatpak/overrides/info.febvre.Komikku"
                                ,(mixed-text-file "info.febvre.Komikku" "\
 [Context]
-filesystems=" (path-append-my-static-assets-directory "komikku" "komikku.db") "
+filesystems=" (path-append-my-assets-directory
+               "komikku" ".static/komikku.db") "
 "))))
             (simple-service name
                             home-impure-symlinks-service-type
                             `((".var/app/info.febvre.Komikku/data"
-                               ,(path-append-my-static-assets-directory
-                                 "komikku")
+                               ,(path-append-my-assets-directory
+                                 "komikku" ".static")
                                "komikku.db"))))))))
 
 (define syncplay-mod
