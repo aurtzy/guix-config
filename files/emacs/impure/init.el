@@ -165,11 +165,21 @@ This does not do anything if the buffer file does not satisfy
     "Set the current note's status keywords, if applicable."
     (require 'org)
     (when-let* ((id (or identifier (alist-get 'id denote-current-data)))
-                (file (denote-get-path-by-id id)))
+                (file (or (denote-get-path-by-id id)
+                          (and-let* ((file (buffer-file-name))
+                                     (_ (string=
+                                         id (denote-extract-id-from-string
+                                             (file-name-base file)))))
+                            file))))
       (let* ((keywords (denote-extract-keywords-from-path file))
              (new-keywords keywords)
              (denote-rename-confirmations nil)
-             (denote-save-buffers t))
+             (denote-save-buffers (if-let* ((buf (get-file-buffer file)))
+                                      ;; Keep the current modified-state of
+                                      ;; the buffer, to avoid saving
+                                      ;; newly-created notes in case they are
+                                      ;; scrapped instead.
+                                      (not (buffer-modified-p buf)))))
         ;; "Inbox" status: only apply if there are no keywords, in which case
         ;; it is likely to be either 1. a new note, or 2. an edge case that
         ;; needs additional sorting (perhaps via a new keyword).  This keyword
