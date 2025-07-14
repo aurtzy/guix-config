@@ -91,12 +91,15 @@ filesystems=" (path-append-my-assets-directory "akregator" ".static") "
       (mod-he-services
        (list (simple-service name
                              home-files-service-type
-                             ;; Segfault happens when DRI is enabled?
+                             ;; Using Zink seems to fix blacked-out interface
+                             ;; issue, so force it on.
                              `((".local/share/flatpak/overrides/io.github.Soundux"
                                 ,(mixed-text-file "io.github.Soundux" "\
 [Context]
-devices=!dri
 filesystems=" (path-append-my-assets-directory "memes") ";~/storage/tmp/audio/etc
+
+[Environment]
+NOUVEAU_USE_ZINK=1
 "))))
              (simple-service name
                              home-flatpak-profile-service-type
