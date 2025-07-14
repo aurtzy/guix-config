@@ -42,7 +42,6 @@
                                        "audio"
                                        "video"
                                        "kvm"
-                                       "libvirt"
                                        ;; rtl-sdr
                                        "dialout")))
               (operating-system-users base-os)))

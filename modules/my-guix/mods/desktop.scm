@@ -654,5 +654,4 @@ Authorized users should be part of the \"libvirt\" user group.")
                 password-management-mod
                 printers-mod
                 swapfile-mod
-                tor-mod
-                virtualization-mod)))
+                tor-mod)))
