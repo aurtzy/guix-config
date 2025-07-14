@@ -524,6 +524,9 @@ management/maintenance.")
              quodlibet))
       (mod-he-services
        (list (simple-service name
+                             home-flatpak-profile-service-type
+                             '((flathub "io.freetubeapp.FreeTube")))
+             (simple-service name
                              home-bash-service-type
                              (home-bash-extension
                               (aliases
@@ -541,7 +544,14 @@ management/maintenance.")
                                    "mpv/scripts"
                                    "trigger-restart-playback-on-eof.lua")))
                                ("mpv/scripts/mpris.so"
-                                ,(file-append mpv-mpris "/lib/mpris.so"))))))))))
+                                ,(file-append mpv-mpris "/lib/mpris.so"))))
+             (simple-service name
+                             home-files-service-type
+                             `((".local/share/flatpak/overrides/io.freetubeapp.FreeTube"
+                                ,(mixed-text-file "io.freetubeapp.FreeTube" "\
+[Context]
+sockets=wayland;!x11
+"))))))))))
 
 (define password-management-mod
   (mod
