@@ -295,13 +295,6 @@ the \"#inbox\" keyword is included."
       (make-local-variable 'project-current-directory-override)
       (setq project-current-directory-override assets-directory))))
 
-;;;; Translate ANSI escape sequences in compilation buffer to text properties.
-
-(use-package ansi-color
-  :config
-  (require 'compile)
-  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
-
 ;;;; Set personal dictionary location.
 
 (use-package ispell
@@ -596,6 +589,13 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;
 ;;; (transients) Transients.
 ;;;
+
+;;;; Translate ANSI escape sequences in compilation buffer to text properties.
+
+(use-package ansi-color
+  :after compile
+  :config
+  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
 
 ;;;; Add suffix to `magit-stash' for editing stash messages.
 
