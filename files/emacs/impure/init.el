@@ -236,6 +236,17 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Configure `magit-todos'.
+
+(use-package magit-todos
+  :after magit
+  :custom
+  (magit-todos-keyword-suffix "[[:space:]]\\|:\\|$")
+  :config
+  ;; TEMP: Partially fix "xxx" keyword parse
+  ;; (https://github.com/alphapapa/magit-todos/issues/101)
+  (add-to-list 'magit-todos-keywords-list "XXX" t))
+
 ;;;; Provide function for setting project to associated assets directory.
 
 (use-package project
@@ -1257,15 +1268,6 @@ used from notes files."
 (use-package magit
   :commands magit
   :config
-  (use-package magit-todos
-    :custom
-    (magit-todos-keyword-suffix "[[:space:]]\\|:\\|$")
-    :config
-    ;; TEMP: Partially fix "xxx" keyword parse
-    ;; (https://github.com/alphapapa/magit-todos/issues/101)
-    (add-to-list 'magit-todos-keywords-list "XXX" t)
-    :preface
-    (declare-function magit-todos-mode "magit-todos"))
   (transient-append-suffix #'magit-stash "f"
     '("e" "Edit message" magit-stash-edit-message))
   (use-package magit-section
