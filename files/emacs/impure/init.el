@@ -236,6 +236,10 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Configure `forge'.
+
+(use-package forge :after magit)
+
 ;;;; Configure `magit-todos'.
 
 (use-package magit-todos
@@ -1279,7 +1283,6 @@ used from notes files."
               ("C-c C-<tab>" . magit-section-cycle)
               :repeat-map magit-section-repeat-map
               ("C-<tab>" . magit-section-cycle))))
-  (use-package forge)
   :preface
   ;; See discussion on editing stash messages here:
   ;; https://www.github.com/magit/magit/issues/2650
