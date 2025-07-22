@@ -236,6 +236,14 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Configure `python' settings.
+
+(use-package python
+  :defer t
+  :custom
+  (python-interpreter "python3")
+  (python-shell-dedicated 'project))
+
 ;;;; Include Guix-related modules in `geiser-guile-load-path'.
 
 ;; TODO: I have embark override "C-." and "M-.", which are both useful; "C-."
@@ -839,6 +847,23 @@ used from notes files."
 ;;; (major-modes) Major modes.
 ;;;
 
+;;;; Map Python major modes to tree-sitter alternatives.
+
+(use-package python
+  :defer t
+  :init
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode)))
+
+;;;; Set `fill-column' for Python modes.
+
+(use-package python
+  :defer t
+  :init
+  (defun my-emacs-python-set-fill-column ()
+    (set-fill-column 79))
+  (add-hook 'python-mode-hook #'my-emacs-python-set-fill-column)
+  (add-hook 'python-ts-mode-hook #'my-emacs-python-set-fill-column))
+
 ;;;; Map JavaScript major modes to tree-sitter alternatives.
 
 (use-package js
@@ -1385,19 +1410,6 @@ used from notes files."
                '("epub" . "xdg-open %s")))
 
 ;;;;; Programming languages
-
-(use-package python
-  :init
-  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-  (add-hook 'python-mode-hook
-            (lambda ()
-              (set-fill-column 79)))
-  (add-hook 'python-ts-mode-hook
-            (lambda ()
-              (set-fill-column 79)))
-  :custom
-  (python-interpreter "python3")
-  (python-shell-dedicated 'project))
 
 (use-package lisp-mode
   :hook ((lisp-mode . enable-paredit-mode)))
