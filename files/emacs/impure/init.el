@@ -246,6 +246,28 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Configure `org' settings.
+
+(use-package org
+  :custom
+  (org-todo-keywords
+   '((sequence "TODO(t)" "PROG(p!)" "|" "DONE(d!)" "SKIP(s@/!)")))
+  (org-cycle-inline-images-display t)
+  (org-export-in-background t)
+  (org-log-redeadline 'note)
+  (org-log-reschedule 'note)
+  (org-log-into-drawer t)
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)
+     (C . t)))
+  (setcdr (assoc 'heading org-blank-before-new-entry) t)
+  (setcdr (assoc 'plain-list-item org-blank-before-new-entry) nil)
+  (add-to-list 'org-file-apps
+               '("epub" . "xdg-open %s")))
+
 ;;;; Configure `python' settings.
 
 (use-package python
@@ -595,6 +617,14 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;
 ;;; (transients) Transients.
 ;;;
+
+;;;; Add custom global key-binds for Org mode.
+
+(use-package org
+  :bind (("C-c C-x <backtab>" . org-clock-out)
+         ("C-c l" . org-store-link)
+         ("C-c a" . org-agenda)
+         ("C-c c" . org-capture)))
 
 ;;;; Translate ANSI escape sequences in compilation buffer to text properties.
 
@@ -1377,42 +1407,19 @@ used from notes files."
   (dired-vc-rename-file t))
 
 (use-package org
+  :custom
+  ;; TODO: add a cleaner function that deletes files after some time limit
+  (org-preview-latex-image-directory "~/.cache/emacs/ltximg/")
+  :config
+  (plist-put org-format-latex-options :scale 2.0)
+  (advice-add 'org-latex-export-to-pdf
+              :before #'org-export-to-pdf-cd)
+  (add-to-list 'org-latex-default-packages-alist '("hidelinks" "hyperref" nil))
   :preface
   (defun org-export-to-pdf-cd (&optional _ _ _ _ _)
     "Change default directory to the canonicalized dirname of this buffer."
     ;; TODO: Fixes issue with export to pdf failing when it's not canonicalized.
     ;; Needs more investigation and might be a good idea to report upstream.
-    (cd (file-name-directory (file-truename (buffer-file-name)))))
-  :commands org-mode
-  :bind (("C-c C-x <backtab>" . org-clock-out)
-         ("C-c l" . org-store-link)
-         ("C-c a" . org-agenda)
-         ("C-c c" . org-capture))
-  :custom
-  (org-todo-keywords
-   '((sequence "TODO(t)" "PROG(p!)" "|" "DONE(d!)" "SKIP(s@/!)")))
-  (org-cycle-inline-images-display t)
-  (org-export-in-background t)
-  ;; TODO: add a cleaner function that deletes files after some time limit
-  (org-preview-latex-image-directory "~/.cache/emacs/ltximg/")
-  (org-log-redeadline 'note)
-  (org-log-reschedule 'note)
-  (org-log-into-drawer t)
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (python . t)
-     (C . t)))
-  (plist-put org-format-latex-options :scale 2.0)
-  (advice-add 'org-latex-export-to-pdf
-              :before #'org-export-to-pdf-cd)
-  (setcdr (assoc 'heading org-blank-before-new-entry) t)
-  (setcdr (assoc 'plain-list-item org-blank-before-new-entry) nil)
-  (add-to-list 'org-latex-default-packages-alist '("hidelinks" "hyperref" nil))
-  (add-to-list 'org-file-apps
-               '("epub" . "xdg-open %s")))
-
-
+    (cd (file-name-directory (file-truename (buffer-file-name))))))
 
 ;;; init.el ends here
