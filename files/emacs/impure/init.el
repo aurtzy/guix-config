@@ -246,6 +246,11 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Start Emacs server for this session, if there isn't already one.
+
+(use-package server :demand
+  :config (server-start))
+
 ;;;; Configure `org' settings.
 
 (use-package org
@@ -1386,9 +1391,6 @@ used from notes files."
 
 (use-package emacs
   :bind (("C-z" . nil)))
-
-(use-package server :demand
-  :config (server-start))
 
 ;;; Major modes
 
