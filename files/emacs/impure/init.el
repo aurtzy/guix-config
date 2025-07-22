@@ -246,6 +246,17 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Configure and setup `dashboard' during initialization.
+
+(use-package dashboard :demand
+  :custom
+  (dashboard-projects-backend 'project-el)
+  (dashboard-items '((recents . 5)
+                     (bookmarks . 10)))
+  :config
+  (dashboard-setup-startup-hook)
+  :functions (dashboard-setup-startup-hook))
+
 ;;;; Start Emacs server for this session, if there isn't already one.
 
 (use-package server :demand
@@ -1393,15 +1404,6 @@ used from notes files."
   :bind (("C-z" . nil)))
 
 ;;; Major modes
-
-(use-package dashboard :demand
-  :custom
-  (dashboard-projects-backend 'project-el)
-  (dashboard-items '((recents . 5)
-                     (bookmarks . 10)))
-  :config
-  (dashboard-setup-startup-hook)
-  :functions (dashboard-setup-startup-hook))
 
 (use-package dired
   :custom
