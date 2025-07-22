@@ -1388,8 +1388,6 @@ used from notes files."
          ("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture))
-  :hook ((org-mode . (lambda ()
-                       (electric-pair-local-mode -1))))
   :custom
   (org-todo-keywords
    '((sequence "TODO(t)" "PROG(p!)" "|" "DONE(d!)" "SKIP(s@/!)")))
