@@ -864,6 +864,13 @@ used from notes files."
 ;;; (major-modes) Major modes.
 ;;;
 
+;;;; Map Rust major modes to tree-sitter alternatives.
+
+(use-package rust-ts-mode
+  :defer t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.\\(rs\\|rlib\\)\\'" . rust-ts-mode)))
+
 ;;;; Make formatting tweaks in Scheme buffers.
 
 (use-package scheme
@@ -1437,10 +1444,6 @@ used from notes files."
                '("epub" . "xdg-open %s")))
 
 ;;;;; Programming languages
-
-(use-package rust-ts-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.\\(rs\\|rlib\\)\\'" . rust-ts-mode)))
 
 (use-package sh-script
   :init
