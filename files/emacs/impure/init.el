@@ -1256,7 +1256,7 @@ used from notes files."
 
 (use-package magit
   :commands magit
-  :init
+  :config
   (use-package magit-todos
     :custom
     (magit-todos-keyword-suffix "[[:space:]]\\|:\\|$")
@@ -1266,7 +1266,6 @@ used from notes files."
     (add-to-list 'magit-todos-keywords-list "XXX" t)
     :preface
     (declare-function magit-todos-mode "magit-todos"))
-  :config
   (transient-append-suffix #'magit-stash "f"
     '("e" "Edit message" magit-stash-edit-message))
   (use-package magit-section
