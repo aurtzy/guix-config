@@ -501,11 +501,17 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Enable `guix-devel-mode' in Scheme buffers.
+
+(use-package scheme :hook (scheme-mode . guix-devel-mode))
+
 ;;;; Enable `paredit-mode' in Lisp-mode-related buffers.
 
 (use-package elisp-mode :hook (emacs-lisp-mode . enable-paredit-mode))
 
 (use-package lisp-mode :hook (lisp-mode . enable-paredit-mode))
+
+(use-package scheme :hook (scheme-mode . enable-paredit-mode))
 
 ;;;; Hide `dired' details by default.
 
@@ -857,6 +863,16 @@ used from notes files."
 ;;;
 ;;; (major-modes) Major modes.
 ;;;
+
+;;;; Make formatting tweaks in Scheme buffers.
+
+(use-package scheme
+  :defer t
+  :init
+  (font-lock-add-keywords 'scheme-mode
+                          '(("(\\(lambda\\*\\)"
+                             (1 font-lock-keyword-face))))
+  (put 'lambda* 'scheme-indent-function 1))
 
 ;;;; Map Python major modes to tree-sitter alternatives.
 
@@ -1421,15 +1437,6 @@ used from notes files."
                '("epub" . "xdg-open %s")))
 
 ;;;;; Programming languages
-
-(use-package scheme
-  :hook ((scheme-mode . enable-paredit-mode)
-         (scheme-mode . guix-devel-mode))
-  :init
-  (font-lock-add-keywords 'scheme-mode
-                          '(("(\\(lambda\\*\\)"
-                             (1 font-lock-keyword-face))))
-  (put 'lambda* 'scheme-indent-function 1))
 
 (use-package rust-ts-mode
   :init
