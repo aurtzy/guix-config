@@ -479,6 +479,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Enable `paredit-mode' in Lisp-mode-related buffers.
+
+(use-package elisp-mode :hook (emacs-lisp-mode . enable-paredit-mode))
+
 ;;;; Hide `dired' details by default.
 
 (use-package dired :hook (dired-mode . dired-hide-details-mode))
@@ -1354,9 +1358,6 @@ used from notes files."
                '("epub" . "xdg-open %s")))
 
 ;;;;; Programming languages
-
-(use-package elisp-mode
-  :hook ((emacs-lisp-mode . enable-paredit-mode)))
 
 ;; TODO: I have embark override "C-." and "M-.", which are both useful; "C-."
 ;; has another keybind so it can be ignored, but "M-."
