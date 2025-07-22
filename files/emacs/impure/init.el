@@ -236,6 +236,19 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Configure `magit'.
+
+(use-package magit
+  :defer t
+  ;; XXX: Reserve "C-<tab>" for other things (like `tab-bar-mode')
+  :bind ( :map magit-status-mode-map
+          ("C-<tab>" . nil)
+          ("C-c C-<tab>" . magit-section-cycle)
+          :repeat-map magit-section-repeat-map
+          ("C-<tab>" . magit-section-cycle))
+  :config
+  (put 'magit-clean 'disabled nil))
+
 ;;;; Configure `forge'.
 
 (use-package forge :after magit)
@@ -559,6 +572,28 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;
 ;;; (transients) Transients.
 ;;;
+
+;;;; Add suffix to `magit-stash' for editing stash messages.
+
+(use-package magit-stash
+  :after magit
+  :autoload ( magit-stash magit-read-stash magit-git-string magit-read-string
+              magit-rev-parse magit-stash-drop magit-stash-store magit-refresh)
+  :config
+  (defun magit-stash-edit-message (stash message)
+    "Change STASH's message to MESSAGE."
+    (interactive
+     (let* ((stash (magit-read-stash "Rename"))
+            (old-msg (magit-git-string "show" "-s" "--format=%s" stash)))
+       (list stash (magit-read-string "Stash message" old-msg))))
+    (let ((commit (magit-rev-parse stash)))
+      (magit-stash-drop stash)
+      (magit-stash-store message "refs/stash" commit))
+    (magit-refresh))
+  ;; See discussion on editing stash messages here:
+  ;; https://www.github.com/magit/magit/issues/2650
+  (transient-append-suffix #'magit-stash "f"
+    '("e" "Edit message" magit-stash-edit-message)))
 
 ;;;; Set up `vundo' key-bind.
 
@@ -1268,36 +1303,6 @@ used from notes files."
   :custom
   (dired-listing-switches "-alh")
   (dired-vc-rename-file t))
-
-(use-package magit
-  :commands magit
-  :config
-  (transient-append-suffix #'magit-stash "f"
-    '("e" "Edit message" magit-stash-edit-message))
-  (use-package magit-section
-    :config
-    (use-package magit-status
-      ;; XXX: Reserve "C-<tab>" for other things (like `tab-bar-mode')
-      :bind ( :map magit-status-mode-map
-              ("C-<tab>" . nil)
-              ("C-c C-<tab>" . magit-section-cycle)
-              :repeat-map magit-section-repeat-map
-              ("C-<tab>" . magit-section-cycle))))
-  :preface
-  ;; See discussion on editing stash messages here:
-  ;; https://www.github.com/magit/magit/issues/2650
-  (defun magit-stash-edit-message (stash message)
-    "Change STASH's message to MESSAGE."
-    (interactive
-     (let* ((stash (magit-read-stash "Rename"))
-            (old-msg (magit-git-string "show" "-s" "--format=%s" stash)))
-       (list stash (magit-read-string "Stash message" old-msg))))
-    (let ((commit (magit-rev-parse stash))
-          (inhibit-magit-refresh t))
-      (magit-stash-drop stash)
-      (magit-stash-store message "refs/stash" commit))
-    (magit-refresh))
-  (put 'magit-clean 'disabled nil))
 
 (use-package org
   :preface
