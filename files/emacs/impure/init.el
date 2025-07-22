@@ -823,6 +823,15 @@ used from notes files."
 ;;; (major-modes) Major modes.
 ;;;
 
+;;;; Map C-language-related major modes to tree-sitter alternatives.
+
+(use-package c-ts-mode
+  :defer t
+  :init
+  (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode)))
+
 ;;;; Don't parse "<" or ">" as parentheses in `org-mode'.
 
 (use-package org
@@ -1345,12 +1354,6 @@ used from notes files."
                '("epub" . "xdg-open %s")))
 
 ;;;;; Programming languages
-
-(use-package cc-mode
-  :init
-  (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode)))
 
 (use-package elisp-mode
   :hook ((emacs-lisp-mode . enable-paredit-mode)))
