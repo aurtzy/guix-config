@@ -1400,7 +1400,7 @@ used from notes files."
   (org-log-redeadline 'note)
   (org-log-reschedule 'note)
   (org-log-into-drawer t)
-  :init
+  :config
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -1412,7 +1412,6 @@ used from notes files."
   (setcdr (assoc 'heading org-blank-before-new-entry) t)
   (setcdr (assoc 'plain-list-item org-blank-before-new-entry) nil)
   (add-to-list 'org-latex-default-packages-alist '("hidelinks" "hyperref" nil))
-  :config
   (add-to-list 'org-file-apps
                '("epub" . "xdg-open %s")))
 
