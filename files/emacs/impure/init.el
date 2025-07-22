@@ -236,6 +236,18 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Include Guix-related modules in `geiser-guile-load-path'.
+
+;; TODO: I have embark override "C-." and "M-.", which are both useful; "C-."
+;; has another keybind so it can be ignored, but "M-."
+;; (geiser-edit-symbol-at-point) does not.  It might be a good idea to add it
+;; to embark-dwim.
+(use-package geiser-guile
+  :defer t
+  :config
+  (add-to-list 'geiser-guile-load-path "~/src/guix")
+  (add-to-list 'geiser-guile-load-path "~/guix-config/modules"))
+
 ;;;; Configure `magit'.
 
 (use-package magit
@@ -1358,15 +1370,6 @@ used from notes files."
                '("epub" . "xdg-open %s")))
 
 ;;;;; Programming languages
-
-;; TODO: I have embark override "C-." and "M-.", which are both useful; "C-."
-;; has another keybind so it can be ignored, but "M-."
-;; (geiser-edit-symbol-at-point) does not.  It might be a good idea to add it
-;; to embark-dwim.
-(use-package geiser-guile
-  :config
-  (add-to-list 'geiser-guile-load-path "~/src/guix")
-  (add-to-list 'geiser-guile-load-path "~/guix-config/modules"))
 
 (use-package go-ts-mode
   :init
