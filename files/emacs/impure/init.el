@@ -505,6 +505,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package elisp-mode :hook (emacs-lisp-mode . enable-paredit-mode))
 
+(use-package lisp-mode :hook (lisp-mode . enable-paredit-mode))
+
 ;;;; Hide `dired' details by default.
 
 (use-package dired :hook (dired-mode . dired-hide-details-mode))
@@ -1419,12 +1421,6 @@ used from notes files."
                '("epub" . "xdg-open %s")))
 
 ;;;;; Programming languages
-
-(use-package lisp-mode
-  :hook ((lisp-mode . enable-paredit-mode)))
-
-(use-package lisp-data-mode
-  :hook ((lisp-data-mode . enable-paredit-mode)))
 
 (use-package scheme
   :hook ((scheme-mode . enable-paredit-mode)
