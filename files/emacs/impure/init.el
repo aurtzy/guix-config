@@ -839,6 +839,13 @@ used from notes files."
 ;;; (major-modes) Major modes.
 ;;;
 
+;;;; Map JavaScript major modes to tree-sitter alternatives.
+
+(use-package js
+  :defer t
+  :init
+  (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode)))
+
 ;;;; Map Go-language-related major modes to tree-sitter alternatives.
 
 (use-package go-ts-mode
@@ -1378,10 +1385,6 @@ used from notes files."
                '("epub" . "xdg-open %s")))
 
 ;;;;; Programming languages
-
-(use-package js
-  :init
-  (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode)))
 
 (use-package python
   :init
