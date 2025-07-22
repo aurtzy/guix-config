@@ -83,11 +83,17 @@
 (setq user-full-name "aurtzy"
       user-mail-address "aurtzy@gmail.com")
 
-;;;; Fix some byte-compiler warnings.
-;; See: https://github.com/jwiegley/use-package/issues/636
 
 (eval-when-compile
-  (setq use-package-expand-minimally byte-compile-current-file))
+
+;;;; Fix some byte-compiler warnings.
+
+  ;; See: https://github.com/jwiegley/use-package/issues/636
+  (setq use-package-expand-minimally byte-compile-current-file)
+
+;;;; Always defer `use-package' forms.
+
+  (setq use-package-always-defer t))
 
 ;;;; Set `custom-file' so customization information doesn't end up in init.el.
 ;; ...and load it, if available.
@@ -117,7 +123,7 @@ alist of aliases to denote IDs.")
 ;; accessing external files; notably, the "assets directories", where files
 ;; associated with notes can live.
 
-(use-package denote
+(use-package denote :demand
   :custom
   (denote-directory "~/data/")
   ;; Avoid traversing past data directories.
@@ -135,6 +141,7 @@ alist of aliases to denote IDs.")
 
 This does not do anything if the buffer file does not satisfy
 `denote-file-is-note-p'."
+    (declare-function org-edit-headline "org")
     (when (and (denote-filename-is-note-p (buffer-file-name))
                (equal "org" (file-name-extension (buffer-file-name))))
       (save-excursion
@@ -230,7 +237,9 @@ the \"#inbox\" keyword is included."
                                 (insert-file-contents mappings-file)
                                 (buffer-string)))))
         (cdr (assoc alias mappings))
-      nil)))
+      nil))
+  :functions ( org-next-visible-heading org-at-heading-p
+               org-insert-heading org-get-title))
 
 
 ;;;
@@ -240,7 +249,6 @@ the \"#inbox\" keyword is included."
 ;;;; Configure `python' settings.
 
 (use-package python
-  :defer t
   :custom
   (python-interpreter "python3")
   (python-shell-dedicated 'project))
@@ -252,7 +260,6 @@ the \"#inbox\" keyword is included."
 ;; (geiser-edit-symbol-at-point) does not.  It might be a good idea to add it
 ;; to embark-dwim.
 (use-package geiser-guile
-  :defer t
   :config
   (add-to-list 'geiser-guile-load-path "~/src/guix")
   (add-to-list 'geiser-guile-load-path "~/guix-config/modules"))
@@ -260,7 +267,6 @@ the \"#inbox\" keyword is included."
 ;;;; Configure `magit'.
 
 (use-package magit
-  :defer t
   ;; XXX: Reserve "C-<tab>" for other things (like `tab-bar-mode')
   :bind ( :map magit-status-mode-map
           ("C-<tab>" . nil)
@@ -276,8 +282,7 @@ the \"#inbox\" keyword is included."
 
 ;;;; Configure `magit-todos'.
 
-(use-package magit-todos
-  :after magit
+(use-package magit-todos :after magit
   :custom
   (magit-todos-keyword-suffix "[[:space:]]\\|:\\|$")
   :config
@@ -288,7 +293,6 @@ the \"#inbox\" keyword is included."
 ;;;; Provide function for setting project to associated assets directory.
 
 (use-package project
-  :defer t
   :preface
   (defun my-emacs-project-set-assets-directory-override ()
     "Set a file-local project directory override to associated assets directory."
@@ -300,7 +304,6 @@ the \"#inbox\" keyword is included."
 ;;;; Set personal dictionary location.
 
 (use-package ispell
-  :defer t
   :custom
   (ispell-personal-dictionary
    (when-let* ((identifier (my-emacs-denote-aliases-assoc-ref "emacs")))
@@ -310,8 +313,7 @@ the \"#inbox\" keyword is included."
 
 ;;;; Add org link type for entry-local denote assets.
 
-(use-package org
-  :defer t
+(use-package ol
   :config
   (org-link-set-parameters
    "denote-asset"
@@ -337,12 +339,12 @@ the \"#inbox\" keyword is included."
            (relative-path
             (file-relative-name (read-file-name "Denote asset: " assets-dir)
                                 assets-dir)))
-      (concat "denote-asset:" relative-path))))
+      (concat "denote-asset:" relative-path)))
+  :functions (org-link-set-parameters org-link-open-as-file))
 
 ;;;; Add active data directories to org agenda files.
 
 (use-package org
-  :defer t
   :config
   (org-store-new-agenda-file-list
    (cl-delete-duplicates
@@ -351,12 +353,12 @@ the \"#inbox\" keyword is included."
                        (file-name-concat denote-directory data-dir-name)))
                     '("workshop" "areas" "library"))
             org-agenda-files)
-    :test #'equal)))
+    :test #'equal))
+  :functions (org-store-new-agenda-file-list))
 
 ;;;; Define function for creating new notes files.
 
 (use-package autoinsert
-  :defer t
   :init
   (defun my-emacs-find-new-notes-file (file title)
     "Create new notes FILE with TITLE."
@@ -375,24 +377,19 @@ the \"#inbox\" keyword is included."
 ;;;; Explicitly set `org-agenda-span'.
 
 (use-package org-agenda
-  :defer t
-  :custom
-  (org-agenda-span 10))
+  :custom (org-agenda-span 10))
 
 ;;;; Specify additional `project.el' root markers.
 
 (use-package project
-  :defer t
-  :custom
-  (project-vc-extra-root-markers `(,dir-locals-file
-                                   "manifest.scm"
-                                   ".envrc"
-                                   "agenda.org")))
+  :custom (project-vc-extra-root-markers `(,dir-locals-file
+                                           "manifest.scm"
+                                           ".envrc"
+                                           "agenda.org")))
 
 ;;;; Configure how to uniquify buffer names.
 
 (use-package uniquify
-  :defer t
   :custom
   (uniquify-buffer-name-style 'reverse)
   (uniquify-strip-common-suffix nil))
@@ -450,8 +447,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;; Always check for the most recent file to load.
 
 (use-package emacs
-  :custom
-  (load-prefer-newer t))
+  :custom (load-prefer-newer t))
 
 ;;;; Control backups and deletion of files.
 
@@ -467,19 +463,16 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;; Enable directory-local variables for remote files.
 
 (use-package emacs
-  :custom
-  (enable-remote-dir-locals t))
+  :custom (enable-remote-dir-locals t))
 
 ;;;; Enable `imenu' support for `use-package'.
 
 (use-package use-package-core
-  :custom
-  (use-package-enable-imenu-support t))
+  :custom (use-package-enable-imenu-support t))
 
 ;;;; Customize `flymake'.
 
 (use-package flymake
-  :defer t
   :custom (flymake-number-of-errors-to-display 4))
 
 ;;;; Show help at point.
@@ -490,7 +483,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;; Add "tooltip" org link for arbitrary tooltips.
 
 (use-package ol
-  :defer t
   :config
   (org-link-set-parameters
    "tooltip"
@@ -524,32 +516,30 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Configure `envrc-global-mode'.
 
-(use-package envrc
+(use-package envrc :hook (after-init . envrc-global-mode)
   :custom
   (envrc-none-lighter '(" env/"
                         (:propertize "N" face envrc-mode-line-none-face)))
   (envrc-on-lighter '(" env/"
                       (:propertize "O" face envrc-mode-line-on-face)))
   (envrc-error-lighter '(" env/"
-                         (:propertize "E" face envrc-mode-line-error-face)))
-  :hook (after-init . envrc-global-mode))
+                         (:propertize "E" face envrc-mode-line-error-face))))
 
 ;;;; Configure `editorconfig-mode'.
 
-(use-package editorconfig
+(use-package editorconfig :demand
   :delight " EdCfg"
   :config (editorconfig-mode 1))
 
 ;;;; Configure `global-page-break-lines-mode'.
 
-(use-package page-break-lines
+(use-package page-break-lines :demand
   :delight
   :config (global-page-break-lines-mode t))
 
 ;;;; Enable `compilation-minor-mode' in log files.
 
-(use-package compile
-  :mode ("\\.log\\'" . compilation-minor-mode))
+(use-package compile :mode ("\\.log\\'" . compilation-minor-mode))
 
 ;;;; Override read-only key-bind for `compilation-minor-mode' in Comint buffers.
 
@@ -570,7 +560,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Prettify-rename denote buffers.
 
-(use-package denote :config (denote-rename-buffer-mode t))
+(use-package denote :demand
+  :config (denote-rename-buffer-mode t))
 
 ;;;; Add fontification for denote files in `dired-mode'.
 
@@ -579,14 +570,12 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;; Enable context menus.
 
 (use-package mouse
-  :config
-  (context-menu-mode))
+  :config (context-menu-mode))
 
 ;;;; Disable menu bar, which doesn't correctly apply transparency on GNOME.
 
 (use-package emacs
-  :config
-  (menu-bar-mode -1))
+  :config (menu-bar-mode -1))
 
 ;;;; Load `flymake'-related setup functions.
 
@@ -609,15 +598,13 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Translate ANSI escape sequences in compilation buffer to text properties.
 
-(use-package ansi-color
-  :after compile
+(use-package ansi-color :after compile
   :config
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
 
 ;;;; Add suffix to `magit-stash' for editing stash messages.
 
-(use-package magit-stash
-  :after magit
+(use-package magit-stash :after magit
   :autoload ( magit-stash magit-read-stash magit-git-string magit-read-string
               magit-rev-parse magit-stash-drop magit-stash-store magit-refresh)
   :config
@@ -651,6 +638,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package transient
   :bind ("C-c A" . my-emacs-denote-dispatch)
+  :commands (org-occur-in-agenda-files)
   :preface
   (require 'thingatpt)
 
@@ -764,10 +752,6 @@ prompting for denote ID as a fallback."
 
 (use-package disproject
   :config
-  (transient-insert-suffix 'disproject-manage-projects-dispatch '(0 0)
-    '("d" "with `dir-locals-file'" my-emacs-disproject-init-dir-locals-file))
-  :config
-  (require 'transient)
   (transient-define-suffix my-emacs-disproject-init-dir-locals-file (dir)
     "Initialize a project in DIR with an initial `dir-locals-file'.
 
@@ -781,14 +765,15 @@ used from notes files."
                         dir (read-string "Project name: "
                                          (file-name-base (buffer-name))))))
       (make-directory project-dir t)
-      (find-file (file-name-concat project-dir dir-locals-file)))))
+      (find-file (file-name-concat project-dir dir-locals-file))))
+
+  (transient-insert-suffix 'disproject-manage-projects-dispatch '(0 0)
+    '("d" "with `dir-locals-file'" my-emacs-disproject-init-dir-locals-file)))
 
 ;;;; Add command to find notes files.
 
 (use-package org
   :config
-  (declare-function org-get-tags "org")
-  (defvar auto-insert)
   (defun my-emacs-find-notes-file ()
     "Edit a notes file."
     (interactive)
@@ -835,7 +820,8 @@ used from notes files."
                 (and (string-match "^\\([^~]+~\\)?\\(.*\\)\\.org$" notes-file)
                      (match-string 2 notes-file))))
           (my-emacs-find-new-notes-file
-           notes-file (concat entry-type " notes: " base-name))))))))
+           notes-file (concat entry-type " notes: " base-name)))))))
+  :functions (org-get-agenda-file-buffer org-get-tags))
 
 ;;;; Configure `disproject' commands.
 
@@ -867,21 +853,17 @@ used from notes files."
 ;;;; Map Shell-related major modes to tree-sitter alternatives.
 
 (use-package sh-script
-  :defer t
-  :init
-  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
+  :init (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
 
 ;;;; Map Rust major modes to tree-sitter alternatives.
 
 (use-package rust-ts-mode
-  :defer t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.\\(rs\\|rlib\\)\\'" . rust-ts-mode)))
+  :init (add-to-list 'auto-mode-alist
+                     '("\\.\\(rs\\|rlib\\)\\'" . rust-ts-mode)))
 
 ;;;; Make formatting tweaks in Scheme buffers.
 
 (use-package scheme
-  :defer t
   :init
   (font-lock-add-keywords 'scheme-mode
                           '(("(\\(lambda\\*\\)"
@@ -891,14 +873,11 @@ used from notes files."
 ;;;; Map Python major modes to tree-sitter alternatives.
 
 (use-package python
-  :defer t
-  :init
-  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode)))
+  :init (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode)))
 
 ;;;; Set `fill-column' for Python modes.
 
 (use-package python
-  :defer t
   :init
   (defun my-emacs-python-set-fill-column ()
     (set-fill-column 79))
@@ -908,14 +887,12 @@ used from notes files."
 ;;;; Map JavaScript major modes to tree-sitter alternatives.
 
 (use-package js
-  :defer t
   :init
   (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode)))
 
 ;;;; Map Go-language-related major modes to tree-sitter alternatives.
 
 (use-package go-ts-mode
-  :defer t
   :init
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
   (add-to-list 'auto-mode-alist '("^go\\.mod\\'" . go-mod-ts-mode)))
@@ -923,7 +900,6 @@ used from notes files."
 ;;;; Map C-language-related major modes to tree-sitter alternatives.
 
 (use-package c-ts-mode
-  :defer t
   :init
   (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
   (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
@@ -1005,7 +981,7 @@ used from notes files."
 
 ;;;; Editing
 
-(use-package adaptive-wrap
+(use-package adaptive-wrap :demand
   :config
   (global-adaptive-wrap-prefix-mode 1)
   :preface
@@ -1016,7 +992,7 @@ used from notes files."
     :group 'adaptive-wrap)
   (declare-function adaptive-wrap-prefix-mode "adaptive-wrap"))
 
-(use-package autorevert
+(use-package autorevert :demand
   :custom
   (global-auto-revert-non-file-buffers t)
   :config
@@ -1063,9 +1039,6 @@ used from notes files."
 
 (use-package unfill
   :after embark
-  :defines (embark-region-map
-            embark-sentence-map
-            embark-paragraph-map)
   :bind ( :map embark-region-map
           ("M-f" . unfill-region)
           :map
@@ -1073,11 +1046,14 @@ used from notes files."
           ("M-f" . unfill-paragraph)
           :map
           embark-paragraph-map
-          ("M-f" . unfill-paragraph)))
+          ("M-f" . unfill-paragraph))
+  :defines (embark-region-map
+            embark-sentence-map
+            embark-paragraph-map))
 
 ;; Resource:
 ;; https://www.vernon-grant.com/Emacs/Discovering-Emacs/4-using-whitespace-mode.html
-(use-package whitespace
+(use-package whitespace :demand
   :delight (global-whitespace-mode)
   :custom
   (whitespace-style '(face
@@ -1279,21 +1255,17 @@ used from notes files."
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package marginalia
-  :preface
-  (declare-function marginalia-mode "marginalia")
   :bind (:map minibuffer-local-map ("M-A" . marginalia-cycle))
-  :init
-  (marginalia-mode 1))
+  :init (marginalia-mode 1)
+  :functions (marginalia-mode))
 
-(use-package orderless
+(use-package orderless :demand
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package vertico
-  :defines (crm-separator)
   :preface
-  (declare-function vertico-mode "vertico")
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
   (defun crm-indicator (args)
@@ -1310,11 +1282,13 @@ used from notes files."
   (vertico-cycle t)
   (enable-recursive-minibuffers t)
   :config
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+  :defines (crm-separator)
+  :functions (vertico-mode))
 
 ;;;; Guix
 
-(use-package autoinsert
+(use-package autoinsert :demand
   :config
   (define-auto-insert
     '("manifest\\.scm" . "Guix manifest file")
@@ -1336,13 +1310,11 @@ used from notes files."
   :after prog-mode
   :hook (prog-mode . display-line-numbers-mode))
 
-(use-package elec-pair
-  :config
-  (electric-pair-mode 1))
+(use-package elec-pair :demand
+  :config (electric-pair-mode 1))
 
 (use-package eldoc
-  :custom
-  (eldoc-documentation-strategy #'eldoc-documentation-compose))
+  :custom (eldoc-documentation-strategy #'eldoc-documentation-compose))
 
 (use-package emacs
   :custom
@@ -1374,36 +1346,30 @@ used from notes files."
   :hook ((text-mode . flyspell-mode)
          (prog-mode . flyspell-prog-mode)))
 
-(use-package hl-todo
-  :config
-  (global-hl-todo-mode t)
-  :preface
-  (declare-function global-hl-todo-mode "hl-todo"))
+(use-package hl-todo :demand
+  :config (global-hl-todo-mode t))
 
-(use-package repeat
-  :config
-  (repeat-mode t))
+(use-package repeat :demand
+  :config (repeat-mode t))
 
 ;;;; Miscellaneous
 
 (use-package emacs
   :bind (("C-z" . nil)))
 
-(use-package server
-  :config
-  (server-start))
+(use-package server :demand
+  :config (server-start))
 
 ;;; Major modes
 
-(use-package dashboard
-  :preface
-  (declare-function dashboard-setup-startup-hook "dashboard")
+(use-package dashboard :demand
   :custom
   (dashboard-projects-backend 'project-el)
   (dashboard-items '((recents . 5)
                      (bookmarks . 10)))
   :config
-  (dashboard-setup-startup-hook))
+  (dashboard-setup-startup-hook)
+  :functions (dashboard-setup-startup-hook))
 
 (use-package dired
   :custom
