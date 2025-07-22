@@ -47,7 +47,8 @@
 ;; "settings" consists of function/variable definitions and customizations.
 ;; One-shot code like loading a file also goes here.  This can also be
 ;; considered a miscellaneous section for configurations that don't belong
-;; anywhere else.
+;; anywhere else.  With the exception of one-shot code, usually code placed
+;; here should be deferred in some manner.
 ;;
 ;; "minor-modes" consists of configurations for minor modes.
 ;;
@@ -287,6 +288,7 @@ the \"#inbox\" keyword is included."
 ;;;; Provide function for setting project to associated assets directory.
 
 (use-package project
+  :defer t
   :preface
   (defun my-emacs-project-set-assets-directory-override ()
     "Set a file-local project directory override to associated assets directory."
@@ -298,22 +300,24 @@ the \"#inbox\" keyword is included."
 ;;;; Set personal dictionary location.
 
 (use-package ispell
-  :config
-  (when-let* ((identifier (my-emacs-denote-aliases-assoc-ref "emacs")))
-    (setq ispell-personal-dictionary
-          (let* ((notes-file (denote-get-path-by-id identifier))
-                 (assets-dir (my-emacs-denote-assets-directory notes-file)))
-            (file-name-concat assets-dir ".static/aspell.en.pws")))))
+  :defer t
+  :custom
+  (ispell-personal-dictionary
+   (when-let* ((identifier (my-emacs-denote-aliases-assoc-ref "emacs")))
+     (let* ((notes-file (denote-get-path-by-id identifier))
+            (assets-dir (my-emacs-denote-assets-directory notes-file)))
+       (file-name-concat assets-dir ".static/aspell.en.pws")))))
 
 ;;;; Add org link type for entry-local denote assets.
 
 (use-package org
+  :defer t
   :config
   (org-link-set-parameters
    "denote-asset"
    :follow #'my-emacs-denote-asset-follow
    :complete #'my-emacs-denote-asset-complete)
-
+  :preface
   (defun my-emacs-denote-asset-follow (path &optional prefix)
     "Follow PATH for `denote-asset' org link with potential PREFIX argument."
     (let* ((identifier (denote-retrieve-filename-identifier-with-error
@@ -338,6 +342,7 @@ the \"#inbox\" keyword is included."
 ;;;; Add active data directories to org agenda files.
 
 (use-package org
+  :defer t
   :config
   (org-store-new-agenda-file-list
    (cl-delete-duplicates
@@ -350,9 +355,9 @@ the \"#inbox\" keyword is included."
 
 ;;;; Define function for creating new notes files.
 
-(use-package org
-  :config
-  (require 'autoinsert)
+(use-package autoinsert
+  :defer t
+  :init
   (defun my-emacs-find-new-notes-file (file title)
     "Create new notes FILE with TITLE."
     (if (file-exists-p file)
@@ -370,12 +375,14 @@ the \"#inbox\" keyword is included."
 ;;;; Explicitly set `org-agenda-span'.
 
 (use-package org-agenda
+  :defer t
   :custom
   (org-agenda-span 10))
 
 ;;;; Specify additional `project.el' root markers.
 
 (use-package project
+  :defer t
   :custom
   (project-vc-extra-root-markers `(,dir-locals-file
                                    "manifest.scm"
@@ -385,6 +392,7 @@ the \"#inbox\" keyword is included."
 ;;;; Configure how to uniquify buffer names.
 
 (use-package uniquify
+  :defer t
   :custom
   (uniquify-buffer-name-style 'reverse)
   (uniquify-strip-common-suffix nil))
@@ -471,8 +479,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;; Customize `flymake'.
 
 (use-package flymake
-  :custom
-  (flymake-number-of-errors-to-display 4))
+  :defer t
+  :custom (flymake-number-of-errors-to-display 4))
 
 ;;;; Show help at point.
 
@@ -482,6 +490,7 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;;; Add "tooltip" org link for arbitrary tooltips.
 
 (use-package ol
+  :defer t
   :config
   (org-link-set-parameters
    "tooltip"
