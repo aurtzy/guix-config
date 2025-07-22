@@ -864,6 +864,13 @@ used from notes files."
 ;;; (major-modes) Major modes.
 ;;;
 
+;;;; Map Shell-related major modes to tree-sitter alternatives.
+
+(use-package sh-script
+  :defer t
+  :init
+  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
+
 ;;;; Map Rust major modes to tree-sitter alternatives.
 
 (use-package rust-ts-mode
@@ -1443,10 +1450,6 @@ used from notes files."
   (add-to-list 'org-file-apps
                '("epub" . "xdg-open %s")))
 
-;;;;; Programming languages
 
-(use-package sh-script
-  :init
-  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
 
 ;;; init.el ends here
