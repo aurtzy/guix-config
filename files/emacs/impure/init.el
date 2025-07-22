@@ -839,6 +839,14 @@ used from notes files."
 ;;; (major-modes) Major modes.
 ;;;
 
+;;;; Map Go-language-related major modes to tree-sitter alternatives.
+
+(use-package go-ts-mode
+  :defer t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+  (add-to-list 'auto-mode-alist '("^go\\.mod\\'" . go-mod-ts-mode)))
+
 ;;;; Map C-language-related major modes to tree-sitter alternatives.
 
 (use-package c-ts-mode
@@ -1370,11 +1378,6 @@ used from notes files."
                '("epub" . "xdg-open %s")))
 
 ;;;;; Programming languages
-
-(use-package go-ts-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
-  (add-to-list 'auto-mode-alist '("^go\\.mod\\'" . go-mod-ts-mode)))
 
 (use-package js
   :init
