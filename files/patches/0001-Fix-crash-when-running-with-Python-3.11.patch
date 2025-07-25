@@ -1,0 +1,27 @@
+From f815b477a2a1170481bac72ce6f2fd3f56d1548f Mon Sep 17 00:00:00 2001
+From: aurtzy <aurtzy@gmail.com>
+Date: Thu, 24 Jul 2025 22:46:59 -0400
+Subject: [PATCH] Fix crash when running with Python 3.11
+
+Using enums with the "in" keyword was added in Python 3.12.  We fall back to a
+list comprehension to support versions that don't support this.
+---
+ keyboard_center/gui/CKeySequenceEdit.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/keyboard_center/gui/CKeySequenceEdit.py b/keyboard_center/gui/CKeySequenceEdit.py
+index cab0306..5b25552 100644
+--- a/keyboard_center/gui/CKeySequenceEdit.py
++++ b/keyboard_center/gui/CKeySequenceEdit.py
+@@ -38,7 +38,7 @@ class CKeySequenceEdit(QKeySequenceEdit):
+         if len(self.tmpKeycodes) > 0: return
+ 
+         keycode = a0.nativeScanCode() - 8
+-        if keycode in allkeys.Modifiers and not self.rawEnabled:
++        if keycode in [m.value for m in allkeys.Modifiers] and not self.rawEnabled:
+             return
+ 
+         self.pressedKeycode = keycode
+-- 
+2.50.1
+

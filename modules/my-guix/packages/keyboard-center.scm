@@ -21,6 +21,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages kde-plasma)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
@@ -35,7 +36,13 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (my-guix utils))
+  #:use-module (guix utils)
+  #:use-module (ice-9 match)
+  #:use-module (my-guix packages mesa)
+  #:use-module (my-guix packages rust)
+  #:use-module (my-guix utils)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public python-lupa
   (package
@@ -87,49 +94,41 @@
     (description "Pythonic API to Linux uinput kernel module.")
     (license license:gpl3+)))
 
-;; TODO: Latest version requires Python 3.12+; look into this:
-;; https://git.ditigal.xyz/~ruther/guix-exprs/tree/main/item/ruther/packages/python-next.scm#L51
-;;
 ;; FIXME: icons do not show up.  Potentially related:
 ;; https://www.github.com/zocker-160/keyboard-center/issues/55
 (define-public keyboard-center
-  (let ((version "1.0.10")
-        (hash "1hc7vv7pzadqn27f4hg93ydrw2k94x3p004f3m58w4vxf5xnzj5n"))
+  (let ((version "2.0.6")
+        (hash "0zv1zx19pq48ibmbxzqfqal7jrgyg5sva2nnfpym9iwl8m23g57j"))
     (package
       (name "keyboard-center")
       (version version)
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/zocker-160/keyboard-center")
-                      (commit version)))
-                (file-name (git-file-name name version))
-                (sha256 (base32 hash))))
-      (build-system copy-build-system)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/zocker-160/keyboard-center")
+                (commit version)))
+         (file-name (git-file-name name version))
+         (sha256 (base32 hash))
+         (patches
+          (search-my-patches
+           "0001-Fix-crash-when-running-with-Python-3.11.patch"))))
+      (build-system pyproject-build-system)
       (arguments
        (list
-        #:modules '((guix build copy-build-system)
+        ;; Tests are available, but not hooked up to the build system.
+        #:tests? #f
+        #:modules '((guix build pyproject-build-system)
                     (guix build qt-utils)
                     (guix build utils)
                     (ice-9 match))
-        #:imported-modules `(,@%copy-build-system-modules
+        #:imported-modules `(,@%pyproject-build-system-modules
                              (guix build qt-utils))
-        #:install-plan #~'(("src"
-                            "/lib/keyboard-center")
-                           ("linux_packaging/60-keyboard-center.rules"
-                            "/lib/udev/rules.d/")
-                           ("linux_packaging/uinput-keyboard-center.conf"
-                            "/lib/modules-load.d/keyboard-center.conf")
-                           ("linux_packaging/assets/keyboard-center.png"
-                            "/share/icons/hicolor/512x512/apps/")
-                           ("linux_packaging/assets/keyboard-center.desktop"
-                            "/share/applications/"))
         #:phases
         #~(modify-phases %standard-phases
             (add-after 'unpack 'patch-libraries
               (lambda* (#:key inputs #:allow-other-keys)
-                (substitute* "src/lib/hid.py"
-                    ;; "keyboard_center/lib/hid.py"
+                (substitute* "keyboard_center/lib/hid.py"
                   (("library_paths = " assign)
                    ;; Push the originally assigned tuple onto the next line to
                    ;; make it a noop that can be ignored
@@ -138,36 +137,36 @@
                                   (search-input-file
                                    inputs "lib/libhidapi-hidraw.so")
                                   "',)\n")))))
-            (add-after 'install 'install-bin
+            (add-after 'install 'install-files
               (lambda _
-                (mkdir-p (string-append #$output "/bin"))
-                (with-output-to-file (string-append
-                                      #$output "/bin/keyboard-center")
-                  (lambda _
-                    (display
-                     (string-append
-                      "#!" (which "sh") "\n"
-                      (which "python3")
-                      " " #$output "/lib/keyboard-center/main.py $@"))))
-                (chmod (string-append #$output "/bin/keyboard-center") #o777)))
-            (add-after 'install-bin 'wrap-program
+                (install-file "linux_packaging/60-keyboard-center.rules"
+                              (string-append #$output "/lib/udev/rules.d"))
+                ;; TODO: This was a workaround for an issue with
+                ;; EndeavourOS (and Arch-based?).  Is this still
+                ;; needed?
+                ;; (install-file "linux_packaging/uinput-keyboard-center.conf"
+                ;;               (string-append #$output "/lib/modules-load.d"))
+                ))
+            (add-after 'install 'install-desktop-files
+              (lambda _
+                (install-file "linux_packaging/assets/keyboard-center.png"
+                              (string-append
+                               #$output "/share/icons/hicolor/512x512/apps"))
+                (install-file "linux_packaging/assets/keyboard-center.desktop"
+                              (string-append
+                               #$output "/share/applications"))))
+            (add-after 'create-entrypoints 'wrap-program
               (lambda* (#:key inputs #:allow-other-keys)
-                (wrap-program (string-append #$output "/bin/keyboard-center")
-                  '("LD_LIBRARY_PATH" ":" = (#$(file-append eudev "/lib"))))
                 (wrap-qt-program "keyboard-center"
-                                 #:output %output
+                                 #:output #$output
                                  #:inputs inputs))))))
-      (inputs
-       (list bash-minimal
-             hidapi
-             libnotify
-             qtwayland-5))
-      (propagated-inputs
-       (list python
-             python-pyqt
-             python-pyusb
-             python-ruamel.yaml
-             python-uinput))
+      (native-inputs (list python-setuptools python-wheel))
+      (inputs (list bash-minimal hidapi libnotify qtwayland-5))
+      (propagated-inputs (list lua
+                               python-pyqt
+                               python-pyusb
+                               python-uinput
+                               python-lupa))
       (synopsis "Application for mapping macro keys on Logitech keyboards")
       (description "")
       (home-page "https://github.com/zocker-160/keyboard-center")
