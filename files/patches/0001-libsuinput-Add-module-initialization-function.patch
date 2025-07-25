@@ -22,15 +22,15 @@ index 8d5fb71..ef6a14b 100644
  }
 +
 +PyMethodDef module_methods[] = {
-+        {"suinput_open", suinput_open, METH_VARARGS},
-+        {"suinput_enable_event", suinput_enable_event, METH_VARARGS},
-+        {"suinput_create", suinput_create, METH_VARARGS},
-+        {"suinput_write_event", suinput_write_event, METH_VARARGS},
-+        {"suinput_emit", suinput_emit, METH_VARARGS},
-+        {"suinput_emit_click", suinput_emit_click, METH_VARARGS},
-+        {"suinput_emit_combo", suinput_emit_combo, METH_VARARGS},
-+        {"suinput_syn", suinput_syn, METH_VARARGS},
-+        {"suinput_destroy", suinput_destroy, METH_VARARGS}
++        {"suinput_open", (PyCFunction) suinput_open, METH_VARARGS},
++        {"suinput_enable_event", (PyCFunction) suinput_enable_event, METH_VARARGS},
++        {"suinput_create", (PyCFunction) suinput_create, METH_VARARGS},
++        {"suinput_write_event", (PyCFunction) suinput_write_event, METH_VARARGS},
++        {"suinput_emit", (PyCFunction) suinput_emit, METH_VARARGS},
++        {"suinput_emit_click", (PyCFunction) suinput_emit_click, METH_VARARGS},
++        {"suinput_emit_combo", (PyCFunction) suinput_emit_combo, METH_VARARGS},
++        {"suinput_syn", (PyCFunction) suinput_syn, METH_VARARGS},
++        {"suinput_destroy", (PyCFunction) suinput_destroy, METH_VARARGS}
 +};
 +
 +static struct PyModuleDef module_def = {
