@@ -78,9 +78,9 @@
               (source
                (uuid "d50f62c1-e312-4c83-8b55-b0af00a4de2a"))
               (target "cryptstorage")
-              (type (luks-device-mapping-with-options
-                     #:key-file (string-append "/root/keys/"
-                                               (uuid->string source)))))))
+              (type luks-device-mapping)
+              (arguments `(#:key-file ,(string-append
+                                        "/root/keys/" (uuid->string source)))))))
       (file-systems
        (cons* (file-system
                 (mount-point "/")
