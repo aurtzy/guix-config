@@ -16,19 +16,14 @@
 ;;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (my-guix packages keyboard-center)
-  #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages kde-plasma)
-  #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages serialization)
-  #:use-module (guix build-system copy)
   #:use-module (guix build-system python)
   #:use-module (guix build-system pyproject)
   #:use-module (guix download)
@@ -37,12 +32,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (ice-9 match)
-  #:use-module (my-guix packages mesa)
-  #:use-module (my-guix packages rust)
-  #:use-module (my-guix utils)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26))
+  #:use-module (my-guix utils))
 
 (define-public python-lupa
   (package
