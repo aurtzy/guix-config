@@ -84,11 +84,10 @@
           (add-after 'unpack 'patch-libudev
             (lambda _
               (substitute* "setup.py"
-                (("libraries=\\[.*libudev_so\\]" all)
-                 (string-append
-                  "library_dirs=['" #$eudev "/lib'], "
-                  "extra_link_args=['-ludev']"))))))))
+                (("libraries=\\[.*libudev_so\\]" libs)
+                 (string-append libs ", extra_link_args=['-ludev']"))))))))
     (native-inputs (list python-setuptools python-wheel))
+    (inputs (list eudev))
     (home-page "https://github.com/pyinput/python-uinput")
     (synopsis "Pythonic API to Linux uinput kernel module.")
     (description "Pythonic API to Linux uinput kernel module.")
