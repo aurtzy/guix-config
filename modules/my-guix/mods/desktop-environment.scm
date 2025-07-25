@@ -32,6 +32,7 @@
   #:use-module (my-guix mods)
   #:use-module (my-guix mods desktop)
   #:use-module (my-guix mods hardware)
+  #:use-module (my-guix packages gnome)
   #:use-module (my-guix utils)
   #:use-module (nonguix utils)
   #:export (gnome-mod
@@ -110,7 +111,8 @@
              (list (service gnome-desktop-service-type
                             (gnome-desktop-configuration
                              (extra-packages
-                              (list gnome-essential-extras
+                              (list adwaita-icon-theme-legacy
+                                    gnome-essential-extras
                                     gnome-shell-extensions
                                     gnome-shell-extension-gsconnect
                                     gnome-tweaks

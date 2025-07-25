@@ -93,8 +93,6 @@
     (description "Pythonic API to Linux uinput kernel module.")
     (license license:gpl3+)))
 
-;; FIXME: icons do not show up.  Potentially related:
-;; https://www.github.com/zocker-160/keyboard-center/issues/55
 (define-public keyboard-center
   (let ((version "2.0.6")
         (hash "0zv1zx19pq48ibmbxzqfqal7jrgyg5sva2nnfpym9iwl8m23g57j"))
