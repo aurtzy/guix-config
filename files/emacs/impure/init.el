@@ -615,11 +615,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 (use-package emacs
   :config (menu-bar-mode -1))
 
-;;;; Load `flymake'-related setup functions.
 
-(use-package flymake)
+;;;; Set up `flymake-mode' for programming-mode buffers.
 
-(use-package package-lint-flymake)
+(use-package flymake :hook prog-mode)
 
 ;;;; Enable some Emacs file history tracking modes.
 
