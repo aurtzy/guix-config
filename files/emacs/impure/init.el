@@ -633,6 +633,47 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Add commands for managing `trusted-content'.
+
+(use-package emacs
+  :preface
+  (defun my-emacs-trust-content-in-file-or-directory (file-or-directory)
+    "Add the current buffer's file name to `trusted-content'."
+    (interactive "fFile or directory: ")
+    (add-to-list 'trusted-content
+                 (if (file-directory-p file-or-directory)
+                     (file-name-as-directory file-or-directory)
+                   file-or-directory))
+    (message "Added to `trusted-content': %s" file-or-directory)))
+
+(use-package disproject
+  :config
+  (transient-define-suffix my-emacs-disproject-trust-content ()
+    "Add the project's root directory to `trusted-content'.
+
+The default description provides an indicator that is colored as
+`transient-enabled-suffix' or `transient-disabled-suffix' based on
+whether the directory is trusted or not, respectively."
+    :description
+    (lambda ()
+      (concat "Trust content"
+              (if-let* ((scope (disproject--scope))
+                        (project (disproject-scope-selected-project scope))
+                        (root (disproject-project-root project)))
+                  (concat
+                   " ("
+                   (propertize "*" 'face (if (member root trusted-content)
+                                             'transient-enabled-suffix
+                                           'transient-disabled-suffix))
+                   ")")
+                "")))
+    (interactive)
+    (disproject-with-root
+      (add-to-list 'trusted-content default-directory)))
+  (transient-insert-suffix 'disproject-dispatch "M-x"
+    '("C-t" my-emacs-disproject-trust-content))
+  :functions (disproject--scope disproject-with-root-apply))
+
 ;;;; Add custom global key-binds for Org mode.
 
 (use-package org
