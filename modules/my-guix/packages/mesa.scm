@@ -133,10 +133,10 @@
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "a3a53b7cee4ad3f461ac8d93a14453ec1076a21f")))
+             (commit "4ca3cc5a1ac0162ae012b7d4c4c4fc75776eb80b")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "1lp81njybla50xakrjm4pwmjgmfyyd5df7d5yfk3m9ha6qzl4p4a"))))
+                "0s6w34ajlbji7arlz0zbw22rwn3i8r6ga840k7qrdzrkfpm2f1f5"))))
     (arguments
      (cons*
       #:meson meson-next
@@ -169,7 +169,13 @@
                                (patch-wrap-file name source)))
                             '#+(map (lambda (pkg)
                                       (let ((pkg (package/with-rust-binary pkg)))
-                                        (list (package-upstream-name* pkg)
+                                        (list (string-append
+                                               (package-upstream-name* pkg)
+                                               "-"
+                                               (let ((version (package-version pkg)))
+                                                 (if (string= "0" (version-major version))
+                                                     (version-major+minor version)
+                                                     (version-major version))))
                                               (crate-package-source pkg))))
                                     (list rust-syn-2
                                           rust-unicode-ident-1

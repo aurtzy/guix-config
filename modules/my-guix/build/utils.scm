@@ -31,7 +31,8 @@
                           (overlay-dir (string-append
                                         subprojects-dir
                                         "/packagefiles/"
-                                        subproject-name))
+                                        subproject-name
+                                        "-rs"))
                           (provides '()))
   "Generate a local directory with SOURCE-DIR recursively copied to it, and
 then patches the wrap file for SUBPROJECT-NAME to use it.  This is
@@ -54,10 +55,12 @@ directory are located.  By default, this is expected to be in
 
 The [provide] section of the wrap file can also be configured via an alist
 specification provided to PROVIDES."
+  ;; TODO: See personal notes on rewriting wrap files in meson-build-system
+  ;; for further work.
   (let* ((wrap-file (string-append
-                     subprojects-dir "/" subproject-name ".wrap"))
+                     subprojects-dir "/" subproject-name "-rs.wrap"))
          (subproject-dest (string-append
-                           subprojects-dir "/" subproject-name)))
+                           subprojects-dir "/" subproject-name "-rs")))
     (copy-recursively source-dir subproject-dest)
     (when (file-exists? overlay-dir)
       (copy-recursively overlay-dir subproject-dest))
@@ -67,7 +70,7 @@ specification provided to PROVIDES."
                 "[wrap-file]
 directory = ~a
 "
-                subproject-name)
+                (string-append subproject-name "-rs"))
         (unless (null? provides)
           (format port
                   "[provide]
