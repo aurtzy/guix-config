@@ -24,6 +24,7 @@
   #:use-module (my-guix mods)
   #:use-module (my-guix mods desktop)
   #:use-module (my-guix utils)
+  #:use-module (nonguix transformations)
   #:use-module ((rnrs base) #:prefix rnrs:)
   #:export (nvidia-proprietary?
 
@@ -62,17 +63,7 @@ configurations.")
      "Configures the system for an NVIDIA GPU.")
     (os-extension
      (let ((nvidia-proprietary? (nvidia-proprietary?)))
-       (compose
-        (mod-os-services
-         (if nvidia-proprietary?
-             (list (service (module-ref (resolve-interface
-                                         '(nongnu services nvidia))
-                                        'nvidia-service-type)))
-             '()))
-        (mod-os-kernel-arguments
-         (if nvidia-proprietary?
-             (list "modprobe.blacklist=nouveau"
-                   ;; TODO: This may be needed to get GDM to run on Wayland.
-                   ;; "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
-                   "nvidia_drm.modeset=1")
-             (list "nouveau.config=NvGspRm=1"))))))))
+       (if nvidia-proprietary?
+           (nonguix-transformation-nvidia #:open-source-kernel-module? #t)
+           ;; Enable GSP firmware for Nouveau/NVK.
+           (mod-os-kernel-arguments (list "nouveau.config=NvGspRm=1")))))))
