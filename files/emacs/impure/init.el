@@ -633,6 +633,19 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Add command to open files externally, with xdg-open.
+
+(use-package emacs
+  :preface
+  (defun my-emacs-current-buffer-xdg-open ()
+    "Run \"xdg-open\" on the file that the current buffer is visiting.
+
+By default, attempt to use `buffer-file-name'; if that is not available,
+then `default-directory'."
+    (interactive)
+    (call-process "xdg-open" nil nil nil
+                  (or (buffer-file-name) default-directory))))
+
 ;;;; Add commands for managing `trusted-content'.
 
 (use-package emacs
