@@ -931,7 +931,9 @@ used from notes files."
       (disproject-find-dir-locals-file)
       (disproject-find-dir-locals-2-file)
       ("m" disproject-find-special-file :file ("Makefile" "makefile"
-                                               "GNUmakefile"))])))
+                                               "GNUmakefile"))
+      ("r" disproject-find-special-file :file ("README.org" "README"
+                                               "README.md"))])))
 
 
 ;;;
