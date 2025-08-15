@@ -4,6 +4,7 @@
 (let* ((args (command-line))
        (filename (canonicalize-path (car args)))
        (cmd-args (cdr args)))
-  ;; Should end up in guix-config directory
-  (setenv "GUIX_PACKAGE_PATH" (dirname (dirname filename)))
+  ;; Should end up in guix-config/modules directory
+  (setenv "GUIX_PACKAGE_PATH" (string-append (dirname (dirname filename))
+                                             "/modules"))
   (apply execlp "guix" "guix" cmd-args))
