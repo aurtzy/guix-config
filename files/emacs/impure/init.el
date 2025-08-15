@@ -246,6 +246,12 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Add guile-lsp-server as a server choice for `eglot'.
+
+(use-package eglot
+  :config
+  (add-to-list 'eglot-server-programs '(scheme-mode . ("guile-lsp-server"))))
+
 ;;;; Configure and setup `dashboard' during initialization.
 
 (use-package dashboard :demand
