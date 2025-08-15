@@ -539,7 +539,8 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 (use-package elisp-mode :hook (emacs-lisp-mode . enable-paredit-mode))
 
-(use-package lisp-mode :hook (lisp-mode . enable-paredit-mode))
+(use-package lisp-mode :hook ((lisp-mode . enable-paredit-mode)
+                              (lisp-data-mode . enable-paredit-mode)))
 
 (use-package scheme :hook (scheme-mode . enable-paredit-mode))
 
