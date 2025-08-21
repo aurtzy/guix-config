@@ -311,6 +311,7 @@ elsewhere in possibly different forms).")
                (map
                 package-with-emacs-pgtk
                 (list emacs-pgtk
+                      emacs-ef-themes
                       font-hack
                       font-iosevka-etoile
                       ;; tree-sitter
