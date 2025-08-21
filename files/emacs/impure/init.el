@@ -246,6 +246,11 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Enable terminal emulation with Eat in Eshell.
+
+(use-package eat :demand
+  :config (eat-eshell-mode 1))
+
 ;;;; Add guile-lsp-server as a server choice for `eglot'.
 
 (use-package eglot
