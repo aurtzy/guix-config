@@ -4,6 +4,7 @@
              (gnu home services shepherd)
              (gnu home services sound)
              (gnu packages linux)
+             (gnu services linux)
              (gnu services sddm)
              (gnu services web)
              (gnu services xorg)
@@ -49,12 +50,6 @@
                      (package-version kernel)))
       (initrd microcode-initrd)
       (firmware (list linux-firmware))
-      (kernel-arguments
-       (cons*
-        ;; vfio
-        ;; "intel_iommu=on"
-        ;; "iommu=pt"
-        (operating-system-user-kernel-arguments base-os)))
       (users
        (cons* (user-account
                (name "alvin")
@@ -144,6 +139,8 @@
       (services
        (cons* (service keyboard-center-service-type)
               (service nginx-service-type)
+              (simple-service 'load-ntsync kernel-module-loader-service-type
+                              '("ntsync"))
               (simple-service 'redlib-reverse-proxy
                               nginx-service-type
                               (list
