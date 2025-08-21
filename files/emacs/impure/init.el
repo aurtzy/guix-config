@@ -684,9 +684,9 @@ whether the directory is trusted or not, respectively."
                         (root (disproject-project-root project)))
                   (concat
                    " ("
-                   (propertize "*" 'face (if (member root trusted-content)
-                                             'transient-enabled-suffix
-                                           'transient-disabled-suffix))
+                   (if (member root trusted-content)
+                       (propertize "*" 'face 'success)
+                     (propertize "x" 'face 'error))
                    ")")
                 "")))
     (interactive)
