@@ -457,7 +457,6 @@ the \"#inbox\" keyword is included."
 
 (use-package emacs
   :custom
-  (modus-themes-hl-line '(accented))
   (visible-bell t)
   (frame-inhibit-implied-resize t)
   (frame-resize-pixelwise t)
@@ -465,7 +464,10 @@ the \"#inbox\" keyword is included."
   (mode-line ((t . (:family "Iosevka Etoile"))))
   (mode-line-inactive ((t . (:family "Iosevka Etoile"))))
   :config
-  (load-theme 'modus-vivendi)
+  ;; Disable any active themes before loading one to prevent unintentional
+  ;; mixing of themes.
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme 'ef-dark t)
   (add-to-list 'default-frame-alist '(font . "Hack-11"))
   (tool-bar-mode -1)
   (global-hl-line-mode 1))
