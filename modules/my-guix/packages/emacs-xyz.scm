@@ -26,17 +26,12 @@
   #:use-module (my-guix utils))
 
 (define-public emacs-disproject/newer
-  (let ((local-disproject (path-append-my-home "/src/disproject")))
-    (if (file-exists? local-disproject)
+  (let ((local-package (path-append-my-home "/src/disproject/guix.scm")))
+    (if (file-exists? local-package)
         (package
-          (inherit emacs-disproject)
-          (name "emacs-disproject")
-          (version (string-append (package-version emacs-disproject)
-                                  "-dev"))
-          (source
-           (local-file local-disproject
-                       #:recursive? #t
-                       #:select? (git-predicate local-disproject))))
+          (inherit (load local-package))
+          ;; Un-pin the Transient version from local-package.
+          (propagated-inputs (list emacs-transient)))
         emacs-disproject)))
 
 (define-public emacs-nftables-mode
