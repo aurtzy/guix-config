@@ -629,7 +629,6 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 (use-package emacs
   :config (menu-bar-mode -1))
 
-
 ;;;; Set up `flymake-mode' for programming-mode buffers.
 
 (use-package flymake :hook prog-mode)
