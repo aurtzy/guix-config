@@ -376,6 +376,7 @@ elsewhere in possibly different forms).")
                       aspell
                       aspell-dict-en
                       ;; etc
+                      emacs-casual
                       emacs-denote
                       emacs-delight
                       emacs-dimmer

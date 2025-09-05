@@ -646,6 +646,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Configure Casual.
+
+(use-package casual :demand)
+
 ;;;; Configure AGitjo.
 
 (use-package agitjo :demand :after magit)
