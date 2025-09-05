@@ -229,5 +229,6 @@ filesystems=" (path-append-my-assets-directory
         minecraft-mod
         minetest-mod
         openttd-mod
-        syncplay-mod
+        ;; TEMP: Doesn't build at the moment (qtwebengine broken).
+        ;; syncplay-mod
         videa-mod))
