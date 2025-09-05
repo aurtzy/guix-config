@@ -32,7 +32,6 @@
   #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages game-client)
-  #:use-module (my-guix packages minecraft-wayland)
   #:use-module (my-guix utils)
   #:export (game-mangers-mod
             minecraft-mod
@@ -177,8 +176,6 @@ gamescope -w 2560 -h 1440 -W 2560 -H 1440 --force-grab-cursor --fullscreen -- \\
     (name 'minecraft)
     (he-extension
      (compose
-      (mod-he-packages
-       (list glfw-wayland-minecraft))
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
