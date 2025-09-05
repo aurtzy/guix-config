@@ -1,6 +1,6 @@
 ;;; init.el --- my init.el -*- lexical-binding: t -*-
 ;; Copyright © 2013-2022 Phil Hagelberg and contributors
-;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
+;; Copyright © 2023-2025 aurtzy <aurtzy@gmail.com>
 ;; Copyright © 2012-2016 Kyle Meyer <kyle@kyleam.com>
 ;; Copyright © 2022-2024  Free Software Foundation, Inc.
 ;;
