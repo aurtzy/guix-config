@@ -18,34 +18,37 @@
 
 (define-module (my-guix packages redlib)
   #:use-module (gnu packages)
+  #:use-module (guix build-system cargo)
   #:use-module (guix gexp)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (nonguix build-system binary))
 
 (define-public redlib
-  (package
-    (name "redlib")
-    (version "dev")
-    ;; This requires `redlib` to be separately built from source.
-    (source (local-file (string-append (getenv "HOME")
-                                       "/src/redlib/target/debug/redlib")))
-    (build-system binary-build-system)
-    (arguments
-     (list
-      ;; TODO: This needs patching to validate runpath.
-      #:validate-runpath? #f
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'move-to-bin
-            (lambda _
-              (mkdir-p "bin")
-              (rename-file "redlib" "bin/redlib")
-              (chmod "bin/redlib" #o777))))))
-    (home-page "https://github.com/redlib-org/redlib")
-    (synopsis "Alternative private front-end to Reddit")
-    (description
-     "This package provides Redlib, an alternative private front-end to
+  (let ((commit "407a6c00c3c874a9e3319c95308fc2c86d2e0443")
+        (revision "0"))
+    (package
+      (name "redlib")
+      (version (git-version "0.36.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/redlib-org/redlib")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "14h5k4l2g3b6vr0i4f7zkqq63k8rh2yhrb2gj5mvqagab74axqkf"))))
+      (build-system cargo-build-system)
+      (arguments (list #:install-source? #f
+                       ;; TODO: Fix tests.
+                       #:tests? #f))
+      (inputs (cargo-inputs 'redlib #:module '(my-guix packages rust-crates)))
+      (home-page "https://github.com/redlib-org/redlib")
+      (synopsis "Alternative private front-end to Reddit")
+      (description
+       "This package provides Redlib, an alternative private front-end to
 Reddit.")
-    (license license:agpl3)))
+      (license license:agpl3))))
