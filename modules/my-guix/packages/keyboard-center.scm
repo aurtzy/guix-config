@@ -127,13 +127,7 @@
             (add-after 'install 'install-files
               (lambda _
                 (install-file "linux_packaging/60-keyboard-center.rules"
-                              (string-append #$output "/lib/udev/rules.d"))
-                ;; TODO: This was a workaround for an issue with
-                ;; EndeavourOS (and Arch-based?).  Is this still
-                ;; needed?
-                ;; (install-file "linux_packaging/uinput-keyboard-center.conf"
-                ;;               (string-append #$output "/lib/modules-load.d"))
-                ))
+                              (string-append #$output "/lib/udev/rules.d"))))
             (add-after 'install 'install-desktop-files
               (lambda _
                 (install-file "linux_packaging/assets/keyboard-center.png"
