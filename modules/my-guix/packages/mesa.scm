@@ -40,8 +40,6 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages crates-apple)
-  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages llvm)
@@ -152,10 +150,10 @@ vendored inputs."
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "874639746144d8e5f5b0ba961ef3d18127e6cef5")))
+             (commit "a6bfb7e869d746df2dce842e589c450e0ad6006f")))
        (file-name (git-file-name name "git"))
        (sha256 (base32
-                "0gc2ha188m8vnlsab8f71q6igj5a6g3387gymqj3ylrafw96n8yg"))))
+                "1z5mra08kbysfvf9hnlnkkff9pz5y30qir7v7nn9h9qm4i4pf4m5"))))
     (arguments
      (cons*
       #:meson meson-next
