@@ -123,6 +123,70 @@
         (base32
          "148wh3cw88pv1adbhmkr13ass2vznzpa03hc3f6hwmwfv4bjsdlr"))))))
 
+(define patch-cargo-wrap-files-gexp
+  #~(let ((wrap-name-regexp (make-regexp "^(.*)-([^-]*)-rs$"))
+          (guix-vendored-name-regexp (make-regexp "^rust-.+-([0-9]+(\\.[0-9]+)*)")))
+      (lambda* (#:key (vendor-dir "guix-vendor") #:allow-other-keys)
+        "Unbundle Cargo/Rust dependencies (subprojects) and point Meson to our own
+vendored inputs."
+        (define (find-vendored-input name version-prefix)
+          (let* ((guix-downstream-namever
+                  (string-append "rust-" (string-replace-substring name  "_" "-")
+                                 "-" version-prefix))
+                 (matches
+                  (scandir vendor-dir (cut string-match
+                                           (regexp-quote guix-downstream-namever)
+                                           <>))))
+            (match matches
+              (() #f)
+              ;; Pick the first match, assuming it's the correct one.
+              ((input . _)
+               ;; This is slightly hacky: since the only information we have about
+               ;; the rust inputs are the files themselves, we figure out the full
+               ;; version by parsing it out of the matched directory.
+               (let* ((m (regexp-exec guix-vendored-name-regexp input))
+                      (version (match:substring m 1)))
+                 (list input version))))))
+
+        ;; Set vendor directory as a location that Meson will use to search for
+        ;; names corresponding to the "directory" key in wrap file.
+        (setenv "MESON_PACKAGE_CACHE_DIR" vendor-dir)
+        (for-each
+         (lambda (wrap-file)
+           (let* ((wrap-name (basename wrap-file ".wrap"))
+                  (m (regexp-exec wrap-name-regexp wrap-name))
+                  (name (match:substring m 1))
+                  (version-prefix (match:substring m 2))
+                  (overlay-dir (string-append
+                                "subprojects/packagefiles/" wrap-name)))
+             (match (find-vendored-input name version-prefix)
+               ((input version)
+                ;; Don't use any bundled dependencies.
+                (invoke "meson" "subprojects" "purge" "--confirm" wrap-name)
+                (when (file-exists? overlay-dir)
+                  ;; Adjust subproject's meson.build file to have the correct
+                  ;; version associated with input.
+                  (with-directory-excursion overlay-dir
+                    (invoke "meson" "rewrite" "kwargs"
+                            "set" "project" "/" "version" version)))
+                ;; Patch local source in wrap file.
+                (substitute* wrap-file
+                  (("^source.*$") "")
+                  (("^directory.*$")
+                   (string-append "directory = " input "\n")))
+                ;; "Download" source from the patched-in local path.
+                (invoke "meson" "subprojects" "download" wrap-name))
+               (else
+                (format #t "Vendored input for ~s was not found~%" name)
+                #f))))
+         (if (file-exists? "subprojects")
+             ;; Meson uses the naming scheme "{NAME}-{VERSIONPREFIX}-rs" for
+             ;; Cargo/Rust dependencies.
+             (with-directory-excursion "subprojects"
+               (and=> (scandir "." (cut string-match "-rs\\.wrap$" <>))
+                      (cut map canonicalize-path <>)))
+             '())))))
+
 (define-public nvsa-git
   ;; slimmed mesa git version for NVIDIA drivers.
   (package
@@ -141,12 +205,18 @@
      (cons*
       #:meson meson-next
       #:imported-modules `(,@%meson-build-system-modules
+                           ,@%cargo-build-system-modules
                            (guix build utils)
                            (my-guix build utils))
       (substitute-keyword-arguments (package-arguments mesa)
         ((#:modules original-modules)
          (append original-modules
-                 '((my-guix build utils))))
+                 '(((guix build cargo-build-system) #:prefix cargo:)
+                   (ice-9 ftw)
+                   (ice-9 string-fun)
+                   (ice-9 regex)
+                   (my-guix build utils)
+                   (srfi srfi-26))))
         ((#:configure-flags original-flags)
          #~(append (lset-difference equal? #$original-flags
                                     ;; These flags were removed upstream.
@@ -158,40 +228,12 @@
                           '())))
         ((#:phases original-phases)
          #~(modify-phases #$original-phases
-             #$@(let ((patch-subproject-sources
-                       ;; Subproject source URLs are patched to point to the
-                       ;; store, which avoids an attempt to download them
-                       ;; mid-build.
-                       #~(lambda _
-                           (for-each
-                            (match-lambda
-                              ((name source)
-                               (patch-wrap-file name source)))
-                            '#+(map (lambda (pkg)
-                                      (let ((pkg (package/with-rust-binary pkg)))
-                                        (list (string-append
-                                               (package-upstream-name* pkg)
-                                               "-"
-                                               (let ((version (package-version pkg)))
-                                                 (if (string= "0" (version-major version))
-                                                     (version-major+minor version)
-                                                     (version-major version))))
-                                              (crate-package-source pkg))))
-                                    (list rust-syn-2
-                                          rust-unicode-ident-1
-                                          rust-quote-1
-                                          rust-proc-macro2-1
-                                          rust-paste-1
-                                          rust-rustc-hash-2))))))
-                  (cond
-                   ((target-x86-32?)
-                    #~((add-after 'unpack 'patch-subproject-sources
-                         #$patch-subproject-sources)))
-                   ((target-x86-64?)
-                    #~((replace 'patch-subproject-sources
-                         #$patch-subproject-sources)))
-                   (else
-                    #~())))
+             (delete 'patch-subproject-sources)
+             (add-before 'configure 'patch-cargo-wrap-files
+               #$patch-cargo-wrap-files-gexp)
+             (add-before 'patch-cargo-wrap-files 'vendor-cargo-inputs
+               (lambda args
+                 (apply (assoc-ref cargo:%standard-phases 'configure) args)))
              (add-before 'build 'patch-out-rustfmt
                (lambda _
                  ;; XXX: Patch out rustfmt call, which appears to require rust
@@ -222,8 +264,12 @@
              (replace "rust-cbindgen"
                (package/with-rust-binary rust-cbindgen-0.26))))))
     (inputs
-     (modify-inputs (package-inputs mesa)
-       (replace "wayland-protocols" wayland-protocols-next)))))
+     ;; HACK: modify-inputs doesn't support adding lists, so we add input
+     ;; labels manually before combining lists.
+     (append ((@@ (guix packages) maybe-add-input-labels)
+              (cargo-inputs 'mesa #:module '(my-guix packages rust-crates)))
+             (modify-inputs (package-inputs mesa)
+               (replace "wayland-protocols" wayland-protocols-next))))))
 
 (define mesa/nvsa-git
   (package
