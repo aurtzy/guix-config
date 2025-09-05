@@ -327,11 +327,11 @@ the \"#inbox\" keyword is included."
 
 ;;;; Configure `forge'.
 
-(use-package forge :after magit)
+(use-package forge :demand :after magit)
 
 ;;;; Configure `magit-todos'.
 
-(use-package magit-todos :after magit
+(use-package magit-todos :demand :after magit
   :custom
   (magit-todos-keyword-suffix "[[:space:]]\\|:\\|$")
   :config
@@ -714,13 +714,13 @@ whether the directory is trusted or not, respectively."
 
 ;;;; Translate ANSI escape sequences in compilation buffer to text properties.
 
-(use-package ansi-color :after compile
+(use-package ansi-color :demand :after compile
   :config
   (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
 
 ;;;; Add suffix to `magit-stash' for editing stash messages.
 
-(use-package magit-stash :after magit
+(use-package magit-stash :demand :after magit
   :autoload ( magit-stash magit-read-stash magit-git-string magit-read-string
               magit-rev-parse magit-stash-drop magit-stash-store magit-refresh)
   :config
