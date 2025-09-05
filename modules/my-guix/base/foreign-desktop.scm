@@ -29,7 +29,7 @@
   #:use-module (my-guix base desktop)
   #:export (base-foreign-desktop-home-environment))
 
-(use-package-modules base certs ssh)
+(use-package-modules base nss ssh)
 
 (define base-foreign-desktop-home-environment
   (let ((env base-desktop-home-environment))
