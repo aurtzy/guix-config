@@ -60,7 +60,8 @@
                                        "netdev"
                                        "audio"
                                        "video"
-                                       "kvm")))
+                                       "kvm"
+                                       "libvirt")))
               (operating-system-users base-os)))
       (mapped-devices
        (list (mapped-device
