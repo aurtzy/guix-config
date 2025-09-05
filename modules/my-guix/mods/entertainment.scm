@@ -209,6 +209,9 @@ gamescope -w 2560 -h 1440 -W 2560 -H 1440 --force-grab-cursor --fullscreen -- \\
 [Context]
 filesystems=" (path-append-my-assets-directory
                "komikku" ".static/komikku.db") "
+" #; "App crashes on startup with Zink, so disable it." "
+[Environment]
+NOUVEAU_USE_ZINK=0
 "))))
             (simple-service name
                             home-impure-symlinks-service-type
