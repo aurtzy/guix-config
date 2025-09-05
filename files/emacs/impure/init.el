@@ -953,7 +953,7 @@ used from notes files."
    '(["Other options"
       (disproject-infix-customize-switch)]
      ["Special files"
-      ("c" disproject-find-special-file :file "CHANGELOG")
+      ("c" disproject-find-special-file :file ("CHANGELOG" "CHANGELOG.org"))
       ("e" disproject-find-special-file :file ".envrc")
       ("g g" disproject-find-special-file :file "guix.scm")
       ("g h" disproject-find-special-file :file "hall.scm")
