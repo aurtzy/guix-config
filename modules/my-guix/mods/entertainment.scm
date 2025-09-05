@@ -37,11 +37,12 @@
   #:export (game-mangers-mod
             minecraft-mod
             minetest-mod
+            openttd-mod
             syncplay-mod
 
             entertainment-mods))
 
-(use-package-modules freedesktop minetest sdl video)
+(use-package-modules freedesktop games minetest sdl video)
 
 (use-service-modules sysctl)
 
@@ -190,6 +191,12 @@ gamescope -w 2560 -h 1440 -W 2560 -H 1440 --force-grab-cursor --fullscreen -- \\
      (compose (mod-he-packages
                (list minetest))))))
 
+(define openttd-mod
+  (mod
+    (name 'openttd)
+    (he-extension
+     (compose (mod-he-packages (list openttd))))))
+
 (define videa-mod
   (mod
     (name 'videa)
@@ -224,5 +231,6 @@ filesystems=" (path-append-my-assets-directory
   (list game-managers-mod
         minecraft-mod
         minetest-mod
+        openttd-mod
         syncplay-mod
         videa-mod))
