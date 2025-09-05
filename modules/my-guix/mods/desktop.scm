@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -354,6 +354,7 @@ elsewhere in possibly different forms).")
                       emacs-unfill
                       emacs-vundo
                       ;; git
+                      emacs-agitjo/maybe-newer
                       emacs-magit
                       emacs-magit-todos ; XXX: Strangely only works with ripgrep?
                       emacs-magit-annex

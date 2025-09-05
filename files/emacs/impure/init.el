@@ -646,6 +646,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Configure AGitjo.
+
+(use-package agitjo :demand :after magit)
+
 ;;;; Add command to open files externally, with xdg-open.
 
 (use-package emacs

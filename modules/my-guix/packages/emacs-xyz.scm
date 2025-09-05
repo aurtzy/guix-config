@@ -1,4 +1,4 @@
-;;; Copyright © 2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2024-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -24,6 +24,31 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (my-guix utils))
+
+(define-public emacs-agitjo/maybe-newer
+  (let ((local-package (path-append-my-home "/src/agitjo/guix.scm")))
+    (if (file-exists? local-package)
+        (load local-package)
+        (package
+          (name "emacs-agitjo")
+          (version "0.3.1")
+          (source
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://codeberg.org/halvin/agitjo")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name "git"))
+             (sha256 (base32
+                      "1m9k7zvw551vn8g8d3yjln5m9wczf921h0s0ahrwzf6myf8bd6mj"))))
+          (build-system emacs-build-system)
+          (propagated-inputs (list emacs-magit
+                                   emacs-markdown-mode
+                                   emacs-transient))
+          (home-page "https://codeberg.org/halvin/agitjo")
+          (synopsis "Manage Forgejo PRs with AGit-Flow in Emacs")
+          (description "")
+          (license license:gpl3+)))))
 
 (define-public emacs-disproject/newer
   (let ((local-package (path-append-my-home "/src/disproject/guix.scm")))
