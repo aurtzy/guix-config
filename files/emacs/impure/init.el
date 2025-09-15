@@ -246,6 +246,35 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Apply a fix to `csharp--color-forwards' by redefining it.
+
+(use-package csharp-mode
+  :config
+  ;; Redefine this function (copied from `csharp-mode'), with a tweak.
+  (defun csharp--color-forwards (font-lock-face)
+    (let (id-beginning)
+      (goto-char (match-beginning 0))
+      (forward-word)
+      (while (and (not (or (eq (char-after) ?\;)
+                           (eq (char-after) ?\{)
+                           ;; HACK: Tweak here.  We don't want to keep
+                           ;; fontifying if there's nothing left in the
+                           ;; buffer.  This fixes an end-of-buffer error when
+                           ;; fontifying, which can be seen in Markdown/Org
+                           ;; code snippets or while using e.g. OmniSharp and
+                           ;; hovering over namespaces.
+                           (/= (point) (point-max))))
+                  (progn
+                    (forward-char)
+                    (c-forward-syntactic-ws)
+                    (setq id-beginning (point))
+                    (> (skip-chars-forward
+                        (c-lang-const c-symbol-chars))
+                       0))
+                  (not (get-text-property (point) 'face)))
+        (c-put-font-lock-face id-beginning (point) font-lock-face)
+        (c-forward-syntactic-ws)))))
+
 ;;;; Enable terminal emulation with Eat in Eshell.
 
 (use-package eat :demand
