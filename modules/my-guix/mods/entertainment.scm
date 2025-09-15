@@ -36,7 +36,6 @@
   #:export (game-mangers-mod
             minecraft-mod
             minetest-mod
-            openttd-mod
             syncplay-mod
 
             entertainment-mods))
@@ -188,12 +187,6 @@ gamescope -w 2560 -h 1440 -W 2560 -H 1440 --force-grab-cursor --fullscreen -- \\
      (compose (mod-he-packages
                (list minetest))))))
 
-(define openttd-mod
-  (mod
-    (name 'openttd)
-    (he-extension
-     (compose (mod-he-packages (list openttd))))))
-
 (define videa-mod
   (mod
     (name 'videa)
@@ -231,7 +224,6 @@ NOUVEAU_USE_ZINK=0
   (list game-managers-mod
         minecraft-mod
         minetest-mod
-        openttd-mod
         ;; TEMP: Doesn't build at the moment (qtwebengine broken).
         ;; syncplay-mod
         videa-mod))
