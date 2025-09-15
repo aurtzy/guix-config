@@ -1007,6 +1007,15 @@ used from notes files."
 ;;; (major-modes) Major modes.
 ;;;
 
+;;;; Map C#-related major modes to tree-sitter alternatives.
+
+(use-package csharp
+  :init
+  ;; FIXME: See: https://codeberg.org/guix/guix/issues/580
+  (add-to-list 'treesit-load-name-override-list
+               '(c-sharp "libtree-sitter-c_sharp" "tree_sitter_c_sharp"))
+  (add-to-list 'major-mode-remap-alist '(csharp-mode . csharp-ts-mode)))
+
 ;;;; Use `web-mode' where appropriate.
 
 (use-package web-mode :mode ("\\.cshtml\\'"))
