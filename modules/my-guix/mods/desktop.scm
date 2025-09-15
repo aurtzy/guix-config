@@ -244,6 +244,9 @@ filesystems=" (string-join (list (path-append-my-assets-directory
                                  "/run/current-system/profile/share/fonts:ro"
                                  "~/.guix-home:ro")
                            ";") "
+" #;"Zink seems to cause some crashes." "\
+[Environment]
+NOUVEAU_USE_ZINK=0
 [Session Bus Policy]
 # TEMP: Shouldn't be necessary anymore when Plasma updates to 6.1.4
 org.freedesktop.ScreenSaver=talk
