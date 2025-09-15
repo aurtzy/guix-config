@@ -158,17 +158,20 @@ filesystems=~/.local/share/.guix-sandbox-home"))))
                                home-bash-service-type
                                (home-bash-extension
                                 (aliases
-                                 ;; Set aliases for steam-with-NVK and
-                                 ;; steam-with-proprietry driver for
-                                 ;; convenience.
-                                 '(("steam-custom"
+                                 ;; Set aliases for running steam in
+                                 ;; gamescope, for convenience.
+                                 ;;
+                                 ;; Use SDL backend to fix an issue with
+                                 ;; pointer escaping fullscreen onto secondary
+                                 ;; monitors.
+                                 '(("steam-720"
                                     . "\
-gamescope --backend sdl -w 1280 -h 720 -W 1280 -H 720 --force-grab-cursor --fullscreen -- \\
-	guix shell steam-custom -- steam")
-                                   ("steam-nvidia"
+gamescope --backend sdl -w 1280 -h 720 -W 1280 -H 720 -r 144 \\
+	--force-grab-cursor --fullscreen -- steam")
+                                   ("steam-1440"
                                     . "\
-gamescope -w 2560 -h 1440 -W 2560 -H 1440 --force-grab-cursor --fullscreen -- \\
-	guix shell steam-nvidia -- steam"))))))))))))
+gamescope --backend sdl -w 2560 -h 1440 -W 2560 -H 1440 -r 144 \\
+	--force-grab-cursor --fullscreen -- steam"))))))))))))
 
 (define minecraft-mod
   (mod
