@@ -50,6 +50,9 @@
                      (package-version kernel)))
       (initrd microcode-initrd)
       (firmware (list linux-firmware))
+      (kernel-arguments
+       (cons* "preempt=full" ; Mitigate stuttering and audio crackling issues.
+              (operating-system-user-kernel-arguments base-os)))
       (users
        (cons* (user-account
                (name "alvin")
