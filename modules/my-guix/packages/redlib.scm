@@ -27,7 +27,7 @@
   #:use-module (nonguix build-system binary))
 
 (define-public redlib
-  (let ((commit "407a6c00c3c874a9e3319c95308fc2c86d2e0443")
+  (let ((commit "a989d19ca92713878e9a20dead4252f266dc4936")
         (revision "0"))
     (package
       (name "redlib")
@@ -40,7 +40,7 @@
                 (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "14h5k4l2g3b6vr0i4f7zkqq63k8rh2yhrb2gj5mvqagab74axqkf"))))
+          (base32 "0mhx0mpls60fmd29mpyv5pczf9ybj8ixlfdvwda0s9dw5285b5k0"))))
       (build-system cargo-build-system)
       (arguments (list #:install-source? #f
                        ;; TODO: Fix tests.
