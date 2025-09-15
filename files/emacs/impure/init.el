@@ -978,6 +978,10 @@ used from notes files."
 ;;; (major-modes) Major modes.
 ;;;
 
+;;;; Use `web-mode' where appropriate.
+
+(use-package web-mode :mode ("\\.cshtml\\'"))
+
 ;;;; Map Shell-related major modes to tree-sitter alternatives.
 
 (use-package sh-script

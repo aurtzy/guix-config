@@ -394,6 +394,7 @@ elsewhere in possibly different forms).")
                       emacs-ripgrep
                       emacs-sharper
                       emacs-wgrep
+                      emacs-web-mode
                       ;; packages being tried out go below here
                       emacs-dape
                       emacs-org-noter
