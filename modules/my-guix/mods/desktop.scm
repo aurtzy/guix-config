@@ -392,6 +392,7 @@ elsewhere in possibly different forms).")
                       emacs-page-break-lines
                       emacs-protobuf-mode
                       emacs-ripgrep
+                      emacs-sharper
                       emacs-wgrep
                       ;; packages being tried out go below here
                       emacs-dape

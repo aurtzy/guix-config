@@ -646,6 +646,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Configure Sharper CLI wrapper.
+
+(use-package sharper :demand)
+
 ;;;; Configure Casual.
 
 (use-package casual :demand)

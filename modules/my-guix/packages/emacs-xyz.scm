@@ -77,3 +77,26 @@
      "This package provides a major mode for editing nftables files.  It
 supports basic highlighting and indentation.")
     (license license:gpl3+)))
+
+(define-public emacs-sharper
+  (let ((commit "5049795848609e6508e4c9718a9f97ee481bf36c")
+        (revision "0"))
+    (package
+      (name "emacs-sharper")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/sebasmonia/sharper")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10w8hnny8grnxhkx1cgsgq74p9cp2ni73n0w233inmids46661ha"))))
+      (build-system emacs-build-system)
+      (arguments
+       (list #:tests? #f))              ;no tests
+      (home-page "https://github.com/lelit/vbnet-mode")
+      (synopsis "Transient wrapper for dotnet CLI")
+      (description "")
+      (license license:gpl2+))))
