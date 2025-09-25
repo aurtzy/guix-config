@@ -1023,7 +1023,7 @@ used from notes files."
 
 ;;;; Map C#-related major modes to tree-sitter alternatives.
 
-(use-package csharp
+(use-package csharp-mode
   :init
   ;; FIXME: See: https://codeberg.org/guix/guix/issues/580
   (add-to-list 'treesit-load-name-override-list
