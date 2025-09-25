@@ -25,7 +25,8 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:export (package-with-explicit-emacs
-            package-with-emacs-pgtk))
+            package-with-emacs-pgtk
+            package-with-emacs-next-pgtk))
 
 (define* (package-with-explicit-emacs emacs old-prefix new-prefix
                                       #:key variant-property)
@@ -82,6 +83,16 @@ pre-defined variants."
 
 (define package-with-emacs-pgtk
   (package-with-explicit-emacs emacs-pgtk
+                               "emacs-"
+                               ;; XXX: Prefix is supposed to be "emacs-pgtk" but
+                               ;; it requires changes to the build system
+                               ;; internally (e.g. prefix stripping) I don't
+                               ;; want to bother with.
+                               "emacs-"
+                               #:variant-property 'emacs-pgtk-variant))
+
+(define package-with-emacs-next-pgtk
+  (package-with-explicit-emacs emacs-next-pgtk
                                "emacs-"
                                ;; XXX: Prefix is supposed to be "emacs-pgtk" but
                                ;; it requires changes to the build system
