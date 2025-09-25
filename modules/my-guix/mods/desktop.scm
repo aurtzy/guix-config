@@ -31,6 +31,7 @@
   #:use-module (gnu services shepherd)
   #:use-module (guix packages)
   #:use-module (guix records)
+  #:use-module (guix transformations)
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix build-system emacs)
   #:use-module (my-guix home services)
@@ -391,6 +392,18 @@ elsewhere in possibly different forms).")
                       emacs-nftables-mode
                       emacs-package-lint
                       emacs-page-break-lines
+                      ;; Last release was in 2020.
+                      (let* ((commit "25ba9463a443f0e904147138f226284e437248d3")
+                             (transform
+                              (options->transformation
+                               `((with-commit . ,(string-append
+                                                  "emacs-polymode=" commit))))))
+                        (transform
+                         (package/inherit emacs-polymode
+                           (arguments
+                            ;; Tests also fail upstream at the moment.
+                            (cons* #:tests? #f
+                                   (package-arguments emacs-polymode))))))
                       emacs-protobuf-mode
                       emacs-ripgrep
                       emacs-sharper

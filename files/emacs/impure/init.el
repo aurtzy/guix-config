@@ -1016,9 +1016,141 @@ used from notes files."
                '(c-sharp "libtree-sitter-c_sharp" "tree_sitter_c_sharp"))
   (add-to-list 'major-mode-remap-alist '(csharp-mode . csharp-ts-mode)))
 
-;;;; Use `web-mode' where appropriate.
+;;;; Configure a polymode with `web-mode' and `csharp-ts-mode' for Razor files.
 
-(use-package web-mode :mode ("\\.cshtml\\'"))
+(use-package web-mode :mode (("\\.razor\\'" . poly-razor-mode))
+  :init
+  (require 'polymode)
+  (require 'pcase)
+
+  (defun poly-razor-mode-code-directive-tail-matcher (_arg)
+    "Match the tail of a @code directive chunk."
+    (re-search-backward "{")
+    (or (ignore-error scan-error
+          (forward-sexp)
+          (cons (1- (point)) (point)))
+        (cons (point-max) (point-max))))
+
+  (define-hostmode poly-razor-mode-hostmode
+    :mode 'web-mode
+    ;; Prevent fontification of inner modes, since `web-mode' tries to
+    ;; override with its own.
+    :protect-font-lock t)
+  (define-innermode poly-razor-mode-code-directive-innermode
+    ;; FIXME: `pm-get-mode-symbol-from-name' prioritizes exact name match over
+    ;; remapping, so `csharp-mode' is never translated even if a remap to
+    ;; `csharp-ts-mode' is available.
+    :mode 'csharp-ts-mode
+    :head-matcher "@code\\s-*{"
+    :tail-matcher #'poly-razor-mode-code-directive-tail-matcher
+    ;; Attempting to fontify these with `web-mode' will not work due to the
+    ;; host mode font-lock protection.
+    :head-mode 'fundamental
+    :tail-mode 'fundamental
+    :body-indent-offset 'web-mode-code-indent-offset)
+  (define-polymode poly-razor-mode
+    :hostmode 'poly-razor-mode-hostmode
+    :innermodes '(poly-razor-mode-code-directive-innermode))
+
+  ;; HACK: `treesit.el' only supports embedding tree-sitter languages inside
+  ;; tree-sitter languages, so we hack up our own embedding logic here to fix
+  ;; issues with e.g. fontification getting confused as a result of errors
+  ;; from parsing the entire buffer instead of just the innermode region.
+  (defun poly-razor-mode-update-ranges ()
+    (when (and poly-razor-mode (buffer-modified-p))
+      (save-excursion
+        (let (ranges parser)
+          (pm-map-over-spans
+           (lambda (span)
+             (pcase span
+               (`(body ,begin ,end ,_obj)
+                (when (with-current-buffer (pm-span-buffer span)
+                        (and treesit-primary-parser
+                             ;; We assume that there's only one primary
+                             ;; parser, so it's fine to set it multiple times.
+                             (setq parser treesit-primary-parser)))
+                  (push (cons begin end) ranges))))))
+          (when parser
+            (treesit-parser-set-included-ranges parser ranges))))))
+  (add-hook 'post-command-hook #'poly-razor-mode-update-ranges)
+
+  ;; HACK: Update syntax highlighting more aggressively to work around an
+  ;; issue with fontification not applying.  Possibly related to this issue:
+  ;; https://github.com/polymode/polymode/issues/297
+  (defun poly-razor-mode-font-lock-update (&rest _)
+    (when poly-razor-mode (call-interactively #'font-lock-debug-fontify)))
+  (defun poly-razor-mode-font-lock-update-when-web-mode (&rest _)
+    ;; Optimization: Only re-fontify if the buffer is modified while editing
+    ;; in `web-mode' (`csharp-ts-mode' fontifies fine on its own).
+    (when (and (eq 'web-mode major-mode) (buffer-modified-p))
+      (poly-razor-mode-font-lock-update)))
+  (add-hook 'post-command-hook #'poly-razor-mode-font-lock-update-when-web-mode)
+
+  ;; HACK: Fix indentation with bracketed template blocks.
+  (defun poly-razor-mode-bracketed-block-previous-position (&optional pos)
+    "Return the position of the previous bracketed block.
+
+`web-mode-indent-line' assumes that the position of
+`web-mode-block-previous' has the correct indentation offset, which is
+not necessarily true when there are nested directives (a result of using
+`previous-single-property-change'?).  This is intended to replace that
+behavior (see: search \"I142\" in `web-mode-indent-line') with an
+alternative algorithm that is based on traversing s-expressions
+naturally formed by the brackets."
+    (setq pos (or pos (point)))
+    (save-excursion
+      (goto-char pos)
+      (goto-char (pos-bol))
+      (cond
+       ((looking-at-p "^\\s-*}")
+        (re-search-forward "}")
+        (backward-sexp)
+        (web-mode-block-previous-position))
+       ((looking-at-p "^\\s-*\\({\\|else\\)")
+        (backward-sexp)
+        (web-mode-block-previous-position))
+       (t
+        (web-mode-block-beginning-position (pos-eol))))))
+  (defun poly-razor-mode-indent-line-advice (fun &rest args)
+    "Hijack `web-mode-block-previous' to get correct indentation for a block."
+    (if poly-razor-mode
+        ;; NOTE: `web-mode-indent-line' is a pretty big function that does
+        ;; lots of things, so try to limit the number of cases where overrides
+        ;; apply, if possible.
+        (cl-letf
+            ;; This assumes that `web-mode-block-previous-position' is always
+            ;; called in `web-indent-line' with the intention of finding the
+            ;; start of a bracketed block.
+            (((symbol-function 'web-mode-block-previous-position)
+              #'poly-razor-mode-bracketed-block-previous-position))
+          (apply fun args))
+      (apply fun args)))
+  (advice-add #'web-mode-indent-line :around
+              #'poly-razor-mode-indent-line-advice)
+
+  ;; HACK: Fix indentation for markup that proceeds a closing bracket.
+  (defun poly-razor-mode-markup-indentation-advice (fun pos)
+    "Return intended indentation for current line.
+
+Around advice, for `web-mode-markup-indentation'.
+
+`web-mode-indent-line' does not take closing brackets
+(i.e. \"}\") into account when computing offset.  To remedy this, we
+search backwards for the next non-whitespace character.  If this
+character is a closing bracket, we assume POS's line should match its
+indentation."
+    (or (if poly-razor-mode
+            (save-excursion
+              (goto-char pos)
+              (and (skip-chars-backward "[:space:]")
+                   (char-equal ?} (char-before))
+                   (current-indentation))))
+        (funcall fun pos)))
+  (advice-add #'web-mode-markup-indentation :around
+              #'poly-razor-mode-markup-indentation-advice)
+  :functions ( web-mode-indent-line web-mode-block-previous-position
+               web-mode-block-beginning-position web-mode-markup-indentation
+               font-lock-debug-fontify))
 
 ;;;; Map Shell-related major modes to tree-sitter alternatives.
 
