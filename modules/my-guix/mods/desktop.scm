@@ -574,6 +574,9 @@ management/maintenance.")
                                 ,(mixed-text-file "io.freetubeapp.FreeTube" "\
 [Context]
 sockets=wayland;!x11
+
+[Session Bus Policy]
+org.freedesktop.Flatpak=talk
 "))))))))))
 
 (define password-management-mod
