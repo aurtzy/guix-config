@@ -705,7 +705,22 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Configure Sharper CLI wrapper.
 
-(use-package sharper :demand)
+(use-package sharper :demand
+  :config
+  (require 'disproject)
+  ;; HACK: Replace `sharper--run-async-shell' completely to use a `compile'
+  ;; buffer instead for running commands.  Also respect disproject
+  ;; environment, when possible.
+  (defun my-emacs-sharper-run-with-compile ( command bufname
+                                             &optional
+                                             _buffer-reuse-behavior)
+    (let ((compilation-buffer-name-function
+           (lambda (name-of-mode)
+             (concat "*" name-of-mode "-" (string-trim-left bufname "\\*")))))
+      (disproject-with-env+root
+        (compile command))))
+  (advice-add #'sharper--run-async-shell :override
+              #'my-emacs-sharper-run-with-compile))
 
 ;;;; Configure Casual.
 
