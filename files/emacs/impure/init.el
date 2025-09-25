@@ -246,6 +246,20 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Add some upstream improvements to `csharp-ts-mode' indentation.
+;; TEMP: Should be made redundant with Emacs 31.
+
+(use-package csharp-mode
+  :config
+  (setf (alist-get 'c-sharp csharp-ts-mode--indent-rules)
+        (append
+         ;; See: https://lists.gnu.org/archive/html/bug-gnu-emacs/2025-09/msg00394.html
+         '(((parent-is "array_creation_expression") parent-bol 0)
+           ((match "{" "initializer_expression" ) parent-bol 0)
+           ((parent-is "member_access_expression")
+            parent-bol csharp-ts-mode-indent-offset))
+         (alist-get 'c-sharp csharp-ts-mode--indent-rules))))
+
 ;;;; Apply a fix to `csharp--color-forwards' by redefining it.
 
 (use-package csharp-mode
