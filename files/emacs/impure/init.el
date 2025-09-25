@@ -573,6 +573,20 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Don't manage C# Razor files with Eglot.
+
+(use-package eglot :after web-mode
+  :hook (eglot-managed-mode . my-emacs-eglot-managed-mode-off-if-razor)
+  :config
+  (defun my-emacs-eglot-managed-mode-off-if-razor ()
+    "Disable `eglot--managed-mode' if buffer is a C# Razor file."
+    (when (and (eglot-managed-p)
+               (buffer-file-name)
+               (derived-mode-p '(web-mode csharp-mode))
+               (string-match "\\.razor$" (buffer-file-name)))
+      (eglot--managed-mode-off)))
+  :functions (eglot--managed-mode-off eglot-managed-p))
+
 ;;;; Enable `guix-devel-mode' in Scheme buffers.
 
 (use-package scheme :hook (scheme-mode . guix-devel-mode))
