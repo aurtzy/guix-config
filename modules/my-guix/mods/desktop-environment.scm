@@ -192,4 +192,4 @@
                              home-flatpak-profile-service-type
                              ;; Set application theme for GTK apps to "Breeze"
                              ;; in settings to use this
-                             '(("flathub" "org.gtk.Gtk3theme.Breeze")))))))))
+                             (list "org.gtk.Gtk3theme.Breeze"))))))))

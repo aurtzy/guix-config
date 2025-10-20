@@ -45,6 +45,11 @@
             flatpak-overrides-configuration-system-bus-policy
             flatpak-overrides-configuration-extra-content
 
+            flatpak-app
+            flatpak-app?
+            flatpak-app-id
+            flatpak-app-remote
+
             home-flatpak-configuration
             home-flatpak-configuration?
             home-flatpak-configuration-flatpak
@@ -123,6 +128,13 @@
 
 (define-maybe/no-serialization flatpak-overrides-configuration)
 
+(define-configuration/no-serialization flatpak-app
+  (id string
+      "The application identifier; for example, \"com.example.App\".")
+  (remote maybe-string
+          "The remote where this application should be downloaded from.  If
+left unset, the default remote will be used."))
+
 (define list-of-remotes?
   (match-lambda
     ((((? string?) (? string?)) ((? string?) (? string?)) ...) #t)
@@ -130,8 +142,19 @@
 
 (define list-of-flatpak-apps?
   (match-lambda
-    ((((? string?) (? string?)) ...) #t)
+    (((or (? flatpak-app?) (? string?)) ...) #t)
     (else #f)))
+
+(define (sanitize-list-of-flatpak-apps apps)
+  (if (list-of-flatpak-apps? apps)
+      (map (match-lambda
+             ((and (? string?) app-id)
+              (flatpak-app
+               (id app-id)))
+             (app app))
+           apps)
+      (raise-exception (make-exception-with-message
+                        (format #f "invalid value ~s" apps)))))
 
 (define-configuration/no-serialization home-flatpak-configuration
   (flatpak (file-like flatpak)
@@ -142,11 +165,12 @@ where the first element is the remote name, and the second element is the
 associated URL.  At least one remote is required to use this service.
 
 The first remote in the list is used as the default remote.")
-  ;; TODO: Use default remote to allow remote to be omitted in specifications.
   (profile (list-of-flatpak-apps '())
-           "A list of flatpak applications.  Each entry in the list must be a
-tuple, with the first element being the remote name, and the second element
-being the designated application ID.")
+           "A list of flatpak applications.  Each entry in the list must be
+either a @code{flatpak-app} type or a string representing the application
+identifier.  Strings are implicitly converted into a @code{flatpak-app} with
+an unset remote field, which means the default remote will be used."
+           (sanitizer sanitize-list-of-flatpak-apps))
   (global-overrides maybe-flatpak-overrides-configuration
                     "Override permissions for all Flatpak applications."))
 
@@ -177,15 +201,20 @@ being the designated application ID.")
   ;; g-exp.
   (match-record config <home-flatpak-configuration>
                 (flatpak remotes profile)
-    (for-each (match-lambda
-                ((remote-name app-id)
-                 (unless (assoc remote-name remotes)
-                   (raise-exception
-                    (make-exception-with-message
-                     (format
-                      #f "no flatpak remote named ~s exists for ~s"
-                      remote-name app-id))))))
-              profile)
+    (define default-remote (car (car remotes)))
+
+    (define install-app-arguments
+      (map (match-record-lambda <flatpak-app> (id remote)
+             (set! remote (if (maybe-value-set? remote)
+                              remote
+                              default-remote))
+             (unless (assoc remote remotes)
+               (raise-exception
+                (make-exception-with-message
+                 (format #f "no flatpak remote named ~s exists for ~s"
+                         remote id))))
+             (list remote id))
+           profile))
 
     #~(begin
         ;; TODO: why does use-modules not work??
@@ -193,12 +222,10 @@ being the designated application ID.")
           (identifier-syntax (@ (ice-9 match) match-lambda)))
 
         (define flatpak #$(file-append flatpak "/bin/flatpak"))
-        (define remotes '#$remotes)
-        (define profile '#$profile)
 
         (define configure-remote
           (match-lambda
-            ((remote-name remote-url)
+            ((remote remote-url)
              (call-with-port (%make-void-port "w")
                (lambda (port)
                  (with-error-to-port port
@@ -207,27 +234,27 @@ being the designated application ID.")
                               "--user"
                               "remote-delete"
                               "--force"
-                              remote-name)))))
+                              remote)))))
              (invoke flatpak
                      "--user"
                      "remote-add"
-                     remote-name
+                     remote
                      remote-url))))
 
         (define install-app
           (match-lambda
-            ((remote-name app-id)
+            ((remote app-id)
              (invoke flatpak
                      "--user"
                      "install"
                      "--or-update"
                      "--noninteractive"
-                     remote-name
+                     remote
                      app-id))))
 
         (unless #$(getenv "GUIX_FLATPAK_DISABLE")
-          (for-each configure-remote remotes)
-          (for-each install-app profile)
+          (for-each configure-remote '#$remotes)
+          (for-each install-app '#$install-app-arguments)
           ;; Update any remaining applications.
           (invoke flatpak "--user" "update" "--noninteractive")))))
 
