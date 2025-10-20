@@ -177,7 +177,7 @@ vendored inputs."
     (native-inputs
      ;; Support NVK on x86_32 arch by using rust-binary
      (if (target-x86-32?)
-         (modify-inputs native-inputs
+         (modify-inputs (package-native-inputs mesa)
            (prepend rust-binary
                     (package/with-rust-binary rust-bindgen-cli)
                     (package/with-rust-binary rust-cbindgen-0.26)))
