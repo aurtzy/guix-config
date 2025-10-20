@@ -150,10 +150,10 @@ vendored inputs."
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.freedesktop.org/mesa/mesa.git")
-             (commit "dce29ae35f629f8287e104bea1f8a9cfd72d74d0")))
+             (commit "4531b8ace44342be53311d4abe54fe21632f28c1")))
        (file-name (git-file-name name "git"))
        (sha256
-        (base32 "0xigs41n2fh2al0x1bskdshqv8ccm10dyydbh4jpsv00lc0d0g35"))))
+        (base32 "0ikdyx1sy2cbvjknvjcgjrqdxcxqapn7kd3s35qcvm9w37rd22v6"))))
     (arguments
      (cons*
       #:meson meson-next
