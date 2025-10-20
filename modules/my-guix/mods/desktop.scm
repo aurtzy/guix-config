@@ -40,7 +40,6 @@
   #:use-module (my-guix mods)
   #:use-module (my-guix mods base)
   #:use-module (my-guix packages emacs-xyz)
-  #:use-module (my-guix packages freedesktop)
   #:use-module (my-guix packages git-annex-configure)
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
@@ -314,10 +313,6 @@ elsewhere in possibly different forms).")
          (with-transformation
           replace-mesa
           (modify-services %desktop-services
-            ;; TEMP: Pending changes to upstream.
-            (udisks-service-type
-             config => (udisks-configuration
-                         (udisks udisks/fixed)))
             (delete gdm-service-type)))))))))
 
 (define emacs-mod
