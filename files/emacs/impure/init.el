@@ -708,6 +708,13 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Replace Casual EditKit's Project menu with Disproject.
+
+(use-package casual-editkit
+  :config
+  (transient-replace-suffix 'casual-editkit-main-tmenu "P"
+    '("P" "Project›" disproject-dispatch)))
+
 ;;;; Configure Sharper CLI wrapper.
 
 (use-package sharper :demand
