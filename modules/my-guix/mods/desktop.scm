@@ -206,13 +206,15 @@ pulse.properties = {
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
-                             '("com.usebottles.bottles"))
-             (simple-service name
-                             home-files-service-type
-                             `((".local/share/flatpak/overrides/com.usebottles.bottles"
-                                ,(symlink-to
-                                  (path-append-my-files
-                                   "bottles/impure/com.usebottles.bottles")))))))))))
+                             (list
+                              (flatpak-app
+                                (id "com.usebottles.bottles")
+                                (overrides
+                                 (flatpak-overrides-configuration
+                                   (filesystems
+                                    '("~/.guix-home"
+                                      "~/Games"
+                                      "~/.var/app/com.valvesoftware.Steam/data/Steam")))))))))))))
 
 ;; TODO: do I actually need this?
 (define breeze-theme-mod
@@ -243,29 +245,7 @@ Internet.")
                              ,(symlink-to
                                (path-append-my-assets-directory
                                 "firefox"
-                                ".static/default-profile/bookmarkbackups")))
-                            (".local/share/flatpak/overrides/com.brave.Browser"
-                             ,(symlink-to (path-append-my-files
-                                           "brave/impure/com.brave.Browser")))))
-          (simple-service name
-                          home-files-service-type
-                          `((".local/share/flatpak/overrides/org.mozilla.firefox"
-                             ,(mixed-text-file "org.mozilla.firefox" "\
-[Context]
-filesystems=" (string-join (list (path-append-my-assets-directory
-                                  "firefox" ".static/default-profile")
-                                 "xdg-pictures/screenshots"
-                                 "~/.local/share/fonts:ro"
-                                 "/run/current-system/profile/share/fonts:ro"
-                                 "~/.guix-home:ro")
-                           ";") "
-" #;"Zink seems to cause some crashes." "\
-[Environment]
-NOUVEAU_USE_ZINK=0
-[Session Bus Policy]
-# TEMP: Shouldn't be necessary anymore when Plasma updates to 6.1.4
-org.freedesktop.ScreenSaver=talk
-"))))
+                                ".static/default-profile/bookmarkbackups")))))
           (simple-service name
                           home-activation-service-type
                           ;; This file isn't /that/ important, and Firefox keeps
@@ -281,9 +261,30 @@ org.freedesktop.ScreenSaver=talk
                                 (copy-file src dest))))
           (simple-service name
                           home-flatpak-profile-service-type
-                          '("org.mozilla.firefox"
-                            "org.torproject.torbrowser-launcher"
-                            "com.brave.Browser")))))))))
+                          (list
+                           "org.torproject.torbrowser-launcher"
+                           (flatpak-app
+                             (id "org.mozilla.firefox")
+                             (overrides
+                              (flatpak-overrides-configuration
+                                (filesystems
+                                 `(,(path-append-my-assets-directory
+                                     "firefox" ".static/default-profile")
+                                   "xdg-pictures/screenshots"
+                                   "~/.local/share/fonts:ro"
+                                   "/run/current-system/profile/share/fonts:ro"
+                                   "~/.guix-home:ro"))
+                                (environment
+                                 ;; Zink seems to cause some crashes.
+                                 '(("NOUVEAU_USE_ZINK" . "0"))))))
+                           (flatpak-app
+                             (id "com.brave.Browser")
+                             (overrides
+                              (flatpak-overrides-configuration
+                                (filesystems
+                                 '("~/.local/share/fonts:ro"
+                                   "/run/current-system/profile/share/fonts:ro"
+                                   "~/.guix-home:ro"))))))))))))))
 
 (define common-fonts-mod
   (mod
@@ -487,11 +488,7 @@ remote.")
                              `((".local/share/icons"
                                 ,(symlink-to
                                   "/run/current-system/profile/share/icons")))
-                             '())
-                         `((".local/share/flatpak/overrides/com.github.tchx84.Flatseal"
-                            ,(symlink-to (path-append-my-files
-                                          "flatpak/impure"
-                                          "com.github.tchx84.Flatseal"))))))
+                             '())))
         (simple-service name
                         home-flatpak-profile-service-type
                         (list "com.github.tchx84.Flatseal"))))))))
@@ -544,7 +541,14 @@ management/maintenance.")
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
-                             '("io.freetubeapp.FreeTube"))
+                             (list
+                              (flatpak-app
+                                (id "io.freetubeapp.FreeTube")
+                                (overrides
+                                 (flatpak-overrides-configuration
+                                   (sockets '("wayland" "!x11"))
+                                   (session-bus-policy
+                                    '(("org.freedesktop.Flatpak" . "talk"))))))))
              (simple-service name
                              home-bash-service-type
                              (home-bash-extension
@@ -563,17 +567,7 @@ management/maintenance.")
                                    "mpv/scripts"
                                    "trigger-restart-playback-on-eof.lua")))
                                ("mpv/scripts/mpris.so"
-                                ,(file-append mpv-mpris "/lib/mpris.so"))))
-             (simple-service name
-                             home-files-service-type
-                             `((".local/share/flatpak/overrides/io.freetubeapp.FreeTube"
-                                ,(mixed-text-file "io.freetubeapp.FreeTube" "\
-[Context]
-sockets=wayland;!x11
-
-[Session Bus Policy]
-org.freedesktop.Flatpak=talk
-"))))))))))
+                                ,(file-append mpv-mpris "/lib/mpris.so"))))))))))
 
 (define password-management-mod
   (mod

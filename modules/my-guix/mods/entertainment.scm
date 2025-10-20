@@ -135,34 +135,40 @@
                                                 "tmodloader/files"
                                                 "Captures")))))
                (simple-service name
-                               home-files-service-type
-                               `((".local/share/flatpak/overrides/net.lutris.Lutris"
-                                  ,(mixed-text-file "net.lutris.Lutris" "\
-[Context]
-filesystems=" (string-join (list (path-append-my-assets-directory
-                                  "games" ".static")
-                                 "!home"
-                                 "~/.guix-home"
-                                 "~/Games")
-                           ";") "
-"))
-                                 (".local/share/flatpak/overrides/com.valvesoftware.Steam"
-                                  ,(mixed-text-file "com.valvesoftware.Steam" "\
-[Context]
-filesystems=" (string-join (list (path-append-my-assets-directory
-                                  "games" ".static")
-                                 "~/storage/steam-alt-library"
-                                 "~/Games")
-                           ";") "
-"))
-                                 (".local/share/flatpak/overrides/com.github.Matoking.protontricks"
-                                  ,(mixed-text-file "com.github.Matoking.protontricks" "\
-[Context]
-filesystems=~/.local/share/.guix-sandbox-home"))))
-               (simple-service name
                                home-flatpak-profile-service-type
-                               '("net.lutris.Lutris" "net.davidotek.pupgui2"
-                                 "com.github.Matoking.protontricks"))
+                               (list
+                                (flatpak-app
+                                  (id "net.lutris.Lutris")
+                                  (overrides
+                                   (flatpak-overrides-configuration
+                                     (filesystems
+                                      `(,(path-append-my-assets-directory
+                                          "games" ".static")
+                                        "!home"
+                                        "~/.guix-home"
+                                        "~/Games")))))
+                                (flatpak-app
+                                  (id "net.davidotek.pupgui2")
+                                  (overrides
+                                   (flatpak-overrides-configuration
+                                     (filesystems
+                                      '("xdg-data/guix-sandbox-home/.local/share/Steam")))))
+                                (flatpak-app
+                                  (id "com.github.Matoking.protontricks")
+                                  (overrides
+                                   (flatpak-overrides-configuration
+                                     (filesystems
+                                      '("xdg-data/guix-sandbox-home")))))
+                                ;; TODO: Do I still need this?
+                                (flatpak-app
+                                  (id "com.valvesoftware.Steam")
+                                  (overrides
+                                   (flatpak-overrides-configuration
+                                     (filesystems
+                                      `(,(path-append-my-assets-directory
+                                          "games" ".static")
+                                        "~/storage/steam-alt-library"
+                                        "~/Games")))))))
                (simple-service name
                                home-environment-variables-service-type
                                `(("GUIX_SANDBOX_EXTRA_SHARES"
@@ -211,18 +217,18 @@ gamescope --backend sdl -w 2560 -h 1440 -W 2560 -H 1440 -r 144 \\
      (mod-he-services
       (list (simple-service name
                             home-flatpak-profile-service-type
-                            '("info.febvre.Komikku"))
-            (simple-service name
-                            home-files-service-type
-                            `((".local/share/flatpak/overrides/info.febvre.Komikku"
-                               ,(mixed-text-file "info.febvre.Komikku" "\
-[Context]
-filesystems=" (path-append-my-assets-directory
-               "komikku" ".static/komikku.db") "
-" #; "App crashes on startup with Zink, so disable it." "
-[Environment]
-NOUVEAU_USE_ZINK=0
-"))))
+                            (list
+                             (flatpak-app
+                               (id "info.febvre.Komikku")
+                               (overrides
+                                (flatpak-overrides-configuration
+                                  (filesystems
+                                   `(,(path-append-my-assets-directory
+                                       "komikku" ".static/komikku.db")))
+                                  (environment
+                                   ;; App crashes on startup with Zink, so
+                                   ;; disable it.
+                                   '(("NOUVEAU_USE_ZINK" . "0"))))))))
             (simple-service name
                             home-files-service-type
                             `((".var/app/info.febvre.Komikku/data/komikku.db"

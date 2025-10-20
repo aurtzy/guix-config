@@ -89,24 +89,7 @@ filesystems=" (path-append-my-assets-directory "akregator" ".static") "
       (mod-he-services
        (list (simple-service name
                              home-files-service-type
-                             `( ;; Using Zink seems to fix blacked-out
-                               ;; interface issue, so force it on.
-                               (".local/share/flatpak/overrides/io.github.Soundux"
-                                ,(mixed-text-file "io.github.Soundux" "\
-[Context]
-filesystems=" (path-append-my-assets-directory "memes") ";~/storage/tmp/audio/etc
-
-[Environment]
-NOUVEAU_USE_ZINK=1
-"))
-                               ;; Prevent X11 from being used for Element
-                               ;; client.
-                               (".local/share/flatpak/overrides/im.riot.Riot"
-                                ,(plain-file "im.riot.Riot" "\
-[Context]
-sockets=!x11
-"))
-                               ;; Force-enable Wayland.
+                             `( ;; Force-enable Wayland.
                                (".local/share/applications/im.riot.Riot.desktop"
                                 ,(computed-file
                                   "im.riot.Riot.desktop"
@@ -129,8 +112,26 @@ sockets=!x11
                                                 exec " --ozone-platform=wayland"))))))))))
              (simple-service name
                              home-flatpak-profile-service-type
-                             '("in.cinny.Cinny" "im.riot.Riot"
-                               "io.github.Soundux"))))))))
+                             (list
+                              "in.cinny.Cinny"
+                              (flatpak-app
+                                (id "im.riot.Riot")
+                                (overrides
+                                 (flatpak-overrides-configuration
+                                   ;; Prevent X11 from being used for Element
+                                   ;; client.
+                                   (sockets '("!x11")))))
+                              (flatpak-app
+                                (id "io.github.Soundux")
+                                (overrides
+                                 (flatpak-overrides-configuration
+                                   (filesystems
+                                    `(,(path-append-my-assets-directory "memes")
+                                      "~/storage/tmp/audio/etc"))
+                                   (environment
+                                    ;; Using Zink seems to fix blacked-out
+                                    ;; interface issue, so force it on.
+                                    '(("NOUVEAU_USE_ZINK" . "1"))))))))))))))
 
 (define programming-mod
   (mod
