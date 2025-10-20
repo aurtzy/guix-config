@@ -34,34 +34,13 @@
               #:select ((base-desktop-operating-system . base-os)
                         (base-desktop-home-environment . base-he)))
              (my-guix systems al-pc)
+             (my-guix systems al-pc alvin)
              (my-guix utils)
              (nongnu packages linux)
              ((nongnu packages nvidia) #:prefix nvidia:)
              ((nongnu services nvidia) #:prefix nvidia:)
              (nongnu system linux-initrd)
              (nonguix utils))
-
-(define initial-home-environment
-  (home-environment
-    (inherit base-he)
-    (services
-     (cons* (simple-service 'redlib
-                            home-shepherd-service-type
-                            (list
-                             (shepherd-service
-                               (documentation
-                                "Run Redlib service.")
-                               (provision
-                                '(redlib))
-                               (requirement
-                                '())
-                               (start
-                                #~(make-forkexec-constructor
-                                   (list #$(file-append redlib "/bin/redlib")
-                                         "--port" "8081")))
-                               (stop
-                                #~(make-kill-destructor)))))
-            (home-environment-user-services base-he)))))
 
 (define system
   (modded-system
@@ -98,6 +77,6 @@
                           (let ((replace-mesa (replace-mesa)))
                             (with-transformation replace-mesa he))))
     (initial-os al-pc-operating-system)
-    (initial-he initial-home-environment)))
+    (initial-he alvin-home-environment)))
 
 (modded-system-guess-environment system)

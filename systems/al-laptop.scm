@@ -18,13 +18,9 @@
               #:select ((base-desktop-operating-system . base-os)
                         (base-desktop-home-environment . base-he)))
              (my-guix systems al-laptop)
+             (my-guix systems al-laptop alvin)
              (nongnu packages linux)
              (nongnu system linux-initrd))
-
-(define initial-home-environment
-  (home-environment
-    (inherit base-he)
-    ))
 
 (define system
   (modded-system
@@ -52,6 +48,6 @@
              config => (network-manager-configuration
                          (inherit config)
                          (vpn-plugins (list network-manager-openconnect)))))))))
-    (initial-he initial-home-environment)))
+    (initial-he alvin-home-environment)))
 
 (modded-system-guess-environment system)
