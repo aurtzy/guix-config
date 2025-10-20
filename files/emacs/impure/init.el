@@ -1045,7 +1045,8 @@ prompting for denote ID as a fallback."
        ;; TODO: Add command: Create static assets directory.
        ;; TODO: Display "create assets directory" if it doesn't exist.
        ("a" "Open assets directory" my-emacs-denote-find-context-assets-directory)
-       ("f" "Open file" my-emacs-denote-find-context-file)]
+       ("f" "Open file" my-emacs-denote-find-context-file)
+       ("e" "View related entities" my-emacs-denote-related-entities-menu)]
      ["Rename"
       :advice my-emacs-denote-with-context-apply
       ("r k" "keywords" denote-rename-file-keywords)
@@ -1059,7 +1060,290 @@ prompting for denote ID as a fallback."
     (interactive)
     (transient-setup
      'my-emacs-denote-dispatch nil nil
-     :scope (my-emacs-denote-context-id))))
+     :scope (my-emacs-denote-context-id)))
+
+;;;;; Add facilities for managing related denote entities.
+  ;; TODO: Consider using org links for the entity strings, which would be
+  ;; formatted in buffers.  We can match with `org-link-bracket-re' to
+  ;; re-extract denote links.
+
+  (use-package org
+    :init
+    (require 'llama)
+
+    (defun my-emacs-denote-related-entities-property-name (keyword)
+      "Return the property name where related entities for KEYWORD are stored."
+      (downcase (concat "related_" keyword)))
+
+    (defun my-emacs-denote-related-entities-empty? (keyword)
+      "Return non-nil if there is no related-entities property in current buffer."
+      (let* ((key (my-emacs-denote-related-entities-property-name keyword))
+             (values (org-property-values key)))
+        (seq-empty-p values)))
+
+    ;; TODO: Modify this and `my-emacs-denote-set-related-entities' such that
+    ;; the property actually stores prettified links with the entity's name
+    ;; for convenience (and transparently extracts the IDs when getting them).
+    (defun my-emacs-denote-get-related-entities (keyword
+                                                 &optional error-if-missing?)
+      "Return the related entities for KEYWORD in current buffer.
+
+The format \"related_KEYWORD\" is used for the property key.
+
+The property's value is unserialized with `read', and then converted
+into a ring data structure.  The elements must be strings that satisfy
+`denote-identifier-p'.
+
+This extracts the first-found property value in current buffer.
+
+If ERROR-IF-MISSING, throw an error when no such property can be found."
+      (let ((key (my-emacs-denote-related-entities-property-name keyword)))
+        (if (and error-if-missing?
+                 (my-emacs-denote-related-entities-empty? keyword))
+            (error "Property with key is not available: %s" key)
+          (ring-convert-sequence-to-ring
+           (seq-each (lambda (elt)
+                       (cl-assert (denote-identifier-p elt)
+                                  nil "Not a denote identifier: %s" elt))
+                     (read (or (car-safe (org-property-values key))
+                               ;; Note that Org also reads nil in the value as
+                               ;; a symbol instead of a string, so we should
+                               ;; make sure `read' is always passed a string
+                               ;; "nil".
+                               "nil")))))))
+
+    (defun my-emacs-denote-set-related-entities (keyword related-entities)
+      "Set the related-entities property of the first headline in current buffer.
+
+KEYWORD is used to determine the property key, with the format
+\"related_KEYWORD\".  RELATED-ENTITIES is stored at this property key.
+
+RELATED-ENTITIES should be a ring data structure of entities as denote
+identifiers."
+      (unless (ring-p related-entities)
+        (error "Not a ring: %s" related-entities))
+      (save-excursion
+        (when (progn
+                (goto-char (point-min))
+                (org-next-visible-heading 1)
+                ;; If we're at the end of buffer, that means there was no
+                ;; heading found.
+                (eql (point) (point-max)))
+          (error "No headline found"))
+        (let* ((key (my-emacs-denote-related-entities-property-name keyword))
+               (related-entities-as-list (ring-elements related-entities))
+               (serialized (prin1-to-string related-entities-as-list)))
+          (org-set-property key serialized))))
+
+    (defun my-emacs-denote-related-entities-keywords ()
+      "Return a list of base keywords in current buffer with related entities."
+      (let* ((available-keywords
+              (seq-mapcat (lambda (keyword)
+                            (if (string-match "^\\([^#]+\\)#entities$" keyword)
+                                (list (match-string 1 keyword))))
+                          (denote-keywords)))
+             (file-keywords
+              (seq-mapcat (lambda (keyword)
+                            (if (string-match "^\\([^#]+\\)\\($\\|#.*$\\)" keyword)
+                                (list (match-string 1 keyword))))
+                          (denote-extract-keywords-from-path
+                           (buffer-file-name)))))
+        (cl-intersection available-keywords file-keywords :test #'equal)))
+
+    (defun my-emacs-denote-read-related-entities-keyword ()
+      "Read and return a keyword with related entities."
+      (let ((keywords (my-emacs-denote-related-entities-keywords)))
+        (cond
+         ((null keywords)
+          (error "No keyword with related entities available"))
+         ((= 1 (length keywords))
+          (let ((keyword (car keywords)))
+            (message "auto-selected keyword: %s" keyword)
+            keyword))
+         (t
+          (completing-read "Related entities for keyword: "
+                           keywords nil t)))))
+
+    (defun my-emacs-denote-related-entities-scope (keyword)
+      "Initialize and return a scope for the related-entities menu."
+      (interactive (list (my-emacs-denote-read-related-entities-keyword)))
+      (let* ((entity-ids (ring-convert-sequence-to-ring
+                          (if (my-emacs-denote-related-entities-empty? keyword)
+                              nil
+                            (my-emacs-denote-get-related-entities keyword))))
+             (selected-id (if (ring-empty-p entity-ids)
+                              nil
+                            (ring-ref entity-ids 0))))
+        `((keyword . ,keyword)
+          (selected-id . ,selected-id)
+          (entity-ids . ,entity-ids))))
+
+    (defun my-emacs-denote-related-entities-menu-description ()
+      "Return description for `my-emacs-denote-related-entities-menu'."
+      (let* ((scope (transient-scope))
+             (keyword (alist-get 'keyword scope))
+             (selected-id (alist-get 'selected-id scope))
+             (entity-ids (alist-get 'entity-ids scope)))
+        (if (not selected-id)
+            (propertize (format "no related entities for %s" keyword))
+          (concat
+           (propertize "Related entities\n" 'face 'transient-heading)
+           (string-join
+            (seq-map (lambda (id)
+                       (let ((prefix (if (eq id selected-id)
+                                         (propertize
+                                          ">" 'face 'transient-enabled-suffix)
+                                       (propertize
+                                        "-" 'face 'transient-inactive-value)))
+                             (file (denote-get-path-by-id id)))
+                         (if-let* (file
+                                   (name (file-name-nondirectory file)))
+                             (concat prefix " " name)
+                           (error "No file with ID found: %s" id))))
+                     (ring-elements entity-ids))
+            "\n")))))
+
+    (defclass my-emacs-denote-related-entities-navigation-suffix
+      (transient-suffix)
+      ((navfun :initarg :navfun
+               :documentation "\
+Takes related-entities ring and currently-selected entity as arguments,
+and then performs some navigation based on that state.
+
+Must return the selected entity."
+               :type function)
+       (transient :initform t))
+      "Class for suffixes that navigate the related-entities ring.")
+
+    (transient-define-suffix my-emacs-denote-navigate-related-entities ()
+      "Template suffix for defining navigation commands."
+      :class 'my-emacs-denote-related-entities-navigation-suffix
+      :inapt-if (lambda ()
+                  (<= (ring-length (alist-get 'entity-ids (transient-scope))) 1))
+      (interactive)
+      (let* ((obj (transient-suffix-object))
+             (navfun (oref obj navfun))
+             (scope (transient-scope))
+             (selected-id (alist-get 'selected-id scope))
+             (entity-ids (alist-get 'entity-ids scope)))
+        (cond
+         ((ring-empty-p entity-ids)
+          (error "List is empty: no entity to navigate to"))
+         (t
+          (if selected-id
+              (setf (alist-get 'selected-id scope)
+                    (funcall navfun entity-ids selected-id))
+            (setf (alist-get 'selected-id scope)
+                  (ring-ref entity-ids 0)))))))
+
+    (defclass my-emacs-denote-edit-related-entities-suffix
+      (transient-suffix)
+      ((editfun :initarg :editfun
+                :documentation "\
+Takes current keyword context, related-entities ring, and
+currently-selected entity as arguments, and then performs some edit
+action on the ring.
+
+Must return the new selected entity."
+               :type function)
+       (transient :initform t))
+      "Class for suffixes that navigate the related-entities ring.")
+
+    (transient-define-suffix my-emacs-denote-edit-related-entities ()
+      "Edit the list of related entities and save to the corresponding property."
+      (interactive)
+      (let* ((obj (transient-suffix-object))
+             (editfun (oref obj editfun))
+             (scope (transient-scope))
+             (keyword (alist-get 'keyword scope))
+             (selected-id (alist-get 'selected-id scope))
+             (entity-ids (alist-get 'entity-ids scope)))
+        (setf (alist-get 'selected-id scope)
+              (funcall editfun keyword entity-ids selected-id))
+        (my-emacs-denote-set-related-entities keyword entity-ids)))
+
+    (transient-define-suffix my-emacs-denote-add-related-entity ()
+      "Add a related entity to the active list."
+      :class 'my-emacs-denote-edit-related-entities-suffix
+      :editfun
+      (lambda (keyword entity-ids _selected-id)
+        ;; TODO: Can we sort the collection by title?
+        ;; TODO: Filter out entities that are already in list.
+        (let* ((new-entity-file (denote-file-prompt
+                                 (concat "_" keyword "#entities")
+                                 "Add related entity"))
+               (new-entity-id (denote-extract-id-from-string new-entity-file)))
+          (ring-remove+insert+extend entity-ids new-entity-id t)
+          new-entity-id))
+      (interactive)
+      (call-interactively #'my-emacs-denote-edit-related-entities))
+
+    (transient-define-suffix my-emacs-denote-disconnect-related-entity ()
+      "Disconnect the currently-selected related entity from the list."
+      :class 'my-emacs-denote-edit-related-entities-suffix
+      :editfun
+      (lambda (_keyword entity-ids selected-id)
+        (let* ((pos (ring-member entity-ids selected-id))
+               (length (ring-length entity-ids))
+               (new-entity-id
+                (cond
+                 ((= 0 length) (error "Entities list is empty"))
+                 ((= 1 length) nil)
+                 ((zerop pos) (ring-next entity-ids selected-id))
+                 (t (ring-previous entity-ids selected-id)))))
+          (if (yes-or-no-p (format "Are you sure you want to disconnect %s?"
+                                   (file-name-nondirectory
+                                    (denote-get-path-by-id selected-id))))
+              (progn
+                (ring-remove entity-ids pos)
+                new-entity-id)
+            selected-id)))
+      (interactive)
+      (call-interactively #'my-emacs-denote-edit-related-entities))
+
+    (transient-define-suffix my-emacs-denote-set-related-entities-scope ()
+      "Re-initialize scope to e.g. change the keyword context."
+      :description (lambda ()
+                     (format "Entities for: %s"
+                             (propertize (alist-get 'keyword (transient-scope))
+                                         'face 'transient-value)))
+      :transient t
+      (interactive)
+      (let ((prefix-obj (transient-prefix-object)))
+        (oset prefix-obj scope
+              (call-interactively #'my-emacs-denote-related-entities-scope))))
+
+    (transient-define-suffix my-emacs-denote-visit-related-entity ()
+      "Visit the selected related entity in transient state."
+      :inapt-if (lambda ()
+                  (zerop (ring-length (alist-get 'entity-ids (transient-scope)))))
+      (interactive)
+      (let* ((scope (transient-scope))
+             (selected-id (alist-get 'selected-id scope)))
+        (find-file (denote-get-path-by-id selected-id))))
+
+    (transient-define-prefix my-emacs-denote-related-entities-menu ()
+      :refresh-suffixes t
+      [:description my-emacs-denote-related-entities-menu-description ""]
+      [("t" my-emacs-denote-set-related-entities-scope)]
+      ["Edit entities"
+       ;; TODO: Add command that creates a new entity entry file and then adds
+       ;; it as a related entity.
+       ("a" "Add related entity" my-emacs-denote-add-related-entity)
+       ("d" "Disconnect related entity" my-emacs-denote-disconnect-related-entity)]
+      ["Navigation"
+       ("n" "Next entity" my-emacs-denote-navigate-related-entities
+        :navfun ring-next)
+       ("p" "Previous entity" my-emacs-denote-navigate-related-entities
+        :navfun ring-previous)
+       ("RET" "Visit entity file" my-emacs-denote-visit-related-entity)]
+      (interactive)
+      (transient-setup
+       'my-emacs-denote-related-entities-menu nil nil
+       :scope (call-interactively #'my-emacs-denote-related-entities-scope)))
+
+    :functions ( org-first-headline-recenter org-property-values
+                 org-set-property)))
 
 ;;;; Add `disproject.el' command to initialize a `dir-locals-file' project.
 
