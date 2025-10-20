@@ -488,13 +488,7 @@ remote.")
                                 ,(symlink-to
                                   "/run/current-system/profile/share/icons")))
                              '())
-                         ;; GDK_PIXBUF_MODULE_FILE causes CSD issues on
-                         ;; foreign distros, so we unset it for all flatpaks;
-                         ;; allow access to system icons
-                         `((".local/share/flatpak/overrides/global"
-                            ,(symlink-to
-                              (path-append-my-files "flatpak/impure/global")))
-                           (".local/share/flatpak/overrides/com.github.tchx84.Flatseal"
+                         `((".local/share/flatpak/overrides/com.github.tchx84.Flatseal"
                             ,(symlink-to (path-append-my-files
                                           "flatpak/impure"
                                           "com.github.tchx84.Flatseal"))))))))

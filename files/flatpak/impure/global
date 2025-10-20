@@ -1,3 +1,0 @@
-[Context]
-filesystems=/gnu/store:ro;/run/current-system/profile/share/icons:ro
-unset-environment=GDK_PIXBUF_MODULE_FILE;

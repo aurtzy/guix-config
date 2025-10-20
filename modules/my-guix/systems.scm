@@ -142,7 +142,16 @@
            (service home-flatpak-service-type
                     (home-flatpak-configuration
                      (remotes '(("flathub"
-                                 "https://flathub.org/repo/flathub.flatpakrepo")))))
+                                 "https://flathub.org/repo/flathub.flatpakrepo")))
+                     (global-overrides
+                      ;; GDK_PIXBUF_MODULE_FILE causes CSD issues on foreign
+                      ;; distros, so unset it for all flatpaks.
+                      (flatpak-overrides-configuration
+                       (filesystems
+                        (list "/gnu/store:ro"
+                              ;; Allow access to system icons.
+                              "/run/current-system/profile/share/icons:ro"))
+                       (unset-environment (list "GDK_PIXBUF_MODULE_FILE"))))))
            %base-home-services))))
 
 (define base-foreign-desktop-home-environment

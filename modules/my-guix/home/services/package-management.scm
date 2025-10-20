@@ -29,16 +29,99 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (ice-9 exceptions)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:export (home-flatpak-configuration
+  #:export (flatpak-overrides-configuration
+            flatpak-overrides-configuration?
+            flatpak-overrides-configuration-shared
+            flatpak-overrides-configuration-sockets
+            flatpak-overrides-configuration-filesystems
+            flatpak-overrides-configuration-persistent
+            flatpak-overrides-configuration-features
+            flatpak-overrides-configuration-unset-environment
+            flatpak-overrides-configuration-environment
+            flatpak-overrides-configuration-session-bus-policy
+            flatpak-overrides-configuration-system-bus-policy
+            flatpak-overrides-configuration-extra-content
+
+            home-flatpak-configuration
             home-flatpak-configuration?
             home-flatpak-configuration-flatpak
             home-flatpak-configuration-remotes
             home-flatpak-configuration-profile
+            home-flatpak-configuration-global-overrides
 
             home-flatpak-service-type
             home-flatpak-profile-service-type))
+
+(define (serialize-list-of-strings-in-context-group field-name value)
+  (format #f "[Context]~%~a=~a~%"
+          field-name (string-join value ";")))
+
+(define list-of-strings-in-context-group? list-of-strings?)
+
+(define-maybe list-of-strings-in-context-group)
+
+(define (uglify-variables-field-name field-name)
+  (string-join (map string-capitalize
+                    (string-split (symbol->string field-name) #\-))
+               " "))
+
+(define (serialize-alist-of-variables field-name variables)
+  (format #f "[~a]~%~{~a~%~}"
+          (uglify-variables-field-name field-name)
+          (map (match-lambda ((key . value) (format #f "~a=~a" key value)))
+               variables)))
+
+(define alist-of-variables?
+  (match-lambda
+    ((((? string?) . (? string?)) ...) #t)
+    (else #f)))
+
+(define-maybe alist-of-variables)
+
+(define serialize-alist-of-bus-policy-variables serialize-alist-of-variables)
+
+(define alist-of-bus-policy-variables?
+  (match-lambda
+    ((((? string?) . (or "none" "see" "talk" "own")) ...) #t)
+    (else #f)))
+
+(define-maybe alist-of-bus-policy-variables)
+
+(define (serialize-string _ value)
+  value)
+
+(define-maybe string)
+
+(define-configuration flatpak-overrides-configuration
+  ;; TODO: Documentation.
+  ;; See: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#flatpak-metadata
+  (shared maybe-list-of-strings-in-context-group
+          "")
+  (sockets maybe-list-of-strings-in-context-group
+           "")
+  (devices maybe-list-of-strings-in-context-group
+           "")
+  (filesystems maybe-list-of-strings-in-context-group
+               "")
+  (persistent maybe-list-of-strings-in-context-group
+              "")
+  (features maybe-list-of-strings-in-context-group
+            "")
+  (unset-environment maybe-list-of-strings-in-context-group
+                     "")
+  (environment maybe-alist-of-variables
+               "")
+  (session-bus-policy maybe-alist-of-bus-policy-variables
+                      "")
+  (system-bus-policy maybe-alist-of-bus-policy-variables
+                     "")
+  (extra-content maybe-string
+                 "Extra content to append to overrides file."))
+
+(define-maybe/no-serialization flatpak-overrides-configuration)
 
 (define list-of-remotes?
   (match-lambda
@@ -63,7 +146,21 @@ The first remote in the list is used as the default remote.")
   (profile (list-of-flatpak-apps '())
            "A list of flatpak applications.  Each entry in the list must be a
 tuple, with the first element being the remote name, and the second element
-being the designated application ID."))
+being the designated application ID.")
+  (global-overrides maybe-flatpak-overrides-configuration
+                    "Override permissions for all Flatpak applications."))
+
+(define (home-flatpak-file-entries config)
+  (match-record config <home-flatpak-configuration>
+                (global-overrides)
+    (define overrides-dir ".local/share/flatpak/overrides")
+    (if (maybe-value-set? global-overrides)
+        (list `(,(string-append overrides-dir "/global")
+                ,(mixed-text-file
+                  "global" (serialize-configuration
+                            global-overrides
+                            flatpak-overrides-configuration-fields))))
+        '())))
 
 (define (home-flatpak-packages config)
   "Add flatpak package to profile."
@@ -148,11 +245,14 @@ being the designated application ID."))
   (service-type (name 'home-flatpak)
                 (extensions
                  (list (service-extension
-                        home-profile-service-type
-                        home-flatpak-packages)
-                       (service-extension
                         home-activation-service-type
-                        home-flatpak-activation)))
+                        home-flatpak-activation)
+                       (service-extension
+                        home-files-service-type
+                        home-flatpak-file-entries)
+                       (service-extension
+                        home-profile-service-type
+                        home-flatpak-packages)))
                 (compose concatenate)
                 (extend home-flatpak-extend)
                 (description "Install and configure Flatpak applications.")))
