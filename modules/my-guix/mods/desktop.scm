@@ -544,10 +544,7 @@ management/maintenance.")
       (mod-he-packages
        (list yt-dlp
              mpv
-             ;; HACK: tests currently fail.
-             (let ((transform (options->transformation
-                               `((without-tests . "quodlibet")))))
-               (transform quodlibet))))
+             quodlibet))
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
