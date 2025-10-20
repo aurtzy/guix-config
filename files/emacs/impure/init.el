@@ -729,7 +729,50 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 
 ;;;; Configure Casual.
 
-(use-package casual :demand)
+(use-package casual :demand
+  :bind ("C-c t" . my-emacs-casual-auto-tmenu)
+  :preface
+  (defun my-emacs-casual-auto-tmenu (&optional edit?)
+    "DWIM-dispatch a Casual menu, based on the current major mode.
+
+With prefix arg, unconditionally open the EditKit menu."
+    (interactive (list current-prefix-arg))
+    (declare-function casual-agenda-tmenu "casual-agenda")
+    (declare-function casual-bookmarks-tmenu "casual-bookmarks")
+    (declare-function casual-calc-tmenu "casual-calc")
+    (declare-function casual-calendar-tmenu "casual-calendar")
+    (declare-function casual-dired-tmenu "casual-dired")
+    (declare-function casual-editkit-main-tmenu "casual-editkit-main")
+    (declare-function casual-help-tmenu "casual-help")
+    (declare-function casual-eshell-tmenu "casual-eshell")
+    (declare-function casual-ibuffer-tmenu "casual-ibuffer")
+    (declare-function casual-image-tmenu "casual-image")
+    (declare-function casual-info-tmenu "casual-info")
+    (declare-function casual-isearch-tmenu "casual-isearch")
+    (declare-function casual-make-tmenu "casual-make")
+    (declare-function casual-man-tmenu "casual-man")
+    (declare-function casual-re-builder-tmenu "casual-re-builder")
+    ;; Use `call-interactively' instead of `transient-setup' to enable use of
+    ;; autoloads.
+    (call-interactively
+     (cond
+      (edit? #'casual-editkit-main-tmenu)
+      ((derived-mode-p 'org-agenda-mode) #'casual-agenda-tmenu)
+      ((derived-mode-p 'bookmark-bmenu-mode) #'casual-bookmarks-tmenu)
+      ((derived-mode-p 'calc-mode) #'casual-calc-tmenu)
+      ((derived-mode-p 'calendar-mode) #'casual-calendar-tmenu)
+      ((derived-mode-p 'dired-mode) #'casual-dired-tmenu)
+      ((derived-mode-p 'eshell-mode) #'casual-eshell-tmenu)
+      ((derived-mode-p 'help-mode) #'casual-help-tmenu)
+      ((derived-mode-p 'ibuffer-mode) #'casual-ibuffer-tmenu)
+      ((derived-mode-p 'image-mode) #'casual-image-tmenu)
+      ((derived-mode-p 'Info-mode) #'casual-info-tmenu)
+      ((derived-mode-p 'make-mode) #'casual-make-tmenu)
+      ((derived-mode-p 'Man-mode) #'casual-man-tmenu)
+      ((derived-mode-p 'reb-lisp-mode) #'casual-re-builder-tmenu)
+      ;; Assume that if nothing matches, EditKit is likely what the user
+      ;; wants.
+      (#'casual-editkit-main-tmenu)))))
 
 ;;;; Configure AGitjo.
 
