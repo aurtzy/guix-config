@@ -939,9 +939,9 @@ prompting for denote ID as a fallback."
     (cl-flet ((extract-id-or-nil (string)
                 (if string (denote-extract-id-from-string string))))
       (or (transient-scope)
+          (extract-id-or-nil (buffer-file-name))
           (extract-id-or-nil (word-at-point))
           (extract-id-or-nil (ignore-errors (dired-get-filename)))
-          (extract-id-or-nil (buffer-file-name))
           (extract-id-or-nil default-directory)
           (if prompt?
               (denote-retrieve-filename-identifier-with-error
