@@ -68,55 +68,11 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
-(define stb-deprecated
-  (let ((stb (@@ (gnu packages stb) stb)))
-    (package
-      (inherit stb)
-      (name "stb-deprecated")
-      (arguments
-       (substitute-keyword-arguments (package-arguments stb)
-         ((#:phases original-phases)
-          #~(modify-phases #$original-phases
-              (replace 'install
-                (lambda _
-                  (let ((files (make-regexp "\\.(c|h|md)$")))
-                    (with-directory-excursion "deprecated"
-                      (for-each (lambda (file)
-                                  (install-file file #$output))
-                                (scandir "." (cut regexp-exec files <>))))
-                    #t))))))))))
-
-(define (make-deprecated-stb-header-package name version description)
-  (package
-    (inherit stb-deprecated)
-    (name name)
-    (version version)
-    (source #f)
-    (inputs (list stb-deprecated))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
-                   (let ((stb (assoc-ref %build-inputs "stb-deprecated"))
-                         (lib (string-join (string-split ,name #\-) "_"))
-                         (out (assoc-ref %outputs "out")))
-                     (install-file (string-append stb "/" lib ".h")
-                                   (string-append out "/include"))
-                     #t))))
-    (description description)))
-
-(define-public stb-image-resize
-  (make-deprecated-stb-header-package
-   "stb-image-resize" "0.97"
-   "stb-image-resize is a library that supports scaling and translation of
-images."))
-
 ;; Upstream strongly recommends using some of its pinned dependencies due to
-;; relying on unstable features; these should be checked when updating
-;; gamescope.  See:
+;; relying on unstable/fork-specific features; these should be checked when
+;; updating gamescope.  See:
 ;; <https://github.com/ValveSoftware/gamescope/commit/7741cd587fa2274989f3307a3c6f23ab08e98460>
-(define %gamescope-version "3.16.4")
+(define %gamescope-version "3.16.17")
 
 (define libliftoff-for-gamescope
   (origin
@@ -151,9 +107,9 @@ images."))
     (method git-fetch)
     (uri (git-reference
           (url "https://github.com/Joshua-Ashton/wlroots.git")
-          (commit "4bc5333a2cbba0b0b88559f281dbde04b849e6ef")))
+          (commit "54e844748029d4874e14d0c086d50092c04c8899")))
     (file-name (git-file-name "wlroots-for-gamescope" %gamescope-version))
-    (sha256 (base32 "14m9j9qkaphzm3g36im43b6h92rh3xyjh7j46vw9w2qm602ndwcf"))))
+    (sha256 (base32 "0sxgs157nzm6bkfyzh4dnl9zajg2bq1m1kq09xpxi2lm8ran3g05"))))
 
 ;; From: https://gitlab.com/nonguix/nonguix/-/merge_requests/200
 ;;
@@ -189,12 +145,18 @@ images."))
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09h7046vwqn0w3kv1zaij4h3rcrvs1r2qlm0vva3mk3gg44fnhjl"))
+        (base32 "1b0w3is5carascz3salxlp57m8qbs2p4y8n42j2y7gkh79qdi7c9"))
+       (patches
+        (search-my-patches
+         ;; Provide -Dglm_include_dir and -Dstb_include_dir configure flags.
+         ;; See: https://github.com/ValveSoftware/gamescope/pull/1846
+         "0001-build-add-options-to-override-subproject-paths.patch"))
        (modules '((guix build utils)
                   (ice-9 match)))
        (snippet
         #~(begin
-            ;; Add some dependencies to source tree where they're expected.
+            ;; Add pinned dependencies to the source tree where they're
+            ;; expected.
             (for-each (match-lambda
                         ((source dest)
                          (copy-recursively source dest)))
@@ -205,8 +167,20 @@ images."))
     (build-system meson-build-system)
     (arguments
      (list
-      #:configure-flags #~(list "-Dpipewire=enabled"
-                                "-Denable_openvr_support=false")
+      #:configure-flags
+      #~(list "-Denable_openvr_support=false"
+              (string-append "-Dglm_include_dir="
+                             #+(this-package-input "glm")
+                             "/include")
+              "-Dpipewire=enabled"
+              (string-append "-Dstb_include_dir="
+                             #+(directory-union
+                                "stb-for-gamescope"
+                                (map (cut this-package-native-input <>)
+                                     (list "stb-image"
+                                           "stb-image-write"
+                                           "stb-image-resize")))
+                             "/include"))
       #:modules '((guix build meson-build-system)
                   (guix build utils)
                   (srfi srfi-26))
@@ -214,13 +188,26 @@ images."))
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch-usr-dir
             (lambda _
+              ;; FIXME: I'm pretty sure this doesn't actually do anything
+              ;; because there are no shaders provided with gamescope at
+              ;; #$output/share/gamescope/reshade.  Maybe configure search
+              ;; paths for this package so shaders can be provided in their
+              ;; own packages?
               (substitute* "src/reshade_effect_manager.cpp"
-                (("/usr") #$output))))
+                ;; Search for shaders in output instead of /usr.
+                (("return \"/usr\";")
+                 (string-append "return \"" #$output "\";")))))
+          (add-after 'unpack 'patch-gamescopereaper
+            (lambda _
+              (substitute* "src/Utils/Process.cpp"
+                ;; Explicitly use gamescopereaper from output to avoid PATH.
+                (("\"gamescopereaper\"")
+                 (string-append "\"" #$output "/bin/gamescopereaper" "\"")))))
           (add-after 'unpack 'patch-loader-path
-            ;; "Failed to load vulkan module" error occurs without this patch.
-            ;; Related issue: https://issues.guix.gnu.org/71109
             (lambda* (#:key inputs #:allow-other-keys)
               (substitute* "src/rendervulkan.cpp"
+                ;; Fix "Failed to load vulkan module" error.
+                ;; Related issue: https://issues.guix.gnu.org/71109
                 (("dlopen\\( \"libvulkan\\.so")
                  (string-append "dlopen( \""
                                 (search-input-file
@@ -228,32 +215,16 @@ images."))
           (add-after 'unpack 'patch-version
             (lambda _
               (substitute* "src/meson.build"
+                ;; This determines what `gamescope --version` prints.
                 (("^vcs_tag = .*$")
                  (string-append
                   "vcs_tag = '" #$(package-version this-package) "'\n")))))
-          (add-after 'unpack 'patch-stb
+          (add-after 'unpack 'unbundle-spirv-headers
             (lambda _
-              (let ((stb-files-dir #+(directory-union
-                                      "stb"
-                                      (map (cut this-package-native-input <>)
-                                           (list "stb-image"
-                                                 "stb-image-write"
-                                                 "stb-image-resize")))))
-                (copy-recursively (string-append stb-files-dir "/include")
-                                  "subprojects/stb"))
-              (copy-recursively "subprojects/packagefiles/stb"
-                                "subprojects/stb")
-              (call-with-output-file "subprojects/stb.wrap"
-                (cut format <> "\
-[wrap-file]
-directory = stb
-"))))
-          (add-after 'unpack 'patch-spirv-headers
-            (lambda _
-              (substitute* "src/meson.build"
-                (("../thirdparty/SPIRV-Headers")
-                 #$(this-package-native-input "spirv-headers"))))))))
-    (native-inputs (list gcc-14
+              (delete-file-recursively "thirdparty/SPIRV-Headers")
+              (copy-recursively #$(this-package-native-input "spirv-headers")
+                                "thirdparty/SPIRV-Headers"))))))
+    (native-inputs (list gcc
                          glslang
                          pkg-config
                          python-3
