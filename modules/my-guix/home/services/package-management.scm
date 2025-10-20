@@ -49,6 +49,7 @@
              flatpak-app?
              flatpak-app-id
              flatpak-app-remote
+             flatpak-app-overrides
 
              home-flatpak-configuration
              home-flatpak-configuration?
@@ -133,7 +134,9 @@
       "The application identifier; for example, \"com.example.App\".")
   (remote maybe-string
           "The remote where this application should be downloaded from.  If
-left unset, the default remote will be used."))
+left unset, the default remote will be used.")
+  (overrides maybe-flatpak-overrides-configuration
+             "Override the default permissions for this application."))
 
 (define list-of-remotes?
   (match-lambda
@@ -175,16 +178,26 @@ an unset remote field, which means the default remote will be used."
                     "Override permissions for all Flatpak applications."))
 
 (define (home-flatpak-file-entries config)
-  (match-record config <home-flatpak-configuration>
-                (global-overrides)
-    (define overrides-dir ".local/share/flatpak/overrides")
-    (if (maybe-value-set? global-overrides)
-        (list `(,(string-append overrides-dir "/global")
-                ,(mixed-text-file
-                  "global" (serialize-configuration
-                            global-overrides
-                            flatpak-overrides-configuration-fields))))
-        '())))
+  (define overrides-dir ".local/share/flatpak/overrides")
+  (match-record config <home-flatpak-configuration> (profile global-overrides)
+    (append
+     (if (maybe-value-set? global-overrides)
+         (list `(,(string-append overrides-dir "/global")
+                 ,(mixed-text-file
+                   "global" (serialize-configuration
+                             global-overrides
+                             flatpak-overrides-configuration-fields))))
+         '())
+     (concatenate
+      (map (match-record-lambda <flatpak-app> (id overrides)
+             (if (maybe-value-set? overrides)
+                 (list `(,(string-append overrides-dir "/" id)
+                         ,(mixed-text-file
+                           id (serialize-configuration
+                               overrides
+                               flatpak-overrides-configuration-fields))))
+                 '()))
+           profile)))))
 
 (define (home-flatpak-packages config)
   "Add flatpak package to profile."
