@@ -37,13 +37,13 @@
 (define-public python-lupa
   (package
     (name "python-lupa")
-    (version "2.2")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "lupa" version))
        (sha256
-        (base32 "0kcjr2s7l59gprcjnrhaj5ahqsnh56wj8f4mvggsr6ldrxmh0nk6"))))
+        (base32 "0d4cqkijlfn5769ikyljvhfs6dxsrkpa3lky1l2a623v5fgsiik9"))))
     (build-system pyproject-build-system)
     ;; There are tests that attempt to use internet.
     (arguments (list #:tests? #f))
