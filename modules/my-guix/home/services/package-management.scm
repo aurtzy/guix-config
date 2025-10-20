@@ -70,68 +70,69 @@ being the designated application ID."))
   (let ((flatpak (home-flatpak-configuration-flatpak config)))
     (list flatpak)))
 
-(define (home-flatpak-profile-installer config)
-  "Gexp to add flatpak remotes and install packages."
+(define (home-flatpak-activation config)
+  "Return a gexp that activates the flatpak configuration specified by CONFIG."
   ;; XXX: This service depends on SSL_CERT_FILE pointing to the CA certificates
   ;; file, which is not possible on foreign systems without an initial
   ;; reconfigure.  This file is special in that it is dynamically generated
   ;; rather than built as part of a package (see `ca-certificates-bundle' in
   ;; (guix profiles)), so there does not seem to be a way to insert it into this
   ;; g-exp.
-  (define flatpak (home-flatpak-configuration-flatpak config))
-  (define remotes (home-flatpak-configuration-remotes config))
-  (define profile (delete-duplicates
-                   (home-flatpak-configuration-profile config)))
+  (match-record config <home-flatpak-configuration>
+                (flatpak remotes profile)
+    (for-each (match-lambda
+                ((remote-name app-id)
+                 (unless (assoc remote-name remotes)
+                   (raise-exception
+                    (make-exception-with-message
+                     (format
+                      #f "no flatpak remote named ~s exists for ~s"
+                      remote-name app-id))))))
+              profile)
 
-  (for-each
-   (lambda (app)
-     (match app
-       ((remote-name app-id)
-        (unless (assoc remote-name remotes)
-          (raise-exception
-           (make-exception-with-message
-            (format #f "Flatpak remote does not exist for entry: ~s" app)))))))
-   profile)
-  #~(begin
-      (use-modules (ice-9 match))
-      (unless #$(getenv "GUIX_FLATPAK_DISABLE")
-        (let ((flatpak #$(file-append flatpak "/bin/flatpak"))
-              (remotes '#$remotes)
-              (profile '#$profile))
-          ;; Configure remotes first
-          (for-each (match-lambda
-                      ((remote-name remote-url)
-                       (call-with-port (%make-void-port "w")
-                         (lambda (port)
-                           (with-error-to-port port
-                             (lambda ()
-                               (system* flatpak
-                                        "--user"
-                                        "remote-delete"
-                                        "--force"
-                                        remote-name)))))
-                       (invoke flatpak
-                               "--user"
-                               "remote-add"
-                               remote-name
-                               remote-url)))
-                    remotes)
-          ;; Install/update applications in profile
-          (for-each (match-lambda
-                      ((remote-name app-id)
-                       (invoke flatpak
-                               "--user"
-                               "install"
-                               "--or-update"
-                               "--noninteractive"
-                               remote-name
-                               app-id)))
-                    profile)
-          ;; Update any remaining applications
-          (invoke flatpak
-                  "--user"
-                  "update"
-                  "--noninteractive")))))
+    #~(begin
+        ;; TODO: why does use-modules not work??
+        (define-syntax match-lambda
+          (identifier-syntax (@ (ice-9 match) match-lambda)))
+
+        (define flatpak #$(file-append flatpak "/bin/flatpak"))
+        (define remotes '#$remotes)
+        (define profile '#$profile)
+
+        (define configure-remote
+          (match-lambda
+            ((remote-name remote-url)
+             (call-with-port (%make-void-port "w")
+               (lambda (port)
+                 (with-error-to-port port
+                   (lambda ()
+                     (system* flatpak
+                              "--user"
+                              "remote-delete"
+                              "--force"
+                              remote-name)))))
+             (invoke flatpak
+                     "--user"
+                     "remote-add"
+                     remote-name
+                     remote-url))))
+
+        (define install-app
+          (match-lambda
+            ((remote-name app-id)
+             (invoke flatpak
+                     "--user"
+                     "install"
+                     "--or-update"
+                     "--noninteractive"
+                     remote-name
+                     app-id))))
+
+        (unless #$(getenv "GUIX_FLATPAK_DISABLE")
+          (for-each configure-remote remotes)
+          (for-each install-app profile)
+          ;; Update any remaining applications.
+          (invoke flatpak "--user" "update" "--noninteractive")))))
 
 ;; TODO: see todo comment at top; this should be able to extend remotes too,
 ;; likely by changing profile-extensions to be a general extensions argument,
@@ -151,7 +152,7 @@ being the designated application ID."))
                         home-flatpak-packages)
                        (service-extension
                         home-activation-service-type
-                        home-flatpak-profile-installer)))
+                        home-flatpak-activation)))
                 (compose concatenate)
                 (extend home-flatpak-extend)
                 (description "Install and configure Flatpak applications.")))
