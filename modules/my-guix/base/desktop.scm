@@ -30,7 +30,6 @@
   #:use-module (gnu system nss)
   #:use-module (guix gexp)
   #:use-module (my-guix config)
-  #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
@@ -140,5 +139,4 @@
                                 "inputrc"
                                 "set revert-all-at-newline on\n"))))
            (service home-flatpak-service-type)
-           (service home-impure-symlinks-service-type)
            %base-home-services))))

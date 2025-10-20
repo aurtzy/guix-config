@@ -66,57 +66,7 @@ suffice:
 
 * Home Services
 
-** Base Services
-
-The ~(my-guix home services)~ module provides additional base services.
-
-*** ~home-impure-symlinks-service-type~
-
-This service is based off of Guix Home's ~symlink-manager~ service, except
-that it is designed to work with symlinks outside of the store; hence,
-"impure".
-
-~home-impure-symlinks-service-type~ can be initialized and extended with a
-list of symlink specifications. For example, the following extends the service
-with symlinks at =$HOME/.config/emacs/init.el= and =$HOME/.bash_profile=
-pointing to =$HOME/dotfiles/init.el= and =$HOME/dotfiles/.bash_profile=,
-respectively:
-
-#+begin_src scheme
-  (simple-service 'home-impure-symlinks-dotfiles
-                  home-impure-symlinks-service-type
-                  `((".config/emacs/init.el"
-                     ,(string-append
-                       (getenv "HOME")
-                       "/dotfiles/init.el"))
-                    (".config/emacs/early-init.el"
-                     ,(string-append
-                       (getenv "HOME")
-                       "/dotfiles/early-init.el"))
-                    (".bash_profile"
-                     ,(string-append
-                       (getenv "HOME")
-                       "/dotfiles/.bash_profile"))))
-#+end_src
-
-Optionally, file names can be specified after the source path to copy the
-directory structure of the source path to the destination path (which are
-implied to be directories in this case). For example, the following value is
-equivalent to the extension value declared above:
-
-#+begin_src scheme
-  `((".config/emacs"
-     ,(string-append
-       (getenv "HOME")
-       "/dotfiles")
-     "init.el"
-     "early-init.el")
-    (""
-     ,(string-append
-       (getenv "HOME")
-       "/dotfiles")
-     ".bash_profile"))
-#+end_src
+The following sections document custom services used in home configurations.
 
 ** Package Management
 

@@ -26,7 +26,6 @@
   #:use-module (gnu home services syncthing)
   #:use-module (guix records)
   #:use-module (ice-9 match)
-  #:use-module (my-guix home services)
   #:use-module (my-guix mods)
   #:use-module (my-guix packages git-annex-configure)
   #:use-module (my-guix utils)
@@ -203,28 +202,25 @@ managing it.")
                              `((".local/bin/data-backup-create"
                                 ,(data-backup-create-script))))
              (simple-service name
-                             home-impure-symlinks-service-type
+                             home-files-service-type
                              (concatenate
-                              (map
-                               (match-record-lambda <data-entry> (source)
-                                 (define source-path
-                                   (canonicalize-path
-                                    (if (absolute-file-name? source)
-                                        source
-                                        ;; guix may not necessarily be
-                                        ;; invoked from $HOME, so
-                                        ;; explicitly append to it here.
-                                        (string-append (getenv "HOME")
-                                                       "/" source))))
-                                 ;; ~/data is the destination directory, so
-                                 ;; don't create a symlink if the source is
-                                 ;; in that directory.
-                                 (if (equal? (string-append (getenv "HOME")
-                                                            "/data")
-                                             (dirname source-path))
-                                     '()
-                                     (list
-                                      (list (string-append
-                                             "data/" (basename source-path))
-                                            source-path))))
-                               (data-entries))))))))))
+                              (map (match-record-lambda <data-entry> (source)
+                                     (define source-path
+                                       (canonicalize-path
+                                        (if (absolute-file-name? source)
+                                            source
+                                            ;; guix may not necessarily be
+                                            ;; invoked from $HOME, so
+                                            ;; explicitly append to it here.
+                                            (path-append-my-home source))))
+                                     ;; ~/data is the destination directory, so
+                                     ;; don't create a symlink if the source is
+                                     ;; in that directory.
+                                     (if (equal? (path-append-my-home "data")
+                                                 (dirname source-path))
+                                         '()
+                                         (list
+                                          (list (path-append
+                                                 "data" (basename source-path))
+                                                (symlink-to source-path)))))
+                                   (data-entries))))))))))

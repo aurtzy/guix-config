@@ -16,7 +16,6 @@
              (guix packages)
              (my-guix base desktop)
              (my-guix config)
-             (my-guix home services)
              (my-guix home services package-management)
              (my-guix mods)
              (my-guix mods base)

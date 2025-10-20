@@ -35,7 +35,6 @@
   #:use-module (guix transformations)
   #:use-module (ice-9 exceptions)
   #:use-module (my-guix build-system emacs)
-  #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods base)
@@ -46,6 +45,7 @@
   #:use-module (nonguix utils)
   #:use-module ((rnrs base) #:prefix rnrs:)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:export (replace-mesa
             <swapfile-configuration>
             swapfile-configuration
@@ -172,10 +172,10 @@ pulse.properties = {
 "
 }"))))
              (simple-service name
-                             home-impure-symlinks-service-type
-                             `((".config/easyeffects"
-                                ,(path-append-my-assets-directory
-                                  "easyeffects" ".static/config"))))
+                             home-xdg-configuration-files-service-type
+                             `(("easyeffects"
+                                ,(symlink-to (path-append-my-assets-directory
+                                              "easyeffects" ".static/config")))))
              ;; FIXME: easyeffects service crashes on startup with the error
              ;; "Failed to open display", leading it to be disabled.  Needs
              ;; investigation.  Use other means of starting it for now.
@@ -208,10 +208,11 @@ pulse.properties = {
                              home-flatpak-profile-service-type
                              '((flathub "com.usebottles.bottles")))
              (simple-service name
-                             home-impure-symlinks-service-type
-                             `((".local/share/flatpak/overrides"
-                                ,(path-append-my-files "bottles/impure")
-                                "com.usebottles.bottles")))))))))
+                             home-files-service-type
+                             `((".local/share/flatpak/overrides/com.usebottles.bottles"
+                                ,(symlink-to
+                                  (path-append-my-files
+                                   "bottles/impure/com.usebottles.bottles")))))))))))
 
 ;; TODO: do I actually need this?
 (define breeze-theme-mod
@@ -231,18 +232,21 @@ Internet.")
     (he-extension
      (compose
       (mod-he-services
-       (let ((firefox-profile
-              ".var/app/org.mozilla.firefox/.mozilla/firefox/profile.default"))
+       (let ((firefox-profile-append (cut path-append
+                                          ".var/app/org.mozilla.firefox"
+                                          ".mozilla/firefox/profile.default"
+                                          <...>)))
          (list
           (simple-service name
-                          home-impure-symlinks-service-type
-                          `((,firefox-profile
-                             ,(path-append-my-assets-directory
-                               "firefox" ".static/default-profile")
-                             "bookmarkbackups")
-                            (".local/share/flatpak/overrides"
-                             ,(path-append-my-files "brave/impure")
-                             "com.brave.Browser")))
+                          home-files-service-type
+                          `((,(firefox-profile-append "bookmarkbackups")
+                             ,(symlink-to
+                               (path-append-my-assets-directory
+                                "firefox"
+                                ".static/default-profile/bookmarkbackups")))
+                            (".local/share/flatpak/overrides/com.brave.Browser"
+                             ,(symlink-to (path-append-my-files
+                                           "brave/impure/com.brave.Browser")))))
           (simple-service name
                           home-files-service-type
                           `((".local/share/flatpak/overrides/org.mozilla.firefox"
@@ -271,8 +275,8 @@ org.freedesktop.ScreenSaver=talk
                                           "firefox"
                                           ".static/default-profile/search.json.mozlz4"))
                                   (dest #$(path-append-my-home
-                                           firefox-profile
-                                           "search.json.mozlz4")))
+                                           (firefox-profile-append
+                                            "search.json.mozlz4"))))
                               (when (file-exists? src)
                                 (copy-file src dest))))
           (simple-service name
@@ -292,11 +296,11 @@ org.freedesktop.ScreenSaver=talk
                      font-wqy-zenhei))
               (mod-he-services
                (list (simple-service name
-                                     home-impure-symlinks-service-type
-                                     `((".local/share"
-                                        ,(path-append-my-home
-                                          ".guix-home/profile/share")
-                                        "fonts")))))))))
+                                     home-files-service-type
+                                     `((".local/share/fonts"
+                                        ,(symlink-to (path-append-my-home
+                                                      ".guix-home/profile"
+                                                      "share/fonts")))))))))))
 
 (define desktop-services-mod
   (mod
@@ -427,11 +431,13 @@ elsewhere in possibly different forms).")
               (mod-he-services
                (list
                 (simple-service name
-                                home-impure-symlinks-service-type
-                                `((".config/emacs"
-                                   ,(path-append-my-files "emacs/impure")
-                                   "init.el"
-                                   "lisp")))
+                                home-xdg-configuration-files-service-type
+                                `(("emacs/init.el"
+                                   ,(symlink-to (path-append-my-files
+                                                 "emacs/impure/init.el")))
+                                  ("emacs/lisp"
+                                   ,(symlink-to (path-append-my-files
+                                                 "emacs/impure/lisp")))))
                 (simple-service name
                                 home-environment-variables-service-type
                                 '( ;; Set editor for e.g. sudoedit
@@ -471,27 +477,27 @@ remote.")
       (mod-he-services
        (list
         (simple-service name
-                        home-impure-symlinks-service-type
+                        home-files-service-type
                         (append
-                         ;; Flatpak doesn't like dangling symlinks, so
-                         ;; only make symlink when icons directory
-                         ;; exists (i.e. when on Guix System)
+                         ;; Flatpak doesn't like dangling symlinks, so only
+                         ;; make a symlink to this icons directory when it
+                         ;; exists (i.e. when on Guix System).
                          (if (file-exists?
-                              "/run/current-system/profile/share")
-                             '((".local/share"
-                                "/run/current-system/profile/share"
-                                "icons"))
+                              "/run/current-system/profile/share/icons")
+                             `((".local/share/icons"
+                                ,(symlink-to
+                                  "/run/current-system/profile/share/icons")))
                              '())
-                         `( ;; GDK_PIXBUF_MODULE_FILE causes CSD issues
-                           ;; on foreign distros, so we unset it for
-                           ;; all flatpaks; allow access to system
-                           ;; icons
-                           (".local/share/flatpak/overrides"
-                            ,(path-append-my-files "flatpak/impure")
-                            "global")
-                           (".local/share/flatpak/overrides"
-                            ,(path-append-my-files "flatpak/impure")
-                            "com.github.tchx84.Flatseal"))))))
+                         ;; GDK_PIXBUF_MODULE_FILE causes CSD issues on
+                         ;; foreign distros, so we unset it for all flatpaks;
+                         ;; allow access to system icons
+                         `((".local/share/flatpak/overrides/global"
+                            ,(symlink-to
+                              (path-append-my-files "flatpak/impure/global")))
+                           (".local/share/flatpak/overrides/com.github.tchx84.Flatseal"
+                            ,(symlink-to (path-append-my-files
+                                          "flatpak/impure"
+                                          "com.github.tchx84.Flatseal"))))))))
       ;; TODO: Use a simple-service for home-flatpak-service-type (or
       ;; some descendant supporting remote extensions) when it is
       ;; available

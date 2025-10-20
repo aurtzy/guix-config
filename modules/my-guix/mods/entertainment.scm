@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -29,10 +29,10 @@
   #:use-module (gnu system privilege)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods desktop)
-  #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages game-client)
   #:use-module (my-guix utils)
+  #:use-module (srfi srfi-26)
   #:export (game-mangers-mod
             minecraft-mod
             minetest-mod
@@ -55,11 +55,17 @@
                              "$HOME/Games"
                              "$HOME/storage/steam-alt-library"
                              "$HOME/.config/r2modmanPlus-local"
-                             "$HOME/solid-drive/steam-library"))
+                             "$HOME/solid-drive/steam-library"
+                             ;; Allow access to store so any dependencies can
+                             ;; be resolved.
+                             "/gnu"))
 
 (define game-managers-mod
-  (let* ((lutris-dest ".var/app/net.lutris.Lutris/data")
-         (steam-dest ".local/share/guix-sandbox-home"))
+  (let* ((lutris-append (cut path-append ".var/app/net.lutris.Lutris/data"
+                             <...>))
+         (steam-append (cut path-append ".local/share/guix-sandbox-home"
+                            <...>))
+         (games-src-append (cut path-append games-src <...>)))
     (mod
       (name 'game-managers)
       (os-extension
@@ -100,25 +106,34 @@
          (list steam-custom sdl2))
         (mod-he-services
          (list (simple-service name
-                               home-impure-symlinks-service-type
+                               home-files-service-type
                                `( ;; Mindustry
-                                 (,(path-append lutris-dest "Mindustry")
-                                  ,(path-append games-src "mindustry/files")
-                                  "saves"
-                                  "settings.bin")
+                                 (,(lutris-append "Mindustry/saves")
+                                  ,(symlink-to (games-src-append
+                                                "mindustry/files/saves")))
+                                 (,(lutris-append "Mindustry/settings.bin")
+                                  ,(symlink-to (games-src-append
+                                                "mindustry/files/settings.bin")))
                                  ;; Factorio
-                                 (,steam-dest
-                                  ,(path-append games-src
-                                                "factorio/files")
-                                  ".factorio")
+                                 (,(steam-append ".factorio")
+                                  ,(symlink-to (games-src-append
+                                                "factorio/files/.factorio")))
                                  ;; tModLoader
-                                 (,(path-append steam-dest
-                                                ".local/share/Terraria"
-                                                "tModLoader")
-                                  ,(path-append games-src "tmodloader/files")
-                                  "Players/Backups"
-                                  "Worlds/Backups"
-                                  "Captures")))
+                                 (,(steam-append ".local/share/Terraria/tModLoader"
+                                                 "Players/Backups")
+                                  ,(symlink-to (games-src-append
+                                                "tmodloader/files"
+                                                "Players/Backups")))
+                                 (,(steam-append ".local/share/Terraria/tModLoader"
+                                                 "Worlds/Backups")
+                                  ,(symlink-to (games-src-append
+                                                "tmodloader/files"
+                                                "Worlds/Backups")))
+                                 (,(steam-append ".local/share/Terraria/tModLoader"
+                                                 "Captures")
+                                  ,(symlink-to (games-src-append
+                                                "tmodloader/files"
+                                                "Captures")))))
                (simple-service name
                                home-files-service-type
                                `((".local/share/flatpak/overrides/net.lutris.Lutris"
@@ -210,11 +225,11 @@ filesystems=" (path-append-my-assets-directory
 NOUVEAU_USE_ZINK=0
 "))))
             (simple-service name
-                            home-impure-symlinks-service-type
-                            `((".var/app/info.febvre.Komikku/data"
-                               ,(path-append-my-assets-directory
-                                 "komikku" ".static")
-                               "komikku.db"))))))))
+                            home-files-service-type
+                            `((".var/app/info.febvre.Komikku/data/komikku.db"
+                               ,(symlink-to
+                                 (path-append-my-assets-directory
+                                  "komikku" ".static/komikku.db"))))))))))
 
 (define syncplay-mod
   (mod

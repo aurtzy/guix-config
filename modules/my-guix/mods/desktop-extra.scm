@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -28,7 +28,6 @@
   #:use-module (my-guix config)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods desktop)
-  #:use-module (my-guix home services)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix utils)
   #:export (newsreader-mod
@@ -59,10 +58,11 @@
 filesystems=" (path-append-my-assets-directory "akregator" ".static") "
 "))))
              (simple-service name
-                             home-impure-symlinks-service-type
+                             home-files-service-type
                              `((".var/app/org.kde.akregator/data/akregator/data/feeds.opml"
-                                ,(path-append-my-assets-directory
-                                  "akregator" ".static/akregator-feeds.opml"))))))))))
+                                ,(symlink-to
+                                  (path-append-my-assets-directory
+                                   "akregator" ".static/akregator-feeds.opml")))))))))))
 
 (define creative-mod
   (mod
@@ -142,10 +142,9 @@ sockets=!x11
      (compose
       (mod-he-services
        (list (simple-service name
-                             home-impure-symlinks-service-type
-                             `((""
-                                ,(path-append-my-files)
-                                "manifests")))))))))
+                             home-files-service-type
+                             `(("manifests"
+                                ,(symlink-to (path-append-my-files "manifests")))))))))))
 
 (define extra-mods
   (list newsreaders-mod
