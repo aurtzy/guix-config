@@ -206,7 +206,7 @@ pulse.properties = {
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
-                             '((flathub "com.usebottles.bottles")))
+                             '(("flathub" "com.usebottles.bottles")))
              (simple-service name
                              home-files-service-type
                              `((".local/share/flatpak/overrides/com.usebottles.bottles"
@@ -281,9 +281,9 @@ org.freedesktop.ScreenSaver=talk
                                 (copy-file src dest))))
           (simple-service name
                           home-flatpak-profile-service-type
-                          '((flathub "org.mozilla.firefox")
-                            (flathub "org.torproject.torbrowser-launcher")
-                            (flathub "com.brave.Browser"))))))))))
+                          '(("flathub" "org.mozilla.firefox")
+                            ("flathub" "org.torproject.torbrowser-launcher")
+                            ("flathub" "com.brave.Browser"))))))))))
 
 (define common-fonts-mod
   (mod
@@ -507,11 +507,10 @@ remote.")
          (home-flatpak-configuration
           (inherit config)
           (remotes
-           (acons 'flathub
-                  "https://flathub.org/repo/flathub.flatpakrepo"
+           (cons '("flathub" "https://flathub.org/repo/flathub.flatpakrepo")
                   (home-flatpak-configuration-remotes config)))
           (profile
-           (cons '(flathub "com.github.tchx84.Flatseal")
+           (cons '("flathub" "com.github.tchx84.Flatseal")
                  (home-flatpak-configuration-profile
                   config))))))))))
 
@@ -563,7 +562,7 @@ management/maintenance.")
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
-                             '((flathub "io.freetubeapp.FreeTube")))
+                             '(("flathub" "io.freetubeapp.FreeTube")))
              (simple-service name
                              home-bash-service-type
                              (home-bash-extension
@@ -604,7 +603,7 @@ org.freedesktop.Flatpak=talk
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
-                             '((flathub "org.keepassxc.KeePassXC")))
+                             '(("flathub" "org.keepassxc.KeePassXC")))
              (service home-ssh-agent-service-type)))))))
 
 (define printers-mod

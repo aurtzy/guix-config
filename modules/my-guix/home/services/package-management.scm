@@ -40,22 +40,23 @@
             home-flatpak-service-type
             home-flatpak-profile-service-type))
 
-(define alist-of-symbol->string?
+(define list-of-remotes?
   (match-lambda
-    ((((? symbol?) . (? string?)) ...) #t)
+    ((((? string?) (? string?)) ...) #t)
     (else #f)))
 
 (define list-of-flatpak-apps?
   (match-lambda
-    ((((? symbol?) (? string?)) ...) #t)
+    ((((? string?) (? string?)) ...) #t)
     (else #f)))
 
 (define-configuration/no-serialization home-flatpak-configuration
   (flatpak (file-like flatpak)
            "The Flatpak package to use.")
-  (remotes (alist-of-symbol->string '())
-           "An association list, where the first element is the remote name,
-and the second element is the associated URL.")
+  (remotes (list-of-remotes '())
+           "A list of remotes.  Each element of the list must be a tuple,
+where the first element is the remote name, and the second element is the
+associated URL.")
   (profile (list-of-flatpak-apps '())
            "A list of flatpak applications.  Each entry in the list must be a
 tuple, with the first element being the remote name, and the second element
@@ -83,53 +84,51 @@ being the designated application ID."))
    (lambda (app)
      (match app
        ((remote-name app-id)
-        (unless (assq remote-name remotes)
+        (unless (assoc remote-name remotes)
           (raise-exception
            (make-exception-with-message
             (format #f "Flatpak remote does not exist for entry: ~s" app)))))))
    profile)
-  #~(unless #$(getenv "GUIX_FLATPAK_DISABLE")
-      (let ((flatpak #$(file-append flatpak "/bin/flatpak"))
-            (remotes '#$remotes)
-            (profile '#$profile))
-        ;; Configure remotes first
-        (for-each
-         (lambda (remote)
-           (let ((remote-name (symbol->string (car remote)))
-                 (remote-url (cdr remote)))
-             (call-with-port (%make-void-port "w")
-               (lambda (port)
-                 (with-error-to-port port
-                   (lambda ()
-                     (system* flatpak
-                              "--user"
-                              "remote-delete"
-                              "--force"
-                              remote-name)))))
-             (invoke flatpak
-                     "--user"
-                     "remote-add"
-                     remote-name
-                     remote-url)))
-         remotes)
-        ;; Install/update applications in profile
-        (for-each
-         (lambda (flatpak-app)
-           (let ((remote-name (car flatpak-app))
-                 (app-id (cadr flatpak-app)))
-             (invoke flatpak
-                     "--user"
-                     "install"
-                     "--or-update"
-                     "--noninteractive"
-                     (symbol->string remote-name)
-                     app-id)))
-         profile)
-        ;; Update any remaining applications
-        (invoke flatpak
-                "--user"
-                "update"
-                "--noninteractive"))))
+  #~(begin
+      (use-modules (ice-9 match))
+      (unless #$(getenv "GUIX_FLATPAK_DISABLE")
+        (let ((flatpak #$(file-append flatpak "/bin/flatpak"))
+              (remotes '#$remotes)
+              (profile '#$profile))
+          ;; Configure remotes first
+          (for-each (match-lambda
+                      ((remote-name remote-url)
+                       (call-with-port (%make-void-port "w")
+                         (lambda (port)
+                           (with-error-to-port port
+                             (lambda ()
+                               (system* flatpak
+                                        "--user"
+                                        "remote-delete"
+                                        "--force"
+                                        remote-name)))))
+                       (invoke flatpak
+                               "--user"
+                               "remote-add"
+                               remote-name
+                               remote-url)))
+                    remotes)
+          ;; Install/update applications in profile
+          (for-each (match-lambda
+                      ((remote-name app-id)
+                       (invoke flatpak
+                               "--user"
+                               "install"
+                               "--or-update"
+                               "--noninteractive"
+                               remote-name
+                               app-id)))
+                    profile)
+          ;; Update any remaining applications
+          (invoke flatpak
+                  "--user"
+                  "update"
+                  "--noninteractive")))))
 
 ;; TODO: see todo comment at top; this should be able to extend remotes too,
 ;; likely by changing profile-extensions to be a general extensions argument,

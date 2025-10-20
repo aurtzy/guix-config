@@ -90,8 +90,7 @@ remote. The following example configures Flatpak to use Flathub as a remote:
   (service home-flatpak-service-type
            (home-flatpak-configuration
             (remotes
-             '((flathub
-                . "https://flathub.org/repo/flathub.flatpakrepo")))))
+             '(("flathub" "https://flathub.org/repo/flathub.flatpakrepo")))))
 #+end_src
 
 ~home-flatpak-service-type~ may itself be extended to add applications to the
@@ -105,8 +104,8 @@ environment (assuming that Flathub is already configured as shown above):
 #+begin_src scheme
   (simple-service 'home-flatpak-browsers
                   home-flatpak-profile-service-type
-                  '((flathub "org.mozilla.firefox")
-                    (flathub "com.brave.Browser")))
+                  '(("flathub" "org.mozilla.firefox")
+                    ("flathub" "com.brave.Browser")))
 #+end_src
 
 Note that on foreign systems, the Guix Flatpak package will fail to properly

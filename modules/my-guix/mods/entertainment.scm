@@ -161,9 +161,9 @@ filesystems=" (string-join (list (path-append-my-assets-directory
 filesystems=~/.local/share/.guix-sandbox-home"))))
                (simple-service name
                                home-flatpak-profile-service-type
-                               '((flathub "net.lutris.Lutris")
-                                 (flathub "net.davidotek.pupgui2")
-                                 (flathub "com.github.Matoking.protontricks")))
+                               '(("flathub" "net.lutris.Lutris")
+                                 ("flathub" "net.davidotek.pupgui2")
+                                 ("flathub" "com.github.Matoking.protontricks")))
                (simple-service name
                                home-environment-variables-service-type
                                `(("GUIX_SANDBOX_EXTRA_SHARES"
@@ -196,7 +196,7 @@ gamescope --backend sdl -w 2560 -h 1440 -W 2560 -H 1440 -r 144 \\
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
-                             '((flathub "org.prismlauncher.PrismLauncher")))))))))
+                             '(("flathub" "org.prismlauncher.PrismLauncher")))))))))
 
 (define minetest-mod
   (mod
@@ -212,7 +212,7 @@ gamescope --backend sdl -w 2560 -h 1440 -W 2560 -H 1440 -r 144 \\
      (mod-he-services
       (list (simple-service name
                             home-flatpak-profile-service-type
-                            '((flathub "info.febvre.Komikku")))
+                            '(("flathub" "info.febvre.Komikku")))
             (simple-service name
                             home-files-service-type
                             `((".local/share/flatpak/overrides/info.febvre.Komikku"

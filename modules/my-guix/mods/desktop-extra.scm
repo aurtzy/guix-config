@@ -48,8 +48,8 @@
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
-                             '((flathub "org.mozilla.Thunderbird")
-                               (flathub "org.kde.akregator")))
+                             '(("flathub" "org.mozilla.Thunderbird")
+                               ("flathub" "org.kde.akregator")))
              (simple-service name
                              home-files-service-type
                              `((".local/share/flatpak/overrides/org.kde.akregator"
@@ -72,9 +72,9 @@ filesystems=" (path-append-my-assets-directory "akregator" ".static") "
       (mod-he-services
        (list (simple-service name
                              home-flatpak-profile-service-type
-                             '((flathub "org.kde.kdenlive")
-                               (flathub "fr.handbrake.ghb")
-                               (flathub "org.kde.krita")))))))))
+                             '(("flathub" "org.kde.kdenlive")
+                               ("flathub" "fr.handbrake.ghb")
+                               ("flathub" "org.kde.krita")))))))))
 
 (define office-mod
   (mod
@@ -131,9 +131,9 @@ sockets=!x11
                                                 exec " --ozone-platform=wayland"))))))))))
              (simple-service name
                              home-flatpak-profile-service-type
-                             '((flathub "in.cinny.Cinny")
-                               (flathub "im.riot.Riot")
-                               (flathub "io.github.Soundux")))))))))
+                             '(("flathub" "in.cinny.Cinny")
+                               ("flathub" "im.riot.Riot")
+                               ("flathub" "io.github.Soundux")))))))))
 
 (define programming-mod
   (mod
