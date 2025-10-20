@@ -1,4 +1,4 @@
-;;; Copyright © 2023 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023, 2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -21,17 +21,17 @@
 
 (define-module (my-guix home services package-management)
   #:use-module (gnu home services)
-  #:use-module (gnu services)
   #:use-module (gnu packages certs)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu services)
+  #:use-module (gnu services configuration)
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (ice-9 exceptions)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:export (<home-flatpak-configuration>
-            home-flatpak-configuration
+  #:export (home-flatpak-configuration
             home-flatpak-configuration?
             home-flatpak-configuration-flatpak
             home-flatpak-configuration-remotes
@@ -40,26 +40,26 @@
             home-flatpak-service-type
             home-flatpak-profile-service-type))
 
-;; TODO: learn and use define-configuration here which should improve
-;; extensibility, but this will suffice for now albeit without the ability to
-;; extend flatpak remotes
+(define alist-of-symbol->string?
+  (match-lambda
+    ((((? symbol?) . (? string?)) ...) #t)
+    (else #f)))
 
-(define-record-type* <home-flatpak-configuration>
-  home-flatpak-configuration make-home-flatpak-configuration
-  home-flatpak-configuration?
-  ;; flatpak package
-  (flatpak home-flatpak-configuration-flatpak
-           (default flatpak))
-  ;; Alist of remote name symbol to remote URL string
-  (remotes home-flatpak-configuration-remotes
-           (default '()))
-  ;; List of flatpaks, each of which should be a list consisting of the remote
-  ;; as the first element and the application ID as the second.
-  ;; TODO: this could eventually be a list of flatpak definitions, potentially
-  ;; records with information about remote name, overrides and such - similar
-  ;; to package definitions
-  (profile home-flatpak-configuration-profile
-           (default '())))
+(define list-of-flatpak-apps?
+  (match-lambda
+    ((((? symbol?) (? string?)) ...) #t)
+    (else #f)))
+
+(define-configuration/no-serialization home-flatpak-configuration
+  (flatpak (file-like flatpak)
+           "The Flatpak package to use.")
+  (remotes (alist-of-symbol->string '())
+           "An association list, where the first element is the remote name,
+and the second element is the associated URL.")
+  (profile (list-of-flatpak-apps '())
+           "A list of flatpak applications.  Each entry in the list must be a
+tuple, with the first element being the remote name, and the second element
+being the designated application ID."))
 
 (define (home-flatpak-packages config)
   "Add flatpak package to profile."
