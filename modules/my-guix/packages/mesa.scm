@@ -62,20 +62,6 @@
   #:use-module (my-guix packages rust)
   #:use-module (my-guix utils))
 
-(define-public meson-next
-  (package/inherit meson
-    (name "meson-next")
-    (version "1.8.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mesonbuild/meson/"
-                           "releases/download/" version  "/meson-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "0bwfr2fm2vjv8qyl7nn5lb1q5dgan3cdf4na7p89nlbi28qj76qa"))))))
-
 (define patch-cargo-wrap-files-gexp
   #~(let ((wrap-name-regexp (make-regexp "^(.*)-([^-]*)-rs$"))
           (guix-vendored-name-regexp (make-regexp "^rust-.+-([0-9]+(\\.[0-9]+)*)")))
@@ -156,7 +142,6 @@ vendored inputs."
         (base32 "0aqhssmwdcwgzysjzabr95lxmbv35kmcp3zajllb04xn4fw0sgyw"))))
     (arguments
      (cons*
-      #:meson meson-next
       #:imported-modules `(,@%meson-build-system-modules
                            ,@%cargo-build-system-modules
                            (guix build utils)
