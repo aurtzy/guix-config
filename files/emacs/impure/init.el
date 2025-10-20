@@ -246,6 +246,11 @@ the \"#inbox\" keyword is included."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Maximize fontifications with tree-sitter!!1!
+
+(use-package treesit
+  :custom (treesit-font-lock-level 4))
+
 ;;;; Add some upstream improvements to `csharp-ts-mode' indentation.
 ;; TEMP: Should be made redundant with Emacs 31.
 
