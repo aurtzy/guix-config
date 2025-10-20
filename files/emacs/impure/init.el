@@ -779,7 +779,7 @@ whether the directory is trusted or not, respectively."
                    " ("
                    (if (member root trusted-content)
                        (propertize "*" 'face 'success)
-                     (propertize "x" 'face 'error))
+                     (propertize "!" 'face 'error))
                    ")")
                 "")))
     (interactive)
