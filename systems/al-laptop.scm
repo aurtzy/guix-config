@@ -33,25 +33,25 @@
       (host-name "al-laptop")
       (users
        (cons* (user-account
-               (name "alvin")
-               (comment "Alvin")
-               (group "users")
-               (home-directory "/home/alvin")
-               (supplementary-groups '("wheel"
-                                       "netdev"
-                                       "audio"
-                                       "video"
-                                       "kvm"
-                                       "libvirt"
-                                       ;; rtl-sdr
-                                       "dialout")))
+                (name "alvin")
+                (comment "Alvin")
+                (group "users")
+                (home-directory "/home/alvin")
+                (supplementary-groups '("wheel"
+                                        "netdev"
+                                        "audio"
+                                        "video"
+                                        "kvm"
+                                        "libvirt"
+                                        ;; rtl-sdr
+                                        "dialout")))
               (operating-system-users base-os)))
       (mapped-devices
        (list (mapped-device
-              (source
-               (uuid "bf8c2749-f357-4c6e-be6b-f1009a58aa5f"))
-              (target "cryptroot")
-              (type luks-device-mapping))))
+               (source
+                (uuid "bf8c2749-f357-4c6e-be6b-f1009a58aa5f"))
+               (target "cryptroot")
+               (type luks-device-mapping))))
       (file-systems
        (cons* (file-system
                 (mount-point "/")
@@ -80,8 +80,8 @@
 (define initial-home-environment
   (let ((base-env base-desktop-home-environment))
     (home-environment
-     (inherit base-env)
-     )))
+      (inherit base-env)
+      )))
 
 (define system
   (modded-system
@@ -107,8 +107,8 @@
           (modify-services (operating-system-user-services os)
             (network-manager-service-type
              config => (network-manager-configuration
-                        (inherit config)
-                        (vpn-plugins (list network-manager-openconnect)))))))))
+                         (inherit config)
+                         (vpn-plugins (list network-manager-openconnect)))))))))
     (initial-he initial-home-environment)))
 
 (modded-system-guess-environment system)

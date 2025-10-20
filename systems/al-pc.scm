@@ -55,31 +55,31 @@
               (operating-system-user-kernel-arguments base-os)))
       (users
        (cons* (user-account
-               (name "alvin")
-               (comment "Alvin")
-               (group "users")
-               (home-directory "/home/alvin")
-               (supplementary-groups '("wheel"
-                                       "netdev"
-                                       "audio"
-                                       "video"
-                                       "kvm"
-                                       "libvirt")))
+                (name "alvin")
+                (comment "Alvin")
+                (group "users")
+                (home-directory "/home/alvin")
+                (supplementary-groups '("wheel"
+                                        "netdev"
+                                        "audio"
+                                        "video"
+                                        "kvm"
+                                        "libvirt")))
               (operating-system-users base-os)))
       (mapped-devices
        (list (mapped-device
-              (source
-               (uuid "7ccff0a3-b181-4788-9892-e68306566325"))
-              (target "cryptroot")
-              ;; TODO: Get key file working with root drive
-              (type luks-device-mapping))
+               (source
+                (uuid "7ccff0a3-b181-4788-9892-e68306566325"))
+               (target "cryptroot")
+               ;; TODO: Get key file working with root drive
+               (type luks-device-mapping))
              (mapped-device
-              (source
-               (uuid "d50f62c1-e312-4c83-8b55-b0af00a4de2a"))
-              (target "cryptstorage")
-              (type luks-device-mapping)
-              (arguments `(#:key-file ,(string-append
-                                        "/root/keys/" (uuid->string source)))))))
+               (source
+                (uuid "d50f62c1-e312-4c83-8b55-b0af00a4de2a"))
+               (target "cryptstorage")
+               (type luks-device-mapping)
+               (arguments `(#:key-file ,(string-append
+                                         "/root/keys/" (uuid->string source)))))))
       (file-systems
        (cons* (file-system
                 (mount-point "/")
@@ -149,13 +149,13 @@
                               nginx-service-type
                               (list
                                (nginx-server-configuration
-                                (listen '("8080"))
-                                (server-name '("redlib.localhost"))
-                                (locations
-                                 (list
-                                  (nginx-location-configuration
-                                   (uri "/")
-                                   (body '("proxy_pass http://localhost:8081;"))))))))
+                                 (listen '("8080"))
+                                 (server-name '("redlib.localhost"))
+                                 (locations
+                                  (list
+                                   (nginx-location-configuration
+                                     (uri "/")
+                                     (body '("proxy_pass http://localhost:8081;"))))))))
               (operating-system-user-services base-os))))))
 
 (define initial-home-environment
