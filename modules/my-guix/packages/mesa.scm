@@ -156,10 +156,8 @@ vendored inputs."
                    (my-guix build utils)
                    (srfi srfi-26))))
         ((#:configure-flags original-flags)
-         #~(append (lset-difference equal? #$original-flags
-                                    ;; These flags were removed upstream.
-                                    '("-Dgallium-xa=enabled" "-Dosmesa=true"))
-                   ;; Only enable NVIDIA drivers to reduce build times
+         #~(append #$original-flags
+                   ;; Only enable NVIDIA drivers to reduce build times.
                    '#$(if (or (target-x86-64?) (target-x86-32?))
                           '("-Dgallium-drivers=nouveau,llvmpipe,zink"
                             "-Dvulkan-drivers=swrast,nouveau")
@@ -167,19 +165,11 @@ vendored inputs."
         ((#:phases original-phases)
          #~(modify-phases #$original-phases
              (delete 'patch-subproject-sources)
-             (add-before 'configure 'patch-cargo-wrap-files
-               #$patch-cargo-wrap-files-gexp)
-             (add-before 'patch-cargo-wrap-files 'vendor-cargo-inputs
+             (add-before 'configure 'vendor-cargo-inputs
                (lambda args
                  (apply (assoc-ref cargo:%standard-phases 'configure) args)))
-             (add-before 'build 'patch-out-rustfmt
-               (lambda _
-                 ;; XXX: Patch out rustfmt call, which appears to require rust
-                 ;; nightly to build.  I don't know what consequences this may
-                 ;; have.
-                 (substitute* "../source/src/nouveau/headers/lib_rs_gen.py"
-                   (("subprocess\\.run\\(\\['rustfmt',.*$")
-                    "pass\n")))))))))
+             (add-after 'vendor-cargo-inputs 'patch-cargo-wrap-files
+               #$patch-cargo-wrap-files-gexp))))))
     (native-inputs
      ;; Support NVK on x86_32 arch by using rust-binary
      (if (target-x86-32?)
