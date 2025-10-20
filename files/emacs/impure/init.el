@@ -215,18 +215,26 @@ the \"#inbox\" keyword is included."
 
   ;; Functions for accessing assets directories.
 
-  (defun my-emacs-denote-assets-directory (file)
-    "Return assets directory from FILE note.  Prompt to create, if nonexistent."
+  (defun my-emacs-denote-assets-directory (file &optional prompt?)
+    "Return assets directory from FILE note.
+
+If PROMPT?, user will be prompted to create the directory if it is not
+found.  Otherwise, nil may be returned."
     (interactive
      (list (denote-file-prompt nil "Select FILE associated with assets")))
     (let* ((file (or file (buffer-file-name)))
            (identifier (denote-retrieve-filename-identifier-with-error file))
-           (assets-dir (file-name-concat (file-name-directory file) identifier)))
-      (unless (file-exists-p assets-dir)
-        (unless (y-or-n-p "Assets directory doesn't exist.  Create it? ")
+           (assets-dir-as-file (file-name-concat
+                                (file-name-directory file) identifier))
+           (assets-dir (file-name-as-directory assets-dir-as-file)))
+      (cond
+       ((file-exists-p assets-dir)
+        assets-dir)
+       (prompt?
+        (if (y-or-n-p "Assets directory doesn't exist.  Create it? ")
+            (make-directory assets-dir t)
           (user-error "Assets directory doesn't exist"))
-        (make-directory assets-dir t))
-      (file-name-as-directory assets-dir)))
+        assets-dir))))
 
   (defun my-emacs-denote-aliases-assoc-ref (alias)
     "Return the denote ID associated with ALIAS.  May return nil."
@@ -394,7 +402,7 @@ the \"#inbox\" keyword is included."
   (defun my-emacs-project-set-assets-directory-override ()
     "Set a file-local project directory override to associated assets directory."
     (let* ((file (buffer-file-name))
-           (assets-directory (my-emacs-denote-assets-directory file)))
+           (assets-directory (my-emacs-denote-assets-directory file t)))
       (make-local-variable 'project-current-directory-override)
       (setq project-current-directory-override assets-directory))))
 
@@ -405,7 +413,7 @@ the \"#inbox\" keyword is included."
   (ispell-personal-dictionary
    (when-let* ((identifier (my-emacs-denote-aliases-assoc-ref "emacs")))
      (let* ((notes-file (denote-get-path-by-id identifier))
-            (assets-dir (my-emacs-denote-assets-directory notes-file)))
+            (assets-dir (my-emacs-denote-assets-directory notes-file t)))
        (file-name-concat assets-dir ".static/aspell.en.pws")))))
 
 ;;;; Add org link type for entry-local denote assets.
@@ -432,7 +440,8 @@ the \"#inbox\" keyword is included."
     (let* ((identifier
             (denote-retrieve-filename-identifier-with-error (buffer-file-name)))
            (assets-dir
-            (my-emacs-denote-assets-directory (denote-get-path-by-id identifier)))
+            (my-emacs-denote-assets-directory
+             (denote-get-path-by-id identifier) t))
            (relative-path
             (file-relative-name (read-file-name "Denote asset: " assets-dir)
                                 assets-dir)))
@@ -958,7 +967,7 @@ prompting for denote ID as a fallback."
   (transient-define-suffix my-emacs-denote-dired-assets-directory (file)
     "Open dired in assets directory associated with denote FILE."
     (interactive (list (denote-file-prompt)))
-    (dired (my-emacs-denote-assets-directory file)))
+    (dired (my-emacs-denote-assets-directory file t)))
 
   (transient-define-suffix my-emacs-denote-find-aliases-file ()
     "Find `my-emacs-denote-aliases-file' from `denote-directory'."
@@ -974,7 +983,7 @@ prompting for denote ID as a fallback."
     "Run Dired in the assets directory from current denote context."
     (interactive)
     (dired (my-emacs-denote-assets-directory
-            (denote-get-path-by-id (my-emacs-denote-context-id t)))))
+            (denote-get-path-by-id (my-emacs-denote-context-id t)) t)))
 
   (transient-define-suffix my-emacs-denote-find-denote-directory ()
     "Run Dired in `denote-directory'."
@@ -996,6 +1005,25 @@ prompting for denote ID as a fallback."
       (oset (transient-prefix-object) scope
             (denote-retrieve-filename-identifier-with-error
              (denote-file-prompt)))))
+
+  (transient-define-suffix my-emacs-rename-to-location (dir)
+    "Move context's denote files (including assets) to another location."
+    (interactive (list (denote-subdirectory-prompt)))
+    (if-let* ((file (my-emacs-denote-context-file)))
+        (with-current-buffer (find-file-noselect file)
+          (let* ((file-nondirectory (file-name-nondirectory file))
+                 (target (file-name-concat dir file-nondirectory)))
+            ;; File may not necessarily be saved to disk yet, so rename based
+            ;; off buffer instead of file path.
+            (rename-visited-file target)
+            (message "Renamed: %s -> %s" file target))
+          (when-let* ((assets-dir (my-emacs-denote-assets-directory file))
+                      (assets-dir-as-file (directory-file-name assets-dir))
+                      (target (file-name-concat
+                               dir (file-name-nondirectory assets-dir-as-file))))
+            (rename-file assets-dir-as-file target)
+            (message "Renamed: %s -> %s" file target)))
+      (user-error "No file found from context")))
 
   ;; TODO: Add commands from:
   ;; <https://protesilaos.com/emacs/denote#h:998ae528-9276-47ec-b642-3d7355a38f27>
@@ -1021,7 +1049,7 @@ prompting for denote ID as a fallback."
      ["Rename"
       :advice my-emacs-denote-with-context-apply
       ("r k" "keywords" denote-rename-file-keywords)
-       ;; TODO: Command: Move files between data directories.
+      ("r m" "to another location" my-emacs-rename-to-location)
       ("r t" "title" denote-rename-file-title)
       ("r r" "file" denote-rename-file)]]
     ["Find"
