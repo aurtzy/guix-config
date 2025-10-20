@@ -91,16 +91,44 @@ filesystems=" (path-append-my-assets-directory "akregator" ".static") "
       (mod-he-services
        (list (simple-service name
                              home-files-service-type
-                             ;; Using Zink seems to fix blacked-out interface
-                             ;; issue, so force it on.
-                             `((".local/share/flatpak/overrides/io.github.Soundux"
+                             `( ;; Using Zink seems to fix blacked-out
+                               ;; interface issue, so force it on.
+                               (".local/share/flatpak/overrides/io.github.Soundux"
                                 ,(mixed-text-file "io.github.Soundux" "\
 [Context]
 filesystems=" (path-append-my-assets-directory "memes") ";~/storage/tmp/audio/etc
 
 [Environment]
 NOUVEAU_USE_ZINK=1
-"))))
+"))
+                               ;; Prevent X11 from being used for Element
+                               ;; client.
+                               (".local/share/flatpak/overrides/im.riot.Riot"
+                                ,(plain-file "im.riot.Riot" "\
+[Context]
+sockets=!x11
+"))
+                               ;; Force-enable Wayland.
+                               (".local/share/applications/im.riot.Riot.desktop"
+                                ,(computed-file
+                                  "im.riot.Riot.desktop"
+                                  (with-imported-modules '((guix build utils))
+                                    #~(begin
+                                        (use-modules ((guix build utils)))
+                                        (copy-file #$(local-file
+                                                      (string-append
+                                                       (getenv "HOME")
+                                                       "/.local/share/flatpak"
+                                                       "/exports/share/applications"
+                                                       "/im.riot.Riot.desktop"))
+                                                   #$output)
+                                        (substitute* #$output
+                                          (("Exec=.*/bin/flatpak run.*im\\.riot\\.Riot" exec)
+                                           (if (string-contains
+                                                exec "--ozone-platform=")
+                                               exec
+                                               (string-append
+                                                exec " --ozone-platform=wayland"))))))))))
              (simple-service name
                              home-flatpak-profile-service-type
                              '((flathub "in.cinny.Cinny")
