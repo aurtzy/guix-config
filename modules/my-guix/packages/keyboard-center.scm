@@ -69,13 +69,25 @@
     (build-system pyproject-build-system)
     (arguments
      (list
+      #:test-backend #~'unittest
+      #:modules '((guix build pyproject-build-system)
+                  (guix build utils)
+                  (ice-9 ftw))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch-libudev
             (lambda _
               (substitute* "setup.py"
                 (("libraries=\\[.*libudev_so\\]" libs)
-                 (string-append libs ", extra_link_args=['-ludev']"))))))))
+                 (string-append libs ", extra_link_args=['-ludev']")))))
+          (add-before 'check 'pre-check
+            (lambda _
+              (ftw "build"
+                   (lambda (filename statinfo flag)
+                     (when (string-suffix? ".so" filename)
+                       (display "test!\n")
+                       (copy-file filename (basename filename)))
+                     #t)))))))
     (native-inputs (list python-setuptools python-wheel))
     (inputs (list eudev))
     (home-page "https://github.com/pyinput/python-uinput")
