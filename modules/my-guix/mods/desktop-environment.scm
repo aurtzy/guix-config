@@ -27,6 +27,7 @@
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (guix packages)
+  #:use-module (guix transformations)
   #:use-module (guix utils)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix mods)
@@ -110,6 +111,12 @@
                   (service gdm-service-type)))
              (list (service gnome-desktop-service-type
                             (gnome-desktop-configuration
+                             (shell
+                              (let ((transform
+                                     (options->transformation
+                                      ;; HACK: Tests currently fail.
+                                      `((without-tests . "gnome-color-manager")))))
+                                (list (transform gnome-meta-core-shell))))
                              (extra-packages
                               (list adwaita-icon-theme-legacy
                                     gnome-essential-extras
