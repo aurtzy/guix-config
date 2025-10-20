@@ -918,66 +918,19 @@ whether the directory is trusted or not, respectively."
 ;; TODO: Support denote silos.
 
 (use-package transient
-  :bind ("C-c A" . my-emacs-denote-dispatch)
-  :commands (org-occur-in-agenda-files)
+  :bind ("C-c n" . my-emacs-denote-dispatch)
   :preface
   (require 'thingatpt)
-
-  ;; TODO: Add commands from:
-  ;; <https://protesilaos.com/emacs/denote#h:998ae528-9276-47ec-b642-3d7355a38f27>
-  (transient-define-prefix my-emacs-denote-dispatch ()
-    [:description
-     (lambda ()
-       (concat (propertize "Context: " 'face 'transient-heading)
-               (if-let* ((identifier (my-emacs-denote-context-id)))
-                   (propertize (file-name-nondirectory
-                                (denote-get-path-by-id identifier))
-                               'face 'transient-value)
-                 (propertize "None detected" 'face 'transient-inapt-suffix))))
-     ""]
-    ["Denote commands"
-     :advice my-emacs-denote-with-context-apply
-     ;; TODO: Context commands should be merged with find commands, with
-     ;; context ID (if available) as initial input.
-     ["File"
-      ("f c" "from context" my-emacs-denote-current-note)
-      ;; TODO: Use `consult-line-multi' with `org-agenda-files' instead?
-      ("f f" "find" denote-open-or-create)
-      ("f g" "find regexp" org-occur-in-agenda-files)
-      ("f n" "new" denote-subdirectory)]
-     ;; TODO: Command: Create static assets directory.
-     ["Assets directory"
-      ("d c" "from context" my-emacs-denote-dired-current-assets-directory)
-      ;; TODO: This should prompt with completion for only notes with an
-      ;; assets directory.
-      ("d f" "find" my-emacs-denote-dired-assets-directory)
-      ("d l" "list (data directory)"
-       (lambda () (interactive)
-         (dired (read-directory-name "Dired (directory): " denote-directory))))
-      ;; TODO: Add a "new" command to split from the "find" command.
-      ]
-     ["Rename"
-      ;; TODO: Command: Move files between data directories.
-      ("r k" "keywords" my-emacs-denote-rename-file-keywords)
-      ("r t" "title" my-emacs-denote-rename-file-title)
-      ("r r" "file" my-emacs-denote-rename-file)]]
-    ["Manage"
-     ("m a" "Aliases file" my-emacs-denote-find-aliases-file)])
-
-  (defclass my-emacs-denote-suffix (transient-suffix)
-    ((advice :initform #'my-emacs-denote-with-context-apply)
-     (inapt-if-not :initform #'my-emacs-denote-context-id)))
 
   (defun my-emacs-denote-context-id (&optional prompt?)
     "Extract and return denote ID from context.
 
 Return nil if nothing found in context.  If PROMPT?, allow
 prompting for denote ID as a fallback."
-    ;; TODO: Investigate potential bug?  Seems desirable to use
-    ;; `denote-get-identifier-at-point', but it doesn't work as expected.
     (cl-flet ((extract-id-or-nil (string)
                 (if string (denote-extract-id-from-string string))))
-      (or (extract-id-or-nil (word-at-point))
+      (or (transient-scope)
+          (extract-id-or-nil (word-at-point))
           (extract-id-or-nil (ignore-errors (dired-get-filename)))
           (extract-id-or-nil (buffer-file-name))
           (extract-id-or-nil default-directory)
@@ -985,49 +938,100 @@ prompting for denote ID as a fallback."
               (denote-retrieve-filename-identifier-with-error
                (denote-file-prompt))))))
 
+  (defun my-emacs-denote-context-file ()
+    "Get the current context's file name.  May return nil."
+    (if-let* ((id (my-emacs-denote-context-id)))
+        (cond
+         ((denote-get-path-by-id id))
+         ;; File may not necessarily exist if it's not saved, yet.
+         ((let ((current-file (buffer-file-name)))
+            (and (equal id (denote-extract-id-from-string current-file))
+                 current-file))))))
+
   (defun my-emacs-denote-with-context-apply (fun &rest args)
     "Apply FUN to ARGS in the with buffer set to the contextual denote file."
-    (with-current-buffer (find-file-noselect (denote-get-path-by-id
-                                              (my-emacs-denote-context-id t)))
-      (apply fun args)))
-
-  (transient-define-suffix my-emacs-denote-rename-file ()
-    :class my-emacs-denote-suffix
-    (interactive)
-    (call-interactively #'denote-rename-file))
-
-  (transient-define-suffix my-emacs-denote-rename-file-title ()
-    :class my-emacs-denote-suffix
-    (interactive)
-    (call-interactively #'denote-rename-file-title))
-
-  (transient-define-suffix my-emacs-denote-rename-file-keywords ()
-    :class my-emacs-denote-suffix
-    (interactive)
-    (call-interactively #'denote-rename-file-keywords))
+    (if-let* ((file (my-emacs-denote-context-file)))
+        (with-current-buffer (find-file-noselect file)
+          (apply fun args))
+      (error "Denote context is invalid")))
 
   (transient-define-suffix my-emacs-denote-dired-assets-directory (file)
     "Open dired in assets directory associated with denote FILE."
     (interactive (list (denote-file-prompt)))
     (dired (my-emacs-denote-assets-directory file)))
 
-  (transient-define-suffix my-emacs-denote-dired-current-assets-directory ()
-    "Open dired in assets directory associated with current buffer file name."
-    :class my-emacs-denote-suffix
-    (interactive)
-    (dired (my-emacs-denote-assets-directory
-            (denote-get-path-by-id (my-emacs-denote-context-id)))))
-
-  (transient-define-suffix my-emacs-denote-current-note ()
-    "Attempt to find associated denote file from current buffer's file name."
-    :class my-emacs-denote-suffix
-    (interactive)
-    (find-file (denote-get-path-by-id (my-emacs-denote-context-id))))
-
   (transient-define-suffix my-emacs-denote-find-aliases-file ()
     "Find `my-emacs-denote-aliases-file' from `denote-directory'."
     (interactive)
-    (find-file (file-name-concat denote-directory my-emacs-denote-aliases-file))))
+    (find-file (file-name-concat denote-directory my-emacs-denote-aliases-file)))
+
+  (transient-define-suffix my-emacs-denote-find-context-file ()
+    "Open the contextual denote file from transient state."
+    (interactive)
+    (find-file (denote-get-path-by-id (my-emacs-denote-context-id t))))
+
+  (transient-define-suffix my-emacs-denote-find-context-assets-directory ()
+    "Run Dired in the assets directory from current denote context."
+    (interactive)
+    (dired (my-emacs-denote-assets-directory
+            (denote-get-path-by-id (my-emacs-denote-context-id t)))))
+
+  (transient-define-suffix my-emacs-denote-find-denote-directory ()
+    "Run Dired in `denote-directory'."
+    (interactive)
+    (dired denote-directory))
+
+  (transient-define-suffix my-emacs-denote-find-regexp ()
+    "Find regexp in `denote-directory' notes."
+    (interactive)
+    (let ((default-directory denote-directory))
+      (consult-ripgrep (denote-directory-files))))
+
+  (transient-define-suffix my-emacs-denote-switch-context-id ()
+    "Switch context to another denote file."
+    :transient t
+    (interactive)
+    ;; Ignore the current buffer so we can select the current denote file.
+    (with-temp-buffer
+      (oset (transient-prefix-object) scope
+            (denote-retrieve-filename-identifier-with-error
+             (denote-file-prompt)))))
+
+  ;; TODO: Add commands from:
+  ;; <https://protesilaos.com/emacs/denote#h:998ae528-9276-47ec-b642-3d7355a38f27>
+  (transient-define-prefix my-emacs-denote-dispatch ()
+    :refresh-suffixes t
+    [:description
+     (lambda ()
+       (concat (propertize "Denote context: " 'face 'transient-heading)
+               (if-let* ((file (my-emacs-denote-context-file)))
+                   (propertize (file-name-nondirectory file)
+                               'face 'transient-value)
+                 (propertize "None detected" 'face 'transient-inapt-suffix))))
+     ("n" "Switch denote context" my-emacs-denote-switch-context-id)
+     ("N" "New notes file" denote-subdirectory)]
+    ["Contextual commands"
+     :inapt-if-not my-emacs-denote-context-id
+     :pad-keys t
+     [ :advice my-emacs-denote-with-context-apply
+       ;; TODO: Add command: Create static assets directory.
+       ;; TODO: Display "create assets directory" if it doesn't exist.
+       ("a" "Open assets directory" my-emacs-denote-find-context-assets-directory)
+       ("f" "Open file" my-emacs-denote-find-context-file)]
+     ["Rename"
+      :advice my-emacs-denote-with-context-apply
+      ("r k" "keywords" denote-rename-file-keywords)
+       ;; TODO: Command: Move files between data directories.
+      ("r t" "title" denote-rename-file-title)
+      ("r r" "file" denote-rename-file)]]
+    ["Find"
+     ("A" "aliases file" my-emacs-denote-find-aliases-file)
+     ("D" "denote directory" my-emacs-denote-find-denote-directory)
+     ("R" "regexp in notes" my-emacs-denote-find-regexp)]
+    (interactive)
+    (transient-setup
+     'my-emacs-denote-dispatch nil nil
+     :scope (my-emacs-denote-context-id))))
 
 ;;;; Add `disproject.el' command to initialize a `dir-locals-file' project.
 
