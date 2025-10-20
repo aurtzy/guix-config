@@ -8,41 +8,37 @@
     (["Guix options"
       ("-a" "Allow downgrades" "--allow-downgrades")
       ("-da" "Disable authentication (pull)" "--disable-authentication")
-      ("-df" "Disable flatpak" "--disable-flatpak")]
+      ("-df" "Disable flatpak" :cons 'disable-flatpak? :reader always)]
      ["Run guix..."
       :pad-keys t
       ("h r" "home reconfigure" disproject-compile
-       :cmd (lambda (args)
-              (interactive (list (transient-args transient-current-command)))
-              (let ((allow-downgrades?
-                     (transient-arg-value "--allow-downgrades" args))
-                    (disable-flatpak?
-                     (transient-arg-value "--disable-flatpak" args)))
-                (concat
-                 (if disable-flatpak? "GUIX_FLATPAK_DISABLE=1 " "")
-                 "guix home reconfigure config.scm"
-                 (if allow-downgrades? " --allow-downgrades" ""))))
+       :cmd (lambda (args disable-flatpak?)
+              (interactive
+               (let ((targs (transient-args transient-current-command)))
+                 (list (seq-filter #'stringp targs)
+                       (alist-get 'disable-flatpak? targs))))
+              (concat
+               (if disable-flatpak? "GUIX_FLATPAK_DISABLE=1 " "")
+               "guix home reconfigure config.scm "
+               (string-join args " ")))
        :buffer-id "guix-home")
       ("p" "pull" disproject-compile
        :cmd (lambda (args)
-              (interactive (list (transient-args transient-current-command)))
-              (let ((allow-downgrades?
-                     (transient-arg-value "--allow-downgrades" args))
-                    (disable-authentication?
-                     (transient-arg-value "--disable-authentication" args)))
-                (concat
-                 "guix pull"
-                 (if allow-downgrades? " --allow-downgrades" "")
-                 (if disable-authentication? " --disable-authentication" ""))))
+              (interactive
+               (list (seq-filter #'stringp
+                                 (transient-args transient-current-command))))
+              (concat
+               "guix pull "
+               (string-join args " ")))
        :buffer-id "guix-pull")
       ("s r" "system reconfigure" disproject-compile
        :cmd (lambda (args)
-              (interactive (list (transient-args transient-current-command)))
-              (let ((allow-downgrades?
-                     (transient-arg-value "--allow-downgrades" args)))
-                (concat
-                 "sudo guix system reconfigure config.scm"
-                 (if allow-downgrades? " --allow-downgrades" ""))))
+              (interactive
+               (list (seq-filter #'stringp
+                                 (transient-args transient-current-command))))
+              (concat
+               "sudo guix system reconfigure config.scm "
+               (string-join args " ")))
        :buffer-id "guix-system"
        :comint? t)]))))
  (magit-status-mode . ((magit-todos-exclude-globs . (".git/"
