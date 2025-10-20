@@ -47,4 +47,7 @@
  (scheme-mode . ((eval . (guix-devel-mode t))
                  (eval . (put 'compose-lambda 'scheme-indent-function 1))
                  (eval . (put 'mod 'scheme-indent-function 0))
-                 (eval . (put 'modded-system 'scheme-indent-function 0)))))
+                 (eval . (put 'modded-system 'scheme-indent-function 0))
+                 (eval . (put 'home-flatpak-configuration 'scheme-indent-function 0))
+                 (eval . (put 'flatpak-overrides-configuration 'scheme-indent-function 0))
+                 (eval . (put 'flatpak-app 'scheme-indent-function 0)))))

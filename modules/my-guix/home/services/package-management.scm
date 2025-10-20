@@ -32,33 +32,33 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:export (flatpak-overrides-configuration
-            flatpak-overrides-configuration?
-            flatpak-overrides-configuration-shared
-            flatpak-overrides-configuration-sockets
-            flatpak-overrides-configuration-filesystems
-            flatpak-overrides-configuration-persistent
-            flatpak-overrides-configuration-features
-            flatpak-overrides-configuration-unset-environment
-            flatpak-overrides-configuration-environment
-            flatpak-overrides-configuration-session-bus-policy
-            flatpak-overrides-configuration-system-bus-policy
-            flatpak-overrides-configuration-extra-content
+  #:export ( flatpak-overrides-configuration
+             flatpak-overrides-configuration?
+             flatpak-overrides-configuration-shared
+             flatpak-overrides-configuration-sockets
+             flatpak-overrides-configuration-filesystems
+             flatpak-overrides-configuration-persistent
+             flatpak-overrides-configuration-features
+             flatpak-overrides-configuration-unset-environment
+             flatpak-overrides-configuration-environment
+             flatpak-overrides-configuration-session-bus-policy
+             flatpak-overrides-configuration-system-bus-policy
+             flatpak-overrides-configuration-extra-content
 
-            flatpak-app
-            flatpak-app?
-            flatpak-app-id
-            flatpak-app-remote
+             flatpak-app
+             flatpak-app?
+             flatpak-app-id
+             flatpak-app-remote
 
-            home-flatpak-configuration
-            home-flatpak-configuration?
-            home-flatpak-configuration-flatpak
-            home-flatpak-configuration-remotes
-            home-flatpak-configuration-profile
-            home-flatpak-configuration-global-overrides
+             home-flatpak-configuration
+             home-flatpak-configuration?
+             home-flatpak-configuration-flatpak
+             home-flatpak-configuration-remotes
+             home-flatpak-configuration-profile
+             home-flatpak-configuration-global-overrides
 
-            home-flatpak-service-type
-            home-flatpak-profile-service-type))
+             home-flatpak-service-type
+             home-flatpak-profile-service-type))
 
 (define (serialize-list-of-strings-in-context-group field-name value)
   (format #f "[Context]~%~a=~a~%"
@@ -150,7 +150,7 @@ left unset, the default remote will be used."))
       (map (match-lambda
              ((and (? string?) app-id)
               (flatpak-app
-               (id app-id)))
+                (id app-id)))
              (app app))
            apps)
       (raise-exception (make-exception-with-message
@@ -263,10 +263,10 @@ an unset remote field, which means the default remote will be used."
 ;; which makes the home-flatpak-profile-service-type have an actual purpose
 (define (home-flatpak-extend config profile-extensions)
   (home-flatpak-configuration
-   (inherit config)
-   (profile
-    (append (home-flatpak-configuration-profile config)
-            profile-extensions))))
+    (inherit config)
+    (profile
+      (append (home-flatpak-configuration-profile config)
+              profile-extensions))))
 
 (define home-flatpak-service-type
   (service-type (name 'home-flatpak)
