@@ -322,8 +322,7 @@ elsewhere in possibly different forms).")
                       tree-sitter-bash
                       tree-sitter-c
                       tree-sitter-c-sharp
-                      ;; TEMP: Doesn't build at the moment.
-                      ;; tree-sitter-cpp
+                      tree-sitter-cpp
                       tree-sitter-go
                       tree-sitter-gomod
                       tree-sitter-javascript
