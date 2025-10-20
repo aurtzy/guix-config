@@ -42,7 +42,7 @@
 
 (define list-of-remotes?
   (match-lambda
-    ((((? string?) (? string?)) ...) #t)
+    ((((? string?) (? string?)) ((? string?) (? string?)) ...) #t)
     (else #f)))
 
 (define list-of-flatpak-apps?
@@ -53,10 +53,13 @@
 (define-configuration/no-serialization home-flatpak-configuration
   (flatpak (file-like flatpak)
            "The Flatpak package to use.")
-  (remotes (list-of-remotes '())
+  (remotes list-of-remotes
            "A list of remotes.  Each element of the list must be a tuple,
 where the first element is the remote name, and the second element is the
-associated URL.")
+associated URL.  At least one remote is required to use this service.
+
+The first remote in the list is used as the default remote.")
+  ;; TODO: Use default remote to allow remote to be omitted in specifications.
   (profile (list-of-flatpak-apps '())
            "A list of flatpak applications.  Each entry in the list must be a
 tuple, with the first element being the remote name, and the second element
@@ -151,8 +154,7 @@ being the designated application ID."))
                         home-flatpak-profile-installer)))
                 (compose concatenate)
                 (extend home-flatpak-extend)
-                (description "Install and configure Flatpak applications.")
-                (default-value (home-flatpak-configuration))))
+                (description "Install and configure Flatpak applications.")))
 
 (define home-flatpak-profile-service-type
   (service-type (name 'home-flatpak-profile)

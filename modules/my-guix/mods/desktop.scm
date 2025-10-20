@@ -506,9 +506,6 @@ remote.")
        (lambda (config)
          (home-flatpak-configuration
           (inherit config)
-          (remotes
-           (cons '("flathub" "https://flathub.org/repo/flathub.flatpakrepo")
-                  (home-flatpak-configuration-remotes config)))
           (profile
            (cons '("flathub" "com.github.tchx84.Flatseal")
                  (home-flatpak-configuration-profile

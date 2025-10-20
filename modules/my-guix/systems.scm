@@ -139,7 +139,10 @@
                               ,(plain-file
                                 "inputrc"
                                 "set revert-all-at-newline on\n"))))
-           (service home-flatpak-service-type)
+           (service home-flatpak-service-type
+                    (home-flatpak-configuration
+                     (remotes '(("flathub"
+                                 "https://flathub.org/repo/flathub.flatpakrepo")))))
            %base-home-services))))
 
 (define base-foreign-desktop-home-environment
