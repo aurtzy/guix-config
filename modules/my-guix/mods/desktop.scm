@@ -164,6 +164,15 @@ enables the use of Pipewire.")
       (mod-he-services
        (list (service home-pipewire-service-type)
              (simple-service name
+                             home-xdg-configuration-files-service-type
+                             `( ;; Increase buffer size to avoid crackling.
+                               ("pipewire/pipewire-pulse.conf.d/quantum.conf"
+                                ,(mixed-text-file "quantum.conf" "\
+pulse.properties = {
+	pulse.min.quantum = " #;"TODO: make this a parameter?" "512/48000"
+"
+}"))))
+             (simple-service name
                              home-impure-symlinks-service-type
                              `((".config/easyeffects"
                                 ,(path-append-my-assets-directory
