@@ -90,41 +90,45 @@ vendored inputs."
         ;; Set vendor directory as a location that Meson will use to search for
         ;; names corresponding to the "directory" key in wrap file.
         (setenv "MESON_PACKAGE_CACHE_DIR" vendor-dir)
-        (for-each
-         (lambda (wrap-file)
-           (let* ((wrap-name (basename wrap-file ".wrap"))
-                  (m (regexp-exec wrap-name-regexp wrap-name))
-                  (name (match:substring m 1))
-                  (version-prefix (match:substring m 2))
-                  (overlay-dir (string-append
-                                "subprojects/packagefiles/" wrap-name)))
-             (match (find-vendored-input name version-prefix)
-               ((input version)
-                ;; Don't use any bundled dependencies.
-                (invoke "meson" "subprojects" "purge" "--confirm" wrap-name)
-                (when (file-exists? overlay-dir)
-                  ;; Adjust subproject's meson.build file to have the correct
-                  ;; version associated with input.
-                  (with-directory-excursion overlay-dir
-                    (invoke "meson" "rewrite" "kwargs"
-                            "set" "project" "/" "version" version)))
-                ;; Patch local source in wrap file.
-                (substitute* wrap-file
-                  (("^source.*$") "")
-                  (("^directory.*$")
-                   (string-append "directory = " input "\n")))
-                ;; "Download" source from the patched-in local path.
-                (invoke "meson" "subprojects" "download" wrap-name))
-               (else
-                (format #t "Vendored input for ~s was not found~%" name)
-                #f))))
-         (if (file-exists? "subprojects")
-             ;; Meson uses the naming scheme "{NAME}-{VERSIONPREFIX}-rs" for
-             ;; Cargo/Rust dependencies.
-             (with-directory-excursion "subprojects"
-               (and=> (scandir "." (cut string-match "-rs\\.wrap$" <>))
-                      (cut map canonicalize-path <>)))
-             '())))))
+        (for-each (lambda (wrap-file)
+                    (let* ((wrap-name (basename wrap-file ".wrap"))
+                           (m (regexp-exec wrap-name-regexp wrap-name))
+                           (name (match:substring m 1))
+                           (version-prefix (match:substring m 2))
+                           (overlay-dir (string-append
+                                         "subprojects/packagefiles/" wrap-name)))
+                      (match (find-vendored-input name version-prefix)
+                        ((input version)
+                         ;; Remove any bundled dependency to be replaced.
+                         (invoke "meson" "subprojects"
+                                 "purge" "--confirm" wrap-name)
+                         (when (file-exists? overlay-dir)
+                           ;; Adjust subproject's meson.build file to have the
+                           ;; correct version associated with input.
+                           (with-directory-excursion overlay-dir
+                             (invoke "meson" "rewrite" "kwargs"
+                                     "set" "project" "/" "version" version)))
+                         ;; Patch source wrap file so that it's configured to "download"
+                         ;; from input.  We don't want to just replace the directory, since
+                         ;; the download operation may do other things like apply patches.
+                         (substitute* wrap-file
+                           (("^source.*$") "")
+                           (("^directory.*$") "")
+                           (("^\\[wrap-file\\]$\n" all)
+                            (string-append all "directory = " input "\n")))
+                         (invoke "meson" "subprojects" "download" wrap-name))
+                        (else
+                         (format (current-warning-port)
+                                 "warning: vendored input for ~s not available~%"
+                                 name)
+                         #f))))
+                  (if (file-exists? "subprojects")
+                      ;; Meson uses the naming scheme "{NAME}-{VERSIONPREFIX}-rs"
+                      ;; for Cargo/Rust dependencies.
+                      (with-directory-excursion "subprojects"
+                        (and=> (scandir "." (cut string-match "-rs\\.wrap$" <>))
+                               (cut map canonicalize-path <>)))
+                      '())))))
 
 (define-public nvsa-git
   ;; slimmed mesa git version for NVIDIA drivers.
