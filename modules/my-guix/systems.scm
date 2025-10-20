@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 aurtzy <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -17,9 +17,9 @@
 
 ;;; Commentary:
 ;;;
-;;; This module defines base environments for desktop usage.
+;;; This module defines base system configuration records.
 
-(define-module (my-guix base desktop)
+(define-module (my-guix systems)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
@@ -34,9 +34,10 @@
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
   #:export (base-desktop-operating-system
-            base-desktop-home-environment))
+            base-desktop-home-environment
+            base-foreign-desktop-home-environment))
 
-(use-package-modules ncurses package-management xdisorg ssh)
+(use-package-modules base ncurses nss package-management xdisorg ssh)
 
 (define base-desktop-operating-system
   (operating-system
@@ -140,3 +141,28 @@
                                 "set revert-all-at-newline on\n"))))
            (service home-flatpak-service-type)
            %base-home-services))))
+
+(define base-foreign-desktop-home-environment
+  (let ((env base-desktop-home-environment))
+    (home-environment
+     (inherit env)
+     (packages
+      (cons* nss-certs
+             glibc-locales
+             ;; Use host's ssh
+             (delq openssh
+                   (home-environment-packages env))))
+     (services
+      (cons*
+       (simple-service 'base-foreign-desktop-home-environment-variables
+                       home-environment-variables-service-type
+                       '(("SSL_CERT_DIR"
+                          . "$HOME/.guix-home/profile/etc/ssl/certs")
+                         ("SSL_CERT_FILE"
+                          . "$HOME/.guix-home/profile/etc/ssl/certs/ca-certificates.crt")
+                         ;; TODO: figure out how this hack with XCURSOR_PATH
+                         ;; works; apps can find adwaita cursors but not
+                         ;; others (e.g. breeze_cursors)
+                         ("XCURSOR_PATH"
+                          . "/usr/share/icons")))
+       (home-environment-user-services env))))))

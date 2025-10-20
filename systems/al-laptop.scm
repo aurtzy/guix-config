@@ -5,7 +5,6 @@
              (gnu services networking)
              (gnu system file-systems)
              (guix packages)
-             (my-guix base desktop)
              (my-guix config)
              (my-guix home services package-management)
              (my-guix mods)
@@ -15,72 +14,73 @@
              (my-guix mods desktop-extra)
              (my-guix mods hardware)
              (my-guix mods server)
+             ((my-guix systems)
+              #:select ((base-desktop-operating-system . base-os)
+                        (base-desktop-home-environment . base-he)))
              (nongnu packages linux)
              (nongnu system linux-initrd))
 
 (define initial-operating-system
-  (let ((base-os base-desktop-operating-system))
-    (operating-system
-      (inherit base-os)
-      (kernel linux)
-      (initrd microcode-initrd)
-      (kernel-arguments
-       ;; Fix keyboard not working when resuming from suspend
-       (cons* "i8042.dumbkbd"
-              "modprobe.blacklist=dvb_usb_rtl28xxu"
-              (operating-system-user-kernel-arguments base-os)))
-      (host-name "al-laptop")
-      (users
-       (cons* (user-account
-                (name "alvin")
-                (comment "Alvin")
-                (group "users")
-                (home-directory "/home/alvin")
-                (supplementary-groups '("wheel"
-                                        "netdev"
-                                        "audio"
-                                        "video"
-                                        "kvm"
-                                        "libvirt"
-                                        ;; rtl-sdr
-                                        "dialout")))
-              (operating-system-users base-os)))
-      (mapped-devices
-       (list (mapped-device
-               (source
-                (uuid "bf8c2749-f357-4c6e-be6b-f1009a58aa5f"))
-               (target "cryptroot")
-               (type luks-device-mapping))))
-      (file-systems
-       (cons* (file-system
-                (mount-point "/")
-                (device "/dev/mapper/cryptroot")
-                (type "btrfs")
-                (flags
-                 (base-file-system-flags-ref 'btrfs 'ssd))
-                (options
-                 (alist->file-system-options
-                  (base-file-system-options-ref 'btrfs 'ssd)))
-                (dependencies mapped-devices))
-              (file-system
-                (mount-point "/boot/efi")
-                (device (uuid "DC21-DB63"
-                              'fat32))
-                (type "vfat"))
-              (operating-system-file-systems base-os)))
-      (packages
-       (cons* rtl-sdr
-              (operating-system-packages base-os)))
-      (services
-       (cons*
-        (udev-rules-service 'rtl-sdr rtl-sdr)
-        (operating-system-user-services base-os))))))
+  (operating-system
+    (inherit base-os)
+    (kernel linux)
+    (initrd microcode-initrd)
+    (kernel-arguments
+     ;; Fix keyboard not working when resuming from suspend
+     (cons* "i8042.dumbkbd"
+            "modprobe.blacklist=dvb_usb_rtl28xxu"
+            (operating-system-user-kernel-arguments base-os)))
+    (host-name "al-laptop")
+    (users
+     (cons* (user-account
+              (name "alvin")
+              (comment "Alvin")
+              (group "users")
+              (home-directory "/home/alvin")
+              (supplementary-groups '("wheel"
+                                      "netdev"
+                                      "audio"
+                                      "video"
+                                      "kvm"
+                                      "libvirt"
+                                      ;; rtl-sdr
+                                      "dialout")))
+            (operating-system-users base-os)))
+    (mapped-devices
+     (list (mapped-device
+             (source
+              (uuid "bf8c2749-f357-4c6e-be6b-f1009a58aa5f"))
+             (target "cryptroot")
+             (type luks-device-mapping))))
+    (file-systems
+     (cons* (file-system
+              (mount-point "/")
+              (device "/dev/mapper/cryptroot")
+              (type "btrfs")
+              (flags
+               (base-file-system-flags-ref 'btrfs 'ssd))
+              (options
+               (alist->file-system-options
+                (base-file-system-options-ref 'btrfs 'ssd)))
+              (dependencies mapped-devices))
+            (file-system
+              (mount-point "/boot/efi")
+              (device (uuid "DC21-DB63"
+                            'fat32))
+              (type "vfat"))
+            (operating-system-file-systems base-os)))
+    (packages
+     (cons* rtl-sdr
+            (operating-system-packages base-os)))
+    (services
+     (cons*
+      (udev-rules-service 'rtl-sdr rtl-sdr)
+      (operating-system-user-services base-os)))))
 
 (define initial-home-environment
-  (let ((base-env base-desktop-home-environment))
-    (home-environment
-      (inherit base-env)
-      )))
+  (home-environment
+    (inherit base-he)
+    ))
 
 (define system
   (modded-system
