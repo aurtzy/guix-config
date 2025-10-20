@@ -708,6 +708,36 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Use Casual I-search by default.
+
+(use-package casual-isearch :demand
+  :bind (("C-s" . my-emacs-casual-isearch-forward-maybe-tmenu)
+         ("C-r" . my-emacs-casual-isearch-backward-maybe-tmenu)
+         :map minibuffer-local-isearch-map
+         ("RET" . my-emacs-casual-isearch-exit-minibuffer))
+  :preface
+  (defvar my-emacs--casual-isearch-open-menu? nil)
+  (defun my-emacs-casual-isearch-exit-minibuffer ()
+    (interactive)
+    (setq my-emacs--casual-isearch-open-menu? t)
+    (exit-minibuffer))
+  (transient-define-prefix my-emacs-casual-isearch-forward-maybe-tmenu
+    (&optional regexp-p)
+    (interactive "P")
+    (let ((my-emacs--casual-isearch-open-menu? nil))
+      (isearch-mode t (not (null regexp-p)))
+      (isearch-edit-string)
+      (when my-emacs--casual-isearch-open-menu?
+        (transient-setup 'casual-isearch-tmenu))))
+  (transient-define-prefix my-emacs-casual-isearch-backward-maybe-tmenu
+    (&optional regexp-p)
+    (interactive "P")
+    (let ((my-emacs--casual-isearch-open-menu? nil))
+      (isearch-mode nil (not (null regexp-p)))
+      (isearch-edit-string)
+      (when my-emacs--casual-isearch-open-menu?
+        (transient-setup 'casual-isearch-tmenu)))))
+
 ;;;; Replace Casual EditKit's Project menu with Disproject.
 
 (use-package casual-editkit
