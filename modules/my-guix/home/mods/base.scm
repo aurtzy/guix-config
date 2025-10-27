@@ -35,6 +35,7 @@
   #:use-module (my-guix build-system emacs)
   #:use-module (my-guix home mods)
   #:use-module (my-guix home services package-management)
+  #:use-module (my-guix home services redlib)
   #:use-module (my-guix mods)
   #:use-module (my-guix packages emacs-xyz)
   #:use-module (my-guix packages git-annex-configure)
@@ -58,6 +59,7 @@
             home-flatpak-mod
             home-media-mod
             home-password-management-mod
+            home-redlib-mod
             home-meta-desktop-mod))
 
 (use-package-modules aspell audio backup compression emacs emacs-build
@@ -652,6 +654,15 @@ remote.")
                            '("org.keepassxc.KeePassXC"))
            (service home-ssh-agent-service-type)))))
 
+(define home-redlib-mod
+  (home-environment-mod
+    (name 'home-redlib-server)
+    (description
+     "Configure redlib service.")
+    (services
+     (list (service home-redlib-service-type (redlib-configuration
+                                               (port 8081)))))))
+
 (define home-meta-desktop-mod
   (home-environment-mod
     (name 'home-meta-desktop)
@@ -665,4 +676,5 @@ remote.")
                   home-emacs-mod
                   home-flatpak-mod
                   home-media-mod
-                  home-password-management-mod))))
+                  home-password-management-mod
+                  home-redlib-mod))))

@@ -66,24 +66,7 @@
 (define base-home-environment
   (home-environment
     (inherit initial-he)
-    (services
-     (cons* (simple-service 'redlib
-                            home-shepherd-service-type
-                            (list
-                             (shepherd-service
-                               (documentation
-                                "Run Redlib service.")
-                               (provision
-                                '(redlib))
-                               (requirement
-                                '())
-                               (start
-                                #~(make-forkexec-constructor
-                                   (list #$(file-append redlib "/bin/redlib")
-                                         "--port" "8081")))
-                               (stop
-                                #~(make-kill-destructor)))))
-            (home-environment-user-services initial-he)))))
+    ))
 
 (define modded-home-environment
   (modded-configuration
