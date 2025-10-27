@@ -31,6 +31,7 @@
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages game-client)
   #:use-module (my-guix utils)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (home-game-mangers-mod
             home-minecraft-mod
@@ -43,18 +44,26 @@
 (define games-src
   (path-append-my-assets-directory "games" ".static"))
 
-(define steam-extra-shares `( ;; Work around steam needing access to files when
-                              ;; uploading screenshots/pictures to chat (portal
-                              ;; doesn't seem to apply here..?).
-                             "$HOME/Pictures/Screenshots"
-                             ,games-src
-                             "$HOME/Games"
-                             "$HOME/storage/steam-alt-library"
-                             "$HOME/.config/r2modmanPlus-local"
-                             "$HOME/solid-drive/steam-library"
-                             ;; Allow access to store so any dependencies can
-                             ;; be resolved.
-                             "/gnu"))
+(define games-extra-shares
+  (concatenate
+   (map (lambda (file)
+          (let ((%file (if (absolute-file-name? file)
+                           file
+                           (path-append-my-home file))))
+            (if (file-exists? %file)
+                (list %file)
+                '())))
+        (list
+         ;; Work around steam needing access to files when uploading images to
+         ;; chat (portal doesn't seem to apply here..?).
+         "Pictures/Screenshots"
+         games-src
+         "Games"
+         "storage/steam-alt-library"
+         ".config/r2modmanPlus-local"
+         "solid-drive/steam-library"
+         ;; Allow access to store so any dependencies can be resolved.
+         "/gnu"))))
 
 (define home-game-managers-mod
   (let* ((lutris-append (cut path-append ".var/app/net.lutris.Lutris/data"
@@ -134,7 +143,7 @@
                              home-environment-variables-service-type
                              `(("GUIX_SANDBOX_EXTRA_SHARES"
                                 .
-                                ,(string-join steam-extra-shares ":"))))
+                                ,(string-join games-extra-shares ":"))))
              (simple-service name
                              home-bash-service-type
                              (home-bash-extension
