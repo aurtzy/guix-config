@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2025 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -96,71 +96,69 @@
     (license license:gpl3+)))
 
 (define-public keyboard-center
-  (let ((version "2.0.6")
-        (hash "0zv1zx19pq48ibmbxzqfqal7jrgyg5sva2nnfpym9iwl8m23g57j"))
-    (package
-      (name "keyboard-center")
-      (version version)
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-                (url "https://github.com/zocker-160/keyboard-center")
-                (commit version)))
-         (file-name (git-file-name name version))
-         (sha256 (base32 hash))
-         (patches
-          (search-my-patches
-           "0001-Fix-crash-when-running-with-Python-3.11.patch"))))
-      (build-system pyproject-build-system)
-      (arguments
-       (list
-        ;; Tests are available, but not hooked up to the build system.
-        #:tests? #f
-        #:modules '((guix build pyproject-build-system)
-                    (guix build qt-utils)
-                    (guix build utils)
-                    (ice-9 match))
-        #:imported-modules `(,@%pyproject-build-system-modules
-                             (guix build qt-utils))
-        #:phases
-        #~(modify-phases %standard-phases
-            (add-after 'unpack 'patch-libraries
-              (lambda* (#:key inputs #:allow-other-keys)
-                (substitute* "keyboard_center/lib/hid.py"
-                  (("library_paths = " assign)
-                   ;; Push the originally assigned tuple onto the next line to
-                   ;; make it a noop that can be ignored
-                   (string-append assign
-                                  "('"
-                                  (search-input-file
-                                   inputs "lib/libhidapi-hidraw.so")
-                                  "',)\n")))))
-            (add-after 'install 'install-files
-              (lambda _
-                (install-file "linux_packaging/60-keyboard-center.rules"
-                              (string-append #$output "/lib/udev/rules.d"))))
-            (add-after 'install 'install-desktop-files
-              (lambda _
-                (install-file "linux_packaging/assets/keyboard-center.png"
-                              (string-append
-                               #$output "/share/icons/hicolor/512x512/apps"))
-                (install-file "linux_packaging/assets/keyboard-center.desktop"
-                              (string-append
-                               #$output "/share/applications"))))
-            (add-after 'create-entrypoints 'wrap-program
-              (lambda* (#:key inputs #:allow-other-keys)
-                (wrap-qt-program "keyboard-center"
-                                 #:output #$output
-                                 #:inputs inputs))))))
-      (native-inputs (list python-setuptools python-wheel))
-      (inputs (list bash-minimal hidapi libnotify qtwayland-5))
-      (propagated-inputs (list lua
-                               python-pyqt
-                               python-pyusb
-                               python-uinput
-                               python-lupa))
-      (synopsis "Application for mapping macro keys on Logitech keyboards")
-      (description "")
-      (home-page "https://github.com/zocker-160/keyboard-center")
-      (license license:gpl3))))
+  (package
+    (name "keyboard-center")
+    (version "2.0.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/zocker-160/keyboard-center")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1ngrvbbzq7yqk21sn4g0sb22dv4y51yf8j49q7sqz1210qn2swgi"))
+              (patches
+               (search-my-patches
+                "0001-Fix-crash-when-running-with-Python-3.11.patch"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      ;; Tests are available, but not hooked up to the build system.
+      #:tests? #f
+      #:modules '((guix build pyproject-build-system)
+                  (guix build qt-utils)
+                  (guix build utils)
+                  (ice-9 match))
+      #:imported-modules `(,@%pyproject-build-system-modules
+                           (guix build qt-utils))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-libraries
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "keyboard_center/lib/hid.py"
+                (("library_paths = " assign)
+                 ;; Push the originally assigned tuple onto the next line to
+                 ;; make it a noop that can be ignored
+                 (string-append assign
+                                "('"
+                                (search-input-file
+                                 inputs "lib/libhidapi-hidraw.so")
+                                "',)\n")))))
+          (add-after 'install 'install-files
+            (lambda _
+              (install-file "linux_packaging/60-keyboard-center.rules"
+                            (string-append #$output "/lib/udev/rules.d"))))
+          (add-after 'install 'install-desktop-files
+            (lambda _
+              (install-file "linux_packaging/assets/keyboard-center.png"
+                            (string-append
+                             #$output "/share/icons/hicolor/512x512/apps"))
+              (install-file "linux_packaging/assets/keyboard-center.desktop"
+                            (string-append
+                             #$output "/share/applications"))))
+          (add-after 'create-entrypoints 'wrap-program
+            (lambda* (#:key inputs #:allow-other-keys)
+              (wrap-qt-program "keyboard-center"
+                               #:output #$output
+                               #:inputs inputs))))))
+    (native-inputs (list python-setuptools python-wheel))
+    (inputs (list bash-minimal hidapi libnotify qtwayland-5))
+    (propagated-inputs (list lua
+                             python-pyqt
+                             python-pyusb
+                             python-uinput
+                             python-lupa))
+    (synopsis "Application for mapping macro keys on Logitech keyboards")
+    (description "")
+    (home-page "https://github.com/zocker-160/keyboard-center")
+    (license license:gpl3)))
