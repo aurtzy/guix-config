@@ -1,24 +1,23 @@
 #+title: guix-config
 
-# Modular Guix configuration
-
 * Introduction
 
-These are my [[https://guix.gnu.org][GNU Guix]] configuration files.  This config extends Guix with a
-custom data type (dubbed "mods") to modularize my setup.
+These are my [[https://guix.gnu.org][GNU Guix]] configuration files.
 
-This repository also includes some additional packages and services that are
+This config extends Guix with a custom data type (dubbed "mods") to modularize
+my setup.  It also includes some additional packages and services that are
 either being refined for upstreaming or are not suitable for upstream.
 
 * Overview
 
 Here is a general overview of notable files in this repository:
 
-- [[file:files]] contains configuration files that are not declared with Guile code.
+- [[file:files]] contains configuration files that are not declared in Guile
+  modules.
 - [[file:modules]] contains Guile modules, where packages, services, and other
-  utilities are defined.  =GUIX_PACKAGE_PATH= is also set to this directory.
-- [[file:systems]] is where the top-level Guix System/Home configuration files for
-  my systems are located.
+  utilities are defined.  =GUIX_PACKAGE_PATH= is set to this directory.
+- [[file:systems]] and [[file:modules/my-guix/systems]] are where the top-level Guix
+  System/Home configuration files for my systems are located.
 - [[file:scripts/setup]] is used for setting up additional things that the installer
   does not offer to do.
 - [[file:scripts/guix]] is used for bootstrapping the configuration when
