@@ -145,20 +145,8 @@
             (operating-system-file-systems initial-os)))
     (services
      (cons* (service keyboard-center-service-type)
-            (service nginx-service-type)
             (simple-service 'load-ntsync kernel-module-loader-service-type
                             '("ntsync"))
-            (simple-service 'redlib-reverse-proxy
-                            nginx-service-type
-                            (list
-                             (nginx-server-configuration
-                               (listen '("8080"))
-                               (server-name '("redlib.localhost"))
-                               (locations
-                                (list
-                                 (nginx-location-configuration
-                                   (uri "/")
-                                   (body '("proxy_pass http://localhost:8081;"))))))))
             (operating-system-user-services initial-os)))))
 
 (define modded-operating-system
