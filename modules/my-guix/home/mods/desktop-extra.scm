@@ -81,27 +81,29 @@ filesystems=" (path-append-my-assets-directory "akregator" ".static") "
     (services
      (list (simple-service name
                            home-files-service-type
-                           `( ;; Force-enable Wayland.
-                             (".local/share/applications/im.riot.Riot.desktop"
-                              ,(computed-file
-                                "im.riot.Riot.desktop"
-                                (with-imported-modules '((guix build utils))
-                                  #~(begin
-                                      (use-modules ((guix build utils)))
-                                      (copy-file #$(local-file
-                                                    (string-append
-                                                     (getenv "HOME")
-                                                     "/.local/share/flatpak"
-                                                     "/exports/share/applications"
-                                                     "/im.riot.Riot.desktop"))
-                                                 #$output)
-                                      (substitute* #$output
-                                        (("Exec=.*/bin/flatpak run.*im\\.riot\\.Riot" exec)
-                                         (if (string-contains
-                                              exec "--ozone-platform=")
-                                             exec
-                                             (string-append
-                                              exec " --ozone-platform=wayland"))))))))))
+                           (let ((desktop-file
+                                  (string-append (getenv "HOME")
+                                                 "/.local/share/flatpak"
+                                                 "/exports/share/applications"
+                                                 "/im.riot.Riot.desktop")))
+                             (if (file-exists? desktop-file)
+                                 ;; Force-enable Wayland.
+                                 `((".local/share/applications/im.riot.Riot.desktop"
+                                    ,(computed-file
+                                      "im.riot.Riot.desktop"
+                                      (with-imported-modules '((guix build utils))
+                                        #~(begin
+                                            (use-modules ((guix build utils)))
+                                            (copy-file #$(local-file desktop-file)
+                                                       #$output)
+                                            (substitute* #$output
+                                              (("Exec=.*/bin/flatpak run.*im\\.riot\\.Riot" exec)
+                                               (if (string-contains
+                                                    exec "--ozone-platform=")
+                                                   exec
+                                                   (string-append
+                                                    exec " --ozone-platform=wayland")))))))))
+                                 '())))
            (simple-service name
                            home-flatpak-profile-service-type
                            (list
