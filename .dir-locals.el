@@ -45,6 +45,11 @@
                                                      ".direnv/"
                                                      "/files/patches"))))
  (scheme-mode . ((eval . (guix-devel-mode t))
+                 (eval . (put 'mod-argument 'scheme-indent-function 0))
+                 (eval . (put 'let-mod-arguments 'scheme-indent-function 2))
+                 (eval . (put 'modded-configuration 'scheme-indent-function 0))
+                 (eval . (put 'operating-system-mod 'scheme-indent-function 0))
+                 (eval . (put 'home-environment-mod 'scheme-indent-function 0))
                  (eval . (put 'compose-lambda 'scheme-indent-function 1))
                  (eval . (put 'mod 'scheme-indent-function 0))
                  (eval . (put 'modded-system 'scheme-indent-function 0))

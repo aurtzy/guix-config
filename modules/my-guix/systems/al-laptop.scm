@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2025 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -21,37 +21,34 @@
 
 (define-module (my-guix systems al-laptop)
   #:use-module (gnu)
-  #:use-module (gnu home)
   #:use-module (gnu packages gnome)
   #:use-module (gnu services networking)
   #:use-module (gnu system file-systems)
   #:use-module (guix packages)
   #:use-module (my-guix config)
   #:use-module (my-guix mods)
-  #:use-module (my-guix mods data)
-  #:use-module (my-guix mods desktop)
+  #:use-module (my-guix mods base)
   #:use-module (my-guix mods desktop-environment)
-  #:use-module (my-guix mods desktop-extra)
   #:use-module (my-guix mods hardware)
   #:use-module (my-guix mods server)
   #:use-module ((my-guix systems)
-                #:select ((base-desktop-operating-system . base-os)))
+                #:select ((initial-desktop-operating-system . initial-os)))
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
-  #:export (al-laptop-operating-system))
+  #:export (modded-operating-system))
 
 (use-package-modules radio)
 
-(define al-laptop-operating-system
+(define base-operating-system
   (operating-system
-    (inherit base-os)
+    (inherit initial-os)
     (kernel linux)
     (initrd microcode-initrd)
     (kernel-arguments
      ;; Fix keyboard not working when resuming from suspend
      (cons* "i8042.dumbkbd"
             "modprobe.blacklist=dvb_usb_rtl28xxu"
-            (operating-system-user-kernel-arguments base-os)))
+            (operating-system-user-kernel-arguments initial-os)))
     (host-name "al-laptop")
     (users
      (cons* (user-account
@@ -67,7 +64,7 @@
                                       "libvirt"
                                       ;; rtl-sdr
                                       "dialout")))
-            (operating-system-users base-os)))
+            (operating-system-users initial-os)))
     (mapped-devices
      (list (mapped-device
              (source
@@ -90,12 +87,36 @@
               (device (uuid "DC21-DB63"
                             'fat32))
               (type "vfat"))
-            (operating-system-file-systems base-os)))
+            (operating-system-file-systems initial-os)))
     (packages
      (cons* rtl-sdr
-            (operating-system-packages base-os)))
+            (operating-system-packages initial-os)))
     (services
      (cons*
       (udev-rules-service 'rtl-sdr rtl-sdr)
-      (operating-system-user-services base-os)))))
+      (operating-system-user-services initial-os)))))
 
+(define modded-operating-system
+  (modded-configuration
+    (arguments (list
+                #:swapfile (swapfile-configuration
+                            (file "/swapfile")
+                            (device "/dev/mapper/cryptroot")
+                            (offset "269568"))))
+    (base base-operating-system)
+    (mods (list meta-desktop-mod
+                gnome-mod
+                ssh-server-mod
+                (operating-system-mod
+                  (name 'vpn)
+                  (modifier
+                   (lambda (os)
+                     (operating-system
+                       (inherit os)
+                       (services
+                        (modify-services (operating-system-user-services os)
+                          (network-manager-service-type
+                           config => (network-manager-configuration
+                                       (inherit config)
+                                       (vpn-plugins
+                                        (list network-manager-openconnect))))))))))))))

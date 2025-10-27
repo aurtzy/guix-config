@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -21,49 +21,53 @@
 
 (define-module (my-guix mods hardware)
   #:use-module (gnu)
+  #:use-module (ice-9 optargs)
   #:use-module (my-guix mods)
-  #:use-module (my-guix mods desktop)
   #:use-module (my-guix utils)
   #:use-module (nonguix transformations)
   #:use-module ((rnrs base) #:prefix rnrs:)
-  #:export (nvidia-proprietary?
-
-            battery-mod
+  #:export (battery-mod
+            nvidia-proprietary?-argument
             nvidia-mod))
 
 (use-package-modules linux)
 
 (use-service-modules pm)
 
-;; nvidia-proprietary?: Parameter that dictates whether the NVIDIA proprietary
-;; driver will be used.
-(define nvidia-proprietary?
-  (make-parameter #f (lambda (val)
-                       (rnrs:assert (boolean? val))
-                       val)))
-
 (define battery-mod
-  (mod
+  (operating-system-mod
     (name 'battery)
     (description
      "Configures system for use on a battery.  Ideal for laptop
 configurations.")
-    (os-extension
-     (compose (mod-os-packages
-               (list tlp))
-              (mod-os-services
-               (list (service tlp-service-type
-                              (tlp-configuration
-                               (cpu-boost-on-ac? #t)))))))))
+    (packages (list tlp))
+    (services
+     (list (service tlp-service-type
+                    (tlp-configuration
+                      (cpu-boost-on-ac? #t)))))))
+
+(define nvidia-proprietary?-argument
+  (mod-argument
+    (keyword #:nvidia-proprietary?)
+    (description
+     "Whether or not the proprietary NVIDIA driver is being used.")
+    (default-value #f)))
 
 (define nvidia-mod
-  (mod
+  (operating-system-mod
     (name 'nvidia)
     (description
      "Configures the system for an NVIDIA GPU.")
-    (os-extension
-     (let ((nvidia-proprietary? (nvidia-proprietary?)))
+    (kernel-arguments
+     (let-mod-arguments (this-operating-system-mod-arguments)
+         ((nvidia-proprietary? nvidia-proprietary?-argument))
+       (if nvidia-proprietary?
+           '()
+           ;; Enable GSP firmware for Nouveau/NVK.
+           (list "nouveau.config=NvGspRm=1"))))
+    (modifier
+     (let-mod-arguments (this-operating-system-mod-arguments)
+         ((nvidia-proprietary? nvidia-proprietary?-argument))
        (if nvidia-proprietary?
            (nonguix-transformation-nvidia #:open-source-kernel-module? #t)
-           ;; Enable GSP firmware for Nouveau/NVK.
-           (mod-os-kernel-arguments (list "nouveau.config=NvGspRm=1")))))))
+           identity)))))

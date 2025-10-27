@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2025 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -37,23 +37,23 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (my-guix config)
+  #:use-module (my-guix home mods)
+  #:use-module (my-guix home mods base)
+  #:use-module (my-guix home mods desktop-extra)
+  #:use-module (my-guix home mods entertainment)
+  #:use-module (my-guix home mods server)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods base)
-  #:use-module (my-guix mods data)
-  #:use-module (my-guix mods desktop)
   #:use-module (my-guix mods desktop-environment)
-  #:use-module (my-guix mods desktop-extra)
-  #:use-module (my-guix mods entertainment)
   #:use-module (my-guix mods hardware)
-  #:use-module (my-guix mods server)
   #:use-module (my-guix packages game-client)
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix packages keyboard-center)
   #:use-module (my-guix packages redlib)
   #:use-module (my-guix services hardware)
   #:use-module ((my-guix systems)
-                #:select ((base-desktop-home-environment . base-he)))
+                #:select ((initial-desktop-home-environment . initial-he)))
   #:use-module (my-guix systems al-pc)
   #:use-module (my-guix utils)
   #:use-module (nongnu packages linux)
@@ -61,11 +61,11 @@
   #:use-module ((nongnu services nvidia) #:prefix nvidia:)
   #:use-module (nongnu system linux-initrd)
   #:use-module (nonguix utils)
-  #:export (alvin-home-environment))
+  #:export (modded-home-environment))
 
-(define alvin-home-environment
+(define base-home-environment
   (home-environment
-    (inherit base-he)
+    (inherit initial-he)
     (services
      (cons* (simple-service 'redlib
                             home-shepherd-service-type
@@ -83,4 +83,38 @@
                                          "--port" "8081")))
                                (stop
                                 #~(make-kill-destructor)))))
-            (home-environment-user-services base-he)))))
+            (home-environment-user-services initial-he)))))
+
+(define modded-home-environment
+  (modded-configuration
+    (arguments (list
+                #:home-data-entries
+                (list (home-data-entry
+                       (source "data/workshop")
+                       (borg-repositories
+                        '("/media/backup/workshop.borg"
+                          "/media/usb-backup/workshop.borg")))
+                      (home-data-entry
+                       (source "data/areas")
+                       (borg-repositories
+                        '("/media/backup/areas.borg"
+                          "/media/usb-backup/areas.borg")))
+                      (home-data-entry
+                       (source "storage/library")
+                       (borg-repositories
+                        '("/media/backup/library.borg"
+                          "/media/usb-backup/library.borg")))
+                      (home-data-entry
+                       (source "storage/archives")))))
+    (base base-home-environment)
+    (mods (list home-meta-desktop-mod
+                home-meta-desktop-extra-mod
+                home-meta-entertainment-mod
+                home-web-server-mod
+                (home-environment-mod
+                  (name 'replace-mesa)
+                  (modifier (lambda (he)
+                              (let-mod-arguments
+                                  (this-home-environment-mod-arguments)
+                                  ((replace-mesa replace-mesa-argument))
+                                (with-transformation replace-mesa he)))))))))

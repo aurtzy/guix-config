@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2025 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -21,10 +21,6 @@
 
 (define-module (my-guix systems al-pc)
   #:use-module (gnu)
-  #:use-module (gnu home)
-  #:use-module (gnu home services desktop)
-  #:use-module (gnu home services shepherd)
-  #:use-module (gnu home services sound)
   #:use-module (gnu packages linux)
   #:use-module (gnu services linux)
   #:use-module (gnu services sddm)
@@ -37,13 +33,9 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (my-guix config)
-  #:use-module (my-guix home services package-management)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods base)
-  #:use-module (my-guix mods data)
-  #:use-module (my-guix mods desktop)
   #:use-module (my-guix mods desktop-environment)
-  #:use-module (my-guix mods desktop-extra)
   #:use-module (my-guix mods entertainment)
   #:use-module (my-guix mods hardware)
   #:use-module (my-guix mods server)
@@ -53,18 +45,18 @@
   #:use-module (my-guix packages redlib)
   #:use-module (my-guix services hardware)
   #:use-module ((my-guix systems)
-                #:select ((base-desktop-operating-system . base-os)))
+                #:select ((initial-desktop-operating-system . initial-os)))
   #:use-module (my-guix utils)
   #:use-module (nongnu packages linux)
   #:use-module ((nongnu packages nvidia) #:prefix nvidia:)
   #:use-module ((nongnu services nvidia) #:prefix nvidia:)
   #:use-module (nongnu system linux-initrd)
   #:use-module (nonguix utils)
-  #:export (al-pc-operating-system))
+  #:export (modded-operating-system))
 
-(define al-pc-operating-system
+(define base-operating-system
   (operating-system
-    (inherit base-os)
+    (inherit initial-os)
     (host-name "al-pc")
     (kernel linux)
     (label (format #f "GNU with ~a ~a (Nouveau)"
@@ -74,7 +66,7 @@
     (firmware (list linux-firmware))
     (kernel-arguments
      (cons* "preempt=full"   ; Mitigate stuttering and audio crackling issues.
-            (operating-system-user-kernel-arguments base-os)))
+            (operating-system-user-kernel-arguments initial-os)))
     (users
      (cons* (user-account
               (name "alvin")
@@ -87,7 +79,7 @@
                                       "video"
                                       "kvm"
                                       "libvirt")))
-            (operating-system-users base-os)))
+            (operating-system-users initial-os)))
     (mapped-devices
      (list (mapped-device
              (source
@@ -161,7 +153,7 @@
                 '(("compress-force" . "zstd:10"))))
               (type "btrfs")
               (mount? #f))
-            (operating-system-file-systems base-os)))
+            (operating-system-file-systems initial-os)))
     (services
      (cons* (service keyboard-center-service-type)
             (service nginx-service-type)
@@ -178,4 +170,18 @@
                                  (nginx-location-configuration
                                    (uri "/")
                                    (body '("proxy_pass http://localhost:8081;"))))))))
-            (operating-system-user-services base-os)))))
+            (operating-system-user-services initial-os)))))
+
+(define modded-operating-system
+  (modded-configuration
+    (arguments (list
+                #:swapfile (swapfile-configuration
+                            (file "/swapfile")
+                            (device "/dev/mapper/cryptroot")
+                            (offset "6036736"))))
+    (base base-operating-system)
+    (mods (list meta-desktop-mod
+                meta-entertainment-mod
+                gnome-mod
+                nvidia-mod
+                ssh-server-mod))))

@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2025 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -21,232 +21,48 @@
 
 (define-module (my-guix mods entertainment)
   #:use-module (gnu)
-  #:use-module (gnu home)
-  #:use-module (gnu home services)
-  #:use-module (gnu home services shells)
   #:use-module (gnu packages gl)
   #:use-module (gnu services)
   #:use-module (gnu system privilege)
+  #:use-module (ice-9 optargs)
   #:use-module (my-guix mods)
-  #:use-module (my-guix mods desktop)
-  #:use-module (my-guix home services package-management)
+  #:use-module (my-guix mods base)
   #:use-module (my-guix packages game-client)
   #:use-module (my-guix utils)
   #:use-module (srfi srfi-26)
-  #:export (game-mangers-mod
-            minecraft-mod
-            minetest-mod
-            syncplay-mod
-
-            entertainment-mods))
-
-(use-package-modules freedesktop games minetest sdl video)
+  #:export (meta-entertainment-mod))
 
 (use-service-modules sysctl)
 
-(define games-src
-  (path-append-my-assets-directory "games" ".static"))
-
-(define steam-extra-shares `( ;; Work around steam needing access to files when
-                              ;; uploading screenshots/pictures to chat (portal
-                              ;; doesn't seem to apply here..?).
-                             "$HOME/Pictures/Screenshots"
-                             ,games-src
-                             "$HOME/Games"
-                             "$HOME/storage/steam-alt-library"
-                             "$HOME/.config/r2modmanPlus-local"
-                             "$HOME/solid-drive/steam-library"
-                             ;; Allow access to store so any dependencies can
-                             ;; be resolved.
-                             "/gnu"))
-
-(define game-managers-mod
-  (let* ((lutris-append (cut path-append ".var/app/net.lutris.Lutris/data"
-                             <...>))
-         (steam-append (cut path-append ".local/share/guix-sandbox-home"
-                            <...>))
-         (games-src-append (cut path-append games-src <...>)))
-    (mod
-      (name 'game-managers)
-      (os-extension
-       (compose
-        (mod-os-services
-         (let ((replace-mesa (replace-mesa)))
-           (list (simple-service name
-                                 profile-service-type
-                                 (list (replace-mesa gamescope)))
-                 (simple-service name
-                                 privileged-program-service-type
-                                 (list
-                                  (privileged-program
-                                   (program
-                                    (file-append
-                                     (replace-mesa gamescope) "/bin/gamescope"))
-                                   (capabilities "cap_sys_nice=eip"))))
-                 ;; HACK: Using privileges causes gamescope to not inherit
-                 ;; environment, so it fails an attempt to search for needed
-                 ;; vulkan files.  Conveniently provide them at this location,
-                 ;; which gamescope searches by default.
-                 (simple-service name
-                                 etc-service-type
-                                 `(("vulkan" ,(file-append (replace-mesa mesa)
-                                                           "/share/vulkan")))))))
-        (mod-os-service
-         sysctl-service-type
-         (lambda (config)
-           (sysctl-configuration
-            (inherit config)
-            ;; Copied value from Arch Linux (and context given in link):
-            ;; https://archlinux.org/news/increasing-the-default-vmmax_map_count-value/
-            (settings (cons* '("vm.max_map_count" . "1048576")
-                             (sysctl-configuration-settings config))))))))
-      (he-extension
-       (compose
-        (mod-he-packages
-         (list steam-custom sdl2))
-        (mod-he-services
-         (list (simple-service name
-                               home-files-service-type
-                               `( ;; Mindustry
-                                 (,(lutris-append "Mindustry/saves")
-                                  ,(symlink-to (games-src-append
-                                                "mindustry/files/saves")))
-                                 (,(lutris-append "Mindustry/settings.bin")
-                                  ,(symlink-to (games-src-append
-                                                "mindustry/files/settings.bin")))
-                                 ;; Factorio
-                                 (,(steam-append ".factorio")
-                                  ,(symlink-to (games-src-append
-                                                "factorio/files/.factorio")))
-                                 ;; tModLoader
-                                 (,(steam-append ".local/share/Terraria/tModLoader"
-                                                 "Players/Backups")
-                                  ,(symlink-to (games-src-append
-                                                "tmodloader/files"
-                                                "Players/Backups")))
-                                 (,(steam-append ".local/share/Terraria/tModLoader"
-                                                 "Worlds/Backups")
-                                  ,(symlink-to (games-src-append
-                                                "tmodloader/files"
-                                                "Worlds/Backups")))
-                                 (,(steam-append ".local/share/Terraria/tModLoader"
-                                                 "Captures")
-                                  ,(symlink-to (games-src-append
-                                                "tmodloader/files"
-                                                "Captures")))))
-               (simple-service name
-                               home-flatpak-profile-service-type
-                               (list
-                                (flatpak-app
-                                  (id "net.lutris.Lutris")
-                                  (overrides
-                                   (flatpak-overrides-configuration
-                                     (filesystems
-                                      `(,(path-append-my-assets-directory
-                                          "games" ".static")
-                                        "!home"
-                                        "~/.guix-home"
-                                        "~/Games")))))
-                                (flatpak-app
-                                  (id "net.davidotek.pupgui2")
-                                  (overrides
-                                   (flatpak-overrides-configuration
-                                     (filesystems
-                                      '("xdg-data/guix-sandbox-home/.local/share/Steam")))))
-                                (flatpak-app
-                                  (id "com.github.Matoking.protontricks")
-                                  (overrides
-                                   (flatpak-overrides-configuration
-                                     (filesystems
-                                      '("xdg-data/guix-sandbox-home")))))
-                                ;; TODO: Do I still need this?
-                                (flatpak-app
-                                  (id "com.valvesoftware.Steam")
-                                  (overrides
-                                   (flatpak-overrides-configuration
-                                     (filesystems
-                                      `(,(path-append-my-assets-directory
-                                          "games" ".static")
-                                        "~/storage/steam-alt-library"
-                                        "~/Games")))))))
-               (simple-service name
-                               home-environment-variables-service-type
-                               `(("GUIX_SANDBOX_EXTRA_SHARES"
-                                  .
-                                  ,(string-join steam-extra-shares ":"))))
-               (simple-service name
-                               home-bash-service-type
-                               (home-bash-extension
-                                (aliases
-                                 ;; Set aliases for running steam in
-                                 ;; gamescope, for convenience.
-                                 ;;
-                                 ;; Use SDL backend to fix an issue with
-                                 ;; pointer escaping fullscreen onto secondary
-                                 ;; monitors.
-                                 '(("steam-720"
-                                    . "\
-gamescope --backend sdl -w 1280 -h 720 -W 1280 -H 720 -r 144 \\
-	--force-grab-cursor --fullscreen -- steam")
-                                   ("steam-1440"
-                                    . "\
-gamescope --backend sdl -w 2560 -h 1440 -W 2560 -H 1440 -r 144 \\
-	--force-grab-cursor --fullscreen -- steam"))))))))))))
-
-(define minecraft-mod
-  (mod
-    (name 'minecraft)
-    (he-extension
-     (compose
-      (mod-he-services
+;; TODO: Factorize this.
+(define meta-entertainment-mod
+  (operating-system-mod
+    (name 'meta-entertainment)
+    (services
+     (let-mod-arguments (this-operating-system-mod-arguments)
+         ((replace-mesa replace-mesa-argument))
        (list (simple-service name
-                             home-flatpak-profile-service-type
-                             '("org.prismlauncher.PrismLauncher"))))))))
-
-(define minetest-mod
-  (mod
-    (name 'minetest)
-    (he-extension
-     (compose (mod-he-packages
-               (list minetest))))))
-
-(define videa-mod
-  (mod
-    (name 'videa)
-    (he-extension
-     (mod-he-services
-      (list (simple-service name
-                            home-flatpak-profile-service-type
-                            (list
-                             (flatpak-app
-                               (id "info.febvre.Komikku")
-                               (overrides
-                                (flatpak-overrides-configuration
-                                  (filesystems
-                                   `(,(path-append-my-assets-directory
-                                       "komikku" ".static/komikku.db")))
-                                  (environment
-                                   ;; App crashes on startup with Zink, so
-                                   ;; disable it.
-                                   '(("NOUVEAU_USE_ZINK" . "0"))))))))
-            (simple-service name
-                            home-files-service-type
-                            `((".var/app/info.febvre.Komikku/data/komikku.db"
-                               ,(symlink-to
-                                 (path-append-my-assets-directory
-                                  "komikku" ".static/komikku.db"))))))))))
-
-(define syncplay-mod
-  (mod
-    (name 'syncplay)
-    (he-extension
-     (compose (mod-he-packages
-               (list syncplay))))))
-
-(define entertainment-mods
-  (list game-managers-mod
-        minecraft-mod
-        minetest-mod
-        ;; TEMP: Doesn't build at the moment (qtwebengine broken).
-        ;; syncplay-mod
-        videa-mod))
+                             profile-service-type
+                             (list (replace-mesa gamescope)))
+             (simple-service name
+                             privileged-program-service-type
+                             (list
+                              (privileged-program
+                                (program
+                                 (file-append
+                                  (replace-mesa gamescope) "/bin/gamescope"))
+                                (capabilities "cap_sys_nice=eip"))))
+             ;; HACK: Using privileges causes gamescope to not inherit
+             ;; environment, so it fails an attempt to search for needed
+             ;; vulkan files.  Conveniently provide them at this location,
+             ;; which gamescope searches by default.
+             (simple-service name
+                             etc-service-type
+                             `(("vulkan" ,(file-append (replace-mesa mesa)
+                                                       "/share/vulkan"))))
+             (simple-service name
+                             sysctl-service-type
+                             ;; Copied value from Arch Linux (and context
+                             ;; given in link):
+                             ;; https://archlinux.org/news/increasing-the-default-vmmax_map_count-value/
+                             '(("vm.max_map_count" . "1048576"))))))))

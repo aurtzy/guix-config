@@ -15,13 +15,12 @@
              (guix git-download)
              (guix packages)
              (my-guix config)
+             (my-guix home mods)
+             (my-guix home mods base)
              (my-guix home services package-management)
              (my-guix mods)
              (my-guix mods base)
-             (my-guix mods data)
-             (my-guix mods desktop)
              (my-guix mods desktop-environment)
-             (my-guix mods desktop-extra)
              (my-guix mods entertainment)
              (my-guix mods hardware)
              (my-guix mods server)
@@ -30,9 +29,6 @@
              (my-guix packages keyboard-center)
              (my-guix packages redlib)
              (my-guix services hardware)
-             ((my-guix systems)
-              #:select ((base-desktop-operating-system . base-os)
-                        (base-desktop-home-environment . base-he)))
              (my-guix systems al-pc)
              (my-guix systems al-pc alvin)
              (my-guix utils)
@@ -44,39 +40,7 @@
 
 (define system
   (modded-system
-    (parameters `((,swapfile ,(swapfile-configuration
-                               (file "/swapfile")
-                               (device "/dev/mapper/cryptroot")
-                               (offset "6036736")))
-                  (,data-entries ,(list (data-entry
-                                         (source "data/workshop")
-                                         (borg-repositories
-                                          '("/media/backup/workshop.borg"
-                                            "/media/usb-backup/workshop.borg")))
-                                        (data-entry
-                                         (source "data/areas")
-                                         (borg-repositories
-                                          '("/media/backup/areas.borg"
-                                            "/media/usb-backup/areas.borg")))
-                                        (data-entry
-                                         (source "storage/library")
-                                         (borg-repositories
-                                          '("/media/backup/library.borg"
-                                            "/media/usb-backup/library.borg")))
-                                        (data-entry
-                                         (source "storage/archives"))))))
-    (mods (append desktop-mods
-                  extra-mods
-                  entertainment-mods
-                  (list data-mod
-                        gnome-mod
-                        nvidia-mod
-                        ssh-server-mod
-                        web-server-mod)))
-    (final-he-extension (lambda (he)
-                          (let ((replace-mesa (replace-mesa)))
-                            (with-transformation replace-mesa he))))
-    (initial-os al-pc-operating-system)
-    (initial-he alvin-home-environment)))
+    (initial-os (modded-configuration-operating-system modded-operating-system))
+    (initial-he (modded-configuration-home-environment modded-home-environment))))
 
 (modded-system-guess-environment system)

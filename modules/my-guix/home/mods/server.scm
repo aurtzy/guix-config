@@ -19,21 +19,17 @@
 ;;;
 ;;; This module provides mods geared towards server use.
 
-(define-module (my-guix mods server)
+(define-module (my-guix home mods server)
   #:use-module (gnu)
-  #:use-module (gnu services)
+  #:use-module (gnu home)
+  #:use-module (gnu home services)
+  #:use-module (my-guix home mods)
   #:use-module (my-guix mods)
-  #:export (ssh-server-mod))
+  #:export (home-web-server-mod))
 
-(use-service-modules ssh)
+(use-package-modules web)
 
-(define ssh-server-mod
-  (operating-system-mod
-    (name 'ssh-server)
-    (description
-     "Provides an ssh service that runs in the background.")
-    (services
-     (list (service openssh-service-type
-                    (openssh-configuration
-                      (port-number 12122)
-                      (password-authentication? #f)))))))
+(define home-web-server-mod
+  (home-environment-mod
+    (name 'home-web-server)
+    (packages (list darkhttpd))))

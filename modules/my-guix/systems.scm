@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2025 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -17,7 +17,8 @@
 
 ;;; Commentary:
 ;;;
-;;; This module defines base system configuration records.
+;;; This module provides initial configurations that may be used as
+;;; foundations for systems.
 
 (define-module (my-guix systems)
   #:use-module (gnu)
@@ -33,13 +34,13 @@
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages mesa)
   #:use-module (my-guix utils)
-  #:export (base-desktop-operating-system
-            base-desktop-home-environment
-            base-foreign-desktop-home-environment))
+  #:export (initial-desktop-operating-system
+            initial-desktop-home-environment
+            initial-foreign-desktop-home-environment))
 
 (use-package-modules base ncurses nss package-management xdisorg ssh)
 
-(define base-desktop-operating-system
+(define initial-desktop-operating-system
   (operating-system
     (host-name "a-guix-system")
     (timezone "America/New_York")
@@ -84,7 +85,7 @@
                    global-guix)
                (command-line)))))
 
-(define-public base-desktop-home-environment
+(define-public initial-desktop-home-environment
   (home-environment
    (packages
     (list ncurses ;; fancy shell text
@@ -155,8 +156,8 @@
                          (unset-environment (list "GDK_PIXBUF_MODULE_FILE"))))))
            %base-home-services))))
 
-(define base-foreign-desktop-home-environment
-  (let ((env base-desktop-home-environment))
+(define initial-foreign-desktop-home-environment
+  (let ((env initial-desktop-home-environment))
     (home-environment
      (inherit env)
      (packages
@@ -167,7 +168,7 @@
                    (home-environment-packages env))))
      (services
       (cons*
-       (simple-service 'base-foreign-desktop-home-environment-variables
+       (simple-service 'initial-foreign-desktop-home-environment-variables
                        home-environment-variables-service-type
                        '(("SSL_CERT_DIR"
                           . "$HOME/.guix-home/profile/etc/ssl/certs")

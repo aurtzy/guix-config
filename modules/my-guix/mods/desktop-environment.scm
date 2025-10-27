@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -21,175 +21,151 @@
 
 (define-module (my-guix mods desktop-environment)
   #:use-module (gnu)
-  #:use-module (gnu home)
-  #:use-module (gnu home services)
-  #:use-module (gnu home services shells)
   #:use-module (gnu services)
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix transformations)
   #:use-module (guix utils)
-  #:use-module (my-guix home services package-management)
+  #:use-module (ice-9 optargs)
   #:use-module (my-guix mods)
-  #:use-module (my-guix mods desktop)
+  #:use-module (my-guix mods base)
   #:use-module (my-guix mods hardware)
   #:use-module (my-guix packages gnome)
   #:use-module (my-guix utils)
   #:use-module (nonguix utils)
   #:export (gnome-mod
-            plasma-mod
-            wayland-mod))
+            plasma-mod))
 
-(use-package-modules freedesktop gnome gnome-xyz image kde kde-frameworks
-                     kde-multimedia kde-plasma kde-utils qt)
+(use-package-modules freedesktop gnome gnome-xyz image kde-frameworks
+                     kde-graphics kde-internet kde-multimedia kde-plasma
+                     kde-utils qt)
 
 (use-service-modules desktop sddm xorg)
 
-(define wayland-mod
-  (mod
-    (name 'wayland)
-    (description
-     "Configures environment for usage on Wayland compositors.")
-    (he-extension
-     (compose
-      (mod-he-services
-       (list (simple-service name
-                             home-bash-service-type
-                             (home-bash-extension
-                              (environment-variables
-                               '(("MOZ_ENABLE_WAYLAND" . "1")))))))))))
-
 (define gnome-mod
-  (mod
-    (inherit wayland-mod)
+  (operating-system-mod
     (name 'gnome)
     (description
      "Provides configurations for the GNOME desktop environment.")
-    (os-extension
-     (compose-lambda (os)
-       (let ((replace-mesa (replace-mesa))
-             (nvidia-proprietary? (nvidia-proprietary?)))
-         (list
-          (mod-os-extension wayland-mod)
-          (mod-os-services
-           (with-transformation
-            replace-mesa
-            (append
-             ;; TODO: Fix GDM not using of Wayland on nonfree drivers.  We
-             ;; use SDDM instead for now as a hack, which does not have
-             ;; this issue.
-             ;; (set-xorg-configuration
-             ;;  (xorg-configuration
-             ;;   (keyboard-layout (operating-system-keyboard-layout os))
-             ;;   (modules (cons (module-ref (resolve-interface
-             ;;                               '(nongnu packages nvidia))
-             ;;                              'nvda)
-             ;;                  %default-xorg-modules))
-             ;;   (drivers '("nvidia"))))
-             (if nvidia-proprietary?
-                 (list
-                  (service sddm-service-type
-                           (sddm-configuration
-                            (xorg-configuration
-                             (if nvidia-proprietary?
-                                 (xorg-configuration
-                                  (keyboard-layout
-                                   (operating-system-keyboard-layout os))
-                                  (modules
-                                   (cons (module-ref (resolve-interface
-                                                      '(nongnu packages nvidia))
-                                                     'nvda)
-                                         %default-xorg-modules))
-                                  (drivers '("nvidia")))
-                                 (xorg-configuration
-                                  (keyboard-layout
-                                   (operating-system-keyboard-layout os))))))))
-                 (list
-                  (set-xorg-configuration
-                   (xorg-configuration
-                    (keyboard-layout (operating-system-keyboard-layout os))))
-                  (service gdm-service-type)))
-             (list (service gnome-desktop-service-type
-                            (gnome-desktop-configuration
-                             (shell
-                              (let ((transform
-                                     (options->transformation
-                                      ;; HACK: Tests currently fail.
-                                      `((without-tests . "gnome-color-manager")))))
-                                (list (transform gnome-meta-core-shell))))
-                             (extra-packages
-                              (list adwaita-icon-theme-legacy
-                                    gnome-essential-extras
-                                    gnome-shell-extensions
-                                    gnome-shell-extension-gsconnect
-                                    gnome-tweaks
-                                    xdg-desktop-portal-kde))))))))))))))
-
-(define plasma-mod
-  (mod
-    (inherit wayland-mod)
-    (name 'plasma)
-    (description
-     "Configures the KDE Plasma desktop environment for this system.")
-    (os-extension
-     (compose-lambda (os)
-       (let ((replace-mesa (replace-mesa))
-             (nvidia-proprietary? (nvidia-proprietary?)))
-         (list
-          (mod-os-extension wayland-mod)
-          (mod-os-packages
-           (map replace-mesa
-                ;; Numerous packages here are included by recommendation of the
-                ;; wiki page on packaging, although I'm not sure what some of
-                ;; them do:
-                ;; https://community.kde.org/Distributions/Packaging_Recommendations
-                (list ark
-                      bluedevil
-                      bluez-qt    ;XXX: Propagate for bluedevil settings to work
-                      ffmpegthumbs
-                      filelight
-                      gnome-tweaks
-                      gwenview
-                      icoutils
-                      kdeconnect
-                      kded  ;XXX: Fix audio/tray(/more?) integration being funky
-                      kimageformats
-                      kwayland-integration
-                      kwrited
-                      okular
-                      print-manager
-                      qtimageformats
-                      system-config-printer
-                      xdg-desktop-portal-gtk)))
-          (mod-os-services
-           (list (service plasma-desktop-service-type
-                          (plasma-desktop-configuration
-                           (plasma-package (replace-mesa plasma))))
-                 (service sddm-service-type
-                          (sddm-configuration
-                           (xorg-configuration
-                            (if nvidia-proprietary?
-                                (xorg-configuration
+    (services
+     (let-mod-arguments (this-operating-system-mod-arguments)
+         ((base-configuration base-configuration-argument)
+          (replace-mesa replace-mesa-argument)
+          (nvidia-proprietary? nvidia-proprietary?-argument))
+       (with-transformation
+        replace-mesa
+        (append
+         ;; TODO: Fix GDM not using of Wayland on nonfree drivers.  We
+         ;; use SDDM instead for now as a hack, which does not have
+         ;; this issue.
+         ;; (set-xorg-configuration
+         ;;  (xorg-configuration
+         ;;   (keyboard-layout (operating-system-keyboard-layout os))
+         ;;   (modules (cons (module-ref (resolve-interface
+         ;;                               '(nongnu packages nvidia))
+         ;;                              'nvda)
+         ;;                  %default-xorg-modules))
+         ;;   (drivers '("nvidia"))))
+         (if nvidia-proprietary?
+             (list
+              (service sddm-service-type
+                       (sddm-configuration
+                         (xorg-configuration
+                           (if nvidia-proprietary?
+                               (xorg-configuration
                                  (keyboard-layout
-                                  (operating-system-keyboard-layout os))
+                                  (operating-system-keyboard-layout
+                                   base-configuration))
                                  (modules
                                   (cons (module-ref (resolve-interface
                                                      '(nongnu packages nvidia))
                                                     'nvda)
                                         %default-xorg-modules))
                                  (drivers '("nvidia")))
-                                (xorg-configuration
+                               (xorg-configuration
                                  (keyboard-layout
-                                  (operating-system-keyboard-layout os)))))
-                           ;; FIXME: Time displays are blank when this is used
-                           ;; (auto-login-user "alvin")
-                           ))))))))
-    (he-extension
-     (compose
-      (mod-he-extension wayland-mod)
-      (mod-he-services
-       (list (simple-service name
-                             home-flatpak-profile-service-type
-                             ;; Set application theme for GTK apps to "Breeze"
-                             ;; in settings to use this
-                             (list "org.gtk.Gtk3theme.Breeze"))))))))
+                                  (operating-system-keyboard-layout
+                                   base-configuration))))))))
+             (list
+              (set-xorg-configuration
+               (xorg-configuration
+                 (keyboard-layout (operating-system-keyboard-layout
+                                   base-configuration))))
+              (service gdm-service-type)))
+         (list (service gnome-desktop-service-type
+                        (gnome-desktop-configuration
+                          (shell
+                           (let ((transform
+                                  (options->transformation
+                                   ;; HACK: Tests currently fail.
+                                   `((without-tests . "gnome-color-manager")))))
+                             (list (transform gnome-meta-core-shell))))
+                          (extra-packages
+                           (list adwaita-icon-theme-legacy
+                                 gnome-essential-extras
+                                 gnome-shell-extensions
+                                 gnome-shell-extension-gsconnect
+                                 gnome-tweaks
+                                 xdg-desktop-portal-kde)))))))))))
+
+(define plasma-mod
+  (operating-system-mod
+    (name 'plasma)
+    (description
+     "Configures the KDE Plasma desktop environment for this system.")
+    (packages
+     (let-mod-arguments (this-operating-system-mod-arguments)
+         ((replace-mesa replace-mesa-argument)
+          (nvidia-proprietary? nvidia-proprietary?-argument))
+       (map replace-mesa
+            ;; Numerous packages here are included by recommendation of the
+            ;; wiki page on packaging, although I'm not sure what some of
+            ;; them do:
+            ;; https://community.kde.org/Distributions/Packaging_Recommendations
+            (list ark
+                  bluedevil
+                  bluez-qt      ;XXX: Propagate for bluedevil settings to work
+                  ffmpegthumbs
+                  filelight
+                  gnome-tweaks
+                  gwenview
+                  icoutils
+                  kdeconnect
+                  kded    ;XXX: Fix audio/tray(/more?) integration being funky
+                  kimageformats
+                  kwayland-integration
+                  kwrited
+                  okular
+                  print-manager
+                  qtimageformats
+                  system-config-printer
+                  xdg-desktop-portal-gtk))))
+    (services
+     (let-mod-arguments (this-operating-system-mod-arguments)
+         ((base-configuration base-configuration-argument)
+          (replace-mesa replace-mesa-argument)
+          (nvidia-proprietary? nvidia-proprietary?-argument))
+       (list (service plasma-desktop-service-type
+                      (plasma-desktop-configuration
+                        (plasma-package (replace-mesa plasma))))
+             (service sddm-service-type
+                      (sddm-configuration
+                        (xorg-configuration
+                          (if nvidia-proprietary?
+                              (xorg-configuration
+                                (keyboard-layout
+                                 (operating-system-keyboard-layout
+                                  base-configuration))
+                                (modules
+                                 (cons (module-ref (resolve-interface
+                                                    '(nongnu packages nvidia))
+                                                   'nvda)
+                                       %default-xorg-modules))
+                                (drivers '("nvidia")))
+                              (xorg-configuration
+                                (keyboard-layout
+                                 (operating-system-keyboard-layout
+                                  base-configuration)))))
+                        ;; FIXME: Time displays are blank when this is used
+                        ;; (auto-login-user "alvin")
+                        )))))))

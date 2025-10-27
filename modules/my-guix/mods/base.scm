@@ -1,4 +1,4 @@
-;;; Copyright © 2023-2024 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2023-2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -22,60 +22,245 @@
 (define-module (my-guix mods base)
   #:use-module (gnu)
   #:use-module (guix channels)
+  #:use-module (guix records)
+  #:use-module (guix packages)
+  #:use-module (guix transformations)
+  #:use-module (ice-9 exceptions)
+  #:use-module (ice-9 optargs)
   #:use-module (my-guix mods)
   #:use-module (my-guix utils)
+  #:use-module (nonguix utils)
+  #:use-module ((rnrs base) #:prefix rnrs:)
   #:export (base-packages-mod
             nonguix-channel-mod
+            meta-base-mod
 
-            base-mods))
+            replace-mesa-argument
+            desktop-services-mod
+            esync-mod
+            file-system-management-mod
+            printers-mod
+            swapfile-configuration
+            swapfile-configuration?
+            swapfile-configuration-file
+            swapfile-configuration-device
+            swapfile-configuration-offset
+            swapfile-argument
+            swapfile-mod
+            tor-mod
+            virtualization-mod
+            meta-desktop-mod))
 
-(use-package-modules version-control)
+(use-package-modules aspell audio avahi backup compression cryptsetup disk
+                     emacs emacs-build emacs-xyz fonts freedesktop gl gnome
+                     gnome-xyz guile haskell-apps kde-frameworks kde-plasma
+                     linux music package-management protobuf pulseaudio qt tex
+                     tor tree-sitter version-control video virtualization)
+
+(use-service-modules cups desktop linux networking pm virtualization xorg)
+
+
+;;; Base mods.
 
 (define base-packages-mod
-  (mod
+  (operating-system-mod
     (name 'base-packages)
     (description
      "Provides the base set of packages defined by Guix as well as additional
 packages deemed essential.")
-    (os-extension
-     (mod-os-packages (cons* git
-                             %base-packages)))))
+    (packages (cons* git git-annex %base-packages))))
 
-(define nonguix-channel-mod
-  (mod
-    (name 'nonguix-channel)
+(define guix-channels-mod
+  (operating-system-mod
+    (name 'guix-channels)
     (description
      "Sets up the Nonguix channel on this system.  The channel must still be
 enabled in the home environment.")
-    (os-extension
-     (compose
-      (mod-os-services
-       (list
-        (simple-service name
-                        guix-service-type
-                        (guix-extension
-                         (authorized-keys
-                          (list (local-file (path-append-my-files
-                                             "guix/nonguix.pub"))))
-                         (substitute-urls
-                          '("https://substitutes.nonguix.org"))))))
-      (mod-os-service
-       guix-service-type
-       (lambda (config)
-         (guix-configuration
-          (inherit config)
-          (channels
-           (cons*
-            (channel
-             (name 'nonguix)
-             (url "https://gitlab.com/nonguix/nonguix")
-             (branch "master")
-             (introduction
-              (make-channel-introduction
-               "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
-               (openpgp-fingerprint
-                "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
-            %default-channels)))))))))
+    (services
+     (list (service guix-service-type
+                    (guix-configuration
+                      (channels
+                       (cons*
+                        (channel
+                          (name 'nonguix)
+                          (url "https://gitlab.com/nonguix/nonguix")
+                          (branch "master")
+                          (introduction
+                           (make-channel-introduction
+                            "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+                            (openpgp-fingerprint
+                             "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+                        %default-channels))))
+           (simple-service name
+                           guix-service-type
+                           (guix-extension
+                             (authorized-keys
+                              (list (local-file (path-append-my-files
+                                                 "guix/nonguix.pub"))))
+                             (substitute-urls
+                              '("https://substitutes.nonguix.org"))))))))
 
-(define base-mods (list base-packages-mod
-                        nonguix-channel-mod))
+(define meta-base-mod
+  (operating-system-mod
+    (name 'meta-base)
+    (addons (list base-packages-mod guix-channels-mod))))
+
+
+;;; Desktop mods.
+
+(define replace-mesa-argument
+  (mod-argument
+    (keyword #:replace-mesa)
+    (description
+     "Procedure that consumes a package and replaces its mesa inputs.  By
+default, this just returns an identical package.
+
+This parameter can be directly set to the replacement procedure, but can also
+accept a package, in which it will be turned into a procedure that grafts mesa
+with that package.")
+    (default-value identity)
+    (sanitizer (lambda (val)
+                 (cond ((procedure? val)
+                        val)
+                       ((package? val)
+                        (package-input-rewriting `((,mesa . ,val))))
+                       (else
+                        (raise-exception
+                         (make-exception
+                          (make-exception-with-message
+                           (format #f "not a procedure or package: ~s" val))))))))))
+
+(define desktop-services-mod
+  (operating-system-mod
+    (name 'desktop-services)
+    (description
+     "Configures desktop services defined by Guix.
+
+Some services are explicitly removed for modularity purposes (i.e. to be added
+elsewhere in possibly different forms).")
+    (services
+     (let-mod-arguments (this-operating-system-mod-arguments)
+         ((replace-mesa replace-mesa-argument))
+       (with-transformation replace-mesa
+                            (modify-services %desktop-services
+                              (delete guix-service-type)
+                              (delete gdm-service-type)))))))
+
+(define esync-mod
+  (operating-system-mod
+    (name 'esync)
+    (description
+     "Makes the system Esync-compatible.")
+    (services
+     (list (service pam-limits-service-type
+                    (list (pam-limits-entry "*" 'hard 'nofile 524288)))))))
+
+(define file-system-management-mod
+  (operating-system-mod
+    (name 'file-system-management)
+    (description
+     "Provides software to support various file system operations and disk
+management/maintenance.")
+    (packages (let-mod-arguments (this-operating-system-mod-arguments)
+                  ((replace-mesa replace-mesa-argument))
+                (list btrfs-progs
+                      cryptsetup
+                      (replace-mesa gnome-disk-utility)
+                      gparted
+                      gptfdisk
+                      lvm2
+                      ntfs-3g)))
+    (services (list (service fstrim-service-type)))))
+
+(define printers-mod
+  (operating-system-mod
+    (name 'printers)
+    (description
+     "Provides printing support via CUPS.")
+    (packages (list nss-mdns))
+    (services (list (service cups-service-type)))))
+
+;; TODO: Use define-configuration.
+(define-record-type* <swapfile-configuration>
+  swapfile-configuration make-swapfile-configuration
+  swapfile-configuration?
+  ;; Path to swapfile.
+  (file swapfile-configuration-file)
+  ;; Device that swapfile is present on.
+  (device swapfile-configuration-device)
+  ;; Offset of swapfile.
+  (offset swapfile-configuration-offset))
+
+(define swapfile-argument
+  (mod-argument
+    (keyword #:swapfile)
+    (description "Swapfile configuration.")))
+
+(define swapfile-mod
+  (operating-system-mod
+    (name 'swapfile)
+    (description
+     "Configures swapfile for the system.  See <info:guix#Swap Space> for more
+information.  If the setup script in this repository is used to set up the
+swapfile, it should output all the swapfile configuration information needed.
+
+The base operating system must include the swapfile file system
+configuration.")
+    (swap-devices
+     (let-mod-arguments (this-operating-system-mod-arguments)
+         ((base-configuration base-configuration-argument)
+          (swapfile swapfile-argument))
+       (match-record swapfile <swapfile-configuration> (file)
+         (list (swap-space
+                 (target file)
+                 (dependencies
+                  (filter (file-system-mount-point-predicate "/")
+                          (operating-system-file-systems base-configuration))))))))
+    (kernel-arguments
+     (let-mod-arguments (this-operating-system-mod-arguments)
+         ((swapfile swapfile-argument))
+       (match-record swapfile <swapfile-configuration> (device offset)
+         (list (string-append "resume=" device)
+               (string-append "resume_offset=" offset)))))))
+
+(define tor-mod
+  (operating-system-mod
+    (name 'tor)
+    (description
+     "Configures tor.")
+    (packages (list torsocks))
+    (services (list (service tor-service-type)))))
+
+(define virtualization-mod
+  (operating-system-mod
+    (name 'virtualization)
+    (description
+     "Adds virtualization packages and services to the system environment.
+
+Authorized users should be part of the \"libvirt\" user group.")
+    (packages (let-mod-arguments (this-operating-system-mod-arguments)
+                  ((replace-mesa replace-mesa-argument))
+                (list virt-manager
+                      (replace-mesa gnome-boxes))))
+    (services
+     (list (service libvirt-service-type
+                    (libvirt-configuration
+                      (unix-sock-group "libvirt")))
+           (service virtlog-service-type)
+           (service qemu-binfmt-service-type
+                    (qemu-binfmt-configuration
+                      (platforms (lookup-qemu-platforms
+                                  "arm"
+                                  "aarch64"))))))))
+
+(define meta-desktop-mod
+  (operating-system-mod
+    (name 'meta-desktop)
+    (addons (list meta-base-mod
+                  desktop-services-mod
+                  esync-mod
+                  file-system-management-mod
+                  printers-mod
+                  swapfile-mod
+                  tor-mod
+                  virtualization-mod))))

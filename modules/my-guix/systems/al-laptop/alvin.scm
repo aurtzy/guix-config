@@ -1,4 +1,4 @@
-;;; Copyright © 2025 aurtzy <aurtzy@gmail.com>
+;;; Copyright © 2025 Alvin Hsu <aurtzy@gmail.com>
 ;;;
 ;;; This file is NOT part of GNU Guix.
 ;;;
@@ -22,11 +22,26 @@
 (define-module (my-guix systems al-laptop alvin)
   #:use-module (gnu)
   #:use-module (gnu home)
+  #:use-module (ice-9 optargs)
+  #:use-module (my-guix home mods base)
+  #:use-module (my-guix home mods desktop-extra)
+  #:use-module (my-guix mods)
+  #:use-module (my-guix mods base)
   #:use-module ((my-guix systems)
-                #:select ((base-desktop-home-environment . base-he)))
-  #:export (alvin-home-environment))
+                #:select ((initial-desktop-home-environment . initial-he)))
+  #:export (modded-home-environment))
 
-(define alvin-home-environment
+(define base-home-environment
   (home-environment
-    (inherit base-he)
+    (inherit initial-he)
     ))
+
+(define modded-home-environment
+  (modded-configuration
+    (arguments (list
+                #:ignored-mods (list home-creative-mod
+                                     home-personal-comms-mod)
+                #:home-data-entries '("workshop" "areas" "library" "archives")))
+    (base base-home-environment)
+    (mods (list home-meta-desktop-mod
+                home-meta-desktop-extra-mod))))
