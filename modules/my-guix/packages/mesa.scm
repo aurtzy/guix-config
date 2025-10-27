@@ -146,6 +146,8 @@ vendored inputs."
         (base32 "0aqhssmwdcwgzysjzabr95lxmbv35kmcp3zajllb04xn4fw0sgyw"))))
     (arguments
      (cons*
+      #:parallel-build? #t
+      #:parallel-tests? #t
       #:imported-modules `(,@%meson-build-system-modules
                            ,@%cargo-build-system-modules
                            (guix build utils)
