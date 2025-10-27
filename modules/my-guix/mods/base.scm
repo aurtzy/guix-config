@@ -169,10 +169,12 @@ management/maintenance.")
     (description
      "Apply configurations for general improvements in system performance.")
     (services
-     (list
-      ;; Make system Esync-compatible.
-      (service pam-limits-service-type
-               (list (pam-limits-entry "*" 'hard 'nofile 524288)))))))
+     (list (service pam-limits-service-type)
+           ;; Make system Esync-compatible.
+           (simple-service name pam-limits-service-type
+                           (list (pam-limits-entry "*" 'hard 'nofile 524288)))
+           (simple-service name kernel-module-loader-service-type
+                           '("ntsync"))))))
 
 (define printers-mod
   (operating-system-mod

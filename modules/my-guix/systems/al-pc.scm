@@ -145,8 +145,6 @@
             (operating-system-file-systems initial-os)))
     (services
      (cons* (service keyboard-center-service-type)
-            (simple-service 'load-ntsync kernel-module-loader-service-type
-                            '("ntsync"))
             (operating-system-user-services initial-os)))))
 
 (define modded-operating-system
