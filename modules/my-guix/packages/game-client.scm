@@ -65,6 +65,7 @@
   #:use-module (nonguix multiarch-container)
   #:use-module (nongnu packages game-client)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 optargs)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
@@ -293,31 +294,36 @@ many gaming-centric features such as:
                     #:sh #$(file-append bash-minimal "/bin/bash")
                     '("QT_X11_NO_MITSHM" = ("1"))))))))))))
 
-(define-public steam-container-custom
-  (let ((steam-client-libs (@@ (nongnu packages game-client)
-                               steam-client-libs))
-        (steam-gameruntime-libs (@@ (nongnu packages game-client)
-                                    steam-gameruntime-libs))
-        (container (steam-container-for nvsa-git)))
-    (nonguix-container
-     (inherit container)
-     (name "steam-custom")
-     (binary-name "steam")
-     (wrap-package steam-client-custom)
-     (union64
-      (fhs-union (modify-inputs (ngc-packages container)
-                   (prepend libglvnd)
-                   (replace "mesa"
-                     (package/inherit nvsa-git
-                       (inputs (modify-inputs (package-inputs nvsa-git)
-                                 (prepend libglvnd))))))))
-     (union32
+(define* (custom-steam #:optional (suffix "-custom")
+                       #:key (mesa-package mesa) custom-x86?)
+  (let ((container (steam-container-for mesa-package)))
+    (nonguix-container->package
+     (nonguix-container
+      (inherit container)
+      (name (string-append "steam" suffix))
+      (binary-name "steam")
+      (wrap-package steam-client-custom)
+      (union64
+       (fhs-union (modify-inputs (ngc-packages container)
+                    (prepend libglvnd)
+                    (replace "mesa"
+                      (package/inherit nvsa-git
+                        (inputs (modify-inputs (package-inputs nvsa-git)
+                                  (prepend libglvnd))))))))
       ;; Avoid building 32-bit version of mesa normally unless a situation
       ;; calls for it.  Note that Guix's Rust does not build on i686-linux, so
       ;; an alternative (like rust-binary) must be used to enable 32-bit NVK.
-      (ngc-union32 (steam-container-for mesa)))
-     (exposed (cons* "/run/privileged/bin/gamescope"
-                     (ngc-exposed container))))))
+      (union32 (if custom-x86?
+                   (ngc-union32 (steam-container-for mesa-package))
+                   (ngc-union32 container)))
+      (exposed (cons* "/run/privileged/bin/gamescope"
+                      (ngc-exposed container)))))))
 
 (define-public steam-custom
-  (nonguix-container->package steam-container-custom))
+  (custom-steam "-custom"))
+
+(define-public steam-custom-nvsa
+  (custom-steam "-custom-nvsa" #:mesa-package nvsa-git))
+
+(define-public steam-custom-nvsa+x86
+  (custom-steam "-custom-nvsa+x86" #:mesa-package nvsa-git #:custom-x86? #t))

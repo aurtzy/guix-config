@@ -28,9 +28,11 @@
   #:use-module (gnu system privilege)
   #:use-module (my-guix home mods)
   #:use-module (my-guix mods)
+  #:use-module (my-guix mods base)
   #:use-module (my-guix home services package-management)
   #:use-module (my-guix packages game-client)
   #:use-module (my-guix utils)
+  #:use-module (nongnu packages game-client)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (home-game-mangers-mod
@@ -73,7 +75,12 @@
          (games-src-append (cut path-append games-src <...>)))
     (home-environment-mod
       (name 'home-game-managers)
-      (packages (list steam-custom sdl2))
+      (packages (let-mod-arguments (this-home-environment-mod-arguments)
+                    ((replace-mesa replace-mesa-argument))
+                  (list (if (eq? replace-mesa identity)
+                            steam
+                            (custom-steam "-custom-default"
+                                          #:mesa-package (replace-mesa mesa))))))
       (services
        (list (simple-service name
                              home-files-service-type
