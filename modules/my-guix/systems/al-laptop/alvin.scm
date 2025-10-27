@@ -41,7 +41,10 @@
     (arguments (list
                 #:ignored-mods (list home-creative-mod
                                      home-personal-comms-mod)
-                #:home-data-entries '("workshop" "areas" "library" "archives")))
+                #:home-data-entries '("data/workshop"
+                                      "data/areas"
+                                      "data/library"
+                                      "data/archives")))
     (base base-home-environment)
     (mods (list home-meta-desktop-mod
                 home-meta-desktop-extra-mod))))
