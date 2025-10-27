@@ -133,17 +133,6 @@
               (device (uuid "DC21-DB63" 'fat32))
               (type "vfat"))
             (file-system
-              (mount-point "/home/alvin/solid-drive")
-              (device (uuid "043dc8b2-b5e6-4bfe-aa58-5ff1e995a22a" 'btrfs))
-              (flags
-               (base-file-system-flags-ref 'btrfs 'ssd))
-              (options
-               (alist->file-system-options
-                (base-file-system-options-ref 'btrfs 'ssd)))
-              (type "btrfs")
-              (create-mount-point? #t)
-              (mount-may-fail? #t))
-            (file-system
               (mount-point "/media/backup")
               (device "/dev/mapper/luks-f42810d8-c723-4521-9646-da12f6103b59")
               (flags
