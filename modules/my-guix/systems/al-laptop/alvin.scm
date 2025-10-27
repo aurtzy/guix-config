@@ -25,6 +25,7 @@
   #:use-module (ice-9 optargs)
   #:use-module (my-guix home mods base)
   #:use-module (my-guix home mods desktop-extra)
+  #:use-module (my-guix home mods entertainment)
   #:use-module (my-guix mods)
   #:use-module (my-guix mods base)
   #:use-module ((my-guix systems)
@@ -47,4 +48,5 @@
                                       "data/archives")))
     (base base-home-environment)
     (mods (list home-meta-desktop-mod
+                home-meta-entertainment-mod
                 home-meta-desktop-extra-mod))))
