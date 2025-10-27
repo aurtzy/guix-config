@@ -37,8 +37,8 @@
 
             replace-mesa-argument
             desktop-services-mod
-            esync-mod
             file-system-management-mod
+            performance-mod
             printers-mod
             swapfile-configuration
             swapfile-configuration?
@@ -146,15 +146,6 @@ elsewhere in possibly different forms).")
                               (delete guix-service-type)
                               (delete gdm-service-type)))))))
 
-(define esync-mod
-  (operating-system-mod
-    (name 'esync)
-    (description
-     "Makes the system Esync-compatible.")
-    (services
-     (list (service pam-limits-service-type
-                    (list (pam-limits-entry "*" 'hard 'nofile 524288)))))))
-
 (define file-system-management-mod
   (operating-system-mod
     (name 'file-system-management)
@@ -171,6 +162,17 @@ management/maintenance.")
                       lvm2
                       ntfs-3g)))
     (services (list (service fstrim-service-type)))))
+
+(define performance-mod
+  (operating-system-mod
+    (name 'performance)
+    (description
+     "Apply configurations for general improvements in system performance.")
+    (services
+     (list
+      ;; Make system Esync-compatible.
+      (service pam-limits-service-type
+               (list (pam-limits-entry "*" 'hard 'nofile 524288)))))))
 
 (define printers-mod
   (operating-system-mod
@@ -258,7 +260,7 @@ Authorized users should be part of the \"libvirt\" user group.")
     (name 'meta-desktop)
     (addons (list meta-base-mod
                   desktop-services-mod
-                  esync-mod
+                  performance-mod
                   file-system-management-mod
                   printers-mod
                   swapfile-mod
