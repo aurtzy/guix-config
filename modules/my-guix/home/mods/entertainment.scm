@@ -35,11 +35,11 @@
   #:use-module (srfi srfi-26)
   #:export (home-game-mangers-mod
             home-minecraft-mod
-            home-minetest-mod
+            home-luanti-mod
             home-syncplay-mod
             home-meta-entertainment-mod))
 
-(use-package-modules freedesktop games gl minetest sdl video)
+(use-package-modules freedesktop games gl luanti sdl video)
 
 (define games-src
   (path-append-my-assets-directory "games" ".static"))
@@ -171,10 +171,10 @@ gamescope --backend sdl -w 2560 -h 1440 -W 2560 -H 1440 -r 144 \\
                            home-flatpak-profile-service-type
                            '("org.prismlauncher.PrismLauncher"))))))
 
-(define home-minetest-mod
+(define home-luanti-mod
   (home-environment-mod
-    (name 'home-minetest)
-    (packages (list minetest))))
+    (name 'home-luanti)
+    (packages (list luanti))))
 
 (define home-videa-mod
   (home-environment-mod
@@ -211,6 +211,6 @@ gamescope --backend sdl -w 2560 -h 1440 -W 2560 -H 1440 -r 144 \\
     (name 'home-entertainment)
     (addons (list home-game-managers-mod
                   home-minecraft-mod
-                  home-minetest-mod
+                  home-luanti-mod
                   home-videa-mod
                   home-syncplay-mod))))
