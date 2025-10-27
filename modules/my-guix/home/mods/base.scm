@@ -330,7 +330,6 @@ Internet.")
      "Specifies a list of data entries in the home environment.  Elements of
 the list should be a @code{home-data-entry}, but strings may also be used as
 a shorthand if only the source needs to be specified.")
-    (default-value '())
     (sanitizer (lambda (value)
                  (map (match-lambda
                         ((? home-data-entry? data-entry)
