@@ -99,13 +99,6 @@ top-level configurations.
   - =arguments= ::
   - =base= ::
   - =mods= ::
-- Data Type: mod-argument ::
-  Fields:
-  - =keyword= ::
-  - =default-value= ::
-  - =sanitizer= ::
-- Variable: base-configuration-argument ::
-- Variable: ignored-mods-argument ::
 
 
 ~(my-guix mods)~ also includes an implementation of mods for the
@@ -167,8 +160,8 @@ their config to begin using it:
 Perhaps the user would like to group this configuration into a mod.
 Converting something like this to a mod is not as straightforward, however,
 due to swapfile configuration values being different per machine.  To account
-for this, a mod argument can be defined with ~mod-argument~, and then
-its have its passed value be let-bound with ~let-mod-arguments~ in mods:
+for this, that user can define a mod argument with ~mod-argument~, and then
+let-bind the argument values with ~let-mod-arguments~:
 
 #+begin_src scheme
   (define-configuration/no-serialization swapfile-configuration
@@ -214,11 +207,11 @@ its have its passed value be let-bound with ~let-mod-arguments~ in mods:
 (From [[file:modules/my-guix/mods/base.scm]].)
 
 For convenience, the file, device, and offset are collected into a record type
-that is expected as the argument.  To actually pass mod arguments, the user
-can specify them in the =arguments= field of ~modded-configuration~, which is
-a list of keyword arguments that correspond to the keywords of mod arguments.
-The full ~modded-configuration~ from [[file:modules/my-guix/systems/al-pc.scm]]
-looks like so:
+that is expected as the argument.  To actually set values for mod arguments,
+they are specified in the =arguments= field of ~modded-configuration~, as a
+list of keyword arguments that correspond to the keywords set in
+~mod-argument~ definitions.  The full ~modded-configuration~ from
+[[file:modules/my-guix/systems/al-pc.scm]] looks like so:
 
 #+begin_src scheme
   (define modded-operating-system
@@ -235,6 +228,18 @@ looks like so:
                   nvidia-mod
                   ssh-server-mod))))
 #+end_src
+
+~(my-guix mods)~ provides facilities for using mod arguments, which are
+documented below (WIP).
+
+- Data Type: mod-argument ::
+  Fields:
+  - =keyword= ::
+  - =default-value= ::
+  - =sanitizer= ::
+- Macro: let-mod-arguments ::
+- Variable: base-configuration-argument ::
+- Variable: ignored-mods-argument ::
 
 * Services
 
