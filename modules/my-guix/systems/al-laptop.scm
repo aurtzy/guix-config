@@ -45,9 +45,7 @@
     (kernel linux)
     (initrd microcode-initrd)
     (kernel-arguments
-     ;; Fix keyboard not working when resuming from suspend
-     (cons* "i8042.dumbkbd"
-            "modprobe.blacklist=dvb_usb_rtl28xxu"
+     (cons* "modprobe.blacklist=dvb_usb_rtl28xxu"
             (operating-system-user-kernel-arguments initial-os)))
     (host-name "al-laptop")
     (users
