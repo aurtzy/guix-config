@@ -21,6 +21,7 @@
 
 (define-module (my-guix mods base)
   #:use-module (gnu)
+  #:use-module (gnu services configuration)
   #:use-module (guix channels)
   #:use-module (guix records)
   #:use-module (guix packages)
@@ -184,16 +185,10 @@ management/maintenance.")
     (packages (list nss-mdns))
     (services (list (service cups-service-type)))))
 
-;; TODO: Use define-configuration.
-(define-record-type* <swapfile-configuration>
-  swapfile-configuration make-swapfile-configuration
-  swapfile-configuration?
-  ;; Path to swapfile.
-  (file swapfile-configuration-file)
-  ;; Device that swapfile is present on.
-  (device swapfile-configuration-device)
-  ;; Offset of swapfile.
-  (offset swapfile-configuration-offset))
+(define-configuration/no-serialization swapfile-configuration
+  (file string "Path to swapfile.")
+  (device string "Device that swapfile is present on.")
+  (offset string "Offset of swapfile."))
 
 (define swapfile-argument
   (mod-argument
