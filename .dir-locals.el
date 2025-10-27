@@ -19,7 +19,7 @@
                        (alist-get 'disable-flatpak? targs))))
               (concat
                (if disable-flatpak? "GUIX_FLATPAK_DISABLE=1 " "")
-               "guix home reconfigure config.scm "
+               "guix home reconfigure home.scm "
                (string-join args " ")))
        :buffer-id "guix-home")
       ("p" "pull" disproject-compile
@@ -37,7 +37,7 @@
                (list (seq-filter #'stringp
                                  (transient-args transient-current-command))))
               (concat
-               "sudo guix system reconfigure config.scm "
+               "sudo guix system reconfigure system.scm "
                (string-join args " ")))
        :buffer-id "guix-system"
        :comint? t)]))))
