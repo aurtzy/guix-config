@@ -43,6 +43,8 @@
   (operating-system
     (inherit initial-os)
     (kernel linux)
+    (firmware (cons* atheros-firmware
+                     (operating-system-firmware initial-os)))
     (initrd microcode-initrd)
     (kernel-arguments
      (cons* "modprobe.blacklist=dvb_usb_rtl28xxu"
@@ -104,6 +106,7 @@
     (base base-operating-system)
     (mods (list meta-desktop-mod
                 battery-mod
+                bluetooth-mod
                 gnome-mod
                 ssh-server-mod
                 (operating-system-mod
