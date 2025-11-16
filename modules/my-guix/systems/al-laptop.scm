@@ -103,6 +103,7 @@
                             (offset "269568"))))
     (base base-operating-system)
     (mods (list meta-desktop-mod
+                battery-mod
                 gnome-mod
                 ssh-server-mod
                 (operating-system-mod
