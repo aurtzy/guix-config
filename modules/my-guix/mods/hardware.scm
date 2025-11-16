@@ -27,12 +27,13 @@
   #:use-module (nonguix transformations)
   #:use-module ((rnrs base) #:prefix rnrs:)
   #:export (battery-mod
+            bluetooth-mod
             nvidia-proprietary?-argument
             nvidia-mod))
 
 (use-package-modules linux)
 
-(use-service-modules pm)
+(use-service-modules desktop pm)
 
 (define battery-mod
   (operating-system-mod
@@ -45,6 +46,16 @@ configurations.")
      (list (service tlp-service-type
                     (tlp-configuration
                       (cpu-boost-on-ac? #t)))))))
+
+(define bluetooth-mod
+  (operating-system-mod
+    (name 'bluetooth)
+    (description "Sets up Bluetooth for the system.")
+    (services
+     (list (service bluetooth-service-type
+                    (bluetooth-configuration
+                     (privacy 'network/on)
+                     (auto-enable? #t)))))))
 
 (define nvidia-proprietary?-argument
   (mod-argument
