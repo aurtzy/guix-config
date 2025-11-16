@@ -52,14 +52,11 @@
   (description home-environment-mod-description
                (default "")
                (sanitize (sanitizer <string> #:label "Mod description")))
-  ;; Internal value, managed by modded-configuration-home-environment.  Stores
-  ;; the arguments from modded-configuration-arguments, which can then be
-  ;; reliably accessed by the thunked fields below.
+  ;; Internal value.
   (arguments home-environment-mod-arguments
              (default (list))
              (sanitize (sanitizer <list> #:label "Mod arguments"))
              (innate))
-  ;; This allows mods to provide groups of other mods.
   (addons home-environment-mod-addons
           (default (list))
           (sanitize (sanitizer <list> #:label "Mod addons"))
@@ -72,9 +69,6 @@
             (default (list))
             (sanitize (sanitizer <list> #:label "Mod services"))
             (thunked))
-  ;; Modifiers from mods are executed after all other fields from mods have
-  ;; been applied, as a last step.  This is an escape hatch for handling
-  ;; non-extensible cases, and should be used sparingly.
   (modifier home-environment-mod-modifier
             (default identity)
             (sanitize (sanitizer <procedure> #:label "Mod modifier"))

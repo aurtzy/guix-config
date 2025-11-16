@@ -168,8 +168,8 @@ there is no default available."
                                        body body* ...)
   "Find mod arguments in ARGUMENTS, bind them, and execute BODY.
 
-ARGUMENTS is an alist of keyword-to-value mappings.  Values are selectively
-let-bound according to MOD-ARG to an associated BINDING symbol."
+ARGUMENTS is a list of keyword arguments.  Values are selectively let-bound
+according to MOD-ARG to an associated BINDING symbol."
   (let ((args arguments))
     (%let-mod-arguments args (binding ...) (mod-arg ...) body body* ...)))
 
@@ -281,9 +281,7 @@ override conflicting services.")
   (description operating-system-mod-description
                (default "")
                (sanitize (sanitizer <string> #:label "Mod description")))
-  ;; Internal value, managed by modded-configuration-operating-system.  Stores
-  ;; the arguments from modded-configuration-arguments, which can then be
-  ;; reliably accessed by the thunked fields below.
+  ;; Internal value.
   ;;
   ;; NOTE: Mods may modify a configuration record's field that may itself be
   ;; thunked.  This makes it infeasible to use parameters, since these values
@@ -294,7 +292,6 @@ override conflicting services.")
              (default (list))
              (sanitize (sanitizer <list> #:label "Mod arguments"))
              (innate))
-  ;; This allows mods to provide groups of other mods.
   (addons operating-system-mod-addons
           (default (list))
           (sanitize (sanitizer <list> #:label "Mod addons"))
@@ -315,9 +312,6 @@ override conflicting services.")
             (default (list))
             (sanitize (sanitizer <list> #:label "Mod services"))
             (thunked))
-  ;; Modifiers from mods are executed after all other fields from mods have
-  ;; been applied, as a last step.  This is an escape hatch for handling
-  ;; non-extensible cases, and should be used sparingly.
   (modifier operating-system-mod-modifier
             (default identity)
             (sanitize (sanitizer <procedure> #:label "Mod modifier"))
