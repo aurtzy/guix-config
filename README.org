@@ -29,13 +29,18 @@ provided by the Guile modules.
 
 * Mods
 
-The ~(my-guix mods)~ module implements "mods", an extension to Guix records
-that can be used to modularize configurations; in this case, particularly
-~operating-system~ and ~home-environment~ configurations.
+This configuration utilizes "mods", an extension to Guix records that can be
+used to modularize configurations; in this case, particularly ~operating-system~
+and ~home-environment~ records.
 
-A simple use case might be to group various related packages or services
-together.  For instance, the ~file-system-management-mod~ in this repository
-is defined like so:
+The basic idea is that most configurations can be broken down into parts that
+extend the environment, like adding to the list of packages or kernel arguments.
+Mods provide a way to capture these types of configurations into logical groups
+that make them easier to remove, include, and manage in environments, especially
+when maintaining multiple systems that share only a subset of configurations.
+
+For instance, the ~file-system-management-mod~ in this repository is defined
+like so:
 #+begin_src scheme
   (define file-system-management-mod
     (operating-system-mod
@@ -56,12 +61,11 @@ is defined like so:
 #+end_src
 (From [[file:modules/my-guix/mods/base.scm]].)
 
-To use mods, configurations are stored in a ~modded-configuration~ record
-type, and then be converted to records that Guix expects using
-~modded-configuration-operating-system~ or
-~modded-configuration-home-environment~ for the system and home environments,
-respectively.  This produces top-level configurations that look something like
-the following:
+To apply mods, users must specify a ~modded-configuration~ record where mods and
+the base record can be declared.  From there, the final configuration can be
+built with a corresponding procedure; e.g.,
+~modded-configuration-operating-system~.  This produces top-level configurations
+that might look something like the following:
 
 #+begin_src scheme
   ;; Machine-specific configurations can still be included here.
@@ -87,81 +91,118 @@ the following:
 #+end_src
 (From [[file:modules/my-guix/systems/al-pc.scm]] and [[file:systems/al-pc.scm]].)
 
-Specifications for the relevant facilities are documented below (WIP).
-
-# TODO: document specifications.
+Specifications for the relevant facilities are documented below.
 
 The ~(my-guix mods)~ module provides abstractions for implementing mods and
-top-level configurations.
+defining top-level configurations.
 
 - Data Type: modded-configuration ::
   Fields:
-  - =arguments= ::
-  - =base= ::
-  - =mods= ::
+  - =arguments= :: List of keyword arguments that can be used by mods.
+
+    See [[id:04a22196-4b5a-4e62-9bec-485a90c0d681][Mod Arguments]] for documentation on using mod arguments.
+  - =base= :: The base record that mods will be applied to.
+  - =mods= :: List of mods to apply.
 
 
-~(my-guix mods)~ also includes an implementation of mods for the
-~operating-system~ record.
+On its own, ~modded-configuration~ cannot do anything - it still needs a
+corresponding implementation and conversion procedure for the record type that
+the user intends to extend.  In the case of ~operating-system~, an
+implementation is provided in the ~(my-guix mods)~ module, documented below.
 
-- Data Type: operating-system-mod ::
+- Data Type: operating-system-mod :: Mod for ~operating-system~ records.
+
+  Fields:
+  - =name= :: The name of the mod, for debugging purposes.
+  - =description= :: A description of what the mod does when applied.
+  - =arguments= :: Arguments supplied by ~modded-configuration~.
+
+    This is an internal field that is managed by
+    ~modded-configuration-operating-system~, and is normally accessed by
+    ~(this-operating-system-mod-arguments)~.
+  - =addons= :: List of additional mods to apply when this mod is applied.
+  - =kernel-arguments= :: List of additional kernel arguments for the operating
+    system.
+  - =swap-devices= :: List of additional swap devices for the operating system.
+  - =packages= :: List of additional packages for the operating system.
+  - =services= :: List of additional services for the operating system.
+  - =modifier= :: Procedure that takes an ~operating-system~ and returns a
+    modified ~operating-system~.
+
+    This field is applied after all other fields in all other mods are applied.
+    It is an escape hatch intended for non-extensible cases, and should be used
+    sparingly.
+- Special Form: (this-operating-system-mod-arguments) :: Returns the contextual
+  mod's arguments as passed from ~modded-configuration~.
+- Function: modded-configuration-operating-system config :: Apply mods from a
+  ~modded-configuration~ CONFIG to its base configuration, and return the
+  resulting ~operating-system~.
+
+An implementation for ~home-environment~ mods is also provided under the
+~(my-guix home mods)~ module.
+
+- Data Type: home-environment-mod :: Mod for ~home-environment~ records.
+
+  Since ~home-environment~ fields are practically a subset of ~operating-system~
+  fields, all fields listed below correspond to those documented for
+  ~operating-system-mod~; see its documentation for information on respective
+  entries.
+
   Fields:
   - =name= ::
   - =description= ::
   - =arguments= ::
   - =addons= ::
-  - =kernel-arguments= ::
-  - =swap-devices= ::
   - =packages= ::
   - =services= ::
   - =modifier= ::
-- Special Form: this-operating-system-mod-arguments ::
-- Function: modded-configuration-operating-system ::
-
-The implementation for ~home-environment~ mods can be found in ~(my-guix home
-mods)~.
-
-- Data Type: home-environment-mod ::
-  Fields:
-  - =name= ::
-  - =description= ::
-  - =arguments= ::
-  - =addons= ::
-  - =packages= ::
-  - =services= ::
-  - =modifier= ::
-- Special Form: this-home-environment-mod-arguments ::
-- Function: modded-configuration-home-environment ::
+- Special Form: (this-home-environment-mod-arguments) :: Returns the contextual
+  mod's arguments as passed from ~modded-configuration~.
+- Function: modded-configuration-home-environment config :: Apply mods from a
+  ~modded-configuration~ CONFIG to its base configuration, and return the
+  resulting ~home-environment~.
 
 ** Mod arguments
+:PROPERTIES:
+:ID:       04a22196-4b5a-4e62-9bec-485a90c0d681
+:END:
 
-Readers may have noticed the ~let-mod-arguments~ form in the
-~file-system-management-mod~ example above.  This is how mods can define
-parameters - akin to Guile's parameters - for configurations that can be
-tweaked or must be explicitly declared by the user.
+Readers may notice bits related to "arguments" that were mentioned in the
+previous section.  These are facilities that enable mods to be parameterized -
+akin to Guile's parameters - using values that are specified in the top-level
+~modded-configuration~.
 
 For example, let's say a user would like to configure a swapfile.  After
 creating one, normally they would include something like the following in
-their config to begin using it:
+their configuration to begin using it:
 
 #+begin_src scheme
   (operating-system
     [...]
     (swap-devices
      (list (swap-space
-             (target "FILE")
+             (target "/swapfile")
              (dependencies
               (filter (file-system-mount-point-predicate "/") file-systems)))))
     (kernel-arguments
-     (list "resume=DEVICE"
-           "resume_offset=OFFSET")))
+     (list "resume=/dev/mapper/cryptroot"
+           "resume_offset=6036736")))
 #+end_src
 
-Perhaps the user would like to group this configuration into a mod.
-Converting something like this to a mod is not as straightforward, however,
-due to swapfile configuration values being different per machine.  To account
-for this, that user can define a mod argument with ~mod-argument~, and then
-let-bind the argument values with ~let-mod-arguments~:
+It would be easy to directly convert this into a mod, but - ideally - mods
+should be usable by other systems, as well; the swapfile path, device, and
+offset will not necessarily be the same per system.  To account for this, the
+~modded-configuration~ record accepts an =arguments= field, which is a list of
+keyword arguments that are made accessible to mods during evaluation, e.g. via
+~(this-operating-system-mod-arguments)~.  This value can be used by mods to
+allow variations in configurations, without having to essentially duplicate mods
+for each system.
+
+"Mod arguments" are facilities that build on top of this feature to make it
+easier to define and access arguments, and are described below.
+
+For example, the following defines a swapfile mod argument which is used in the
+swapfile mod:
 
 #+begin_src scheme
   (define-configuration/no-serialization swapfile-configuration
@@ -206,11 +247,22 @@ let-bind the argument values with ~let-mod-arguments~:
 #+end_src
 (From [[file:modules/my-guix/mods/base.scm]].)
 
-For convenience, the file, device, and offset are collected into a record type
-that is expected as the argument.  To actually set values for mod arguments,
-they are specified in the =arguments= field of ~modded-configuration~, as a
-list of keyword arguments that correspond to the keywords set in
-~mod-argument~ definitions.  The full ~modded-configuration~ from
+For convenience, due to the swapfile having multiple variables - i.e., the file,
+device, and offset - we start by collecting them into a configuration record
+type that will be expected as the argument.
+
+The ~mod-argument~ record type is used to define mod arguments.  In the case of
+~swapfile-argument~, the ~#:swapfile~ keyword will be used to specify its value.
+It is also a required argument, since the =default-value= field is not set.  The
+description is another optional field for documenting the argument's purpose.
+
+This defined mod argument is then specified in ~let-mod-arguments~, which will
+use its information to acquire the argument's value from
+~(this-operating-system-mod-arguments)~ and let-bind it to the symbol ~swapfile~
+(or raise an exception, if it isn't found).
+
+Finally, the system-dependent argument value can be specified in
+~modded-configuration~.  The full ~modded-configuration~ from
 [[file:modules/my-guix/systems/al-pc.scm]] looks like so:
 
 #+begin_src scheme
@@ -229,17 +281,41 @@ list of keyword arguments that correspond to the keywords set in
                   ssh-server-mod))))
 #+end_src
 
-~(my-guix mods)~ provides facilities for using mod arguments, which are
-documented below (WIP).
+~(my-guix mods)~ provides the various facilities for using mod arguments,
+documented below.
 
-- Data Type: mod-argument ::
+- Data Type: mod-argument :: A mod argument.
+
   Fields:
-  - =keyword= ::
-  - =default-value= ::
-  - =sanitizer= ::
-- Macro: let-mod-arguments ::
-- Variable: base-configuration-argument ::
-- Variable: ignored-mods-argument ::
+  - =keyword= :: The keyword used to specify the argument value.
+  - =default-value= :: Value used as a fallback, if no corresponding keyword
+    argument can be found.
+
+    When there is no default, an exception will be raised.
+  - =sanitizer= :: Procedure that the argument value is passed to before
+    let-binding it in ~let-mod-arguments~.
+- Macro: let-mod-arguments arguments bindings body ... :: Let-bind keyword
+  argument values from ARGUMENTS, and execute BODY in that context.
+
+  This form is similar to ~let-keywords~ from ~(ice-9 optargs)~, with the
+  notable difference being that default values are replaced with ~mod-argument~
+  records, taking the following form in BINDINGS:
+  #+begin_src lisp-data
+    ((VARIABLE MOD-ARG) ...)
+  #+end_src
+  where MOD-ARG is a ~mod-argument~ record.  These records are then used by
+  ~let-mod-arguments~ to determine and set values based on ARGUMENTS.
+- Variable: base-configuration-argument :: The base configuration record that
+  was specified in ~modded-configuration~.
+
+  This is set to the base record by default.  It is technically possible to
+  override this value with the =#:base-configuration= keyword, but generally
+  this is only meant to be consumed by mods.
+- Variable: ignored-mods-argument :: A list of mods that should never be
+  applied.
+
+  By default, this is an empty list.  This is specified with the
+  =#:ignored-mods= keyword.
 
 * Services
 
