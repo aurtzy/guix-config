@@ -254,6 +254,11 @@ found.  Otherwise, nil may be returned."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Enable DWIM behavior with dired action targets.
+
+(use-package dired
+  :custom (dired-dwim-target t))
+
 ;;;; Maximize fontifications with tree-sitter!!1!
 
 (use-package treesit
