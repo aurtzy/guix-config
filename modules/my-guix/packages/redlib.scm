@@ -18,6 +18,7 @@
 
 (define-module (my-guix packages redlib)
   #:use-module (gnu packages)
+  #:use-module (gnu packages perl)
   #:use-module (guix build-system cargo)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
@@ -27,7 +28,7 @@
   #:use-module (nonguix build-system binary))
 
 (define-public redlib
-  (let ((commit "a989d19ca92713878e9a20dead4252f266dc4936")
+  (let ((commit "43fe3585ff2a10c588de081a293d7bab60562d68")
         (revision "0"))
     (package
       (name "redlib")
@@ -36,15 +37,16 @@
        (origin
          (method git-fetch)
          (uri (git-reference
-                (url "https://github.com/redlib-org/redlib")
+                (url "https://github.com/chowder/redlib")
                 (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0mhx0mpls60fmd29mpyv5pczf9ybj8ixlfdvwda0s9dw5285b5k0"))))
+          (base32 "00ccms8pnj8i0prk6vzn6xa4xlq0psgxv9v86k63i6d4q33samc8"))))
       (build-system cargo-build-system)
       (arguments (list #:install-source? #f
                        ;; TODO: Fix tests.
                        #:tests? #f))
+      (native-inputs (list perl))
       (inputs (cargo-inputs 'redlib #:module '(my-guix packages rust-crates)))
       (home-page "https://github.com/redlib-org/redlib")
       (synopsis "Alternative private front-end to Reddit")
