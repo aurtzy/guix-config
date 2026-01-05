@@ -16,6 +16,7 @@
 ;;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (my-guix packages emacs-xyz)
+  #:use-module (gnu packages emacs-build)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (guix build-system emacs)
   #:use-module (guix download)
@@ -100,3 +101,24 @@ supports basic highlighting and indentation.")
       (synopsis "Transient wrapper for dotnet CLI")
       (description "")
       (license license:gpl2+))))
+
+(define-public emacs-verb
+  (package
+    (name "emacs-verb")
+    (version "3.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/federicotdn/verb")
+                    (commit version)))
+              (sha256
+               (base32 "12y2shqhbl21xj18hldg17n03pq3qcycwmswxdwr0pnac8613pq6"))))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-package-lint
+                             emacs-relint))
+    (home-page "https://github.com/federicotdn/verb")
+    (synopsis "Organize and send HTTP requests")
+    (description
+     "Verb is a package that allows you to organize and send HTTP requests from Emacs.
+ See the project's README.md file for more details.")
+    (license license:gpl3+)))
