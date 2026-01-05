@@ -538,6 +538,7 @@ still be manually switched to in system settings.")
                      emacs-dape
                      emacs-org-noter
                      emacs-pdf-tools
+                     emacs-verb
                      ;; Enable viewing .zip files
                      unzip)))
     (services

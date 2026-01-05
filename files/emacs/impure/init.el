@@ -606,6 +606,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Set up Verb, an Org mode HTTP client.
+
+(use-package verb :demand :after org
+  :config (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+
 ;;;; Don't manage C# Razor files with Eglot.
 
 (use-package eglot :after web-mode
