@@ -8,6 +8,7 @@
     (["Guix options"
       ("-a" "Allow downgrades" "--allow-downgrades")
       ("-da" "Disable authentication (pull)" "--disable-authentication")
+      ("-su" "Override substitute URLs" "--substitute-urls=")
       ("-df" "Disable flatpak" :cons 'disable-flatpak? :reader always)]
      ["Run guix..."
       :pad-keys t
