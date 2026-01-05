@@ -60,7 +60,8 @@
   #:use-module (guix utils)
   #:use-module (ice-9 match)
   #:use-module (my-guix packages rust)
-  #:use-module (my-guix utils))
+  #:use-module (my-guix utils)
+  #:use-module (srfi srfi-1))
 
 (define patch-cargo-wrap-files-gexp
   #~(let ((wrap-name-regexp (make-regexp "^(.*)-([^-]*)-rs$"))
@@ -190,11 +191,10 @@ vendored inputs."
            (replace "rust-cbindgen"
              (package/with-rust-binary rust-cbindgen-0.26)))))
     (inputs
-     ;; HACK: modify-inputs doesn't support adding lists, so we add input
-     ;; labels manually before combining lists.
-     (append ((@@ (guix packages) maybe-add-input-labels)
-              (cargo-inputs 'mesa #:module '(my-guix packages rust-crates)))
-             (package-inputs mesa)))))
+     (fold (lambda (cargo-input inputs)
+             (modify-inputs inputs (prepend cargo-input)))
+           (package-inputs mesa)
+           (cargo-inputs 'mesa #:module '(my-guix packages rust-crates))))))
 
 (define mesa/nvsa-git
   (package
