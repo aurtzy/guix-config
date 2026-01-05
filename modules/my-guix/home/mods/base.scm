@@ -172,6 +172,7 @@ Internet.")
         (simple-service name
                         home-flatpak-profile-service-type
                         (list
+                         "io.github.ungoogled_software.ungoogled_chromium"
                          "org.torproject.torbrowser-launcher"
                          (flatpak-app
                            (id "org.mozilla.firefox")
@@ -186,15 +187,7 @@ Internet.")
                                  "~/.guix-home:ro"))
                               (environment
                                ;; Zink seems to cause some crashes.
-                               '(("NOUVEAU_USE_ZINK" . "0"))))))
-                         (flatpak-app
-                           (id "com.brave.Browser")
-                           (overrides
-                            (flatpak-overrides-configuration
-                              (filesystems
-                               '("~/.local/share/fonts:ro"
-                                 "/run/current-system/profile/share/fonts:ro"
-                                 "~/.guix-home:ro"))))))))))))
+                               '(("NOUVEAU_USE_ZINK" . "0")))))))))))))
 
 (define home-common-fonts-mod
   (home-environment-mod
