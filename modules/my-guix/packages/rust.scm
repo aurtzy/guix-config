@@ -73,7 +73,7 @@
   (package
     (inherit rust)
     (name "rust-binary")
-    (version "1.82.0")
+    (version "1.92.0")
     (source #f)
     (build-system binary-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
@@ -101,7 +101,7 @@
                      (uri (stable-uri version "x86_64-unknown-linux-gnu"))
                      (sha256
                       (base32
-                       "0sv7ry7qnqqwh5xh8ddy1dh4mwmibxh498j8a2bdxi4px65c0r82"))))
+                       "19bcvl960mpwl2cqnappik350rjk28jq9cg6shr2ffwm4mngspkf"))))
                   ((target-x86-32?)
                    (origin
                      (method url-fetch)
