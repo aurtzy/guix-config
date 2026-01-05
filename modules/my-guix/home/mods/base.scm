@@ -450,6 +450,7 @@ still be manually switched to in system settings.")
                      tree-sitter-cpp
                      tree-sitter-go
                      tree-sitter-gomod
+                     tree-sitter-html
                      tree-sitter-javascript
                      tree-sitter-python
                      tree-sitter-rust
