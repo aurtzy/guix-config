@@ -356,6 +356,7 @@ found.  Otherwise, nil may be returned."
    'org-babel-load-languages
    '((emacs-lisp . t)
      (python . t)
+     (shell . t)
      (C . t)))
   (setcdr (assoc 'heading org-blank-before-new-entry) t)
   (setcdr (assoc 'plain-list-item org-blank-before-new-entry) nil)
