@@ -1985,7 +1985,24 @@ indentation."
 (use-package dired
   :custom
   (dired-listing-switches "-alh")
-  (dired-vc-rename-file t))
+  (dired-vc-rename-file t)
+  :config
+  ;; HACK: Fix VC renaming not working when called from outside a
+  ;; repository. A more proper fix should probably be in the dired renaming
+  ;; function.
+  (advice-add #'vc-rename-file
+              :around #'my-emacs-vc-rename-file-default-directory-advice)
+  :preface
+  (defun my-emacs-vc-rename-file-default-directory-advice (fun old new)
+    "Call `vc-rename-file' with `default-directory' as the parent directory of OLD.
+
+If `default-directory' is not actually in the repository, an error (in
+particular, noticed with git) is produced.  So, this modifies the
+arguments to guarantee that--at the least--`default-directory' is part
+of the same repository as OLD."
+    (let* ((default-directory
+            (expand-file-name (file-name-directory old) default-directory)))
+      (funcall fun old new))))
 
 (use-package org
   :custom
