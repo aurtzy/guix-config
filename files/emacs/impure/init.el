@@ -215,11 +215,13 @@ the \"#inbox\" keyword is included."
 
   ;; Functions for accessing assets directories.
 
-  (defun my-emacs-denote-assets-directory (file &optional prompt?)
+  (defun my-emacs-denote-assets-directory (file &optional create?)
     "Return assets directory from FILE note.
 
-If PROMPT?, user will be prompted to create the directory if it is not
-found.  Otherwise, nil may be returned."
+If CREATE? is non-nil, user will be prompted to create the directory if
+it is not found.  Otherwise, nil may be returned.  As a special case, if
+CREATE is `without-prompt', an assets directory will be unconditionally
+created."
     (interactive
      (list (denote-file-prompt nil "Select FILE associated with assets")))
     (let* ((file (or file (buffer-file-name)))
@@ -230,8 +232,9 @@ found.  Otherwise, nil may be returned."
       (cond
        ((file-exists-p assets-dir)
         assets-dir)
-       (prompt?
-        (if (y-or-n-p "Assets directory doesn't exist.  Create it? ")
+       (create?
+        (if (or (eq create? 'without-prompt)
+                (y-or-n-p "Assets directory doesn't exist.  Create it? "))
             (make-directory assets-dir t)
           (user-error "Assets directory doesn't exist"))
         assets-dir))))
