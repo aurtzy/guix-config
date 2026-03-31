@@ -155,20 +155,11 @@ This does not do anything if the buffer file does not satisfy
           (user-error "Buffer has no Org title property")))))
 
   (defun my-emacs-denote-sluggify-keyword (string)
-    "Make an appropriate keyword from STRING."
-    (defvar org-tag-re)
-    (require 'org)
+    "Sluggify keyword STRING with an exception for \"#\"."
     (downcase (denote-slug-hyphenate
-               ;; We assume that `org-tag-re' can match single characters as
-               ;; components of a complete tag string.  We then use this
-               ;; assumption to filter characters that are considered not a
-               ;; valid part of the tag regexp.  This may fail if the regexp
-               ;; expands in the future to match multi-character sequences.
-               (apply #'concat
-                      (seq-map (lambda (char)
-                                 (let ((str (string char)))
-                                   (if (string-match org-tag-re str) str "")))
-                               string)))))
+               (string-join (seq-map #'denote-sluggify-keyword
+                                     (split-string string "#"))
+                            "#"))))
 
   (defun my-emacs-denote-set-status-keywords (&optional identifier new-note?)
     "Set the current note's status keywords, if applicable.
