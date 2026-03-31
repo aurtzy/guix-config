@@ -255,6 +255,11 @@ found.  Otherwise, nil may be returned."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; HACK: Load `info.el' when `envrc.el' is loaded to fix an error.
+;; See: <https://github.com/purcell/envrc/issues/117>
+
+(use-package info :demand :after envrc)
+
 ;;;; Enable DWIM behavior with dired action targets.
 
 (use-package dired
