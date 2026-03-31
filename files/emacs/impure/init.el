@@ -208,7 +208,8 @@ the \"#inbox\" keyword is included."
                  (delq 'my-emacs-denote-set-status-keywords
                        denote-after-rename-file-hook)))
             (denote-rename-file
-             file 'keep-current new-keywords 'keep-current 'keep-current))))))
+             file 'keep-current new-keywords
+             'keep-current 'keep-current 'keep-current))))))
 
   (defun my-emacs-denote-set-new-note-status-keywords ()
     (my-emacs-denote-set-status-keywords nil :new-note))
