@@ -129,7 +129,8 @@ alist of aliases to denote IDs.")
   ;; Avoid traversing past data directories.
   (denote-excluded-directories-regexp "^[^/]*/.*")
   (denote-sort-dired-default-sort-component 'last-modified)
-  (denote-file-name-slug-functions '((keyword . my-emacs-denote-sluggify-keyword)))
+  (denote-file-name-slug-functions '((title . my-emacs-denote-sluggify-title)
+                                     (keyword . my-emacs-denote-sluggify-keyword)))
   (denote-known-keywords '("#inbox"))
   :config
   (add-hook 'denote-after-new-note-hook #'my-emacs-denote-mirror-title-to-first-headline)
@@ -153,6 +154,13 @@ This does not do anything if the buffer file does not satisfy
         (if-let* ((title (org-get-title)))
             (org-edit-headline title)
           (user-error "Buffer has no Org title property")))))
+
+  (defun my-emacs-denote-sluggify-title (string)
+    "Sluggify title STRING with an exception for \"#\"."
+    (downcase (denote-slug-hyphenate
+               (string-join (seq-map #'denote-sluggify-title
+                                     (split-string string "#"))
+                            "#"))))
 
   (defun my-emacs-denote-sluggify-keyword (string)
     "Sluggify keyword STRING with an exception for \"#\"."
