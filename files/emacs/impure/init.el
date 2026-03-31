@@ -142,7 +142,7 @@ alist of aliases to denote IDs.")
 This does not do anything if the buffer file does not satisfy
 `denote-file-is-note-p'."
     (declare-function org-edit-headline "org")
-    (when (and (denote-filename-is-note-p (buffer-file-name))
+    (when (and (denote-file-has-denoted-filename-p (buffer-file-name))
                (equal "org" (file-name-extension (buffer-file-name))))
       (save-excursion
         (goto-char (point-min))
@@ -224,7 +224,7 @@ found.  Otherwise, nil may be returned."
     (interactive
      (list (denote-file-prompt nil "Select FILE associated with assets")))
     (let* ((file (or file (buffer-file-name)))
-           (identifier (denote-retrieve-filename-identifier-with-error file))
+           (identifier (denote-retrieve-filename-identifier file))
            (assets-dir-as-file (file-name-concat
                                 (file-name-directory file) identifier))
            (assets-dir (file-name-as-directory assets-dir-as-file)))
@@ -433,8 +433,7 @@ found.  Otherwise, nil may be returned."
   :preface
   (defun my-emacs-denote-asset-follow (path &optional prefix)
     "Follow PATH for `denote-asset' org link with potential PREFIX argument."
-    (let* ((identifier (denote-retrieve-filename-identifier-with-error
-                        (buffer-file-name)))
+    (let* ((identifier (denote-retrieve-filename-identifier (buffer-file-name)))
            (assets-dir (file-name-concat (file-name-directory
                                           (denote-get-path-by-id identifier))
                                          identifier))
@@ -444,7 +443,7 @@ found.  Otherwise, nil may be returned."
   (defun my-emacs-denote-asset-complete ()
     "Provide completion for and return a `denote-asset' link."
     (let* ((identifier
-            (denote-retrieve-filename-identifier-with-error (buffer-file-name)))
+            (denote-retrieve-filename-identifier (buffer-file-name)))
            (assets-dir
             (my-emacs-denote-assets-directory
              (denote-get-path-by-id identifier) t))
@@ -955,8 +954,7 @@ prompting for denote ID as a fallback."
           (extract-id-or-nil (ignore-errors (dired-get-filename)))
           (extract-id-or-nil default-directory)
           (if prompt?
-              (denote-retrieve-filename-identifier-with-error
-               (denote-file-prompt))))))
+              (denote-retrieve-filename-identifier (denote-file-prompt))))))
 
   (defun my-emacs-denote-context-file ()
     "Get the current context's file name.  May return nil."
@@ -1014,8 +1012,7 @@ prompting for denote ID as a fallback."
     ;; Ignore the current buffer so we can select the current denote file.
     (with-temp-buffer
       (oset (transient-prefix-object) scope
-            (denote-retrieve-filename-identifier-with-error
-             (denote-file-prompt)))))
+            (denote-retrieve-filename-identifier (denote-file-prompt)))))
 
   (transient-define-suffix my-emacs-rename-to-location (dir)
     "Move context's denote files (including assets) to another location."
@@ -1114,7 +1111,7 @@ If ERROR-IF-MISSING, throw an error when no such property can be found."
             (error "Property with key is not available: %s" key)
           (ring-convert-sequence-to-ring
            (seq-each (lambda (elt)
-                       (cl-assert (denote-identifier-p elt)
+                       (cl-assert (denote-date-identifier-p elt)
                                   nil "Not a denote identifier: %s" elt))
                      (read (or (car-safe (org-property-values key))
                                ;; Note that Org also reads nil in the value as
