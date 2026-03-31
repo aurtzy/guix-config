@@ -1037,6 +1037,9 @@ prompting for denote ID as a fallback."
   ;; <https://protesilaos.com/emacs/denote#h:998ae528-9276-47ec-b642-3d7355a38f27>
   (transient-define-prefix my-emacs-denote-dispatch ()
     :refresh-suffixes t
+    ;; TODO: We could have a higher-level heading above denote context for
+    ;; `denote-directory'.  This is where we could put "global" commands and
+    ;; silo management commands.
     [:description
      (lambda ()
        (concat (propertize "Denote context: " 'face 'transient-heading)
