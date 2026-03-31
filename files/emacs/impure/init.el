@@ -128,6 +128,7 @@ alist of aliases to denote IDs.")
   (denote-directory "~/data/")
   ;; Avoid traversing past data directories.
   (denote-excluded-directories-regexp "^[^/]*/.*")
+  (denote-sort-dired-default-sort-component 'last-modified)
   (denote-file-name-slug-functions '((keyword . my-emacs-denote-sluggify-keyword)))
   (denote-known-keywords '("#inbox"))
   :config
