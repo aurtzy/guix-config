@@ -271,6 +271,10 @@ This is advice for `denote-keywords'."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Add `org-habit' as org module.
+
+(use-package org :config (add-to-list 'org-modules 'org-habit t))
+
 ;;;; HACK: Load `info.el' when `envrc.el' is loaded to fix an error.
 ;; See: <https://github.com/purcell/envrc/issues/117>
 
