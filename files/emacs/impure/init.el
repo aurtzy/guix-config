@@ -131,7 +131,6 @@ alist of aliases to denote IDs.")
   (denote-sort-dired-default-sort-component 'last-modified)
   (denote-file-name-slug-functions '((title . my-emacs-denote-sluggify-title)
                                      (keyword . my-emacs-denote-sluggify-keyword)))
-  (denote-known-keywords '("#inbox"))
   :config
   (add-hook 'denote-after-new-note-hook #'my-emacs-denote-mirror-title-to-first-headline)
   (add-hook 'denote-after-new-note-hook #'my-emacs-denote-set-new-note-status-keywords)
@@ -249,6 +248,20 @@ found.  Otherwise, nil may be returned."
       nil))
   :functions ( org-next-visible-heading org-at-heading-p
                org-insert-heading org-get-title))
+
+;;;;; Set up denote keyword vocabulary.
+
+(use-package denote
+  :custom
+  (denote-known-keywords '("#inbox"))
+  :config
+  (advice-add #'denote-keywords :around #'my-emacs-denote-keywords-areas)
+  :preface
+  (defun my-emacs-denote-keywords-areas (fun _files-matching-regexp)
+    "Always return keywords from areas, ignoring the passed regexp.
+
+This is advice for `denote-keywords'."
+    (funcall fun "^areas/")))
 
 
 ;;;
