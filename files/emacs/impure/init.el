@@ -811,6 +811,11 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Use `eat-line-send-interrupt' in Eat terminal emulation mode for Eshell.
+
+(use-package eat :bind ( :map eat-eshell-semi-char-mode-map
+                         ("C-c C-c" . eat-line-send-interrupt)))
+
 ;;;; Configure AGitjo key-binds.
 
 (use-package agitjo :after magit :config (agitjo-setup "#"))
