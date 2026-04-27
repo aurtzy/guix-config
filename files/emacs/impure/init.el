@@ -1146,9 +1146,14 @@ used from notes files."
                '(c-sharp "libtree-sitter-c_sharp" "tree_sitter_c_sharp"))
   (add-to-list 'major-mode-remap-alist '(csharp-mode . csharp-ts-mode)))
 
+;;;; Configure Razor tree-sitter mode.
+
+(use-package razor-ts-mode :mode "\\.razor\\'")
+
 ;;;; Configure a polymode with `web-mode' and `csharp-ts-mode' for Razor files.
 
 (use-package web-mode :mode (("\\.razor\\'" . poly-razor-mode))
+  :disabled
   :init
   (require 'polymode)
   (require 'pcase)
