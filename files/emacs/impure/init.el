@@ -679,6 +679,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Improve editing regexps in minibuffer.
+
+(use-package minibuffer :demand :config (minibuffer-regexp-mode 1))
+
 ;;;; Set up Verb, an Org mode HTTP client.
 
 (use-package verb :demand :after org
