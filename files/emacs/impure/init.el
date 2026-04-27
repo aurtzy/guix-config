@@ -271,6 +271,10 @@ This is advice for `denote-keywords'."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Enable Markdown (`ox-md') Org export backend.
+
+(use-package org :config (add-to-list 'org-export-backends 'md))
+
 ;;;; Add `org-habit' as org module.
 
 (use-package org :config (add-to-list 'org-modules 'org-habit t))
