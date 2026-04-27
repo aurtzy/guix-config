@@ -290,19 +290,62 @@ This is advice for `denote-keywords'."
 (use-package treesit
   :custom (treesit-font-lock-level 4))
 
-;;;; Add some upstream improvements to `csharp-ts-mode' indentation.
-;; TEMP: Should be made redundant with Emacs 31.
+;;;; Add improvements to `csharp-ts-mode' indentation rules.
 
 (use-package csharp-mode
   :config
   (setf (alist-get 'c-sharp csharp-ts-mode--indent-rules)
         (append
-         ;; See: https://lists.gnu.org/archive/html/bug-gnu-emacs/2025-09/msg00394.html
-         '(((parent-is "array_creation_expression") parent-bol 0)
-           ((match "{" "initializer_expression" ) parent-bol 0)
+         '(;; Outdent preprocessors (e.g. #if DEBUG ...).
+           ((node-is "preproc_if") column-0 0)
+           ((match "#endif" "preproc_if") column-0 0)
+           ;; Indent preprocessor contents according to grandparents.
+           ((n-p-gp nil "preproc_if" "block") grand-parent csharp-ts-mode-indent-offset)
            ((parent-is "member_access_expression")
-            parent-bol csharp-ts-mode-indent-offset))
-         (alist-get 'c-sharp csharp-ts-mode--indent-rules))))
+            parent-bol csharp-ts-mode-indent-offset)
+           ;; This block rule should be able to cover some of the existing
+           ;; rules.
+           ((node-is "block") parent-bol 0)
+           ((match "}" "block") parent-bol 0)
+           ((parent-is "block") parent-bol csharp-ts-mode-indent-offset)
+           ;; Don't indent the starting brace for collection initialization expressions.
+           ((node-is "initializer_expression") parent-bol 0)
+           ;; Indent non-block lambda expressions.
+           ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)
+           ;; Fix object indentation after "new" on new line.
+           ((parent-is "object_creation_expression") parent-bol csharp-ts-mode-indent-offset)
+           ;; Indent multiline collection expression elements (e.g. = [ e1, e2 ]).
+           ((match "]" "element_binding_expression") parent-bol 0)
+           ((node-is "element_binding_expression") parent-bol 0)
+           ((parent-is "element_binding_expression") parent-bol csharp-ts-mode-indent-offset)
+           ;; Indent "is" keyword like a binary operator.
+           ((parent-is "is_pattern_expression") parent 0)
+           ;;
+           ((node-is "arrow_expression_clause") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "arrow_expression_clause") parent-bol csharp-ts-mode-indent-offset)
+           ;; Indent multiline inherited classes (e.g. class ClassName : _).
+           ((node-is "base_list") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "base_list") grand-parent csharp-ts-mode-indent-offset)
+           ;; catch_clause is a child of try_statement.
+           ((node-is "catch_clause") parent-bol 0)
+           ;; Indent multilined variable?.Member the same as variable.Member.
+           ((parent-is "conditional_access_expression") parent-bol csharp-ts-mode-indent-offset)
+           ;; Indent multiline "base" or "this" call following constructor
+           ;; parameters (e.g. public Constructor(params) : base(...)).
+           ((node-is "constructor_initializer") parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "constructor_initializer") grand-parent csharp-ts-mode-indent-offset)
+           ;; Indent all property declaration children on same level, /except/
+           ;; for the right hand side.
+           ((query ((property_declaration value: _ @cap)))
+            parent-bol csharp-ts-mode-indent-offset)
+           ((query ((property_declaration "=" @cap)))
+            parent-bol csharp-ts-mode-indent-offset)
+           ((parent-is "property_declaration") parent-bol 0)
+           ((parent-is "parameter_list") parent-bol csharp-ts-mode-indent-offset))
+         (alist-get 'c-sharp csharp-ts-mode--indent-rules)
+         '(((parent-is "accessor_list") parent-bol csharp-ts-mode-indent-offset)
+           ;; Fix comments between clause statements (e.g. if _ // _ else _).
+           ((node-is "comment") parent-bol 0)))))
 
 ;;;; Apply a fix to `csharp--color-forwards' by redefining it.
 
