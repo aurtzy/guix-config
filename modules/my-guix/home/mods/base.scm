@@ -39,6 +39,7 @@
   #:use-module (my-guix mods)
   #:use-module (my-guix packages emacs-xyz)
   #:use-module (my-guix packages git-annex-configure)
+  #:use-module (my-guix packages tree-sitter)
   #:use-module (my-guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -453,6 +454,7 @@ still be manually switched to in system settings.")
                      tree-sitter-html
                      tree-sitter-javascript
                      tree-sitter-python
+                     tree-sitter-razor/maybe-newer
                      tree-sitter-rust
                      ;; latex with org-mode
                      texlive-beamer
