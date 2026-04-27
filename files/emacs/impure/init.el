@@ -271,6 +271,10 @@ This is advice for `denote-keywords'."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Deduplicate Eshell history.
+
+(use-package em-hist :custom (eshell-hist-ignoredups 'erase))
+
 ;;;; Enable Markdown (`ox-md') Org export backend.
 
 (use-package org :config (add-to-list 'org-export-backends 'md))
