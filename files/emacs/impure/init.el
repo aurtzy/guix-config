@@ -811,6 +811,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Configure AGitjo key-binds.
+
+(use-package agitjo :after magit :config (agitjo-setup "#"))
+
 ;;;; Use a smarter back-to-indentation command.
 
 (use-package emacs
