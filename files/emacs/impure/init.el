@@ -800,6 +800,23 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (transients) Transients.
 ;;;
 
+;;;; Use a smarter back-to-indentation command.
+
+(use-package emacs
+  :bind ("M-m" . my-emacs-beginning-of-text-or-indentation)
+  :preface
+  (defun my-emacs-beginning-of-text-or-indentation ()
+    "Move point to beginning of text or indentation.
+
+Prefer indentation point.  If point is already on the position and this
+was also the last called command, move to beginning of text instead."
+    (interactive "^")
+    (let ((bol-pos (save-excursion (back-to-indentation) (point))))
+      (if (and (eq last-command 'my-emacs-beginning-of-text-or-indentation)
+               (eql (point) bol-pos))
+          (beginning-of-line-text)
+        (back-to-indentation)))))
+
 ;;;; Use Casual I-search by default.
 
 (use-package casual-isearch :demand
