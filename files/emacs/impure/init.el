@@ -313,7 +313,10 @@ This is advice for `denote-keywords'."
            ((match "}" "block") parent-bol 0)
            ((parent-is "block") parent-bol csharp-ts-mode-indent-offset)
            ;; Don't indent the starting brace for collection initialization expressions.
-           ((node-is "initializer_expression") parent-bol 0)
+           ((match "}" "initializer_expression") parent-bol 0)
+           ;; Override parent's indentation when initializing objects.
+           ((match "initializer_expression" "array_creation_expression") parent-bol 0)
+           ((parent-is "initializer_expression") parent-bol csharp-ts-mode-indent-offset)
            ;; Indent non-block lambda expressions.
            ((parent-is "lambda_expression") parent-bol csharp-ts-mode-indent-offset)
            ;; Fix object indentation after "new" on new line.
