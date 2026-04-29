@@ -519,7 +519,6 @@ A Razor node is determined by `razor-ts-mode-razor-match-predicates'."
   (when (and (treesit-ready-p 'razor) (treesit-ready-p 'html))
     (setq-local treesit-primary-parser (treesit-parser-create 'razor))
 
-
 ;;;; Set up embedded HTML parser.
 
     (treesit-parser-create 'html)
@@ -528,7 +527,6 @@ A Razor node is determined by `razor-ts-mode-razor-match-predicates'."
     (setq-local treesit-language-at-point-function
                 #'razor-ts-mode-language-at-point)
 
-
 ;;;; Editing.
 
     (setq-local treesit-simple-indent-rules razor-ts-mode--indent-rules)
@@ -536,7 +534,6 @@ A Razor node is determined by `razor-ts-mode-razor-match-predicates'."
                 (append "{}():;," electric-indent-chars))
     ;; TODO: set up comments.
 
-
 ;;;; Font lock.
 
     (setq-local treesit-font-lock-settings razor-ts-mode--font-lock-settings)
@@ -547,7 +544,6 @@ A Razor node is determined by `razor-ts-mode-razor-match-predicates'."
                   ( constant escape-sequence expression literal property)
                   ( function bracket delimiter error)))
 
-
 ;;;; Navigation.
 
     (setq-local treesit-defun-type-regexp
@@ -583,7 +579,6 @@ A Razor node is determined by `razor-ts-mode-razor-match-predicates'."
     (setq-local treesit-outline-predicate
                 (rx (or (seq bos "element" eos) "declaration")))
 
-
 ;;;; Override inherited defaults.
 
     ;; `html-ts-mode' inherits from `html-mode' that sets
@@ -597,7 +592,6 @@ A Razor node is determined by `razor-ts-mode-razor-match-predicates'."
     ;; `electric-pair-mode'.
     (kill-local-variable 'syntax-ppss-table)
 
-
 ;;;; Conclude setup.
 
     (treesit-major-mode-setup)
