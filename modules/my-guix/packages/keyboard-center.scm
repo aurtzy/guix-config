@@ -70,7 +70,9 @@
     (build-system pyproject-build-system)
     (arguments
      (list
+      #:tests? #f                 ;Tests require loading uinput kernel module.
       #:test-backend #~'unittest
+      #:test-flags #~(list "discover" "tests")
       #:modules '((guix build pyproject-build-system)
                   (guix build utils)
                   (ice-9 ftw))
