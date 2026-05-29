@@ -108,6 +108,7 @@ filesystems=" (path-append-my-assets-directory "akregator" ".static") "
                            home-flatpak-profile-service-type
                            (list
                             "in.cinny.Cinny"
+                            "org.zulip.Zulip"
                             (flatpak-app
                               (id "im.riot.Riot")
                               (overrides
