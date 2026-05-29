@@ -47,6 +47,7 @@
     (build-system pyproject-build-system)
     ;; There are tests that attempt to use internet.
     (arguments (list #:tests? #f))
+    (inputs (list lua))
     (native-inputs (list python-cython python-setuptools python-wheel))
     (home-page "https://github.com/scoder/lupa")
     (synopsis "Python wrapper around Lua and LuaJIT")
@@ -153,8 +154,7 @@
                                #:inputs inputs))))))
     (native-inputs (list python-setuptools python-wheel))
     (inputs (list bash-minimal hidapi libnotify qtwayland-5))
-    (propagated-inputs (list lua
-                             python-pyqt
+    (propagated-inputs (list python-pyqt
                              python-pyusb
                              python-uinput
                              python-lupa))
