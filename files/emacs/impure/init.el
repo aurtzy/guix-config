@@ -1538,60 +1538,47 @@ indentation."
 
 ;;;; Completion suite
 
+;; From sample consult configuration.
 (use-package consult
   ;; Enable automatic preview at point in the *Completions* buffer. This is
   ;; relevant when you use the default completion UI.
   :hook (completion-list-mode . consult-preview-at-point-mode)
-  :preface
-  (declare-function consult--customize-put "consult")
-  :defines (xref-show-xrefs-function
-            xref-show-definitions-function)
-  :functions (consult-register-format
-              consult-register-window
-              consult-xref)
   :bind (;; C-c bindings (mode-specific-map)
          ("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
          ("C-c k" . consult-kmacro)
-         ("C-c M" . consult-man)
+         ("C-c m" . consult-man)
          ("C-c i" . consult-info)
          ([remap Info-search] . consult-info)
          ;; C-x bindings (ctl-x-map)
-         ;; orig. repeat-complex-command
-         ("C-x M-:" . consult-complex-command)
-         ;; orig. switch-to-buffer
-         ("C-x b" . consult-buffer)
-         ;; orig. switch-to-buffer-other-window
-         ("C-x 4 b" . consult-buffer-other-window)
-         ;; orig. switch-to-buffer-other-frame
-         ("C-x 5 b" . consult-buffer-other-frame)
-         ;; orig. bookmark-jump
-         ("C-x r b" . consult-bookmark)
-         ;; orig. project-switch-to-buffer
+         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+         ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
          ;; ("C-x p b" . consult-project-buffer) ;use disproject instead
          ;; Custom M-# bindings for fast register access
          ("M-#" . consult-register-load)
-         ;; orig. abbrev-prefix-mark (unrelated)
-         ("M-'" . consult-register-store)
+         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
          ("C-M-#" . consult-register)
          ;; Other custom bindings
          ;; orig. yank-pop
-         ("M-y" . consult-yank-pop)
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
          ;; M-g bindings (goto-map)
          ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake)
-         ;; orig. goto-line
-         ("M-g g" . consult-goto-line)
-         ;; orig. goto-line
-         ("M-g M-g" . consult-goto-line)
-         ("M-g o" . consult-outline)
+         ("M-g r" . consult-grep-match)
+         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
          ("M-g m" . consult-mark)
          ("M-g k" . consult-global-mark)
          ("M-g i" . consult-imenu)
          ("M-g I" . consult-imenu-multi)
          ;; M-s bindings (search-map)
-         ("M-s d" . consult-find)
-         ("M-s D" . consult-locate)
+         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ("M-s c" . consult-locate)
          ("M-s g" . consult-grep)
          ("M-s G" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
@@ -1602,19 +1589,48 @@ indentation."
          ;; Isearch integration
          ("M-s e" . consult-isearch-HISTORY)
          :map isearch-mode-map
-         ;; orig. isearch-edit-string
-         ("M-e" . consult-isearch-history)
-         ;; orig. isearch-edit-string
-         ("M-s e" . consult-isearch-history)
-         ;; needed by consult-line to detect isearch
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
+         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
          ;; Minibuffer history
          :map minibuffer-local-map
-         ;; orig. next-matching-history-element
-         ("M-s" . consult-history)
-         ;; orig. previous-matching-history-element
-         ("M-r" . consult-history))
+         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+  :init
+
+  ;; Tweak the register preview for `consult-register-load',
+  ;; `consult-register-store' and the built-in commands.  This improves the
+  ;; register formatting, adds thin separator lines, register sorting and hides
+  ;; the window mode line.
+  (advice-add #'register-preview :override #'consult-register-window)
+  (setq register-preview-delay 0.5)
+
+  ;; Optionally tweak the register preview window.
+  ;; This adds thin lines, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window)
+
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+
+  :config
+  ;; For some commands and buffer sources it is useful to configure the
+  ;; :preview-key on a per-command basis using the `consult-customize' macro.
+  (consult-customize
+   consult-theme :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep consult-man
+   consult-bookmark consult-recent-file consult-xref
+   consult-source-bookmark consult-source-file-register
+   consult-source-recent-file consult-source-project-recent-file
+   ;; :preview-key "M-."
+   :preview-key '(:debounce 0.4 any))
+
+  (setq consult-narrow-key "<")
+  :functions (consult-register-window consult-xref consult--customize-put))
+
+;; Additional consult configurations.
+(use-package consult
   :custom
   (consult-find-args (pcase my-emacs-search-excluded-directories
                        (`(,first-dir . ,rest-dirs)
@@ -1626,46 +1642,10 @@ indentation."
                                  rest-dirs)
                                 " ) -prune -or -true )"))))
   (consult-async-split-style 'perl-comma)
-  ;; The :init configuration is always executed (Not lazy)
-  :init
-
-  ;; Optionally configure the register formatting. This improves the register
-  ;; preview for `consult-register', `consult-register-load',
-  ;; `consult-register-store' and the Emacs built-ins.
-  (setq register-preview-delay 0.5
-        register-preview-function #'consult-register-format)
-
-  ;; Optionally tweak the register preview window.
-  ;; This adds thin lines, sorting and hides the mode line of the window.
-  (advice-add #'register-preview :override #'consult-register-window)
-
-  ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
-
-  ;; Configure other variables and modes in the :config section,
-  ;; after lazily loading the package.
   :config
   (add-to-list 'consult-async-split-styles-alist
                '(perl-comma :initial "," :function consult--split-perl))
-
-  ;; Optionally configure preview. The default value
-  ;; is 'any, such that any key triggers the preview.
-  ;; (setq consult-preview-key 'any)
-  ;; (setq consult-preview-key "M-.")
-  ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
-  ;; For some commands and buffer sources it is useful to configure the
-  ;; :preview-key on a per-command basis using the `consult-customize' macro.
-  (consult-customize
-   consult-theme :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
-   ;; :preview-key "M-."
-   :preview-key '(:debounce 0.4 any))
-
-  (setq consult-narrow-key "<"))
+  )
 
 (use-package corfu
   :bind ( :map corfu-map
