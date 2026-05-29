@@ -86,7 +86,6 @@
               (ftw "build"
                    (lambda (filename statinfo flag)
                      (when (string-suffix? ".so" filename)
-                       (display "test!\n")
                        (copy-file filename (basename filename)))
                      #t)))))))
     (native-inputs (list python-setuptools python-wheel))
