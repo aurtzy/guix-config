@@ -638,7 +638,8 @@ remote.")
                                  "mpv/scripts"
                                  "trigger-restart-playback-on-eof.lua")))
                              ("mpv/scripts/mpris.so"
-                              ,(file-append mpv-mpris "/lib/mpris.so"))))))))
+                              ,(file-append
+                                mpv-mpris "/lib/mpv-mpris/mpris.so"))))))))
 
 (define home-password-management-mod
   (home-environment-mod
