@@ -62,6 +62,7 @@
          games-src
          "Games"
          "storage/steam-alt-library"
+         "storage-ext/SteamLibrary"
          ".config/r2modmanPlus-local"
          "solid-drive/steam-library"
          ;; Allow access to store so any dependencies can be resolved.
