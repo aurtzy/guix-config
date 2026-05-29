@@ -142,6 +142,12 @@
                 '(("compress-force" . "zstd:10"))))
               (type "btrfs")
               (mount? #f))
+            (file-system
+              (type "ext4")
+              (mount-point "/home/alvin/storage-ext")
+              (device (uuid "c30051da-a063-4956-9397-caa2a9debc3e"))
+              (create-mount-point? #t)
+              (mount-may-fail? #t))
             (operating-system-file-systems initial-os)))
     (services
      (cons* (service keyboard-center-service-type)
