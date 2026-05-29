@@ -32,6 +32,7 @@
   #:use-module (my-guix mods hardware)
   #:use-module (my-guix packages gnome)
   #:use-module (my-guix utils)
+  #:use-module (nongnu packages video)
   #:use-module (nonguix utils)
   #:export (gnome-mod
             plasma-mod))
@@ -42,8 +43,22 @@
 
 (use-service-modules desktop sddm xorg)
 
+(define base-desktop-environment-mod
+  (operating-system-mod
+    (name 'base-desktop-environment)
+    (description
+     "Provides desktop environment agnostic packages.
+
+This mod should be inherited by all desktop environment mods.")
+    (packages
+     (let-mod-arguments (this-operating-system-mod-arguments)
+         ((replace-mesa replace-mesa-argument)
+          (nvidia-proprietary? nvidia-proprietary?-argument))
+       (list (replace-mesa (if nvidia-proprietary? mpv-nvidia mpv)))))))
+
 (define gnome-mod
   (operating-system-mod
+    (inherit base-desktop-environment-mod)
     (name 'gnome)
     (description
      "Provides configurations for the GNOME desktop environment.")
@@ -100,10 +115,12 @@
                                  gnome-shell-extensions
                                  gnome-shell-extension-gsconnect
                                  gnome-tweaks
-                                 xdg-desktop-portal-kde)))))))))))
+                                 xdg-desktop-portal-kde)))))
+         services))))))
 
 (define plasma-mod
   (operating-system-mod
+    (inherit base-desktop-environment-mod)
     (name 'plasma)
     (description
      "Configures the KDE Plasma desktop environment for this system.")
@@ -116,50 +133,52 @@
             ;; wiki page on packaging, although I'm not sure what some of
             ;; them do:
             ;; https://community.kde.org/Distributions/Packaging_Recommendations
-            (list ark
-                  bluedevil
-                  bluez-qt      ;XXX: Propagate for bluedevil settings to work
-                  ffmpegthumbs
-                  filelight
-                  gnome-tweaks
-                  gwenview
-                  icoutils
-                  kdeconnect
-                  kded    ;XXX: Fix audio/tray(/more?) integration being funky
-                  kimageformats
-                  kwayland-integration
-                  kwrited
-                  okular
-                  print-manager
-                  qtimageformats
-                  system-config-printer
-                  xdg-desktop-portal-gtk))))
+            (cons* ark
+                   bluedevil
+                   bluez-qt     ;XXX: Propagate for bluedevil settings to work
+                   ffmpegthumbs
+                   filelight
+                   gnome-tweaks
+                   gwenview
+                   icoutils
+                   kdeconnect
+                   kded   ;XXX: Fix audio/tray(/more?) integration being funky
+                   kimageformats
+                   kwayland-integration
+                   kwrited
+                   okular
+                   print-manager
+                   qtimageformats
+                   system-config-printer
+                   xdg-desktop-portal-gtk
+                   packages))))
     (services
      (let-mod-arguments (this-operating-system-mod-arguments)
          ((base-configuration base-configuration-argument)
           (replace-mesa replace-mesa-argument)
           (nvidia-proprietary? nvidia-proprietary?-argument))
-       (list (service plasma-desktop-service-type
-                      (plasma-desktop-configuration
-                        (plasma-package (replace-mesa plasma))))
-             (service sddm-service-type
-                      (sddm-configuration
-                        (xorg-configuration
-                          (if nvidia-proprietary?
-                              (xorg-configuration
-                                (keyboard-layout
-                                 (operating-system-keyboard-layout
-                                  base-configuration))
-                                (modules
-                                 (cons (module-ref (resolve-interface
-                                                    '(nongnu packages nvidia))
-                                                   'nvda)
-                                       %default-xorg-modules))
-                                (drivers '("nvidia")))
-                              (xorg-configuration
-                                (keyboard-layout
-                                 (operating-system-keyboard-layout
-                                  base-configuration)))))
-                        ;; FIXME: Time displays are blank when this is used
-                        ;; (auto-login-user "alvin")
-                        )))))))
+       (cons* (service plasma-desktop-service-type
+                       (plasma-desktop-configuration
+                         (plasma-package (replace-mesa plasma))))
+              (service sddm-service-type
+                       (sddm-configuration
+                         (xorg-configuration
+                           (if nvidia-proprietary?
+                               (xorg-configuration
+                                 (keyboard-layout
+                                  (operating-system-keyboard-layout
+                                   base-configuration))
+                                 (modules
+                                  (cons (module-ref (resolve-interface
+                                                     '(nongnu packages nvidia))
+                                                    'nvda)
+                                        %default-xorg-modules))
+                                 (drivers '("nvidia")))
+                               (xorg-configuration
+                                 (keyboard-layout
+                                  (operating-system-keyboard-layout
+                                   base-configuration)))))
+                         ;; FIXME: Time displays are blank when this is used
+                         ;; (auto-login-user "alvin")
+                         ))
+              services)))))

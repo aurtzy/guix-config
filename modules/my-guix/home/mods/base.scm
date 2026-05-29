@@ -608,7 +608,7 @@ remote.")
     (name 'home-media)
     (description
      "Configures applications for the consumption of media.")
-    (packages (list yt-dlp mpv quodlibet))
+    (packages (list yt-dlp quodlibet))
     (services
      (list (simple-service name
                            home-flatpak-profile-service-type
