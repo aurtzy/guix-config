@@ -58,7 +58,8 @@
                      linux music package-management protobuf pulseaudio qt tex
                      tor tree-sitter version-control video virtualization)
 
-(use-service-modules cups desktop linux networking pm virtualization xorg)
+(use-service-modules cups desktop linux networking pm sysctl virtualization
+                     xorg)
 
 
 ;;; Base mods.
@@ -142,10 +143,29 @@ elsewhere in possibly different forms).")
     (services
      (let-mod-arguments (this-operating-system-mod-arguments)
          ((replace-mesa replace-mesa-argument))
-       (with-transformation replace-mesa
-                            (modify-services %desktop-services
-                              (delete guix-service-type)
-                              (delete gdm-service-type)))))))
+       (let* ((services
+               (modify-services %desktop-services
+                 (delete guix-service-type)
+                 (delete gdm-service-type)))
+              (services
+               ;; Configure IPv6 privacy extensions.
+               (cons* (simple-service name sysctl-service-type
+                                      '(("net.ipv6.conf.all.use_tempaddr" . "2")
+                                        ("net.ipv6.conf.default.use_tempaddr" . "2")))
+                      ;; Documentation (see man 5 NetworkManager.conf)
+                      ;; indicates the above settings should be used as
+                      ;; fallback values, but they aren't, so we explicitly
+                      ;; enable privacy extensions here as well.
+                      (modify-services services
+                        (network-manager-service-type
+                         config => (network-manager-configuration
+                                     (inherit config)
+                                     (extra-configuration-files
+                                      `(("privacy-ext.conf"
+                                         ,(plain-file "privacy-ext.conf" "\
+[connection]
+ipv6.ip6-privacy=2"))))))))))
+         (with-transformation replace-mesa services))))))
 
 (define file-system-management-mod
   (operating-system-mod
