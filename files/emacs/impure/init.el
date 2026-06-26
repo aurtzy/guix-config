@@ -305,6 +305,10 @@ This is advice for `denote-keywords'."
 ;;; (settings) Function/variable definitions and customizations.
 ;;;
 
+;;;; Configure Ledger default date.
+
+(use-package ledger :custom (ledger-default-date-format ledger-iso-date-format))
+
 ;;;; Deduplicate Eshell history.
 
 (use-package em-hist :custom (eshell-hist-ignoredups 'erase))
