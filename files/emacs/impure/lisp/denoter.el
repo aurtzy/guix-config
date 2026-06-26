@@ -253,7 +253,7 @@ functions."
                              'face 'transient-value)
                (propertize "None detected" 'face 'transient-inapt-suffix))))
    ("n" "Switch denote context" denoter-switch-context-id)
-   ("N" "New notes file" denote-subdirectory)]
+   ("N" "New notes file" denote)]
   ["Contextual commands"
    :inapt-if-not denoter-context-id
    :pad-keys t
