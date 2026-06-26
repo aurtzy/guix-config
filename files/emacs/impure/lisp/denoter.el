@@ -272,6 +272,16 @@ functions."
    ("A" "aliases file" denoter-find-aliases-file)
    ("d" "denote-sort-dired" denoter-dired-menu)
    ("R" "regexp in notes" denoter-find-regexp)]
+  ["Dired: Rename marked files"
+   :if (lambda () (and (derived-mode-p 'dired-mode)
+                       (save-excursion
+                         (beginning-of-buffer)
+                         (re-search-forward dired-re-mark nil t))))
+   ("D f" "Use front matter" denote-dired-rename-marked-files-using-front-matter)
+   ("D k a" "Add keywords" denote-dired-rename-marked-files-add-keywords)
+   ("D k k" "Remove keywords" denote-dired-rename-marked-files-remove-keywords)
+   ("D k r" "Replace keywords" denote-dired-rename-marked-files-with-keywords)
+   ("D r" "Prompt for each" denote-dired-rename-files)]
   (interactive)
   (transient-setup
    'denoter-menu nil nil
