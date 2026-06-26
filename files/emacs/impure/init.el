@@ -140,6 +140,35 @@ alist of aliases to denote IDs.")
   (add-hook 'denote-after-new-note-hook #'end-of-buffer 90)
   (add-hook 'before-save-hook #'my-emacs-denote-mirror-title-to-first-headline)
   (add-hook 'denote-after-rename-file-hook #'my-emacs-denote-set-status-keywords)
+  (setf (alist-get 'ledger denote-file-types)
+        '( :extension ".ledger"
+           :get-file-type-function nil
+           :front-matter "\
+; title:      %s
+; date:       %s
+; tags:       %s
+; identifier: %s
+; signature:  %s
+
+"
+           :title-key-regexp "^;\\s-*title\\s-*:"
+           :title-value-function denote-format-string-for-org-front-matter
+           :title-value-reverse-function denote-trim-whitespace
+           :keywords-key-regexp "^;\\s-*tags\\s-*:"
+           :keywords-value-function denote-format-keywords-for-text-front-matter
+           :keywords-value-reverse-function denote-extract-keywords-from-front-matter
+           :signature-key-regexp "^;\\s-*signature\\s-*:"
+           :signature-value-function denote-format-string-for-org-front-matter
+           :signature-value-reverse-function denote-trim-whitespace
+           :identifier-key-regexp "^;\\s-*identifier\\s-*:"
+           :identifier-value-function denote-format-string-for-org-front-matter
+           :identifier-value-reverse-function denote-trim-whitespace
+           :date-key-regexp "^;\\s-*date\\s-*:"
+           :date-value-function denote-date-iso-8601
+           :date-value-reverse-function denote-extract-date-from-front-matter
+           :link-retrieval-format "[denote:%VALUE%]"
+           :link denote-org-link-format
+           :link-in-context-regexp denote-org-link-in-context-regexp))
   :preface
   (defun my-emacs-denote-mirror-title-to-first-headline ()
     "Set the first headline to the note's title property (or create it).
