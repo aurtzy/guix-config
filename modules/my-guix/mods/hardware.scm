@@ -29,9 +29,10 @@
   #:export (battery-mod
             bluetooth-mod
             nvidia-proprietary?-argument
-            nvidia-mod))
+            nvidia-mod
+            qmk-mod))
 
-(use-package-modules linux)
+(use-package-modules firmware linux)
 
 (use-service-modules desktop pm)
 
@@ -82,3 +83,9 @@ configurations.")
        (if nvidia-proprietary?
            (nonguix-transformation-nvidia #:open-source-kernel-module? #t)
            identity)))))
+
+(define qmk-mod
+  (operating-system-mod
+    (name 'qmk)
+    (description "Configures system with support for QMK devices.")
+    (services (list (udev-rules-service name qmk-udev-rules)))))
