@@ -41,7 +41,6 @@
   #:use-module (my-guix mods server)
   #:use-module (my-guix packages game-client)
   #:use-module (my-guix packages mesa)
-  #:use-module (my-guix packages keyboard-center)
   #:use-module (my-guix packages redlib)
   #:use-module (my-guix services hardware)
   #:use-module ((my-guix systems)
@@ -148,10 +147,7 @@
               (device (uuid "c30051da-a063-4956-9397-caa2a9debc3e"))
               (create-mount-point? #t)
               (mount-may-fail? #t))
-            (operating-system-file-systems initial-os)))
-    (services
-     (cons* (service keyboard-center-service-type)
-            (operating-system-user-services initial-os)))))
+            (operating-system-file-systems initial-os)))))
 
 (define modded-operating-system
   (modded-configuration

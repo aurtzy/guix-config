@@ -49,7 +49,6 @@
   #:use-module (my-guix mods hardware)
   #:use-module (my-guix packages game-client)
   #:use-module (my-guix packages mesa)
-  #:use-module (my-guix packages keyboard-center)
   #:use-module (my-guix packages redlib)
   #:use-module (my-guix services hardware)
   #:use-module ((my-guix systems)
