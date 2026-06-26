@@ -33,12 +33,7 @@
 An association list of scoped values for variables.  Each element should
 element should be of the form (SYMBOL . VALUE), where SYMBOL is a
 variable that is to be set to VALUE when executing
-`scoped-prefix-apply'.")
-   (advices :initarg :advices
-                     :initform nil
-                     :documentation "\
-A list of around advice functions to apply in `scoped-prefix-apply'.
-The functions are applied with the first being the outermost advice.")))
+`scoped-prefix-apply'.")))
 
 (defclass scoped-prefix (transient-prefix)
   ((init-scope :initarg :init-scope
@@ -76,7 +71,6 @@ Scope values are merged into the existing `scoped-scope' object, if any."
   "Apply FUN to ARGS within the `scoped-prefix' scope context."
   (let* ((scope (transient-scope nil 'scoped-prefix))
          (values (oref scope values))
-         (advices (oref scope advices))
          orig-values)
     (unwind-protect
         (progn
@@ -84,12 +78,7 @@ Scope values are merged into the existing `scoped-scope' object, if any."
                       (push (cons symbol (symbol-value symbol)) orig-values)
                       (set symbol form))
                     values)
-          (apply (seq-reduce (lambda (inner-fun advice-fun)
-                               (lambda (&rest arguments)
-                                 (apply advice-fun inner-fun arguments)))
-                             advices
-                             fun)
-                 args))
+          (apply fun args))
       (seq-each (pcase-lambda (`(,symbol . ,value))
                   (set symbol value))
                 orig-values))))
