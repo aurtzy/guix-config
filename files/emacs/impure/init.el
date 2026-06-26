@@ -686,6 +686,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Enable `ledger-flymake' backend for Ledger files.
+
+(use-package ledger-flymake :hook (ledger-mode . ledger-flymake-enable))
+
 ;;;; Improve editing regexps in minibuffer.
 
 (use-package minibuffer :demand :config (minibuffer-regexp-mode 1))
