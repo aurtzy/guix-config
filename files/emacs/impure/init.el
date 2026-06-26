@@ -126,6 +126,7 @@ alist of aliases to denote IDs.")
 (use-package denote :demand
   :custom
   (denote-directory "~/data/")
+  (denote-prompts '(subdirectory title keywords))
   ;; Avoid traversing past data directories.
   (denote-excluded-directories-regexp "^[^/]*/.*")
   (denote-sort-dired-default-sort-component 'last-modified)
