@@ -135,6 +135,9 @@ alist of aliases to denote IDs.")
   :config
   (add-hook 'denote-after-new-note-hook #'my-emacs-denote-mirror-title-to-first-headline)
   (add-hook 'denote-after-new-note-hook #'my-emacs-denote-set-new-note-status-keywords)
+  ;; Make sure point's at the end of the buffer when note is created to not
+  ;; break assumptions of other commands.
+  (add-hook 'denote-after-new-note-hook #'end-of-buffer 90)
   (add-hook 'before-save-hook #'my-emacs-denote-mirror-title-to-first-headline)
   (add-hook 'denote-after-rename-file-hook #'my-emacs-denote-set-status-keywords)
   :preface
@@ -150,6 +153,7 @@ This does not do anything if the buffer file does not satisfy
         (goto-char (point-min))
         (org-next-visible-heading 1)
         (unless (org-at-heading-p)
+          (save-excursion (insert "\n\n"))
           (org-insert-heading))
         (if-let* ((title (org-get-title)))
             (org-edit-headline title)
