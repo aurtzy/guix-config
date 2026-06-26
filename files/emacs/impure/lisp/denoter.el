@@ -1,6 +1,7 @@
 ;;; denoter.el --- Transient menus for denote.el  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2026 Alvin Hsu
+;; Copyright (C) 2018-2025 Free Software Foundation, Inc.
 
 ;; Author: Alvin Hsu <aurtzy@gmail.com>
 ;; Keywords: convenience
@@ -25,6 +26,7 @@
 ;;; Code:
 
 (require 'denote)
+(require 'eieio)
 (require 'thingatpt)
 (require 'transient)
 
@@ -35,6 +37,21 @@
 (defvar my-emacs-denote-aliases-file)
 
 (require 'consult)
+(require 'scoped)
+
+
+;;;; Classes.
+
+
+;;;;; Definitions.
+
+
+;;;; Transient groups.
+
+
+;;;;; Definitions.
+
+
 
 
 ;;;; Commands.
@@ -75,9 +92,61 @@ prompting for denote ID as a fallback."
       (error "Denote context is invalid")))
 
 
+;;;;; Transient infixes.
+
+;;;;;; Auxiliary.
+
+;;;;;; Definitions.
+
+(transient-define-infix denoter-exclude-regexp-infix ()
+  :class transient-option
+  :argument "exclude-regexp="
+  :reader (lambda (&rest _) (denote-sort-exclude-files-prompt))
+  :description "Exclude regexp")
+
+(transient-define-infix denoter-reverse-sort-infix ()
+  :class transient-switch
+  :argument "reverse-sort"
+  :description "Reverse sort")
+
+(transient-define-infix denoter-sort-by-component-infix ()
+  "Set the sort component in transient state.
+
+The sort component is one of `denote-sort-components', stored as a
+string.  Consumers must intern back to symbols for use with denote
+functions."
+  :class transient-option
+  :argument "sort-by="
+  :reader (lambda (&rest _) (symbol-name (denote-sort-component-prompt)))
+  :always-read t
+  :description "Sort by")
+
+
 ;;;;; Transient suffixes.
 
 ;;;;;; Definitions.
+
+(transient-define-suffix denoter-dired-all
+  (sort-by-component reverse exclude-regexp)
+  "Execute `denoter-dired' with FILES-MATCHING-REGEXP set to nil."
+  (interactive
+   (let ((args (transient-args 'denoter-dired-menu)))
+     (list (intern (transient-arg-value "sort-by=" args))
+           (transient-arg-value "reverse-sort" args)
+           (transient-arg-value "exclude-regexp=" args))))
+  (denoter-dired nil sort-by-component reverse exclude-regexp))
+
+(transient-define-suffix denoter-dired
+  (files-matching-regexp sort-by-component reverse exclude-regexp)
+  "Like `denote-sort-dired', but interactive calls use transient state."
+  (interactive
+   (let ((args (transient-args 'denoter-dired-menu)))
+     (list (denote-files-matching-regexp-prompt)
+           (intern (transient-arg-value "sort-by=" args))
+           (transient-arg-value "reverse-sort" args)
+           (transient-arg-value "exclude-regexp=" args))))
+  (denote-sort-dired
+   files-matching-regexp sort-by-component reverse exclude-regexp))
 
 (transient-define-suffix denoter-dired-assets-directory (file)
   "Open `dired' in assets directory associated with denote FILE."
@@ -99,11 +168,6 @@ prompting for denote ID as a fallback."
   "Open the contextual denote file from transient state."
   (interactive)
   (find-file (denote-get-path-by-id (denoter-context-id t))))
-
-(transient-define-suffix denoter-find-denote-directory ()
-  "Run Dired in `denote-directory'."
-  (interactive)
-  (dired denote-directory))
 
 (transient-define-suffix denoter-find-regexp ()
   "Find regexp in variable `denote-directory' notes."
@@ -142,7 +206,33 @@ prompting for denote ID as a fallback."
 
 ;;;;; Transient prefixes.
 
+;;;;;; Auxiliary.
+
+
+
 ;;;;;; Definitions.
+
+;;;###autoload
+(transient-define-prefix denoter-dired-menu ()
+  [:description
+   (lambda ()
+     (concat (propertize "Denote directory: " 'face 'transient-heading)
+             (propertize denote-directory 'face 'transient-value)))
+   ""]
+  ["Options"
+   (",e" denoter-exclude-regexp-infix)
+   (",s" denoter-sort-by-component-infix)
+   (",r" denoter-reverse-sort-infix)]
+  ["Commands"
+   ("a" "Dired (all)" denoter-dired-all)
+   ("d" "Dired (filtered)" denoter-dired)]
+  (interactive)
+  (transient-setup
+   'denoter-dired-menu nil nil
+   ;; Use user-customizable `denote' options to set defaults for menu.
+   :value `(,(concat
+              "sort-by=" (symbol-name denote-sort-dired-default-sort-component))
+            ,@(if denote-sort-dired-default-reverse-sort '("reverse-sort")))))
 
 ;; TODO: Add commands from:
 ;; <https://protesilaos.com/emacs/denote#h:998ae528-9276-47ec-b642-3d7355a38f27>
@@ -180,7 +270,7 @@ prompting for denote ID as a fallback."
     ("r r" "file" denote-rename-file)]]
   ["Find"
    ("A" "aliases file" denoter-find-aliases-file)
-   ("D" "denote directory" denoter-find-denote-directory)
+   ("d" "denote-sort-dired" denoter-dired-menu)
    ("R" "regexp in notes" denoter-find-regexp)]
   (interactive)
   (transient-setup
