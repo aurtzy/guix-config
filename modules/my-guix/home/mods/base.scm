@@ -64,7 +64,7 @@
             home-meta-desktop-mod))
 
 (use-package-modules aspell audio backup compression emacs emacs-build
-                     emacs-xyz fonts freedesktop guile haskell-apps
+                     emacs-xyz finance fonts freedesktop guile haskell-apps
                      kde-frameworks kde-plasma music protobuf pulseaudio tex
                      tree-sitter video)
 
@@ -507,6 +507,9 @@ still be manually switched to in system settings.")
                      ;; ispell/aspell for flyspell
                      aspell
                      aspell-dict-en
+                     ;; ledger accounting
+                     emacs-ledger-mode
+                     ledger             ;provide manuals
                      ;; etc
                      emacs-casual
                      (let ((transform (options->transformation
