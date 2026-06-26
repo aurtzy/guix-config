@@ -77,7 +77,9 @@
                                       "audio"
                                       "video"
                                       "kvm"
-                                      "libvirt")))
+                                      "libvirt"
+                                      "plugdev"
+                                      )))
             (operating-system-users initial-os)))
     (mapped-devices
      (list (mapped-device
@@ -161,4 +163,5 @@
                 meta-entertainment-mod
                 gnome-mod
                 nvidia-mod
+                qmk-mod
                 ssh-server-mod))))

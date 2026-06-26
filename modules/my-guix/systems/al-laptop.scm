@@ -63,7 +63,8 @@
                                       "kvm"
                                       "libvirt"
                                       ;; rtl-sdr
-                                      "dialout")))
+                                      "dialout"
+                                      "plugdev")))
             (operating-system-users initial-os)))
     (mapped-devices
      (list (mapped-device
@@ -108,6 +109,7 @@
                 battery-mod
                 bluetooth-mod
                 gnome-mod
+                qmk-mod
                 ssh-server-mod
                 (operating-system-mod
                   (name 'vpn)
