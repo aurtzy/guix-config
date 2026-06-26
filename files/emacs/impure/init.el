@@ -686,6 +686,10 @@ quits:  if a previous call to this function is still active, auto-return `t'."
 ;;; (minor-modes) Minor modes.
 ;;;
 
+;;;; Use `flyspell-prog-mode' in Ledger buffers.
+
+(use-package ledger :hook (ledger-mode . flyspell-prog-mode))
+
 ;;;; Enable `ledger-flymake' backend for Ledger files.
 
 (use-package ledger-flymake :hook (ledger-mode . ledger-flymake-enable))
