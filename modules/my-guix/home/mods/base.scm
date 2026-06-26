@@ -509,7 +509,9 @@ still be manually switched to in system settings.")
                      aspell-dict-en
                      ;; etc
                      emacs-casual
-                     emacs-denote
+                     (let ((transform (options->transformation
+                                       `((with-latest . "emacs-denote")))))
+                       (transform emacs-denote))
                      emacs-delight
                      emacs-dimmer
                      emacs-disproject/newer
